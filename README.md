@@ -4,10 +4,10 @@
 
 | Item | Description |
 |---|---|
-| Course |  |
-| Class |  |
+| Course | SWP391 |
+| Class | SE20A02 |
 | Semester | SU26 |
-| Group |  |
+| Group | Group 6 |
 | Topic |  |
 | Repository |  |
 
@@ -17,10 +17,10 @@
 
 | No | Student ID | Full Name | GitHub Username | Role | Main Responsibility |
 |---:|---|---|---|---|---|
-| 1 |  |  |  | Leader |  |
-| 2 |  |  |  | Member |  |
-| 3 |  |  |  | Member |  |
-| 4 |  |  |  | Member |  |
+| 1 | DE190177 | Đặng Phương Nam |  | Leader |  |
+| 2 | SE183193 | Nguyễn Hoài Nam |  | Member |  |
+| 3 | SE183792 | Cao Điền Hưng |  | Member |  |
+| 4 | DE190974 | Giàng Anh Tuấn |  | Member |  |
 | 5 |  |  |  | Member |  |
 
 ---
