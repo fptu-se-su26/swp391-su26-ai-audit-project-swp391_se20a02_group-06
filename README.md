@@ -21,7 +21,7 @@
 | 2 | SE183193 | Nguyễn Hoài Nam |  | Member |  |
 | 3 | SE183792 | Cao Điền Hưng |  | Member |  |
 | 4 | DE190974 | Giàng Anh Tuấn |  | Member |  |
-| 5 |  |  |  | Member |  |
+| 5 | DE180983 |  Lê Văn Đạt|  | Member |  |
 
 ---
 
