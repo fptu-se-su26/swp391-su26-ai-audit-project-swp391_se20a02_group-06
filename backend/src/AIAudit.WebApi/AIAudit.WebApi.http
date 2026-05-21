@@ -1,0 +1,6 @@
+@AIAudit.WebApi_HostAddress = http://localhost:5007
+
+GET {{AIAudit.WebApi_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
