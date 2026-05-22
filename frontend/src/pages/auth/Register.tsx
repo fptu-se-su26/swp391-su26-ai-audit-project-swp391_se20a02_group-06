@@ -4,7 +4,6 @@ import {
   Flex,
   Heading,
   Text,
-  Button,
   Input,
   Checkbox,
   Link,
@@ -22,6 +21,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
 import { useNavigate } from 'react-router-dom'
+import AppButton from '../../components/shared/Button/AppButton'
 
 // Validation Schema using Zod
 const registerSchema = z
@@ -335,29 +335,26 @@ const Register: React.FC = () => {
 
               {/* Actions */}
               <Box pt="2" mt="2">
-                <Button
+                <AppButton
                   type="submit"
+                  variant="solid"
                   w="full"
-                  bg="#e03030"
-                  color="white"
                   h="52px"
-                  borderRadius="full"
                   fontSize="14px"
-                  fontWeight="600"
                   isLoading={isLoading}
-                  _hover={{ bg: '#c92a2a' }}
-                  _active={{ transform: 'scale(0.98)' }}
-                  transition="all 0.2s"
                   display="flex"
                   justifyContent="center"
                   alignItems="center"
                   gap="1"
-                >
-                  Continue
-                  <Box as="span" className="material-symbols-outlined" fontSize="20px">
-                    arrow_forward
-                  </Box>
-                </Button>
+                  label={
+                    <>
+                      Continue
+                      <Box as="span" className="material-symbols-outlined" fontSize="20px">
+                        arrow_forward
+                      </Box>
+                    </>
+                  }
+                />
               </Box>
             </Stack>
           </form>

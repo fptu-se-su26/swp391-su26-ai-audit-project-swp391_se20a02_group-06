@@ -4,7 +4,6 @@ import {
   Flex,
   Heading,
   Text,
-  Button,
   Grid,
   Stack,
   HStack,
@@ -14,24 +13,17 @@ import {
   Tr,
   Th,
   Td,
-  IconButton,
 } from '@chakra-ui/react'
 import { useNavigate } from 'react-router-dom'
-import { FiMenu, FiX } from 'react-icons/fi'
+import PublicNavbar from '../../components/shared/Navbar/PublicNavbar'
+import PublicFooter from '../../components/shared/Footer/PublicFooter'
+import AppButton from '../../components/shared/Button/AppButton'
 
 const Pricing: React.FC = () => {
   const navigate = useNavigate()
   const [isYearly, setIsYearly] = useState(false)
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 
   const handleLoginClick = () => navigate('/login')
-
-  const navLinks = [
-    { label: 'Features', href: '#' },
-    { label: 'Pricing', href: '/pricing', isActive: true },
-    { label: 'Training', href: '#' },
-    { label: 'About', href: '/about' },
-  ]
 
   // Pricing configuration
   const plans = [
@@ -81,147 +73,7 @@ const Pricing: React.FC = () => {
 
   return (
     <Box minH="100vh" bg="#0A0A0A" color="#e2e1eb" overflowX="hidden" display="flex" flexDirection="column" pt="72px">
-      {/* ===================== TOP NAV BAR ===================== */}
-      <Box
-        as="nav"
-        position="fixed"
-        top="0"
-        left="0"
-        right="0"
-        h="70px"
-        bg="rgba(10, 10, 10, 0.8)"
-        backdropFilter="blur(12px)"
-        borderBottom="1px solid"
-        borderColor="#33343c"
-        zIndex="100"
-        display="flex"
-        alignItems="center"
-        justifyContent="center"
-        px={{ base: '4', md: '8' }}
-      >
-        <Flex maxW="1200px" w="full" justify="space-between" align="center" position="relative">
-          {/* Logo */}
-          <Heading
-            fontSize="2xl"
-            fontWeight="bold"
-            letterSpacing="tighter"
-            cursor="pointer"
-            zIndex="50"
-            onClick={() => navigate('/')}
-          >
-            AISTHEA
-          </Heading>
-
-          {/* Desktop Nav Links — Centered */}
-          <HStack
-            spacing="8"
-            display={{ base: 'none', md: 'flex' }}
-            position="absolute"
-            left="50%"
-            transform="translateX(-50%)"
-          >
-            {navLinks.map((link) => (
-              <Text
-                key={link.label}
-                fontSize="sm"
-                fontWeight="500"
-                color={link.isActive ? '#e03030' : '#8A8A93'}
-                cursor="pointer"
-                transition="all 0.2s"
-                _hover={{ color: 'white', opacity: 0.8 }}
-                onClick={() => link.href.startsWith('/') ? navigate(link.href) : null}
-              >
-                {link.label}
-              </Text>
-            ))}
-          </HStack>
-
-          {/* Right Side CTA */}
-          <HStack spacing="4" zIndex="50">
-            <Button
-              variant="outline"
-              fontSize="xs"
-              fontWeight="600"
-              borderColor="#262626"
-              borderRadius="full"
-              px="5"
-              h="9"
-              color="white"
-              bg="transparent"
-              _hover={{ bg: 'rgba(255,255,255,0.05)' }}
-              display={{ base: 'none', md: 'block' }}
-              onClick={handleLoginClick}
-            >
-              Login
-            </Button>
-            <Button
-              variant="solid"
-              fontSize="xs"
-              fontWeight="600"
-              bg="#e03030"
-              color="white"
-              borderRadius="full"
-              px="5"
-              h="9"
-              _hover={{ bg: '#c92a2a' }}
-              onClick={handleLoginClick}
-            >
-              Start Training
-            </Button>
-
-            {/* Mobile Hamburger */}
-            <IconButton
-              aria-label="Toggle mobile menu"
-              icon={isMobileMenuOpen ? <FiX size="24" /> : <FiMenu size="24" />}
-              display={{ base: 'flex', md: 'none' }}
-              variant="ghost"
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            />
-          </HStack>
-        </Flex>
-      </Box>
-
-      {/* ===================== MOBILE MENU OVERLAY ===================== */}
-      {isMobileMenuOpen && (
-        <Flex
-          position="fixed"
-          inset="0"
-          bg="#0A0A0A"
-          zIndex="45"
-          direction="column"
-          align="center"
-          justify="center"
-          gap="8"
-        >
-          {navLinks.map((link) => (
-            <Text
-              key={link.label}
-              fontSize="2xl"
-              fontWeight="bold"
-              color={link.isActive ? '#e03030' : '#8A8A93'}
-              cursor="pointer"
-              _hover={{ color: 'white' }}
-              onClick={() => {
-                setIsMobileMenuOpen(false)
-                if (link.href.startsWith('/')) navigate(link.href)
-              }}
-            >
-              {link.label}
-            </Text>
-          ))}
-          <Button
-            variant="ghost"
-            fontSize="md"
-            mt="4"
-            onClick={() => {
-              setIsMobileMenuOpen(false)
-              handleLoginClick()
-            }}
-          >
-            Login
-          </Button>
-        </Flex>
-      )}
+      <PublicNavbar />
 
       {/* ===================== MAIN CONTENT ===================== */}
       <Flex as="main" direction="column" align="center" py="12" px="4" maxW="1200px" mx="auto" w="full" flex="1">
@@ -241,20 +93,19 @@ const Pricing: React.FC = () => {
             align="center"
             boxShadow="md"
           >
-            <Button
+            <AppButton
+              label="Monthly"
+              variant="ghost"
               size="sm"
-              borderRadius="full"
               px="6"
               bg={!isYearly ? '#33343c' : 'transparent'}
               color={!isYearly ? 'white' : '#8A8A93'}
               _hover={{ color: 'white' }}
               onClick={() => setIsYearly(false)}
-            >
-              Monthly
-            </Button>
-            <Button
+            />
+            <AppButton
+              variant="ghost"
               size="sm"
-              borderRadius="full"
               px="6"
               bg={isYearly ? '#33343c' : 'transparent'}
               color={isYearly ? 'white' : '#8A8A93'}
@@ -263,21 +114,24 @@ const Pricing: React.FC = () => {
               display="flex"
               alignItems="center"
               gap="2"
-            >
-              Yearly
-              <Box
-                as="span"
-                fontSize="10px"
-                fontWeight="700"
-                bg="#e03030"
-                color="white"
-                px="2"
-                py="0.5"
-                borderRadius="full"
-              >
-                -20%
-              </Box>
-            </Button>
+              label={
+                <>
+                  Yearly
+                  <Box
+                    as="span"
+                    fontSize="10px"
+                    fontWeight="700"
+                    bg="#e03030"
+                    color="white"
+                    px="2"
+                    py="0.5"
+                    borderRadius="full"
+                  >
+                    -20%
+                  </Box>
+                </>
+              }
+            />
           </Flex>
         </Stack>
 
@@ -362,12 +216,11 @@ const Pricing: React.FC = () => {
               </Stack>
 
               {/* CTA Action */}
-              <Button
+              <AppButton
+                label={plan.btnText}
                 variant={plan.popular ? 'solid' : 'outline'}
                 w="full"
                 h="10"
-                borderRadius="full"
-                fontWeight="600"
                 fontSize="14px"
                 bg={plan.popular ? '#e03030' : 'transparent'}
                 borderColor={plan.popular ? '#e03030' : '#262626'}
@@ -378,9 +231,7 @@ const Pricing: React.FC = () => {
                     : { borderColor: 'white', bg: 'rgba(255, 255, 255, 0.05)' }
                 }
                 onClick={handleLoginClick}
-              >
-                {plan.btnText}
-              </Button>
+              />
             </Flex>
           ))}
         </Grid>
@@ -466,46 +317,7 @@ const Pricing: React.FC = () => {
         </Box>
       </Flex>
 
-      {/* ===================== FOOTER ===================== */}
-      <Box as="footer" w="full" py="10" bg="#0c0e14" borderTop="1px solid" borderColor="#33343c" mt="auto">
-        <Grid
-          maxW="1200px"
-          mx="auto"
-          px="8"
-          templateColumns={{ base: '1fr', md: 'repeat(4, 1fr)' }}
-          gap="8"
-        >
-          <Stack spacing="3">
-            <Heading as="h4" fontSize="lg" color="white" fontWeight="bold">
-              AISTHEA
-            </Heading>
-            <Text fontSize="xs" color="#8A8A93">
-              © 2024 AISTHEA AI. All rights reserved.
-            </Text>
-          </Stack>
-          <Stack spacing="2">
-            {['AI Workouts', 'Nutrition', 'PT Booking'].map((link) => (
-              <Text key={link} fontSize="xs" color="#8A8A93" cursor="pointer" _hover={{ color: '#e03030' }}>
-                {link}
-              </Text>
-            ))}
-          </Stack>
-          <Stack spacing="2">
-            {['About', 'Careers', 'Contact'].map((link) => (
-              <Text key={link} fontSize="xs" color="#8A8A93" cursor="pointer" _hover={{ color: '#e03030' }} onClick={() => link === 'About' ? navigate('/about') : null}>
-                {link}
-              </Text>
-            ))}
-          </Stack>
-          <Stack spacing="2">
-            {['Privacy', 'Terms'].map((link) => (
-              <Text key={link} fontSize="xs" color="#8A8A93" cursor="pointer" _hover={{ color: '#e03030' }}>
-                {link}
-              </Text>
-            ))}
-          </Stack>
-        </Grid>
-      </Box>
+      <PublicFooter />
     </Box>
   )
 }

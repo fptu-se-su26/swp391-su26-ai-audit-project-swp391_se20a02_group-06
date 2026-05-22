@@ -5,19 +5,15 @@ import {
   Grid,
   Heading,
   Text,
-  Button,
   Image,
   Icon,
   Stack,
   HStack,
-  IconButton,
 } from '@chakra-ui/react'
 import { useNavigate } from 'react-router-dom'
 import {
   FiCheck,
   FiCheckCircle,
-  FiMenu,
-  FiX,
   FiCpu,
   FiUser,
   FiBarChart2,
@@ -27,6 +23,9 @@ import {
   FiActivity,
   FiZap,
 } from 'react-icons/fi'
+import PublicNavbar from '../../components/shared/Navbar/PublicNavbar'
+import PublicFooter from '../../components/shared/Footer/PublicFooter'
+import AppButton from '../../components/shared/Button/AppButton'
 
 // Hero athlete gallery images from Stitch
 const heroImages = [
@@ -90,164 +89,12 @@ const aboutCards = [
 const Landing: React.FC = () => {
   const navigate = useNavigate()
   const [isYearly, setIsYearly] = useState(false)
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 
   const handleLoginClick = () => navigate('/login')
 
-  const navLinks = [
-    { label: 'Features', href: '#features' },
-    { label: 'Pricing', href: '/pricing' },
-    { label: 'Training', href: '#training' },
-    { label: 'About', href: '/about' },
-  ]
-
   return (
     <Box minH="100vh" bg="#0c0e14" color="#e2e1eb" overflowX="hidden">
-      {/* ===================== TOP NAV BAR ===================== */}
-      <Box
-        as="nav"
-        position="fixed"
-        top="0"
-        left="0"
-        right="0"
-        h="70px"
-        bg="rgba(12, 14, 20, 0.8)"
-        backdropFilter="blur(12px)"
-        borderBottom="1px solid"
-        borderColor="#33343c"
-        zIndex="100"
-        display="flex"
-        alignItems="center"
-        justifyContent="center"
-        px={{ base: '4', md: '8' }}
-      >
-        <Flex maxW="1200px" w="full" justify="space-between" align="center" position="relative">
-          {/* Logo */}
-          <Heading
-            fontSize="2xl"
-            fontWeight="bold"
-            letterSpacing="tighter"
-            cursor="pointer"
-            zIndex="50"
-            onClick={() => navigate('/')}
-          >
-            AISTHEA
-          </Heading>
-
-          {/* Desktop Nav Links — Centered */}
-          <HStack
-            spacing="8"
-            display={{ base: 'none', md: 'flex' }}
-            position="absolute"
-            left="50%"
-            transform="translateX(-50%)"
-          >
-            {navLinks.map((link) => (
-              <Text
-                key={link.label}
-                fontSize="sm"
-                fontWeight="500"
-                color="#8A8A93"
-                cursor="pointer"
-                transition="all 0.2s"
-                _hover={{ color: 'white', opacity: 0.8 }}
-                _active={{ transform: 'scale(0.95)' }}
-                onClick={() => {
-                  if (link.href.startsWith('/')) {
-                    navigate(link.href)
-                  } else {
-                    const el = document.querySelector(link.href)
-                    if (el) el.scrollIntoView({ behavior: 'smooth' })
-                  }
-                }}
-              >
-                {link.label}
-              </Text>
-            ))}
-          </HStack>
-
-          {/* Right Side CTA */}
-          <HStack spacing="4" zIndex="50">
-            <Button
-              variant="ghost"
-              fontSize="sm"
-              fontWeight="600"
-              px="4"
-              display={{ base: 'none', md: 'block' }}
-              onClick={handleLoginClick}
-            >
-              Login
-            </Button>
-            <Button
-              variant="solid"
-              fontSize="sm"
-              fontWeight="600"
-              px="6"
-              h="10"
-              borderRadius="full"
-              onClick={handleLoginClick}
-            >
-              Start Training
-            </Button>
-
-            {/* Mobile Hamburger */}
-            <IconButton
-              aria-label="Toggle mobile menu"
-              icon={isMobileMenuOpen ? <FiX size="24" /> : <FiMenu size="24" />}
-              display={{ base: 'flex', md: 'none' }}
-              variant="ghost"
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            />
-          </HStack>
-        </Flex>
-      </Box>
-
-      {/* ===================== MOBILE MENU OVERLAY ===================== */}
-      {isMobileMenuOpen && (
-        <Flex
-          position="fixed"
-          inset="0"
-          bg="#0c0e14"
-          zIndex="45"
-          direction="column"
-          align="center"
-          justify="center"
-          gap="8"
-        >
-          {navLinks.map((link) => (
-            <Text
-              key={link.label}
-              fontSize="2xl"
-              fontWeight="bold"
-              color="#8A8A93"
-              cursor="pointer"
-              _hover={{ color: 'white' }}
-              onClick={() => {
-                setIsMobileMenuOpen(false)
-                if (link.href.startsWith('/')) {
-                  navigate(link.href)
-                } else {
-                  const el = document.querySelector(link.href)
-                  if (el) el.scrollIntoView({ behavior: 'smooth' })
-                }
-              }}
-            >
-              {link.label}
-            </Text>
-          ))}
-          <Button
-            variant="ghost"
-            fontSize="md"
-            mt="4"
-            onClick={() => {
-              setIsMobileMenuOpen(false)
-              handleLoginClick()
-            }}
-          >
-            Login
-          </Button>
-        </Flex>
-      )}
+      <PublicNavbar />
 
       {/* ===================== MAIN CONTENT ===================== */}
       <Box as="main" pt="80px" pb="8" display="flex" flexDirection="column" gap={{ base: '16', md: '24' }}>
@@ -328,32 +175,28 @@ const Landing: React.FC = () => {
                 Elevate your performance with elite-level AI programming. No fluff, just data-driven results for the focused athlete.
               </Text>
               <Stack direction={{ base: 'column', sm: 'row' }} spacing="4" pt="2">
-                <Button
+                <AppButton
                   variant="solid"
+                  label="Start Free Trial"
                   px="8"
                   py="6"
                   fontSize="md"
-                  boxShadow="0 4px 20px rgba(224, 48, 48, 0.2)"
-                  _hover={{ brightness: '110%' }}
                   onClick={handleLoginClick}
-                >
-                  Start Free Trial
-                </Button>
-                <Button
-                  border="1px solid"
+                />
+                <AppButton
+                  variant="outline"
+                  label="View Features"
+                  px="8"
+                  py="6"
+                  fontSize="md"
                   borderColor="#e2e1eb"
                   color="#e2e1eb"
-                  bg="transparent"
-                  px="8"
-                  py="6"
-                  fontSize="md"
-                  borderRadius="full"
                   _hover={{ bg: '#e2e1eb', color: '#0c0e14' }}
-                  _active={{ transform: 'scale(0.95)' }}
-                  transition="all 0.2s"
-                >
-                  View Features
-                </Button>
+                  onClick={() => {
+                    const el = document.getElementById('features')
+                    if (el) el.scrollIntoView({ behavior: 'smooth' })
+                  }}
+                />
               </Stack>
             </Flex>
           </Flex>
@@ -493,24 +336,20 @@ const Landing: React.FC = () => {
               borderRadius="full"
               gap="1"
             >
-              <Button
+              <AppButton
                 variant={!isYearly ? 'solid' : 'ghost'}
+                label="Monthly"
                 size="sm"
-                borderRadius="full"
                 px="6"
                 onClick={() => setIsYearly(false)}
-              >
-                Monthly
-              </Button>
-              <Button
+              />
+              <AppButton
                 variant={isYearly ? 'solid' : 'ghost'}
+                label="Yearly (-20%)"
                 size="sm"
-                borderRadius="full"
                 px="6"
                 onClick={() => setIsYearly(true)}
-              >
-                Yearly (-20%)
-              </Button>
+              />
             </Flex>
           </Stack>
 
@@ -551,9 +390,14 @@ const Landing: React.FC = () => {
                   </HStack>
                 ))}
               </Stack>
-              <Button variant="outline" w="full" mt="auto" py="6" onClick={handleLoginClick}>
-                Select Foundation
-              </Button>
+              <AppButton
+                variant="outline"
+                label="Select Foundation"
+                w="full"
+                mt="auto"
+                py="6"
+                onClick={handleLoginClick}
+              />
             </Box>
 
             {/* Pro Athlete (Highlighted) */}
@@ -607,16 +451,15 @@ const Landing: React.FC = () => {
                   </HStack>
                 ))}
               </Stack>
-              <Button
+              <AppButton
                 variant="solid"
+                label="Get Pro Access"
                 w="full"
                 mt="auto"
                 py="6"
                 _hover={{ brightness: '110%', boxShadow: 'lg' }}
                 onClick={handleLoginClick}
-              >
-                Get Pro Access
-              </Button>
+              />
             </Box>
 
             {/* Elite Coached */}
@@ -649,9 +492,14 @@ const Landing: React.FC = () => {
                   </HStack>
                 ))}
               </Stack>
-              <Button variant="outline" w="full" mt="auto" py="6" onClick={handleLoginClick}>
-                Book Coaching
-              </Button>
+              <AppButton
+                variant="outline"
+                label="Book Coaching"
+                w="full"
+                mt="auto"
+                py="6"
+                onClick={handleLoginClick}
+              />
             </Box>
           </Grid>
         </Stack>
@@ -771,54 +619,7 @@ const Landing: React.FC = () => {
         </Flex>
       </Box>
 
-      {/* ===================== FOOTER ===================== */}
-      <Box as="footer" w="full" py="12" bg="#0c0e14" borderTop="1px solid" borderColor="#33343c">
-        <Grid
-          maxW="1200px"
-          mx="auto"
-          px={{ base: '4', md: '8' }}
-          templateColumns={{ base: '1fr', md: 'repeat(4, 1fr)' }}
-          gap="8"
-        >
-          <Stack spacing="3">
-            <Heading as="h4" fontSize="lg" color="white" fontWeight="bold">
-              AISTHEA
-            </Heading>
-            <Text fontSize="xs" color="#8A8A93">
-              © 2024 AISTHEA AI. All rights reserved.
-            </Text>
-          </Stack>
-          <Stack spacing="2">
-            {['AI Workouts', 'Nutrition'].map((link) => (
-              <Text key={link} fontSize="xs" color="#8A8A93" cursor="pointer" _hover={{ color: '#e03030' }} transition="color 0.2s">
-                {link}
-              </Text>
-            ))}
-          </Stack>
-          <Stack spacing="2">
-            {['PT Booking', 'About', 'Careers'].map((link) => (
-              <Text
-                key={link}
-                fontSize="xs"
-                color="#8A8A93"
-                cursor="pointer"
-                _hover={{ color: '#e03030' }}
-                transition="color 0.2s"
-                onClick={() => link === 'About' ? navigate('/about') : link === 'PT Booking' ? navigate('/pricing') : null}
-              >
-                {link}
-              </Text>
-            ))}
-          </Stack>
-          <Stack spacing="2">
-            {['Contact', 'Privacy', 'Terms'].map((link) => (
-              <Text key={link} fontSize="xs" color="#8A8A93" cursor="pointer" _hover={{ color: '#e03030' }} transition="color 0.2s">
-                {link}
-              </Text>
-            ))}
-          </Stack>
-        </Grid>
-      </Box>
+      <PublicFooter />
     </Box>
   )
 }

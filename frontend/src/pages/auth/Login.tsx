@@ -4,7 +4,6 @@ import {
   Flex,
   Heading,
   Text,
-  Button,
   Input,
   Checkbox,
   Link,
@@ -25,6 +24,7 @@ import * as z from 'zod'
 import { useNavigate } from 'react-router-dom'
 import { FiArrowLeft } from 'react-icons/fi'
 import { FaApple } from 'react-icons/fa'
+import AppButton from '../../components/shared/Button/AppButton'
 
 // Validation Schema using Zod
 const loginSchema = z.object({
@@ -255,25 +255,17 @@ const Login: React.FC = () => {
               </Flex>
 
               {/* Primary Action */}
-              <Button
+              <AppButton
+                label="Login"
                 type="submit"
                 variant="solid"
                 w="full"
                 h="44px"
-                bg="#e03030"
-                color="white"
-                borderRadius="full"
-                fontWeight="600"
                 fontSize="14px"
                 isLoading={isLoading}
                 loadingText="Logging in..."
-                _hover={{ bg: '#c02a2a' }}
-                _active={{ transform: 'scale(0.98)' }}
-                transition="all 0.2s"
                 mt="2"
-              >
-                Login
-              </Button>
+              />
             </Stack>
           </form>
 
@@ -288,18 +280,12 @@ const Login: React.FC = () => {
 
           {/* Social Actions */}
           <Stack spacing="3">
-            <Button
+            <AppButton
+              label="Continue with Google"
               variant="outline"
               w="full"
               h="42px"
-              borderRadius="full"
-              borderColor="#262626"
-              bg="transparent"
-              color="white"
-              fontWeight="600"
               fontSize="14px"
-              _hover={{ bg: 'rgba(255, 255, 255, 0.05)' }}
-              _active={{ transform: 'scale(0.98)' }}
               leftIcon={
                 <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24" style={{ marginRight: '6px' }}>
                   <path
@@ -320,27 +306,17 @@ const Login: React.FC = () => {
                   />
                 </svg>
               }
-            >
-              Continue with Google
-            </Button>
-            <Button
+            />
+            <AppButton
+              label="Continue with Apple"
               variant="outline"
               w="full"
               h="42px"
-              borderRadius="full"
-              borderColor="#262626"
-              bg="transparent"
-              color="white"
-              fontWeight="600"
               fontSize="14px"
-              _hover={{ bg: 'rgba(255, 255, 255, 0.05)' }}
-              _active={{ transform: 'scale(0.98)' }}
               leftIcon={
                 <Icon as={FaApple} fontSize="18px" style={{ marginRight: '6px' }} />
               }
-            >
-              Continue with Apple
-            </Button>
+            />
           </Stack>
         </Box>
 
