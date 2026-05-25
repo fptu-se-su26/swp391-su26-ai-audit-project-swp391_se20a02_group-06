@@ -41,17 +41,17 @@ const heroImages = [
   {
     src: hero2,
     alt: 'Male athlete focused training',
-    marginTop: '40px',
+    marginTop: '0px',
   },
   {
     src: hero3,
     alt: 'Female athlete high-intensity training',
-    marginTop: '-20px',
+    marginTop: '0px',
   },
   {
     src: hero4,
     alt: 'Male athlete intense lifting',
-    marginTop: '20px',
+    marginTop: '0px',
   },
 ]
 
@@ -118,9 +118,9 @@ const Landing: React.FC = () => {
               <Box
                 key={idx}
                 h="full"
-                mt={img.marginTop}
                 overflow="hidden"
-                borderRadius="xl"
+                borderRadius="16px"
+                flexShrink={0}
               >
                 <Image
                   src={img.src}
