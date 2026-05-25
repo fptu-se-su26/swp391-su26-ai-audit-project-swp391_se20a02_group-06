@@ -37,17 +37,17 @@ const heroImages = [
   {
     src: 'https://lh3.googleusercontent.com/aida/ADBb0uhpyvDEM2zPsyTXcwiHOvXqUdfoGOXXLd6aft4DIxEGVX90Hfdy1ZtjtLMq-3LlJ0ToP0fGMNXYuPmBpaxcREY-536UGUw-ulBLxMkNSQcINpIMzD4oh3ZhQWkxUeAJZx0AV0XWjNVb7ssMtvCGnOsWPymIMQth9pkQ4lV0Q_zkMfur7TQlAwzz5rr217PKmKCJ4-TF7p41o7PH8xHas7nq7i7uMBAxV92Mp03rQdWJ1VxJ87d1soNsGBKE',
     alt: 'Male athlete focused training',
-    marginTop: '40px',
+    marginTop: '0px',
   },
   {
     src: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDLOhPge2vCkky1al7RB4FgG7E37tt_1SlvsQYYENOalw_nc3nON7zI9KDRStdArz2GzSQOOnERGU0Ia41ZCbY0L_SVyDMO_cvgMLl1wsemBB0tPXfxPZ5CDr8tLzBnRDg_b5PXz8gi_9L5JXmFS9J5AwfHd2sIEuUQCgVWqpIjNy8hsBUiKuBZiDkKJmCdxsGUtL1G0nh7gObjOnB56FpiYxfQ58mgTjY9KJIjqEuwJDo4PAO6N8prXGS4Vl5i3J2-PuIpFSNpoFdO',
     alt: 'Female athlete high-intensity training',
-    marginTop: '-20px',
+    marginTop: '0px',
   },
   {
     src: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBnwiQojKAvmqccfPbtuF0MRIlVR7VnKIIC1sBF2z-D0WUUBHRhIZd13j3CYhA89iCPAsEUbnO5F2rC3yrB0SJQq3Juh3dg1pQ4KW76WmKQH0zdJozyMjKA-q-Nx4FEvpLgNw1IjkdqHGIOllHSiQhCDfnUbuW1563y9lFy7MT0YdBjbZJcJmlkSXj78DccY3laeVRn6wfLJHaaHXkepS4jyGT38HNOSaR3UFHI5OgdAmDRGadl3LQ7mZ3gHIIL6J1tiKy0gIhxdCGi',
     alt: 'Male athlete intense lifting',
-    marginTop: '20px',
+    marginTop: '0px',
   },
 ]
 
@@ -114,9 +114,9 @@ const Landing: React.FC = () => {
               <Box
                 key={idx}
                 h="full"
-                mt={img.marginTop}
                 overflow="hidden"
-                borderRadius="xl"
+                borderRadius="16px"
+                flexShrink={0}
               >
                 <Image
                   src={img.src}
