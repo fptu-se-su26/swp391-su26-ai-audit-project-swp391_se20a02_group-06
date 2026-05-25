@@ -1,0 +1,12 @@
+D:\Documents\GitHub\swp391-su26-ai-audit-project-swp391_se20a02_group-06\backend\src\AIAudit.Domain\bin\Debug\net9.0\AIAudit.Domain.deps.json
+D:\Documents\GitHub\swp391-su26-ai-audit-project-swp391_se20a02_group-06\backend\src\AIAudit.Domain\bin\Debug\net9.0\AIAudit.Domain.dll
+D:\Documents\GitHub\swp391-su26-ai-audit-project-swp391_se20a02_group-06\backend\src\AIAudit.Domain\bin\Debug\net9.0\AIAudit.Domain.pdb
+D:\Documents\GitHub\swp391-su26-ai-audit-project-swp391_se20a02_group-06\backend\src\AIAudit.Domain\obj\Debug\net9.0\AIAudit.Domain.GeneratedMSBuildEditorConfig.editorconfig
+D:\Documents\GitHub\swp391-su26-ai-audit-project-swp391_se20a02_group-06\backend\src\AIAudit.Domain\obj\Debug\net9.0\AIAudit.Domain.AssemblyInfoInputs.cache
+D:\Documents\GitHub\swp391-su26-ai-audit-project-swp391_se20a02_group-06\backend\src\AIAudit.Domain\obj\Debug\net9.0\AIAudit.Domain.AssemblyInfo.cs
+D:\Documents\GitHub\swp391-su26-ai-audit-project-swp391_se20a02_group-06\backend\src\AIAudit.Domain\obj\Debug\net9.0\AIAudit.Domain.csproj.CoreCompileInputs.cache
+D:\Documents\GitHub\swp391-su26-ai-audit-project-swp391_se20a02_group-06\backend\src\AIAudit.Domain\obj\Debug\net9.0\AIAudit.Domain.sourcelink.json
+D:\Documents\GitHub\swp391-su26-ai-audit-project-swp391_se20a02_group-06\backend\src\AIAudit.Domain\obj\Debug\net9.0\AIAudit.Domain.dll
+D:\Documents\GitHub\swp391-su26-ai-audit-project-swp391_se20a02_group-06\backend\src\AIAudit.Domain\obj\Debug\net9.0\refint\AIAudit.Domain.dll
+D:\Documents\GitHub\swp391-su26-ai-audit-project-swp391_se20a02_group-06\backend\src\AIAudit.Domain\obj\Debug\net9.0\AIAudit.Domain.pdb
+D:\Documents\GitHub\swp391-su26-ai-audit-project-swp391_se20a02_group-06\backend\src\AIAudit.Domain\obj\Debug\net9.0\ref\AIAudit.Domain.dll
