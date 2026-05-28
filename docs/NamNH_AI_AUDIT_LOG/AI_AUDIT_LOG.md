@@ -4,16 +4,16 @@
 
 | Thông tin | Nội dung |
 |---|---|
-| Môn học |  |
-| Mã môn học |  |
-| Lớp |  |
-| Học kỳ |  |
-| Tên bài tập / Project |  |
-| Tên sinh viên / Nhóm |  |
-| MSSV / Danh sách MSSV |  |
-| Giảng viên hướng dẫn |  |
-| Ngày bắt đầu |  |
-| Ngày hoàn thành |  |
+| Môn học | SOFTWARE DEVELOPMENT PROJECT |
+| Mã môn học | SWP391 |
+| Lớp | SE20A2 |
+| Học kỳ | SU26 |
+| Tên bài tập / Project | AI FITNESS SYSTEM |
+| Tên sinh viên / Nhóm | NGUYỄN HOÀI NAM / NHÓM 6 |
+| MSSV / Danh sách MSSV | SE183193 |
+| Giảng viên hướng dẫn | QUANGLTN3 |
+| Ngày bắt đầu | 11/05/2026 |
+| Ngày hoàn thành | 23/7/2026 |
 
 ---
 
@@ -21,14 +21,14 @@
 
 Đánh dấu các công cụ AI đã sử dụng trong quá trình thực hiện bài tập/project.
 
-- [ ] ChatGPT
-- [ ] Gemini
+- [X] ChatGPT
+- [X] Gemini
 - [ ] Claude
 - [ ] GitHub Copilot
 - [ ] Cursor
 - [ ] Antigravity
 - [ ] Perplexity
-- [ ] Microsoft Copilot
+- [X] Microsoft Copilot
 - [ ] Công cụ khác: ....................................
 
 ---
@@ -54,9 +54,11 @@ Ví dụ:
 
 ### Mô tả mục tiêu sử dụng AI
 
-```text
-Viết tại đây...
-
+- Gợi ý ý tưởng những dự án
+- gợi ý giải pháp mô tả dự án
+- Giải pháp vẽ Usecase cho dự án
+- Gợi ý những ý tưởng để thiết kế giao diện
+- Thiết kế Database 
 ## 4. Nhật ký sử dụng AI chi tiết
 
 > Mỗi lần sử dụng AI cho một phần quan trọng của bài tập/project, sinh viên cần ghi lại theo mẫu bên dưới.  
@@ -68,41 +70,34 @@ Viết tại đây...
 
 | Nội dung | Thông tin |
 |---|---|
-| Ngày sử dụng |  |
-| Công cụ AI | ChatGPT / Gemini / Claude / GitHub Copilot / Cursor / Antigravity / Khác |
-| Mục đích sử dụng |  |
-| Phần việc liên quan | Requirement / Design / Database / Frontend / Backend / Testing / Debug / Report / Presentation / Other |
-| Mức độ sử dụng | Hỗ trợ ý tưởng / Hỗ trợ một phần / Hỗ trợ nhiều / Sinh chính nội dung |
+| Ngày sử dụng | 14-05-2026 |
+| Công cụ AI | ChatGPT / Gemini  |
+| Mục đích sử dụng | Tìm hiểu các dự án và tìm ý tưởng để giải quyết dự án đó |
+| Phần việc liên quan | Requirement |
+| Mức độ sử dụng | Hỗ trợ ý tưởng  |
 
 #### 4.1. Prompt đã sử dụng
+- Hãy phân tích yêu cầu cho hệ thống quản lí phòng gym
+- 
 
-```text
-Dán nguyên văn prompt đã hỏi AI tại đây.
-```
 
 #### 4.2. Kết quả AI gợi ý
 
 Tóm tắt nội dung AI đã trả lời hoặc gợi ý.
+- Hệ thống quản lí phòng gym là phần mềm/hệ thống giúp quản lý toàn bộ hoạt động của một phòng tập gym thay vì làm thủ công bằng sổ sách hoặc Excel.
+- Các chức năng chính bao gồm Quản lý hội viên , quản lý PT , quản lý gói tập và thanh toán, quản lý lịch tập và quản lý thiết bị phòng gyn
 
-```text
-Viết tại đây...
-```
 
 #### 4.3. Phần sinh viên/nhóm đã sử dụng từ AI
 
 Mô tả rõ phần nào được sử dụng lại từ gợi ý của AI.
-
-```text
-Viết tại đây...
-```
+- em đã sử dụng các chức năng cơ bản để dùng cho yêu cầu dự án như Quản lý hội viên, PT, gói tập và thanh toán, lịch tập
 
 #### 4.4. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
 
 Mô tả sinh viên/nhóm đã thay đổi, kiểm tra, sửa lỗi hoặc cải tiến gì so với gợi ý ban đầu của AI.
-
-```text
-Viết tại đây...
-```
+- Để cải tiến dự án nhóm đã thêm các chức năng như cho thêm người sử dụng tập luyện ở nhà bằng hình thức online
+- thêm  yêu cầu  AI  hỗ trợ người dùng 
 
 #### 4.5. Minh chứng
 
@@ -118,63 +113,73 @@ Viết tại đây...
 #### 4.6. Nhận xét cá nhân/nhóm
 
 Sinh viên/nhóm học được gì sau lần sử dụng AI này?
-
-```text
-Viết tại đây...
-```
-
+- biết thêm được những yêu cầu cần thiết và ý tưởng để phát triển cải tiến dự án của nhóm
 ---
 
 ### Lần sử dụng AI số 2
 
 | Nội dung | Thông tin |
 |---|---|
-| Ngày sử dụng |  |
-| Công cụ AI | ChatGPT / Gemini / Claude / GitHub Copilot / Cursor / Antigravity / Khác |
-| Mục đích sử dụng |  |
-| Phần việc liên quan | Requirement / Design / Database / Frontend / Backend / Testing / Debug / Report / Presentation / Other |
-| Mức độ sử dụng | Hỗ trợ ý tưởng / Hỗ trợ một phần / Hỗ trợ nhiều / Sinh chính nội dung |
+| Ngày sử dụng | 18-05-2026  |
+| Công cụ AI |  Gemini |
+| Mục đích sử dụng | Thiết kế Database|
+| Phần việc liên quan |  Database  |
+| Mức độ sử dụng | Hỗ trợ nhiều  |
 
 #### 4.1. Prompt đã sử dụng
 
-```text
-Dán nguyên văn prompt đã hỏi AI tại đây.
-```
+"User:
+- Đăng ký/ Đăng nhập
+- Mua gói hội viên
+- Mua gói tập luyện online
+- Các bài tập
+- Hồ sơ tập luyện
+- Thực đơn dinh dưỡng(hội viên)
+Admin:
+- Quản lý user, quản lý PT
+- Quản lý doanh thu từ gói hội viên
+- Quản lý bài tập
+- Quản lý lịch tập với PT
+PT:
+- Thêm bài tập
+- Lịch tập với hội viên
+AI:
+- Tạo menu bài tập từ yêu cầu của hội viên
+- Tạo thực đơn dinh dưỡng sau bài tập (hội viên)"
+hãy thiết kế database cho hệ thống quản lí phòng gym sử dụng SQL Server cho phần yêu cầu dự án ở trên.
 
 #### 4.2. Kết quả AI gợi ý
-
-```text
-Viết tại đây...
-```
+- Sơ đồ thực thể (Conceptual Database Layout)
+- Kịch bản khởi tạo Database (SQL Server Script)
+- Giải thích cách Database đáp ứng các yêu cầu (Mapping)
+- Một số lưu ý tối ưu cho SQL Server trong dự án này
 
 #### 4.3. Phần sinh viên/nhóm đã sử dụng từ AI
-
-```text
-Viết tại đây...
-```
+- Em đã sử dụng Sql Server Script để thiết kế database dự án
+- đọc các giải thích và lưu ý để tối ưu database
 
 #### 4.4. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
-
-```text
-Viết tại đây...
-```
-
+- chỉnh sửa lại database name
+- thêm tên Role để phân quyền
+- thêm dữ liệu cho Admin
 #### 4.5. Minh chứng
 
 | Loại minh chứng | Nội dung |
 |---|---|
 | Link commit |  |
 | File liên quan |  |
-| Screenshot |  |
-| Kết quả chạy/test |  |
+| Screenshot |<img width="642" height="695" alt="image" src="https://github.com/user-attachments/assets/b68309b3-b777-4db1-aea3-9bb05e340070" />
+  |
+| Kết quả chạy/test |<img width="1201" height="745" alt="image" src="https://github.com/user-attachments/assets/eebf86e1-ee43-4534-97f3-2ff9c25a8ae2" />
+<img width="1599" height="707" alt="image" src="https://github.com/user-attachments/assets/f4ba780a-0a3e-45fa-8f59-e41c35a0b400" />
+<img width="1365" height="828" alt="image" src="https://github.com/user-attachments/assets/02e904d7-b685-4eca-9184-198375bb509a" />
+
+  |
 | Link video demo |  |
 | Ghi chú khác |  |
 
 #### 4.6. Nhận xét cá nhân/nhóm
-
-```text
-Viết tại đây...
-```
+- Nhóm thấy cáu trúc căn bản đã ổn
 
 ---
 
@@ -190,9 +195,6 @@ Viết tại đây...
 
 #### 4.1. Prompt đã sử dụng
 
-```text
-Dán nguyên văn prompt đã hỏi AI tại đây.
-```
 
 #### 4.2. Kết quả AI gợi ý
 
