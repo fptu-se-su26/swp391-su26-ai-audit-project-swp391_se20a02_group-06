@@ -187,16 +187,63 @@ hãy thiết kế database cho hệ thống quản lí phòng gym sử dụng SQ
 
 | Nội dung | Thông tin |
 |---|---|
-| Ngày sử dụng |  |
-| Công cụ AI | ChatGPT / Gemini / Claude / GitHub Copilot / Cursor / Antigravity / Khác |
-| Mục đích sử dụng |  |
-| Phần việc liên quan | Requirement / Design / Database / Frontend / Backend / Testing / Debug / Report / Presentation / Other |
-| Mức độ sử dụng | Hỗ trợ ý tưởng / Hỗ trợ một phần / Hỗ trợ nhiều / Sinh chính nội dung |
+| Ngày sử dụng | 25-05-2026  |
+| Công cụ AI | Gemini  |
+| Mục đích sử dụng | cải tiến mô hình database  |
+| Phần việc liên quan | Database |
+| Mức độ sử dụng |  Hỗ trợ một phần |
+
+#### 4.1. Prompt đã sử dụng
+tôi muốn chỉnh sửa thêm. Tạo bảng foods chứa: id, name, calories, protein, carbs, fat
+Chỉnh bảng menus:
+Xoá food_name, calories
+Thêm food_id
+Bảng menus nối với bảng foods bảng exercises thêm duration                       
+Thêm bảng body_metrics chứa: id, user_id, weight, body_fat_percentage, muscle_mass, recorded_at 
+Chỉnh bảng schedules: thêm meeting_url                                                                                                            
+#### 4.2. Kết quả AI gợi ý
+- AI tạo một script mới toàn bộ về database cũ và thêm những cập nhật mà em đã ghi như ở promt trên
+- Các điểm cải tiến cực hay sau khi chỉnh sửa
+#### 4.3. Phần sinh viên/nhóm đã sử dụng từ AI
+-Các điểm cải tiến cực hay sau khi chỉnh sửa
+
+#### 4.4. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
+- không có
+
+#### 4.5. Minh chứng
+
+| Loại minh chứng | Nội dung |
+|---|---|
+| Link commit |  |
+| File liên quan |  |
+| Screenshot |<img width="1130" height="602" alt="image" src="https://github.com/user-attachments/assets/142d534d-7b0d-4dda-80d8-3d8ddcb771b2" />
+  |
+| Kết quả chạy/test |<img width="982" height="489" alt="image" src="https://github.com/user-attachments/assets/4745a143-c8a9-4dfd-809f-5c58f5adf3e8" />
+ <img width="1022" height="698" alt="image" src="https://github.com/user-attachments/assets/75b46f9a-7156-4fe2-aab6-1c5ebc2baa4e" />
+ |
+| Link video demo |  |
+| Ghi chú khác |  |
+
+#### 4.6. Nhận xét cá nhân/nhóm
+ - Database đã gần như hoàn chỉnh
+
+---
+
+### Lần sử dụng AI số 4
+
+| Nội dung | Thông tin |
+|---|---|
+| Ngày sử dụng | 25-05-2026  |
+| Công cụ AI |  Gemini  |
+| Mục đích sử dụng | vẽ UseCase dự án |
+| Phần việc liên quan |  Design |
+| Mức độ sử dụng |  Hỗ trợ một phần  |
 
 #### 4.1. Prompt đã sử dụng
 
-
 #### 4.2. Kết quả AI gợi ý
+
+Tóm tắt nội dung AI đã trả lời hoặc gợi ý.
 
 ```text
 Viết tại đây...
@@ -204,11 +251,15 @@ Viết tại đây...
 
 #### 4.3. Phần sinh viên/nhóm đã sử dụng từ AI
 
+Mô tả rõ phần nào được sử dụng lại từ gợi ý của AI.
+
 ```text
 Viết tại đây...
 ```
 
 #### 4.4. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
+
+Mô tả sinh viên/nhóm đã thay đổi, kiểm tra, sửa lỗi hoặc cải tiến gì so với gợi ý ban đầu của AI.
 
 ```text
 Viết tại đây...
@@ -227,12 +278,73 @@ Viết tại đây...
 
 #### 4.6. Nhận xét cá nhân/nhóm
 
+Sinh viên/nhóm học được gì sau lần sử dụng AI này?
+
 ```text
 Viết tại đây...
 ```
 
 ---
+### Lần sử dụng AI số 6
 
+| Nội dung | Thông tin |
+|---|---|
+| Ngày sử dụng |  |
+| Công cụ AI | ChatGPT / Gemini / Claude / GitHub Copilot / Cursor / Antigravity / Khác |
+| Mục đích sử dụng |  |
+| Phần việc liên quan | Requirement / Design / Database / Frontend / Backend / Testing / Debug / Report / Presentation / Other |
+| Mức độ sử dụng | Hỗ trợ ý tưởng / Hỗ trợ một phần / Hỗ trợ nhiều / Sinh chính nội dung |
+
+#### 4.1. Prompt đã sử dụng
+
+```text
+Dán nguyên văn prompt đã hỏi AI tại đây.
+```
+
+#### 4.2. Kết quả AI gợi ý
+
+Tóm tắt nội dung AI đã trả lời hoặc gợi ý.
+
+```text
+Viết tại đây...
+```
+
+#### 4.3. Phần sinh viên/nhóm đã sử dụng từ AI
+
+Mô tả rõ phần nào được sử dụng lại từ gợi ý của AI.
+
+```text
+Viết tại đây...
+```
+
+#### 4.4. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
+
+Mô tả sinh viên/nhóm đã thay đổi, kiểm tra, sửa lỗi hoặc cải tiến gì so với gợi ý ban đầu của AI.
+
+```text
+Viết tại đây...
+```
+
+#### 4.5. Minh chứng
+
+| Loại minh chứng | Nội dung |
+|---|---|
+| Link commit |  |
+| File liên quan |  |
+| Screenshot |  |
+| Kết quả chạy/test |  |
+| Link video demo |  |
+| Ghi chú khác |  |
+
+#### 4.6. Nhận xét cá nhân/nhóm
+
+Sinh viên/nhóm học được gì sau lần sử dụng AI này?
+
+```text
+Viết tại đây...
+```
+
+---
 ## 5. Bảng tổng hợp mức độ sử dụng AI
 
 Đánh dấu mức độ AI hỗ trợ ở từng hạng mục.
