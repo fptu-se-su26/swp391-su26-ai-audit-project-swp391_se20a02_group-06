@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("AIAudit.Application")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+4352705b9e8f7bea969e0019aa36da8e07004499")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+63972c657e2f533eee253793884469b2f1f1f360")]
 [assembly: System.Reflection.AssemblyProductAttribute("AIAudit.Application")]
 [assembly: System.Reflection.AssemblyTitleAttribute("AIAudit.Application")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
