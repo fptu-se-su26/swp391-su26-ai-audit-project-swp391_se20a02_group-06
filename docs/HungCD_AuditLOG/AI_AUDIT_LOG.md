@@ -68,14 +68,14 @@ Viết tại đây....
 
 | Nội dung | Thông tin |
 |---|---|
-| Ngày sử dụng |  |
-| Công cụ AI | ChatGPT / Gemini / Claude / GitHub Copilot / Cursor / Antigravity / Khác |
-| Mục đích sử dụng |  |
-| Phần việc liên quan | Requirement / Design / Database / Frontend / Backend / Testing / Debug / Report / Presentation / Other |
-| Mức độ sử dụng | Hỗ trợ ý tưởng / Hỗ trợ một phần / Hỗ trợ nhiều / Sinh chính nội dung |
+| Ngày sử dụng | 28/05/2026 |
+| Công cụ AI | Gemini |
+| Mục đích sử dụng | promt những cách tạo con AI |
+| Phần việc liên quan | Design |
+| Mức độ sử dụng | Hỗ trợ một phần  |
 
 #### 4.1. Prompt đã sử dụng
-
+promt cách tạo con AI cho hệ thống này
 ```text
 Dán nguyên văn prompt đã hỏi AI tại đây.
 ```
@@ -84,6 +84,19 @@ Dán nguyên văn prompt đã hỏi AI tại đây.
 
 Tóm tắt nội dung AI đã trả lời hoặc gợi ý.
 
+Khi User bấm nút "Tạo lộ trình bằng AI" trên App/Web:
+
+Backend lấy dữ liệu: Lấy dữ liệu chiều cao, cân nặng, mục tiêu từ bảng User_Profile trong cơ sở dữ liệu.
+
+Gửi API: Backend tạo một yêu cầu (HTTP Post) gửi tới OpenAI/Gemini API, trong đó:
+
+System Role: Là nội dung Prompt ở trên.
+
+User Content: "Tuổi: 21, Giới tính: Nam, Cao: 175cm, Nặng: 78kg, Mục tiêu: Tăng cơ, Thể lực: Mới bắt đầu".
+
+Nhận kết quả: AI phản hồi về một chuỗi String có cấu trúc JSON chính xác như bạn yêu cầu.
+
+Xử lý dữ liệu: Backend dùng thư viện (như Jackson trong Java hoặc Newtonsoft.Json trong .NET) để parse chuỗi JSON đó thành Object, lưu vào Database của hệ thống và trả về cho Frontend hiển thị lên màn hình cực kỳ đẹp mắt.
 ```text
 Viết tại đây...
 ```
