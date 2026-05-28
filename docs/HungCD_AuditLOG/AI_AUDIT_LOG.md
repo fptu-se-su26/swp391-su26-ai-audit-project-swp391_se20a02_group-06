@@ -54,8 +54,21 @@ Ví dụ:
 
 ### Mô tả mục tiêu sử dụng AI
 
-Viết tại đây....
-- Chỉ cách tạo một con AI và xem quá trình vận hành của chúng trong project
+Tôi đang làm một dự án phần mềm có tên là "AI Fitness System". Tôi muốn tích hợp AI vào hệ thống thông qua API (như OpenAI GPT hoặc Google Gemini) để đảm nhận 2 nhiệm vụ cốt lõi sau:
+
+1. Tính năng 1 (AI Workout): Tự động tạo menu bài tập dựa trên thông tin đầu vào của hội viên (Tuổi, Giới tính, Chiều cao, Cân nặng, Mục tiêu: Tăng cơ/Giảm cân, Mức độ thể lực).
+2. Tính năng 2 (AI Nutrition): Tự động thiết kế thực đơn dinh dưỡng sau bài tập cho hội viên dựa trên thể trạng và lượng calo họ vừa đốt cháy.
+
+Hãy đóng vai trò là một AI Engineer và cố vấn kỹ thuật chuyên sâu để hướng dẫn tôi cách xây dựng "con AI" này:
+
+YÊU CẦU TƯ VẤN:
+1. System Prompt chuẩn: Hãy viết giúp tôi 2 đoạn System Prompt chi tiết (một cho bài tập, một cho dinh dưỡng) để nạp vào API. Prompt phải ép AI đóng vai trò chuyên gia và BẮT BUỘC trả về dữ liệu dưới dạng cấu trúc JSON thuần túy (không chứa chữ giải thích dông dài, không chứa bọc định dạng ```json).
+2. Cấu trúc JSON mẫu: Thiết kế cấu trúc JSON đầu ra cho cả 2 tính năng trên để code Backend của tôi có thể dễ dàng bóc tách (parse) thành các trường dữ liệu và lưu xuống Database.
+3. Giải quyết bài toán "Output không ổn định": Làm thế nào để đảm bảo AI luôn trả về đúng cấu trúc JSON 100%, không bị lỗi thiếu dấu ngoặc, không bị tự ý đổi tên Key, và không trả về văn bản tự do khiến hệ thống bị crash (sập)? Có các kỹ thuật hay thiết lập tham số API nào (ví dụ: temperature, response_format) để kiểm soát việc này không?
+
+Hãy giải thích chi tiết và cung cấp các đoạn prompt mẫu sẵn sàng để tôi đem vào chạy thử nghiệm nghiệm thu (test) API nhé.
+
+
 
 ## 4. Nhật ký sử dụng AI chi tiết
 
