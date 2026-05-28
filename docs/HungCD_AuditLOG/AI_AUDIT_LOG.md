@@ -36,38 +36,12 @@
 ## 3. Mục tiêu sử dụng AI
 
 Mô tả ngắn gọn sinh viên/nhóm đã sử dụng AI để hỗ trợ những công việc nào.
-
-Ví dụ:
-
 - Phân tích yêu cầu bài toán
 - Gợi ý ý tưởng giải pháp
-- Thiết kế database
-- Thiết kế giao diện
-- Viết code mẫu
 - Debug lỗi
-- Tối ưu code
-- Viết test case
-- Kiểm tra bảo mật
-- Viết báo cáo
-- Chuẩn bị slide thuyết trình
 - Tìm hiểu công nghệ mới
 
 ### Mô tả mục tiêu sử dụng AI
-
-Tôi đang làm một dự án phần mềm có tên là "AI Fitness System". Tôi muốn tích hợp AI vào hệ thống thông qua API (như OpenAI GPT hoặc Google Gemini) để đảm nhận 2 nhiệm vụ cốt lõi sau:
-
-1. Tính năng 1 (AI Workout): Tự động tạo menu bài tập dựa trên thông tin đầu vào của hội viên (Tuổi, Giới tính, Chiều cao, Cân nặng, Mục tiêu: Tăng cơ/Giảm cân, Mức độ thể lực).
-2. Tính năng 2 (AI Nutrition): Tự động thiết kế thực đơn dinh dưỡng sau bài tập cho hội viên dựa trên thể trạng và lượng calo họ vừa đốt cháy.
-
-Hãy đóng vai trò là một AI Engineer và cố vấn kỹ thuật chuyên sâu để hướng dẫn tôi cách xây dựng "con AI" này:
-
-YÊU CẦU TƯ VẤN:
-1. System Prompt chuẩn: Hãy viết giúp tôi 2 đoạn System Prompt chi tiết (một cho bài tập, một cho dinh dưỡng) để nạp vào API. Prompt phải ép AI đóng vai trò chuyên gia và BẮT BUỘC trả về dữ liệu dưới dạng cấu trúc JSON thuần túy (không chứa chữ giải thích dông dài, không chứa bọc định dạng ```json).
-2. Cấu trúc JSON mẫu: Thiết kế cấu trúc JSON đầu ra cho cả 2 tính năng trên để code Backend của tôi có thể dễ dàng bóc tách (parse) thành các trường dữ liệu và lưu xuống Database.
-3. Giải quyết bài toán "Output không ổn định": Làm thế nào để đảm bảo AI luôn trả về đúng cấu trúc JSON 100%, không bị lỗi thiếu dấu ngoặc, không bị tự ý đổi tên Key, và không trả về văn bản tự do khiến hệ thống bị crash (sập)? Có các kỹ thuật hay thiết lập tham số API nào (ví dụ: temperature, response_format) để kiểm soát việc này không?
-
-Hãy giải thích chi tiết và cung cấp các đoạn prompt mẫu sẵn sàng để tôi đem vào chạy thử nghiệm nghiệm thu (test) API nhé.
-
 
 
 ## 4. Nhật ký sử dụng AI chi tiết
@@ -88,33 +62,567 @@ Hãy giải thích chi tiết và cung cấp các đoạn prompt mẫu sẵn sà
 | Mức độ sử dụng | Hỗ trợ một phần  |
 
 #### 4.1. Prompt đã sử dụng
-promt cách tạo con AI cho hệ thống này
+
 ```text
-Dán nguyên văn prompt đã hỏi AI tại đây.
+Tôi đang làm một dự án phần mềm có tên là "AI Fitness System". Tôi muốn tích hợp AI vào hệ thống thông qua API (như OpenAI GPT hoặc Google Gemini) để đảm nhận 2 nhiệm vụ cốt lõi sau:
+
+1. Tính năng 1 (AI Workout): Tự động tạo menu bài tập dựa trên thông tin đầu vào của hội viên (Tuổi, Giới tính, Chiều cao, Cân nặng, Mục tiêu: Tăng cơ/Giảm cân, Mức độ thể lực).
+2. Tính năng 2 (AI Nutrition): Tự động thiết kế thực đơn dinh dưỡng sau bài tập cho hội viên dựa trên thể trạng và lượng calo họ vừa đốt cháy.
+
+Hãy đóng vai trò là một AI Engineer và cố vấn kỹ thuật chuyên sâu để hướng dẫn tôi cách xây dựng "con AI" này:
+
+YÊU CẦU TƯ VẤN:
+1. System Prompt chuẩn: Hãy viết giúp tôi 2 đoạn System Prompt chi tiết (một cho bài tập, một cho dinh dưỡng) để nạp vào API. Prompt phải ép AI đóng vai trò chuyên gia và BẮT BUỘC trả về dữ liệu dưới dạng cấu trúc JSON thuần túy (không chứa chữ giải thích dông dài, không chứa bọc định dạng ```json).
+2. Cấu trúc JSON mẫu: Thiết kế cấu trúc JSON đầu ra cho cả 2 tính năng trên để code Backend của tôi có thể dễ dàng bóc tách (parse) thành các trường dữ liệu và lưu xuống Database.
+3. Giải quyết bài toán "Output không ổn định": Làm thế nào để đảm bảo AI luôn trả về đúng cấu trúc JSON 100%, không bị lỗi thiếu dấu ngoặc, không bị tự ý đổi tên Key, và không trả về văn bản tự do khiến hệ thống bị crash (sập)? Có các kỹ thuật hay thiết lập tham số API nào (ví dụ: temperature, response_format) để kiểm soát việc này không?
+
+Hãy giải thích chi tiết và cung cấp các đoạn prompt mẫu sẵn sàng để tôi đem vào chạy thử nghiệm nghiệm thu (test) API nhé.Dán nguyên văn prompt đã hỏi AI tại đây.
 ```
 
 #### 4.2. Kết quả AI gợi ý
 
-Tóm tắt nội dung AI đã trả lời hoặc gợi ý.
 
-Khi User bấm nút "Tạo lộ trình bằng AI" trên App/Web:
-
-Backend lấy dữ liệu: Lấy dữ liệu chiều cao, cân nặng, mục tiêu từ bảng User_Profile trong cơ sở dữ liệu.
-
-Gửi API: Backend tạo một yêu cầu (HTTP Post) gửi tới OpenAI/Gemini API, trong đó:
-
-System Role: Là nội dung Prompt ở trên.
-
-User Content: "Tuổi: 21, Giới tính: Nam, Cao: 175cm, Nặng: 78kg, Mục tiêu: Tăng cơ, Thể lực: Mới bắt đầu".
-
-Nhận kết quả: AI phản hồi về một chuỗi String có cấu trúc JSON chính xác như bạn yêu cầu.
-
-Xử lý dữ liệu: Backend dùng thư viện (như Jackson trong Java hoặc Newtonsoft.Json trong .NET) để parse chuỗi JSON đó thành Object, lưu vào Database của hệ thống và trả về cho Frontend hiển thị lên màn hình cực kỳ đẹp mắt.
-```text
 Viết tại đây...
 ```
 
-#### 4.3. Phần sinh viên/nhóm đã sử dụng từ AI
+Bạn đang đi đúng hướng nếu xem “AI Fitness System” như một AI recommendation engine + JSON API service, thay vì chatbot thông thường. Với use case của bạn, mục tiêu số 1 không phải “AI nói hay”, mà là AI trả về dữ liệu ổn định để backend parse được 100%.
+
+Kiến trúc tôi khuyên dùng:
+
+Frontend
+   ↓
+Backend (Java/.NET/Node)
+   ↓
+Prompt Builder + Validation Layer
+   ↓
+LLM API (GPT/Gemini)
+   ↓
+Strict JSON Response
+   ↓
+JSON Schema Validation
+   ↓
+Database
+
+Đừng để Frontend gọi AI trực tiếp.
+
+1. Thiết kế kiến trúc AI Fitness System
+
+Bạn có 2 AI Service riêng:
+
+AI Workout Service
+
+Input:
+
+{
+  "age": 23,
+  "gender": "male",
+  "height_cm": 175,
+  "weight_kg": 80,
+  "goal": "muscle_gain",
+  "fitness_level": "intermediate",
+  "days_per_week": 5,
+  "health_conditions": []
+}
+
+Output:
+
+workout plan
+exercises
+reps
+sets
+rest time
+calories estimation
+safety notes
+AI Nutrition Service
+
+Input:
+
+{
+  "age": 23,
+  "gender": "male",
+  "height_cm": 175,
+  "weight_kg": 80,
+  "goal": "fat_loss",
+  "calories_burned": 620,
+  "diet_preference": "high_protein",
+  "allergies": ["seafood"]
+}
+
+Output:
+
+total calories recommendation
+macros
+meals
+ingredients
+portions
+meal timing
+2. SYSTEM PROMPT CHUẨN – AI WORKOUT
+
+Đây là prompt production-ready.
+
+You are an elite certified fitness coach, exercise physiologist, and sports science specialist.
+
+Your task is to generate a personalized workout program for gym members based on their body metrics, goals, and fitness level.
+
+STRICT RULES:
+
+You MUST respond ONLY with valid raw JSON.
+DO NOT include markdown.
+DO NOT include ```json.
+DO NOT explain anything outside JSON.
+DO NOT add extra text before or after JSON.
+Keep JSON property names EXACTLY as specified.
+Return ONLY one valid JSON object.
+Every exercise must contain all required fields.
+If user data is incomplete, infer safely and include warning_notes.
+
+Workout planning requirements:
+
+Goal types:
+muscle_gain
+fat_loss
+maintenance
+endurance
+Fitness level:
+beginner
+intermediate
+advanced
+Include warm-up and cool-down.
+Ensure safe training volume based on experience.
+Avoid dangerous exercise recommendations.
+Workout duration should be realistic (45–90 mins).
+Exercises must match the user's goal.
+
+MANDATORY JSON FORMAT:
+
+{
+"member_profile": {
+"age": number,
+"gender": "male|female|other",
+"height_cm": number,
+"weight_kg": number,
+"bmi": number,
+"goal": "muscle_gain|fat_loss|maintenance|endurance",
+"fitness_level": "beginner|intermediate|advanced"
+},
+"workout_plan": {
+"program_name": string,
+"duration_weeks": number,
+"weekly_schedule": [
+{
+"day": string,
+"focus": string,
+"estimated_duration_minutes": number,
+"warmup": [
+{
+"exercise_name": string,
+"duration_minutes": number
+}
+],
+"main_workout": [
+{
+"exercise_name": string,
+"muscle_group": string,
+"sets": number,
+"reps": string,
+"rest_seconds": number,
+"intensity": string,
+"instructions": string
+}
+],
+"cooldown": [
+{
+"exercise_name": string,
+"duration_minutes": number
+}
+],
+"estimated_calories_burned": number
+}
+]
+},
+"recommendations": {
+"daily_water_intake_liters": number,
+"sleep_hours": number,
+"recovery_tips": [string]
+},
+"warning_notes": [string]
+}
+
+Vì sao prompt này ổn?
+
+Nó ép:
+
+role = fitness expert
+output = JSON only
+cấm markdown
+khóa tên key
+schema rõ ràng
+enum values cố định
+
+=> giảm hallucination cực mạnh.
+
+3. JSON OUTPUT MẪU – AI WORKOUT
+
+Ví dụ response thực tế:
+
+{
+  "member_profile": {
+    "age": 24,
+    "gender": "male",
+    "height_cm": 175,
+    "weight_kg": 78,
+    "bmi": 25.5,
+    "goal": "muscle_gain",
+    "fitness_level": "intermediate"
+  },
+  "workout_plan": {
+    "program_name": "Lean Muscle Builder",
+    "duration_weeks": 8,
+    "weekly_schedule": [
+      {
+        "day": "Monday",
+        "focus": "Chest and Triceps",
+        "estimated_duration_minutes": 70,
+        "warmup": [
+          {
+            "exercise_name": "Jump Rope",
+            "duration_minutes": 5
+          }
+        ],
+        "main_workout": [
+          {
+            "exercise_name": "Bench Press",
+            "muscle_group": "Chest",
+            "sets": 4,
+            "reps": "8-10",
+            "rest_seconds": 90,
+            "intensity": "moderate-heavy",
+            "instructions": "Maintain proper form and controlled motion."
+          }
+        ],
+        "cooldown": [
+          {
+            "exercise_name": "Chest Stretch",
+            "duration_minutes": 5
+          }
+        ],
+        "estimated_calories_burned": 420
+      }
+    ]
+  },
+  "recommendations": {
+    "daily_water_intake_liters": 3.2,
+    "sleep_hours": 8,
+    "recovery_tips": [
+      "Stretch after training",
+      "Consume protein after workout"
+    ]
+  },
+  "warning_notes": []
+}
+
+Backend Java parse rất dễ:
+
+ObjectMapper mapper = new ObjectMapper();
+
+WorkoutResponse response =
+    mapper.readValue(json, WorkoutResponse.class);
+4. SYSTEM PROMPT CHUẨN – AI NUTRITION
+
+You are an elite sports nutritionist, certified dietitian, and performance nutrition specialist.
+
+Your task is to generate a personalized post-workout nutrition plan based on the member's body profile, fitness goal, and calories burned.
+
+STRICT RULES:
+
+You MUST respond ONLY with valid raw JSON.
+DO NOT include markdown.
+DO NOT include ```json.
+DO NOT explain anything outside JSON.
+Keep property names EXACTLY as defined.
+Return ONLY one valid JSON object.
+Meal recommendations must be realistic and nutritionally balanced.
+Respect allergies and diet preferences.
+
+Nutrition goals:
+
+muscle_gain
+fat_loss
+maintenance
+endurance
+
+Diet preferences:
+
+high_protein
+balanced
+vegetarian
+vegan
+keto
+
+MANDATORY JSON FORMAT:
+
+{
+"member_profile": {
+"age": number,
+"gender": "male|female|other",
+"height_cm": number,
+"weight_kg": number,
+"goal": string,
+"calories_burned": number
+},
+"nutrition_plan": {
+"daily_target_calories": number,
+"macro_distribution": {
+"protein_grams": number,
+"carbs_grams": number,
+"fat_grams": number
+},
+"recommended_meals": [
+{
+"meal_name": string,
+"meal_time": string,
+"calories": number,
+"foods": [
+{
+"food_name": string,
+"quantity": string,
+"estimated_calories": number,
+"protein_grams": number
+}
+]
+}
+]
+},
+"hydration": {
+"recommended_water_liters": number,
+"electrolyte_needed": boolean
+},
+"supplement_suggestions": [string],
+"warning_notes": [string]
+}
+
+5. JSON OUTPUT MẪU – AI NUTRITION
+{
+  "member_profile": {
+    "age": 24,
+    "gender": "male",
+    "height_cm": 175,
+    "weight_kg": 78,
+    "goal": "muscle_gain",
+    "calories_burned": 500
+  },
+  "nutrition_plan": {
+    "daily_target_calories": 2800,
+    "macro_distribution": {
+      "protein_grams": 180,
+      "carbs_grams": 300,
+      "fat_grams": 70
+    },
+    "recommended_meals": [
+      {
+        "meal_name": "Post Workout Meal",
+        "meal_time": "18:00",
+        "calories": 650,
+        "foods": [
+          {
+            "food_name": "Chicken Breast",
+            "quantity": "200g",
+            "estimated_calories": 330,
+            "protein_grams": 62
+          }
+        ]
+      }
+    ]
+  },
+  "hydration": {
+    "recommended_water_liters": 3.5,
+    "electrolyte_needed": true
+  },
+  "supplement_suggestions": [
+    "Whey Protein",
+    "Creatine Monohydrate"
+  ],
+  "warning_notes": []
+}
+6. Làm sao để output ổn định 100%?
+
+Đây là phần quan trọng nhất.
+
+Kỹ thuật 1: Temperature thấp
+
+OpenAI:
+
+{
+  "temperature": 0.1
+}
+
+Khuyên dùng:
+
+0.0 → 0.2
+
+Vì bạn không cần sáng tạo.
+
+Bạn cần:
+
+deterministic structured output
+
+Không phải “AI sáng tạo meal plan”.
+
+Kỹ thuật 2: JSON Schema / Structured Output (CỰC QUAN TRỌNG)
+
+Với GPT API mới:
+
+Dùng:
+
+response_format
+
+Ví dụ:
+
+{
+  "response_format": {
+    "type": "json_schema",
+    "json_schema": {
+      "name": "fitness_workout_response",
+      "strict": true,
+      "schema": {
+        "type": "object",
+        "properties": {
+          "member_profile": {
+            "type": "object"
+          }
+        }
+      }
+    }
+  }
+}
+
+strict: true
+
+=> model bị ép phải theo schema.
+
+Không được đổi key.
+
+Không được nói linh tinh.
+
+Đây là best practice production.
+
+Kỹ thuật 3: Backend JSON Validation
+
+Không bao giờ trust AI 100%.
+
+Java:
+
+try {
+    ObjectMapper mapper = new ObjectMapper();
+
+    WorkoutResponse response =
+        mapper.readValue(aiResult,
+            WorkoutResponse.class);
+
+} catch (Exception e) {
+
+    // Retry API
+}
+
+Nếu parse fail:
+
+Retry mechanism
+Retry 1
+→ thêm message:
+"The previous response was invalid JSON.
+Fix it and return valid JSON only."
+
+Retry 2
+→ fallback template
+Kỹ thuật 4: Function Calling / Tool Calling
+
+Nếu dùng GPT:
+
+Dùng structured tool.
+
+Ví dụ:
+
+tools
+
+AI không generate text.
+
+AI generate object.
+
+Độ ổn định cao hơn prompt-only.
+
+Kỹ thuật 5: Fixed Enum
+
+KHÔNG cho AI tự đặt value.
+
+Sai:
+
+"goal": "build huge muscle"
+
+Đúng:
+
+"goal": "muscle_gain"
+
+Chỉ dùng enum.
+
+Backend dễ query DB.
+
+Kỹ thuật 6: Versioning Prompt
+
+Đừng hardcode prompt.
+
+Lưu DB:
+
+prompt_version = v1.0
+
+Sau này:
+
+v1.1
+v2.0
+
+Dễ rollback nếu AI trả kết quả tệ.
+
+7. API setting khuyên dùng
+
+Với GPT:
+
+{
+  "model": "gpt-4.1-mini",
+  "temperature": 0.1,
+  "top_p": 0.1,
+  "response_format": {
+    "type": "json_object"
+  }
+}
+
+Production hơn:
+
+"type": "json_schema"
+
+Gemini:
+
+dùng:
+
+responseMimeType:
+"application/json"
+responseSchema
+
+để ép schema.
+
+Kiến trúc production-ready nhất cho đồ án của bạn là:
+
+Prompt
+    ↓
+JSON Schema
+    ↓
+AI API
+    ↓
+Response Validation
+    ↓
+Retry if invalid
+    ↓
+Save DB
+
+Cách này đủ ổn định để demo đồ án, thậm chí deploy thật ở quy mô nhỏ mà không bị “AI nói lung tung làm sập hệ thống”.#### 4.3. Phần sinh viên/nhóm đã sử dụng từ AI
 
 Mô tả rõ phần nào được sử dụng lại từ gợi ý của AI.
 
@@ -127,7 +635,17 @@ Viết tại đây...
 Mô tả sinh viên/nhóm đã thay đổi, kiểm tra, sửa lỗi hoặc cải tiến gì so với gợi ý ban đầu của AI.
 
 ```text
-Viết tại đây...
+Tối ưu mục 1.1 (Thêm input tần suất):
+-Đầu vào AI Workout:Tuổi,Giới tính,Chiều cao,Cân nặng,mục tiêu luyện tập(Tăng cơ,giảm cân,duy trì),mức độ thể lực,tần suất tập luyện mong muốn.
+
+Tối ưu mục 3 và 6 (Kết hợp giữa pronmt và schema:
+-Thiết kế Promt: Tập trung vào luật định lượng dinh dưỡng và huấn luyện
+-kiểm soát định dạng : Giao hoàn toàn cho tính năng Structured Outputs và responseSchema để đảm bảo an toàn tuyệt đối,loại bỏ các câu lệnh cấm đoán thủ công trg text prompt.
+
+Bổ sung mục 5.6 : quản lý trạng thái bất đồng bộ:
+-GỌI APT từ cá model lớn mất 3-7s.nếu frontend đội Backend theo kiểu đòng bộ,user sẽ thấy app bị đơ.
+-Nên dùng cơ chế Loadin State ỏ Frontend,hoặc Backend xử lý hàng đợi(Queue) /dùng Server-Sent Events(SSE) để tạo trải nghiệm mượt mà hơn.
+
 ```
 
 #### 4.5. Minh chứng
