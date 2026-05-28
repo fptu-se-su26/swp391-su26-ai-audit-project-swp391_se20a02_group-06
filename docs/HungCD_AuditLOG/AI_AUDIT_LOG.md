@@ -54,8 +54,8 @@ Ví dụ:
 
 ### Mô tả mục tiêu sử dụng AI
 
-```text
-Viết tại đây...
+Viết tại đây....
+- Chỉ cách tạo một con AI và xem quá trình vận hành của chúng trong project
 
 ## 4. Nhật ký sử dụng AI chi tiết
 
