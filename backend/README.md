@@ -8,7 +8,7 @@ This is the backend for the KYNEX project, built with C# .NET 9.0 using **Clean 
 
 - **Framework:** .NET 9.0 (ASP.NET Core Web API)
 - **Database ORM:** Entity Framework Core
-- **Database Provider:** SQL Server
+- **Database Provider:** MySQL (via Pomelo)
 - **Patterns & Logic:** CQRS with MediatR (Mediator Pattern)
 - **Validation:** FluentValidation
 - **Authentication:** JWT Bearer (JSON Web Token) with ASP.NET Core Identity
@@ -54,7 +54,7 @@ $$\text{Domain} \longleftarrow \text{Application} \longleftarrow \text{Infrastru
 
 ### Prerequisites
 - **.NET SDK:** .NET 9.0 SDK or later
-- **Database:** SQL Server (LocalDB or Docker instance)
+- **Database:** MySQL (Local instance or Docker container)
 
 ### 1. Build the Solution
 Run the build command from the `backend/` root folder:
