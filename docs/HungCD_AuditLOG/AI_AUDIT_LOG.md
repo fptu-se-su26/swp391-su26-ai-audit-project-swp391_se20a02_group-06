@@ -654,7 +654,8 @@ Bổ sung mục 5.6 : quản lý trạng thái bất đồng bộ:
 |---|---|
 | Link commit |  |
 | File liên quan |  |
-| Screenshot |  |
+| Screenshot | <img width="978" height="485" alt="image" src="https://github.com/user-attachments/assets/5bf22043-0bb9-49fa-8560-ff0245fd8197" />
+ |
 | Kết quả chạy/test |  |
 | Link video demo |  |
 | Ghi chú khác |  |
@@ -664,7 +665,7 @@ Bổ sung mục 5.6 : quản lý trạng thái bất đồng bộ:
 Sinh viên/nhóm học được gì sau lần sử dụng AI này?
 
 ```text
-Viết tại đây...
+Giải thích khá chi tiết và giúp tôi hình dung bao quát về các tạo con AI và logic code của nó.
 ```
 
 ---
