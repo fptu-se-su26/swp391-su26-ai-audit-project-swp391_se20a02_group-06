@@ -24,7 +24,9 @@ import * as z from 'zod'
 import { useNavigate } from 'react-router-dom'
 import { FiArrowLeft } from 'react-icons/fi'
 import { FaApple } from 'react-icons/fa'
+import { useGoogleLogin } from '@react-oauth/google'
 import AppButton from '../../components/shared/Button/AppButton'
+import { useAuthStore } from '../../store/authStore'
 
 // Validation Schema using Zod
 const loginSchema = z.object({
@@ -46,6 +48,40 @@ const Login: React.FC = () => {
     formState: { errors },
   } = useForm<LoginFormInputs>({
     resolver: zodResolver(loginSchema),
+  })
+
+  const setTokens = useAuthStore((state) => state.setTokens)
+
+  const loginWithGoogle = useGoogleLogin({
+    onSuccess: (codeResponse) => {
+      console.log('Google login success', codeResponse)
+      
+      // Ở ứng dụng thực tế, chúng ta sẽ gửi Google Token này cho Backend 
+      // để Backend trả về Access Token & Refresh Token của hệ thống.
+      // Tại đây mình giả lập lưu Access Token của Google và một Refresh Token giả.
+      setTokens(codeResponse.access_token, 'mock-refresh-token-12345')
+
+      toast({
+        title: 'Google Login Successful',
+        description: 'You have authenticated with Google.',
+        status: 'success',
+        duration: 3000,
+        isClosable: true,
+        position: 'top-right',
+      })
+      navigate('/')
+    },
+    onError: (error) => {
+      console.log('Login Failed', error)
+      toast({
+        title: 'Google Login Failed',
+        description: 'There was an issue logging in with Google.',
+        status: 'error',
+        duration: 3000,
+        isClosable: true,
+        position: 'top-right',
+      })
+    }
   })
 
   // Submit Handler with Simulated Delays & Toast Feedback
@@ -286,6 +322,7 @@ const Login: React.FC = () => {
               w="full"
               h="42px"
               fontSize="14px"
+              onClick={() => loginWithGoogle()}
               leftIcon={
                 <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24" style={{ marginRight: '6px' }}>
                   <path
