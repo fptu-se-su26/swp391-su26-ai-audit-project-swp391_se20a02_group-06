@@ -1,4 +1,8 @@
 import React, { useState } from 'react'
+import hero1 from '../../assets/landing/hero1.png'
+import hero2 from '../../assets/landing/hero2.png'
+import hero3 from '../../assets/landing/hero3.png'
+import hero4 from '../../assets/landing/hero4.png'
 import {
   Box,
   Flex,
@@ -30,22 +34,22 @@ import AppButton from '../../components/shared/Button/AppButton'
 // Hero athlete gallery images from Stitch
 const heroImages = [
   {
-    src: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAvmQ0Q8iA8vEnMUlutBbM7fZXsxEbJNRPE0vszfQQ22RmgntXs-3ezWBpXcxZucEEj73yzTNtnaHbgB3q325eRGTP3J1I_fIFhkhZx7aDlr-e2GbBas7tZcqdt2zaKiBxEnKyQXa_YVOeEUk7oCj1yhQRUMD96PCJpPJFu14ce94vbXQlw5ByeB_mUSK-bdyTkqNkN3XfZEB4SVTt7daTiSe7MaNJe2IfYaovMxkotX94paIiDIeBoNlawNd_KhrEvxp1uWp72SMTk',
+    src: hero1,
     alt: 'Female athlete functional training',
     marginTop: '0px',
   },
   {
-    src: 'https://lh3.googleusercontent.com/aida/ADBb0uhpyvDEM2zPsyTXcwiHOvXqUdfoGOXXLd6aft4DIxEGVX90Hfdy1ZtjtLMq-3LlJ0ToP0fGMNXYuPmBpaxcREY-536UGUw-ulBLxMkNSQcINpIMzD4oh3ZhQWkxUeAJZx0AV0XWjNVb7ssMtvCGnOsWPymIMQth9pkQ4lV0Q_zkMfur7TQlAwzz5rr217PKmKCJ4-TF7p41o7PH8xHas7nq7i7uMBAxV92Mp03rQdWJ1VxJ87d1soNsGBKE',
+    src: hero2,
     alt: 'Male athlete focused training',
     marginTop: '0px',
   },
   {
-    src: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDLOhPge2vCkky1al7RB4FgG7E37tt_1SlvsQYYENOalw_nc3nON7zI9KDRStdArz2GzSQOOnERGU0Ia41ZCbY0L_SVyDMO_cvgMLl1wsemBB0tPXfxPZ5CDr8tLzBnRDg_b5PXz8gi_9L5JXmFS9J5AwfHd2sIEuUQCgVWqpIjNy8hsBUiKuBZiDkKJmCdxsGUtL1G0nh7gObjOnB56FpiYxfQ58mgTjY9KJIjqEuwJDo4PAO6N8prXGS4Vl5i3J2-PuIpFSNpoFdO',
+    src: hero3,
     alt: 'Female athlete high-intensity training',
     marginTop: '0px',
   },
   {
-    src: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBnwiQojKAvmqccfPbtuF0MRIlVR7VnKIIC1sBF2z-D0WUUBHRhIZd13j3CYhA89iCPAsEUbnO5F2rC3yrB0SJQq3Juh3dg1pQ4KW76WmKQH0zdJozyMjKA-q-Nx4FEvpLgNw1IjkdqHGIOllHSiQhCDfnUbuW1563y9lFy7MT0YdBjbZJcJmlkSXj78DccY3laeVRn6wfLJHaaHXkepS4jyGT38HNOSaR3UFHI5OgdAmDRGadl3LQ7mZ3gHIIL6J1tiKy0gIhxdCGi',
+    src: hero4,
     alt: 'Male athlete intense lifting',
     marginTop: '0px',
   },

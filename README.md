@@ -19,8 +19,8 @@
 |---:|---|---|---|---|---|
 | 1 | DE190177 | Đặng Phương Nam |  | Leader |  |
 | 2 | SE183193 | Nguyễn Hoài Nam | Nam Nguyễn | Member |  |
-| 3 | SE183792 | Cao Điền Hưng |  | Member |  |
-| 4 | DE190974 | Giàng Anh Tuấn |  | Member |  |
+| 3 | SE183792 | Cao Điền Hưng | Dihucasm | Member |  |
+| 4 | DE190974 | Giàng Anh Tuấn | wowza0 | Member |  |
 | 5 | DE180983 |  Lê Văn Đạt|  | Member |  |
 
 ---
