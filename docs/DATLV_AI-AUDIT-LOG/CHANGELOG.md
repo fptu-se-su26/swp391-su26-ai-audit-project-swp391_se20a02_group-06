@@ -222,8 +222,8 @@ DD/MM/YYYY
 - [ ] Tạo project structure
 - [ ] Cài đặt database connection
 - [ ] Xây dựng backend
-- [ ] Xây dựng frontend
-- [ ] Xây dựng authentication/authorization
+- [x] Xây dựng frontend
+- [x] Xây dựng authentication/authorization
 - [ ] Xử lý CRUD
 - [ ] Xử lý validation
 - [ ] Tích hợp API
@@ -236,21 +236,23 @@ DD/MM/YYYY
 
 | STT | Nội dung thay đổi | Người thực hiện | File/Module liên quan | Minh chứng |
 |---:|---|---|---|---|
-| 1 |  |  |  |  |
-| 2 |  |  |  |  |
-| 3 |  |  |  |  |
-| 4 |  |  |  |  |
+| 1 | Tích hợp Google OAuth 2.0 Login | Đạt | `Login.tsx`, `main.tsx` | Commit 95b31d2 |
+| 2 | Cài đặt Zustand quản lý state Auth | Đạt | `authStore.ts` | Commit 95b31d2 |
+| 3 | Sửa lỗi hiển thị ảnh Hero trang chủ bằng ảnh Local | Đạt | `Landing.tsx`, `assets/landing` | Commit 719f0be / 95b31d2 |
+| 4 | Xoá thư mục `docs-me` khỏi Git tracking | Đạt | Terminal | Commit 2760c79 |
 | 5 |  |  |  |  |
 
 ## AI có hỗ trợ không?
 
-- [ ] Có
+- [x] Có
 - [ ] Không
 
 Nếu có, mô tả AI đã hỗ trợ phần nào:
 
 ```text
-Viết tại đây...
+- AI (Antigravity/Gemini) hỗ trợ viết code tích hợp thư viện `@react-oauth/google` vào file `main.tsx` và gọi hàm `useGoogleLogin` trong `Login.tsx`.
+- AI hỗ trợ viết cấu trúc file `authStore.ts` sử dụng Zustand để lưu trữ state đăng nhập.
+- AI phát hiện và hướng dẫn sửa lỗi Terminal (do chạy lệnh sai thư mục gốc), hỗ trợ thao tác Git (pull nhánh main, rm tracking file).
 ```
 
 ## Commit/Screenshot minh chứng

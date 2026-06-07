@@ -16,14 +16,14 @@ import {
   InputRightElement,
   IconButton,
   useToast,
-  Icon,
+  // Icon,
 } from '@chakra-ui/react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
 import { useNavigate } from 'react-router-dom'
 import { FiArrowLeft } from 'react-icons/fi'
-import { FaApple } from 'react-icons/fa'
+// import { FaApple } from 'react-icons/fa'
 import { useGoogleLogin } from '@react-oauth/google'
 import AppButton from '../../components/shared/Button/AppButton'
 import { useAuthStore } from '../../store/authStore'
@@ -55,7 +55,7 @@ const Login: React.FC = () => {
   const loginWithGoogle = useGoogleLogin({
     onSuccess: (codeResponse) => {
       console.log('Google login success', codeResponse)
-      
+
       // Ở ứng dụng thực tế, chúng ta sẽ gửi Google Token này cho Backend 
       // để Backend trả về Access Token & Refresh Token của hệ thống.
       // Tại đây mình giả lập lưu Access Token của Google và một Refresh Token giả.
@@ -344,7 +344,7 @@ const Login: React.FC = () => {
                 </svg>
               }
             />
-            <AppButton
+            {/* <AppButton
               label="Continue with Apple"
               variant="outline"
               w="full"
@@ -353,7 +353,7 @@ const Login: React.FC = () => {
               leftIcon={
                 <Icon as={FaApple} fontSize="18px" style={{ marginRight: '6px' }} />
               }
-            />
+            /> */}
           </Stack>
         </Box>
 
