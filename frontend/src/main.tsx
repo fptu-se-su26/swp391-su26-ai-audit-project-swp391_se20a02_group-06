@@ -12,7 +12,11 @@ import '@fontsource/be-vietnam-pro/700.css'
 
 const Router = import.meta.env.PROD ? HashRouter : BrowserRouter
 
-const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID || ''
+// Google Client ID is a public identifier. Hardcoding it here ensures it works on GitHub Pages
+// since .env files are not committed to the repository.
+const googleClientId =
+  import.meta.env.VITE_GOOGLE_CLIENT_ID ||
+  '916356717531-klok2ck49pggi156ockpp72f5s5mkf3i.apps.googleusercontent.com'
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
