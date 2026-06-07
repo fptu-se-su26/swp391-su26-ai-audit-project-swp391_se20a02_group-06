@@ -16,14 +16,14 @@ import {
   InputRightElement,
   IconButton,
   useToast,
-  Icon,
+  // Icon,
 } from '@chakra-ui/react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
 import { useNavigate } from 'react-router-dom'
 import { FiArrowLeft } from 'react-icons/fi'
-import { FaApple } from 'react-icons/fa'
+// import { FaApple } from 'react-icons/fa'
 import { useGoogleLogin } from '@react-oauth/google'
 import AppButton from '../../components/shared/Button/AppButton'
 import { useAuthStore } from '../../store/authStore'
