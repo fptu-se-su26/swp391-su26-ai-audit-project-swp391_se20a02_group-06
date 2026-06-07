@@ -18,7 +18,6 @@ const About: React.FC = () => {
   const navigate = useNavigate()
   const handleLoginClick = () => navigate('/login')
 
-
   const values = [
     {
       icon: 'insights',

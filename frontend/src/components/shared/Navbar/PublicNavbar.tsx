@@ -3,6 +3,7 @@ import { Box, Flex, Heading, Text, HStack, IconButton } from '@chakra-ui/react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { FiMenu, FiX } from 'react-icons/fi'
 import AppButton from '../Button/AppButton'
+import { useAuthStore } from '../../../store/authStore'
 
 const navLinks = [
   { label: 'Features', href: '/#features' },
@@ -15,6 +16,7 @@ const PublicNavbar: React.FC = () => {
   const navigate = useNavigate()
   const location = useLocation()
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const { isAuthenticated, logout } = useAuthStore()
 
   const handleLoginClick = () => navigate('/login')
 
@@ -100,22 +102,37 @@ const PublicNavbar: React.FC = () => {
 
           {/* Right Side CTA */}
           <HStack spacing="4" zIndex="50">
-            <AppButton
-              variant="outline"
-              label="Login"
-              fontSize="xs"
-              px="5"
-              h="9"
-              display={{ base: 'none', md: 'block' }}
-              onClick={handleLoginClick}
-            />
+            {isAuthenticated ? (
+              <AppButton
+                variant="outline"
+                label="Logout"
+                fontSize="xs"
+                px="5"
+                h="9"
+                display={{ base: 'none', md: 'block' }}
+                onClick={() => {
+                  logout()
+                  navigate('/')
+                }}
+              />
+            ) : (
+              <AppButton
+                variant="outline"
+                label="Login"
+                fontSize="xs"
+                px="5"
+                h="9"
+                display={{ base: 'none', md: 'block' }}
+                onClick={handleLoginClick}
+              />
+            )}
             <AppButton
               variant="solid"
-              label="Start Training"
+              label={isAuthenticated ? "Dashboard" : "Start Training"}
               fontSize="xs"
               px="5"
               h="9"
-              onClick={handleLoginClick}
+              onClick={() => isAuthenticated ? navigate('/dashboard') : handleLoginClick()}
             />
 
             {/* Mobile Hamburger */}
@@ -160,16 +177,30 @@ const PublicNavbar: React.FC = () => {
               </Text>
             )
           })}
-          <AppButton
-            variant="ghost"
-            label="Login"
-            fontSize="md"
-            mt="4"
-            onClick={() => {
-              setIsMobileMenuOpen(false)
-              handleLoginClick()
-            }}
-          />
+          {isAuthenticated ? (
+            <AppButton
+              variant="ghost"
+              label="Logout"
+              fontSize="md"
+              mt="4"
+              onClick={() => {
+                setIsMobileMenuOpen(false)
+                logout()
+                navigate('/')
+              }}
+            />
+          ) : (
+            <AppButton
+              variant="ghost"
+              label="Login"
+              fontSize="md"
+              mt="4"
+              onClick={() => {
+                setIsMobileMenuOpen(false)
+                handleLoginClick()
+              }}
+            />
+          )}
         </Flex>
       )}
     </>
