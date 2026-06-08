@@ -4,14 +4,14 @@
 
 | Thông tin | Nội dung |
 |---|---|
-| Môn học |  |
-| Mã môn học |  |
-| Lớp |  |
+| Môn học | Software Development Project |
+| Mã môn học | SWP391 |
+| Lớp | SE20A02 |
 | Học kỳ |  |
 | Tên bài tập / Project |  |
-| Tên sinh viên / Nhóm |  |
-| MSSV / Danh sách MSSV |  |
-| Giảng viên hướng dẫn |  |
+| Tên sinh viên / Nhóm | Giàng Anh Tuấn / Nhóm 06 |
+| MSSV / Danh sách MSSV | DE190974 |
+| Giảng viên hướng dẫn | QuangLTN3 |
 | Ngày bắt đầu |  |
 | Ngày hoàn thành |  |
 
@@ -22,7 +22,7 @@
 Đánh dấu các công cụ AI đã sử dụng trong quá trình thực hiện bài tập/project.
 
 - [ ] ChatGPT
-- [ ] Gemini
+- [x] Gemini
 - [ ] Claude
 - [ ] GitHub Copilot
 - [ ] Cursor
