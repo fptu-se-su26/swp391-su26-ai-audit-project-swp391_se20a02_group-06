@@ -16,18 +16,18 @@ import {
   InputRightElement,
   IconButton,
   useToast,
-  Icon,
+  // Icon,
 } from '@chakra-ui/react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
 import { useNavigate } from 'react-router-dom'
 import { FiArrowLeft } from 'react-icons/fi'
-import { FaApple } from 'react-icons/fa'
-import { GoogleLogin, CredentialResponse } from '@react-oauth/google'
+// import { FaApple } from 'react-icons/fa'
+import { GoogleLogin } from '@react-oauth/google'
 import AppButton from '../../components/shared/Button/AppButton'
-import { authService } from '../../features/auth/authService'
 import { useAuthStore } from '../../store/useAuthStore'
+import { authService } from '../../features/auth/authService'
 
 // Validation Schema using Zod
 const loginSchema = z.object({
@@ -51,61 +51,27 @@ const Login: React.FC = () => {
     resolver: zodResolver(loginSchema),
   })
 
-  const setCredentials = useAuthStore((state) => state.setCredentials)
+  const setTokens = useAuthStore((state) => state.setTokens)
+
+  const loginWithGoogle = <GoogleLogin
+    onSuccess={async (credentialResponse) => {
+      const response = await authService.googleLogin(credentialResponse.credential!)
+      setTokens(response.token, '')
+      navigate('/')
+    }}
+    onError={() => toast({ title: 'Google Login Failed', status: 'error' })}
+  />
 
   // Submit Handler with Simulated Delays & Toast Feedback
   const onSubmit = async (data: LoginFormInputs) => {
     setIsLoading(true)
     try {
       const response = await authService.login(data)
-      setCredentials({ userId: response.userId, fullname: response.fullname, email: response.email }, response.token)
-      toast({
-        title: 'Authentication Successful',
-        description: `Welcome back, ${response.fullname}!`,
-        status: 'success',
-        duration: 3000,
-        isClosable: true,
-        position: 'top-right',
-      })
+      setTokens(response.token, '')
+      toast({ title: 'Login Successful', description: `Welcome back, ${response.fullname}!`, status: 'success', duration: 3000, isClosable: true, position: 'top-right' })
       navigate('/')
     } catch (error: any) {
-      toast({
-        title: 'Authentication Failed',
-        description: error.response?.data?.message || 'An error occurred during login.',
-        status: 'error',
-        duration: 3000,
-        isClosable: true,
-        position: 'top-right',
-      })
-    } finally {
-      setIsLoading(false)
-    }
-  }
-
-  const handleGoogleSuccess = async (credentialResponse: CredentialResponse) => {
-    if (!credentialResponse.credential) return
-    setIsLoading(true)
-    try {
-      const response = await authService.googleLogin(credentialResponse.credential)
-      setCredentials({ userId: response.userId, fullname: response.fullname, email: response.email }, response.token)
-      toast({
-        title: 'Google Login Successful',
-        description: `Welcome, ${response.fullname}!`,
-        status: 'success',
-        duration: 3000,
-        isClosable: true,
-        position: 'top-right',
-      })
-      navigate('/')
-    } catch (error: any) {
-      toast({
-        title: 'Google Login Failed',
-        description: error.response?.data?.message || 'Failed to login with Google.',
-        status: 'error',
-        duration: 3000,
-        isClosable: true,
-        position: 'top-right',
-      })
+      toast({ title: 'Login Failed', description: error.response?.data?.message || 'Invalid credentials.', status: 'error', duration: 3000, isClosable: true, position: 'top-right' })
     } finally {
       setIsLoading(false)
     }
@@ -325,26 +291,11 @@ const Login: React.FC = () => {
           </Flex>
 
           {/* Social Actions */}
-          <Stack spacing="3" align="center" w="full">
+          <Stack spacing="3">
             <Box w="full" display="flex" justifyContent="center">
-              <GoogleLogin
-                onSuccess={handleGoogleSuccess}
-                onError={() => {
-                  toast({
-                    title: 'Google Login Error',
-                    status: 'error',
-                    duration: 3000,
-                    isClosable: true,
-                  })
-                }}
-                shape="rectangular"
-                theme="filled_black"
-                text="continue_with"
-                size="large"
-                width="100%"
-              />
+              {loginWithGoogle}
             </Box>
-            <AppButton
+            {/* <AppButton
               label="Continue with Apple"
               variant="outline"
               w="full"
@@ -353,7 +304,7 @@ const Login: React.FC = () => {
               leftIcon={
                 <Icon as={FaApple} fontSize="18px" style={{ marginRight: '6px' }} />
               }
-            />
+            /> */}
           </Stack>
         </Box>
 

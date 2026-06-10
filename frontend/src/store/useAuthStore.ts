@@ -1,38 +1,25 @@
 import { create } from 'zustand'
-
-export interface User {
-  userId: number
-  fullname: string
-  email: string
-}
+import { persist } from 'zustand/middleware'
 
 interface AuthState {
-  user: User | null
-  token: string | null
+  accessToken: string | null
+  refreshToken: string | null
   isAuthenticated: boolean
-  setCredentials: (user: User, token: string) => void
+  setTokens: (access: string, refresh: string) => void
   logout: () => void
 }
 
-export const useAuthStore = create<AuthState>((set) => {
-  // Load token and user from local storage initially
-  const token = localStorage.getItem('token')
-  const userJson = localStorage.getItem('user')
-  const user = userJson ? JSON.parse(userJson) : null
-
-  return {
-    user,
-    token,
-    isAuthenticated: !!token,
-    setCredentials: (user, token) => {
-      localStorage.setItem('token', token)
-      localStorage.setItem('user', JSON.stringify(user))
-      set({ user, token, isAuthenticated: true })
-    },
-    logout: () => {
-      localStorage.removeItem('token')
-      localStorage.removeItem('user')
-      set({ user: null, token: null, isAuthenticated: false })
-    },
-  }
-})
+export const useAuthStore = create<AuthState>()(
+  persist(
+    (set) => ({
+      accessToken: null,
+      refreshToken: null,
+      isAuthenticated: false,
+      setTokens: (accessToken, refreshToken) => set(state => ({ ...state, accessToken, refreshToken, isAuthenticated: true })),
+      logout: () => set({ accessToken: null, refreshToken: null, isAuthenticated: false }),
+    }),
+    {
+      name: 'auth-storage', // This will be the key used in localStorage
+    }
+  )
+)

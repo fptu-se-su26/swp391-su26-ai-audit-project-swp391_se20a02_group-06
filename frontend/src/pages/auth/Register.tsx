@@ -81,7 +81,7 @@ const Register: React.FC = () => {
 
   const strength = getPasswordStrength()
 
-  const setCredentials = useAuthStore((state) => state.setCredentials)
+  const setTokens = useAuthStore((state) => state.setTokens)
 
   const onSubmit = async (data: RegisterFormInputs) => {
     setIsLoading(true)
@@ -92,7 +92,7 @@ const Register: React.FC = () => {
         password: data.password,
         confirmPassword: data.confirmPassword
       })
-      setCredentials({ userId: response.userId, fullname: response.fullname, email: response.email }, response.token)
+      setTokens(response.token, '')
       toast({
         title: 'Registration Successful',
         description: `Welcome to AISTHEA, ${response.fullname}! Let's start training.`,
