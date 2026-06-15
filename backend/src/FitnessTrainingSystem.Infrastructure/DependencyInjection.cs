@@ -1,3 +1,4 @@
+using FitnessTrainingSystem.Application.Common.Interfaces; 
 using FitnessTrainingSystem.Application.Interfaces;
 using FitnessTrainingSystem.Infrastructure.Authentication;
 using FitnessTrainingSystem.Infrastructure.Persistence;
@@ -29,8 +30,12 @@ public static class DependencyInjection
                 serverVersion,
                 builder => builder.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName)
             ));
+
         services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
         services.AddScoped<IAuthService, AuthService>();
+
+        // 🚀 ĐĂNG KÝ HỆ THỐNG TRUY CẬP AI DƯỚI ĐÂY
+        services.AddHttpClient<IGeminiAiService, GeminiAiService>();
 
         return services;
     }
