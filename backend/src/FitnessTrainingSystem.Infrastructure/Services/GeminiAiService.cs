@@ -13,7 +13,7 @@ namespace FitnessTrainingSystem.Infrastructure.Services
         private readonly HttpClient _httpClient;
         
         // API Key Gemini của bạn
-        private const string ApiKey = "AQ.Ab8RN6IHYiqKilcq-368EoumqJD_EUPmyjKUJhECquUwaFZhEw";
+        private const string ApiKey = "GeminiAPI_KEY";
         private const string ModelUrl = $"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={ApiKey}";
 
         public GeminiAiService(HttpClient httpClient)
