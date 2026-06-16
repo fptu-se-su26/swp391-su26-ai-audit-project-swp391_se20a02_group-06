@@ -22,6 +22,8 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
 import { useNavigate } from 'react-router-dom'
 import AppButton from '../../components/shared/Button/AppButton'
+import { authService } from '../../features/auth/authService'
+import { useAuthStore } from '../../store/useAuthStore'
 
 // Validation Schema using Zod
 const registerSchema = z
@@ -79,20 +81,39 @@ const Register: React.FC = () => {
 
   const strength = getPasswordStrength()
 
+  const setTokens = useAuthStore((state) => state.setTokens)
+
   const onSubmit = async (data: RegisterFormInputs) => {
     setIsLoading(true)
-    setTimeout(() => {
-      setIsLoading(false)
+    try {
+      const response = await authService.register({
+        fullname: data.fullName,
+        email: data.email,
+        password: data.password,
+        confirmPassword: data.confirmPassword
+      })
+      setTokens(response.token, '')
       toast({
         title: 'Registration Successful',
-        description: `Welcome to AISTHEA, ${data.fullName}! Let's start training.`,
+        description: `Welcome to AISTHEA, ${response.fullname}! Let's start training.`,
         status: 'success',
         duration: 4000,
         isClosable: true,
         position: 'top-right',
       })
       navigate('/')
-    }, 1500)
+    } catch (error: any) {
+      toast({
+        title: 'Registration Failed',
+        description: error.response?.data?.message || 'An error occurred during registration.',
+        status: 'error',
+        duration: 3000,
+        isClosable: true,
+        position: 'top-right',
+      })
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   return (
