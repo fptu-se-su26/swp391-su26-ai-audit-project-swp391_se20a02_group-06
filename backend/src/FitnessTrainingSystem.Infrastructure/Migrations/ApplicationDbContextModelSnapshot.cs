@@ -261,7 +261,7 @@ namespace FitnessTrainingSystem.Infrastructure.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Order");
+                    b.ToTable("Orders");
                 });
 
             modelBuilder.Entity("FitnessTrainingSystem.Domain.Entities.ProductPackage", b =>
@@ -290,7 +290,7 @@ namespace FitnessTrainingSystem.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ProductPackage");
+                    b.ToTable("ProductPackages");
                 });
 
             modelBuilder.Entity("FitnessTrainingSystem.Domain.Entities.PtProfile", b =>

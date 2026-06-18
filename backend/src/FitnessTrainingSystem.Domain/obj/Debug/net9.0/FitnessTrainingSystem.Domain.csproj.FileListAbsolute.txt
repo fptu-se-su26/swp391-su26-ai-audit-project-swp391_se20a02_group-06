@@ -1,0 +1,12 @@
+d:\Documents\GitHub\swp391-su26-ai-audit-project-swp391_se20a02_group-06\backend\src\FitnessTrainingSystem.Domain\bin\Debug\net9.0\FitnessTrainingSystem.Domain.deps.json
+d:\Documents\GitHub\swp391-su26-ai-audit-project-swp391_se20a02_group-06\backend\src\FitnessTrainingSystem.Domain\bin\Debug\net9.0\FitnessTrainingSystem.Domain.dll
+d:\Documents\GitHub\swp391-su26-ai-audit-project-swp391_se20a02_group-06\backend\src\FitnessTrainingSystem.Domain\bin\Debug\net9.0\FitnessTrainingSystem.Domain.pdb
+d:\Documents\GitHub\swp391-su26-ai-audit-project-swp391_se20a02_group-06\backend\src\FitnessTrainingSystem.Domain\obj\Debug\net9.0\FitnessTrainingSystem.Domain.GeneratedMSBuildEditorConfig.editorconfig
+d:\Documents\GitHub\swp391-su26-ai-audit-project-swp391_se20a02_group-06\backend\src\FitnessTrainingSystem.Domain\obj\Debug\net9.0\FitnessTrainingSystem.Domain.AssemblyInfoInputs.cache
+d:\Documents\GitHub\swp391-su26-ai-audit-project-swp391_se20a02_group-06\backend\src\FitnessTrainingSystem.Domain\obj\Debug\net9.0\FitnessTrainingSystem.Domain.AssemblyInfo.cs
+d:\Documents\GitHub\swp391-su26-ai-audit-project-swp391_se20a02_group-06\backend\src\FitnessTrainingSystem.Domain\obj\Debug\net9.0\FitnessTrainingSystem.Domain.csproj.CoreCompileInputs.cache
+d:\Documents\GitHub\swp391-su26-ai-audit-project-swp391_se20a02_group-06\backend\src\FitnessTrainingSystem.Domain\obj\Debug\net9.0\FitnessTrainingSystem.Domain.sourcelink.json
+d:\Documents\GitHub\swp391-su26-ai-audit-project-swp391_se20a02_group-06\backend\src\FitnessTrainingSystem.Domain\obj\Debug\net9.0\FitnessTrainingSystem.Domain.dll
+d:\Documents\GitHub\swp391-su26-ai-audit-project-swp391_se20a02_group-06\backend\src\FitnessTrainingSystem.Domain\obj\Debug\net9.0\refint\FitnessTrainingSystem.Domain.dll
+d:\Documents\GitHub\swp391-su26-ai-audit-project-swp391_se20a02_group-06\backend\src\FitnessTrainingSystem.Domain\obj\Debug\net9.0\FitnessTrainingSystem.Domain.pdb
+d:\Documents\GitHub\swp391-su26-ai-audit-project-swp391_se20a02_group-06\backend\src\FitnessTrainingSystem.Domain\obj\Debug\net9.0\ref\FitnessTrainingSystem.Domain.dll

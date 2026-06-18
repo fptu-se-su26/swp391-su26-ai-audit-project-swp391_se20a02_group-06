@@ -14,5 +14,5 @@ public class Exercise : BaseAuditableEntity
     public int? CreatedBy { get; set; }
 
     public User? Creator { get; set; }
-    public ICollection<WorkoutLog> WorkoutLogs { get; set; } = new List<WorkoutLog>();
+    public ICollection<WorkoutSessionDetail> WorkoutSessionDetails { get; set; } = new List<WorkoutSessionDetail>();
 }

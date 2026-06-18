@@ -10,5 +10,5 @@ public class Food : BaseEntity
     public decimal Carbs { get; set; } = 0.0m;
     public decimal Fat { get; set; } = 0.0m;
 
-    public ICollection<Menu> Menus { get; set; } = new List<Menu>();
+    public ICollection<MealScheduleItem> MealScheduleItems { get; set; } = new List<MealScheduleItem>();
 }

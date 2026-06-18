@@ -12,5 +12,5 @@ public class MealSchedule : BaseAuditableEntity
 
     public User User { get; set; } = null!;
     public AiRecommendation? AiRecommendation { get; set; }
-    public ICollection<Menu> Menus { get; set; } = new List<Menu>();
+    public ICollection<MealScheduleItem> MealScheduleItems { get; set; } = new List<MealScheduleItem>();
 }

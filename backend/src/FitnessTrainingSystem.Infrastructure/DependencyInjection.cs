@@ -27,10 +27,17 @@ public static class DependencyInjection
             options.UseMySql(
                 connectionString,
                 serverVersion,
-                builder => builder.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName)
-            ));
+                builder => 
+                {
+                    builder.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName);
+                    builder.EnableRetryOnFailure();
+                }
+            ).UseSnakeCaseNamingConvention());
         services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
         services.AddScoped<IAuthService, AuthService>();
+        services.AddScoped<IProductPackageService, ProductPackageService>();
+        services.AddScoped<IOrderService, OrderService>();
+        services.AddScoped<IExerciseService, ExerciseService>();
 
         return services;
     }

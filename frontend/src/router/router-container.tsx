@@ -10,6 +10,15 @@ import About from "../pages/public/About";
 import Login from "../pages/auth/Login";
 import Register from "../pages/auth/Register";
 
+// Pages - Member Area
+import Dashboard from "../pages/member/Dashboard.tsx";
+import Workouts from "../pages/member/Workouts.tsx";
+import Nutrition from "../pages/member/Nutrition.tsx";
+import Progress from "../pages/member/Progress.tsx";
+import PTBooking from "../pages/member/PTBooking.tsx";
+import AIChat from "../pages/member/AIChat.tsx";
+import Profile from "../pages/member/Profile.tsx";
+
 const RouterContainer = () => {
     useEffect(() => {
         window.history.scrollRestoration = "manual"; // Ngăn trình duyệt nhớ vị trí scroll
@@ -28,6 +37,15 @@ const RouterContainer = () => {
             {/* Public Marketing Pages */}
             <Route path="/pricing" element={<Pricing />} />
             <Route path="/about" element={<About />} />
+
+            {/* Member Area Routes */}
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/workouts" element={<Workouts />} />
+            <Route path="/nutrition" element={<Nutrition />} />
+            <Route path="/progress" element={<Progress />} />
+            <Route path="/pt-booking" element={<PTBooking />} />
+            <Route path="/ai-chat" element={<AIChat />} />
+            <Route path="/profile" element={<Profile />} />
 
             {/* Default Route Redirect to Landing */}
             <Route path="*" element={<Navigate to="/" replace />} />

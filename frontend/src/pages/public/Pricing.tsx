@@ -13,17 +13,62 @@ import {
   Tr,
   Th,
   Td,
+  useToast,
 } from '@chakra-ui/react'
 import { useNavigate } from 'react-router-dom'
 import PublicNavbar from '../../components/shared/Navbar/PublicNavbar'
 import PublicFooter from '../../components/shared/Footer/PublicFooter'
 import AppButton from '../../components/shared/Button/AppButton'
+import { useAuthStore } from '../../store/useAuthStore'
+import { orderService } from '../../features/orders/orderService'
 
 const Pricing: React.FC = () => {
   const navigate = useNavigate()
+  const toast = useToast()
   const [isYearly, setIsYearly] = useState(false)
+  
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated)
+  const [purchasingPlan, setPurchasingPlan] = useState<string | null>(null)
 
-  const handleLoginClick = () => navigate('/login')
+  const handlePurchaseClick = async (planName: string) => {
+    if (!isAuthenticated) {
+      navigate('/login?redirect=/pricing')
+      return
+    }
+
+    // Default package IDs for static UI (Premium: 1, Elite: 2)
+    // Update these IDs based on your actual backend database seeded IDs if necessary.
+    const idToPurchase = planName === 'Premium' ? 1 : planName === 'Elite' ? 2 : 0
+
+    if (idToPurchase === 0) {
+      toast({ title: 'Notice', description: 'Free plan is already active.', status: 'info' })
+      return
+    }
+
+    setPurchasingPlan(planName)
+    try {
+      await orderService.purchasePackage(idToPurchase)
+      toast({
+        title: 'Purchase Successful',
+        description: `You have successfully purchased the ${planName} package.`,
+        status: 'success',
+        duration: 5000,
+        isClosable: true,
+        position: 'top-right',
+      })
+    } catch (error: any) {
+      toast({
+        title: 'Purchase Failed',
+        description: error.response?.data?.message || 'Something went wrong.',
+        status: 'error',
+        duration: 5000,
+        isClosable: true,
+        position: 'top-right',
+      })
+    } finally {
+      setPurchasingPlan(null)
+    }
+  }
 
   // Pricing configuration
   const plans = [
@@ -217,7 +262,7 @@ const Pricing: React.FC = () => {
 
               {/* CTA Action */}
               <AppButton
-                label={plan.btnText}
+                label={purchasingPlan === plan.name ? 'Processing...' : plan.btnText}
                 variant={plan.popular ? 'solid' : 'outline'}
                 w="full"
                 h="10"
@@ -225,12 +270,13 @@ const Pricing: React.FC = () => {
                 bg={plan.popular ? '#e03030' : 'transparent'}
                 borderColor={plan.popular ? '#e03030' : '#262626'}
                 color="white"
+                isLoading={purchasingPlan === plan.name}
                 _hover={
                   plan.popular
                     ? { bg: '#c92a2a', opacity: 0.9 }
                     : { borderColor: 'white', bg: 'rgba(255, 255, 255, 0.05)' }
                 }
-                onClick={handleLoginClick}
+                onClick={() => handlePurchaseClick(plan.name)}
               />
             </Flex>
           ))}

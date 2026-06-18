@@ -21,7 +21,7 @@ import {
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import { FiArrowLeft } from 'react-icons/fi'
 // import { FaApple } from 'react-icons/fa'
 import { GoogleLogin } from '@react-oauth/google'
@@ -39,9 +39,12 @@ type LoginFormInputs = z.infer<typeof loginSchema>
 
 const Login: React.FC = () => {
   const navigate = useNavigate()
+  const location = useLocation()
   const toast = useToast()
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
+
+  const redirectUrl = new URLSearchParams(location.search).get('redirect')
 
   const {
     register,
@@ -57,7 +60,7 @@ const Login: React.FC = () => {
     onSuccess={async (credentialResponse) => {
       const response = await authService.googleLogin(credentialResponse.credential!)
       setTokens(response.token, '')
-      navigate('/')
+      navigate(redirectUrl || '/')
     }}
     onError={() => toast({ title: 'Google Login Failed', status: 'error' })}
   />
@@ -69,7 +72,7 @@ const Login: React.FC = () => {
       const response = await authService.login(data)
       setTokens(response.token, '')
       toast({ title: 'Login Successful', description: `Welcome back, ${response.fullname}!`, status: 'success', duration: 3000, isClosable: true, position: 'top-right' })
-      navigate('/')
+      navigate(redirectUrl || '/')
     } catch (error: any) {
       toast({ title: 'Login Failed', description: error.response?.data?.message || 'Invalid credentials.', status: 'error', duration: 3000, isClosable: true, position: 'top-right' })
     } finally {

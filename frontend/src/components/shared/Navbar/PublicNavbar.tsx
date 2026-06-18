@@ -8,7 +8,7 @@ import { useAuthStore } from '../../../store/useAuthStore'
 const navLinks = [
   { label: 'Features', href: '/#features' },
   { label: 'Pricing', href: '/pricing' },
-  { label: 'Training', href: '/#training' },
+  { label: 'Training', href: '/dashboard' },
   { label: 'About', href: '/about' },
 ]
 
