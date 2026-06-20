@@ -11,33 +11,38 @@ import {
 import AdminLayout from '../../components/shared/Layout/AdminLayout'
 import { overviewMock } from '../../mock/admin/overviewMock'
 
+import { useAuthStore } from '../../store/useAuthStore'
+
 const AdminDashboard: React.FC = () => {
+  const roleId = useAuthStore((state) => state.roleId)
+  const isPT = roleId === 2
+
   return (
     <AdminLayout>
       <Box p="7" maxW="1200px">
         <Flex justify="space-between" align="center" mb="7">
           <Heading fontSize="24px" fontWeight="800" color="white">
-            System Overview
+            {isPT ? 'My PT Overview' : 'System Overview'}
           </Heading>
         </Flex>
 
         {/* Top Cards */}
         <Grid templateColumns="repeat(4, 1fr)" gap="4" mb="7">
           <Box bg="#141720" border="1px solid" borderColor="#1e2028" borderRadius="16px" p="5">
-            <Text fontSize="12px" color="#8A8A93" textTransform="uppercase" fontWeight="700">Total Users</Text>
-            <Text fontSize="28px" fontWeight="800" color="white">{overviewMock.totalUsers.toLocaleString()}</Text>
+            <Text fontSize="12px" color="#8A8A93" textTransform="uppercase" fontWeight="700">{isPT ? 'My Clients' : 'Total Users'}</Text>
+            <Text fontSize="28px" fontWeight="800" color="white">{isPT ? '12' : overviewMock.totalUsers.toLocaleString()}</Text>
           </Box>
           <Box bg="#141720" border="1px solid" borderColor="#1e2028" borderRadius="16px" p="5">
-            <Text fontSize="12px" color="#8A8A93" textTransform="uppercase" fontWeight="700">Active PTs</Text>
-            <Text fontSize="28px" fontWeight="800" color="white">{overviewMock.activePTs.toLocaleString()}</Text>
+            <Text fontSize="12px" color="#8A8A93" textTransform="uppercase" fontWeight="700">{isPT ? 'Active Programs' : 'Active PTs'}</Text>
+            <Text fontSize="28px" fontWeight="800" color="white">{isPT ? '8' : overviewMock.activePTs.toLocaleString()}</Text>
           </Box>
           <Box bg="#141720" border="1px solid" borderColor="#1e2028" borderRadius="16px" p="5">
-            <Text fontSize="12px" color="#8A8A93" textTransform="uppercase" fontWeight="700">Workouts</Text>
-            <Text fontSize="28px" fontWeight="800" color="white">{overviewMock.activeWorkouts.toLocaleString()}</Text>
+            <Text fontSize="12px" color="#8A8A93" textTransform="uppercase" fontWeight="700">{isPT ? 'Pending Reviews' : 'Workouts'}</Text>
+            <Text fontSize="28px" fontWeight="800" color="white">{isPT ? '3' : overviewMock.activeWorkouts.toLocaleString()}</Text>
           </Box>
           <Box bg="#141720" border="1px solid" borderColor="#1e2028" borderRadius="16px" p="5">
-            <Text fontSize="12px" color="#8A8A93" textTransform="uppercase" fontWeight="700">Revenue</Text>
-            <Text fontSize="28px" fontWeight="800" color="#E03030">${overviewMock.revenue.toLocaleString()}</Text>
+            <Text fontSize="12px" color="#8A8A93" textTransform="uppercase" fontWeight="700">{isPT ? 'My Earnings' : 'Revenue'}</Text>
+            <Text fontSize="28px" fontWeight="800" color="#E03030">${isPT ? '2,450' : overviewMock.revenue.toLocaleString()}</Text>
           </Box>
         </Grid>
 

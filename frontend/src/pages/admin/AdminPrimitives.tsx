@@ -168,13 +168,41 @@ export const AdminIconButton: React.FC<AdminIconButtonProps> = ({ icon, label })
   </Button>
 )
 
-export const TopbarActions: React.FC = () => (
-  <HStack spacing="8px">
-    <AdminIconButton icon={FiBell} label="Notifications" />
-    <AdminIconButton icon={FiSettings} label="Settings" />
-    <Avatar name="Admin Profile" src={adminAvatar} size="32px" />
-  </HStack>
-)
+import { Menu, MenuButton, MenuList, MenuItem } from '@chakra-ui/react'
+import { useNavigate } from 'react-router-dom'
+import { useAuthStore } from '../../store/useAuthStore'
+
+export const TopbarActions: React.FC = () => {
+  const navigate = useNavigate()
+  const logout = useAuthStore((state) => state.logout)
+
+  const handleLogout = () => {
+    logout()
+    navigate('/login')
+  }
+
+  return (
+    <HStack spacing="8px">
+      <AdminIconButton icon={FiBell} label="Notifications" />
+      <AdminIconButton icon={FiSettings} label="Settings" />
+      <Menu>
+        <MenuButton as={Box} cursor="pointer" borderRadius="full">
+          <Avatar name="Admin Profile" src={adminAvatar} size="32px" />
+        </MenuButton>
+        <MenuList bg={adminColors.surfaceHigh} borderColor={adminColors.surfaceVariant} minW="150px">
+          <MenuItem 
+            bg="transparent" 
+            _hover={{ bg: adminColors.surfaceVariant }}
+            onClick={handleLogout}
+            color={adminColors.error}
+          >
+            Logout
+          </MenuItem>
+        </MenuList>
+      </Menu>
+    </HStack>
+  )
+}
 
 interface SearchFieldProps {
   placeholder?: string
