@@ -24,3 +24,5 @@ Thumbs.db
 npm-debug.log*
 pnpm-debug.log*
 docs-me/ 
+bin/
+obj/
