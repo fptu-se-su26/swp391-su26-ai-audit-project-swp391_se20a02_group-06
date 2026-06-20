@@ -56,8 +56,12 @@ const Login: React.FC = () => {
   const loginWithGoogle = <GoogleLogin
     onSuccess={async (credentialResponse) => {
       const response = await authService.googleLogin(credentialResponse.credential!)
-      setTokens(response.token, '')
-      navigate('/')
+      setTokens(response.token, '', response.roleId)
+      if (response.roleId === 1 || response.roleId === 2) {
+        navigate('/admin')
+      } else {
+        navigate('/dashboard')
+      }
     }}
     onError={() => toast({ title: 'Google Login Failed', status: 'error' })}
   />
@@ -67,9 +71,13 @@ const Login: React.FC = () => {
     setIsLoading(true)
     try {
       const response = await authService.login(data)
-      setTokens(response.token, '')
+      setTokens(response.token, '', response.roleId)
       toast({ title: 'Login Successful', description: `Welcome back, ${response.fullname}!`, status: 'success', duration: 3000, isClosable: true, position: 'top-right' })
-      navigate('/')
+      if (response.roleId === 1 || response.roleId === 2) {
+        navigate('/admin')
+      } else {
+        navigate('/dashboard')
+      }
     } catch (error: any) {
       toast({ title: 'Login Failed', description: error.response?.data?.message || 'Invalid credentials.', status: 'error', duration: 3000, isClosable: true, position: 'top-right' })
     } finally {
