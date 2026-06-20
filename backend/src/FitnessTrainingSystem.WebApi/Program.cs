@@ -3,7 +3,11 @@ using FitnessTrainingSystem.Infrastructure;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 
+// Load environment variables from .env file
+DotNetEnv.Env.Load();
+
 var builder = WebApplication.CreateBuilder(args);
+builder.Configuration.AddEnvironmentVariables();
 
 // Add services to the container.
 builder.Services.AddInfrastructureServices(builder.Configuration);
