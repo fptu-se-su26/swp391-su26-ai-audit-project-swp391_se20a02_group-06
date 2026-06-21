@@ -1,10 +1,30 @@
 import React from 'react'
-import { Box, VStack, Link, Text } from '@chakra-ui/react'
+import { Box, VStack, Flex, Text } from '@chakra-ui/react'
 import { useAuthStore } from '../../../store/useAuthStore'
+import { useNavigate, useLocation } from 'react-router-dom'
 
 const AdminSidebar: React.FC = () => {
   const roleId = useAuthStore((state) => state.roleId)
   const isPT = roleId === 2
+  const navigate = useNavigate()
+  const location = useLocation()
+
+  const NavItem = ({ href, label }: { href: string; label: string }) => {
+    const isActive = location.pathname === href
+    return (
+      <Flex
+        p="3"
+        borderRadius="8px"
+        cursor="pointer"
+        bg={isActive ? '#E03030' : 'transparent'}
+        color={isActive ? 'white' : '#8A8A93'}
+        _hover={{ bg: isActive ? '#E03030' : '#141720', color: isActive ? 'white' : '#E2E1EB' }}
+        onClick={() => navigate(href)}
+      >
+        <Text>{label}</Text>
+      </Flex>
+    )
+  }
 
   return (
     <Box
@@ -24,14 +44,14 @@ const AdminSidebar: React.FC = () => {
         AISTHEA <Text as="span" color="#E03030">{isPT ? 'PT' : 'ADMIN'}</Text>
       </Text>
       <VStack align="stretch" spacing="2">
-        <Link href="/admin" p="3" borderRadius="8px" _hover={{ bg: '#141720' }} color="#8A8A93">Dashboard</Link>
-        <Link href="/admin/users" p="3" borderRadius="8px" _hover={{ bg: '#141720' }} color="#8A8A93">{isPT ? 'My Clients' : 'Users'}</Link>
-        <Link href="/admin/workouts" p="3" borderRadius="8px" _hover={{ bg: '#141720' }} color="#8A8A93">Workouts</Link>
+        <NavItem href="/admin" label="Dashboard" />
+        <NavItem href="/admin/users" label={isPT ? 'My Clients' : 'Users'} />
+        <NavItem href="/admin/workouts" label="Workouts" />
         {!isPT && (
           <>
-            <Link href="/admin/pts" p="3" borderRadius="8px" _hover={{ bg: '#141720' }} color="#8A8A93">PTs</Link>
-            <Link href="/admin/platform" p="3" borderRadius="8px" _hover={{ bg: '#141720' }} color="#8A8A93">Platform</Link>
-            <Link href="/admin/payments" p="3" borderRadius="8px" _hover={{ bg: '#141720' }} color="#8A8A93">Payments</Link>
+            <NavItem href="/admin/pts" label="PTs" />
+            <NavItem href="/admin/platform" label="Platform" />
+            <NavItem href="/admin/payments" label="Payments" />
           </>
         )}
       </VStack>
