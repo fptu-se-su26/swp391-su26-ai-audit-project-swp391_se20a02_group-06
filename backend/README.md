@@ -1,6 +1,6 @@
-# KYNEX Backend — C# Clean Architecture
+# FitnessTrainingSystem Backend — C# Clean Architecture
 
-This is the backend for the KYNEX project, built with C# .NET 9.0 using **Clean Architecture** (Onion Architecture). The design ensures that the core business logic remains independent of external databases, UI frameworks, or third-party services.
+This is the backend for the FitnessTrainingSystem project, built with C# .NET 9.0 using **Clean Architecture** (Onion Architecture). The design ensures that the core business logic remains independent of external databases, UI frameworks, or third-party services.
 
 ---
 
@@ -19,25 +19,25 @@ This is the backend for the KYNEX project, built with C# .NET 9.0 using **Clean 
 
 ```text
 backend/
-├── AIAudit.sln
+├── FitnessTrainingSystem.sln
 └── src/
-    ├── AIAudit.Domain/
+    ├── FitnessTrainingSystem.Domain/
     │   ├── Common/             # Core base classes (e.g., BaseEntity)
     │   ├── Entities/           # Core domain entity models (User, PT, Exercise, Membership, etc.)
     │   ├── Enums/              # Domain-specific enumerations (Roles, PackageTypes)
     │   └── Exceptions/         # Custom domain-level exceptions
     │
-    ├── AIAudit.Application/    # Use cases, depends ONLY on Domain
+    ├── FitnessTrainingSystem.Application/    # Use cases, depends ONLY on Domain
     │   ├── Common/             # Behaviours (logging/validation), interfaces, mappings
     │   ├── DTOs/               # Data Transfer Objects
     │   └── Features/           # CQRS slices (Auth, Users, Memberships, Exercises, Schedules, Nutrition)
     │
-    ├── AIAudit.Infrastructure/ # Database/Services, depends on Application
+    ├── FitnessTrainingSystem.Infrastructure/ # Database/Services, depends on Application
     │   ├── Identity/           # JWT, Identity services implementation
     │   ├── Persistence/        # EF Core DbContext, Configurations, Migrations
     │   └── Services/           # Email, AI Integrations, Payment implementation
     │
-    └── AIAudit.WebApi/         # Presentation Layer (HTTP entry point), depends on Infrastructure & Application
+    └── FitnessTrainingSystem.WebApi/         # Presentation Layer (HTTP entry point), depends on Infrastructure & Application
         ├── Controllers/        # REST Endpoints
         ├── Middleware/         # Custom HTTP pipeline middlewares (Global Exception Handling)
         ├── Program.cs          # Web entry point & Dependency Injection container
@@ -65,7 +65,7 @@ dotnet build
 ### 2. Run the Web API
 To start the developer server:
 ```bash
-dotnet run --project src/AIAudit.WebApi/AIAudit.WebApi.csproj
+dotnet run --project src/FitnessTrainingSystem.WebApi/FitnessTrainingSystem.WebApi.csproj
 ```
 Once running, you can access:
 - **API URL:** `https://localhost:5001` or `http://localhost:5000`
@@ -74,11 +74,11 @@ Once running, you can access:
 ### 3. Add Entity Framework Migrations
 To add a migration after modifying domain entities (run from `backend/` folder):
 ```bash
-dotnet ef migrations add InitialCreate --project src/AIAudit.Infrastructure/ --startup-project src/AIAudit.WebApi/
+dotnet ef migrations add InitialCreate --project src/FitnessTrainingSystem.Infrastructure/ --startup-project src/FitnessTrainingSystem.WebApi/
 ```
 
 ### 4. Update the Database
 To apply migrations to your database instance:
 ```bash
-dotnet ef database update --project src/AIAudit.Infrastructure/ --startup-project src/AIAudit.WebApi/
+dotnet ef database update --project src/FitnessTrainingSystem.Infrastructure/ --startup-project src/FitnessTrainingSystem.WebApi/
 ```
