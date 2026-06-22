@@ -55,7 +55,8 @@ public class AuthService : IAuthService
             UserId = user.Id,
             Fullname = user.Fullname,
             Email = user.Email,
-            Token = token
+            Token = token,
+            RoleId = user.RoleId
         };
     }
 
@@ -85,7 +86,8 @@ public class AuthService : IAuthService
             UserId = user.Id,
             Fullname = user.Fullname,
             Email = user.Email,
-            Token = token
+            Token = token,
+            RoleId = user.RoleId
         };
     }
 
@@ -139,7 +141,8 @@ public class AuthService : IAuthService
                 UserId = user.Id,
                 Fullname = user.Fullname,
                 Email = user.Email,
-                Token = token
+                Token = token,
+                RoleId = user.RoleId
             };
         }
         catch (InvalidJwtException)
