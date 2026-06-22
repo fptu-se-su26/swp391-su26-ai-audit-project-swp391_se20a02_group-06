@@ -607,3 +607,7 @@ INSERT IGNORE INTO `FitnessProject`.`roles` (`id`, `role_name`) VALUES
 
 INSERT IGNORE INTO `FitnessProject`.`users` (`id`, `fullname`, `email`, `password_hash`, `phone`, `role_id`) 
 VALUES (1, 'Nguyễn Văn Admin', 'admin@fitness.com', '$2a$11$5I3trWCyKCoczywUHf4Efena5j5zz2fTUfdMJOu1oHvumqT/uG7Lm', '0123456789', 1);
+INSERT IGNORE INTO `FitnessProject`.`users` (`id`, `fullname`, `email`, `password_hash`, `phone`, `role_id`)
+VALUES (2, 'Huấn Luyện Viên', 'pt@fitness.com', '$2a$11$040grBe6AgpYET886d0Dh.ulaaCXeXr3L3KW4OoWdVPPr4Pp0cVBu', '0123456789', 2);
+INSERT IGNORE INTO `FitnessProject`.`users` (`id`, `fullname`, `email`, `password_hash`, `phone`, `role_id`) 
+VALUES (3, 'Hội Viên', 'member@fitness.com', '$2a$11$040grBe6AgpYET886d0Dh.ulaaCXeXr3L3KW4OoWdVPPr4Pp0cVBu', '0123456789', 3);

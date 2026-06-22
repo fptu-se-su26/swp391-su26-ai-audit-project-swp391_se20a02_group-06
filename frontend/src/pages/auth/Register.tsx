@@ -92,7 +92,7 @@ const Register: React.FC = () => {
         password: data.password,
         confirmPassword: data.confirmPassword
       })
-      setTokens(response.token, '')
+      setTokens(response.token, '', response.roleId)
       toast({
         title: 'Registration Successful',
         description: `Welcome to AISTHEA, ${response.fullname}! Let's start training.`,
@@ -101,7 +101,11 @@ const Register: React.FC = () => {
         isClosable: true,
         position: 'top-right',
       })
-      navigate('/')
+      if (response.roleId === 1 || response.roleId === 2) {
+        navigate('/admin')
+      } else {
+        navigate('/dashboard')
+      }
     } catch (error: any) {
       toast({
         title: 'Registration Failed',

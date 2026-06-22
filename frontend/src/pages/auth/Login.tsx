@@ -21,7 +21,7 @@ import {
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
-import { useNavigate, useLocation } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { FiArrowLeft } from 'react-icons/fi'
 // import { FaApple } from 'react-icons/fa'
 import { GoogleLogin } from '@react-oauth/google'
@@ -39,12 +39,9 @@ type LoginFormInputs = z.infer<typeof loginSchema>
 
 const Login: React.FC = () => {
   const navigate = useNavigate()
-  const location = useLocation()
   const toast = useToast()
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
-
-  const redirectUrl = new URLSearchParams(location.search).get('redirect')
 
   const {
     register,
@@ -59,8 +56,12 @@ const Login: React.FC = () => {
   const loginWithGoogle = <GoogleLogin
     onSuccess={async (credentialResponse) => {
       const response = await authService.googleLogin(credentialResponse.credential!)
-      setTokens(response.token, '')
-      navigate(redirectUrl || '/')
+      setTokens(response.token, '', response.roleId)
+      if (response.roleId === 1 || response.roleId === 2) {
+        navigate('/admin')
+      } else {
+        navigate('/dashboard')
+      }
     }}
     onError={() => toast({ title: 'Google Login Failed', status: 'error' })}
   />
@@ -70,9 +71,13 @@ const Login: React.FC = () => {
     setIsLoading(true)
     try {
       const response = await authService.login(data)
-      setTokens(response.token, '')
+      setTokens(response.token, '', response.roleId)
       toast({ title: 'Login Successful', description: `Welcome back, ${response.fullname}!`, status: 'success', duration: 3000, isClosable: true, position: 'top-right' })
-      navigate(redirectUrl || '/')
+      if (response.roleId === 1 || response.roleId === 2) {
+        navigate('/admin')
+      } else {
+        navigate('/dashboard')
+      }
     } catch (error: any) {
       toast({ title: 'Login Failed', description: error.response?.data?.message || 'Invalid credentials.', status: 'error', duration: 3000, isClosable: true, position: 'top-right' })
     } finally {
