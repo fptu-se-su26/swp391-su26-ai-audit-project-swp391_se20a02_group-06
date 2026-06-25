@@ -611,3 +611,36 @@ INSERT IGNORE INTO `FitnessProject`.`users` (`id`, `fullname`, `email`, `passwor
 VALUES (2, 'Huấn Luyện Viên', 'pt@fitness.com', '$2a$11$040grBe6AgpYET886d0Dh.ulaaCXeXr3L3KW4OoWdVPPr4Pp0cVBu', '0123456789', 2);
 INSERT IGNORE INTO `FitnessProject`.`users` (`id`, `fullname`, `email`, `password_hash`, `phone`, `role_id`) 
 VALUES (3, 'Hội Viên', 'member@fitness.com', '$2a$11$040grBe6AgpYET886d0Dh.ulaaCXeXr3L3KW4OoWdVPPr4Pp0cVBu', '0123456789', 3);
+
+INSERT IGNORE INTO `FitnessProject`.`foods` (`name`, `serving_size`, `unit`, `calories`, `protein`, `carbs`, `fat`) VALUES 
+('Chicken Breast (Cooked)', '100', 'g', 165, 31.02, 0.00, 3.57),
+('Brown Rice (Cooked)', '100', 'g', 112, 2.32, 23.51, 0.83),
+('Broccoli (Raw)', '100', 'g', 34, 2.82, 6.64, 0.37),
+('Whole Egg (Large)', '50', 'g', 72, 6.28, 0.36, 4.75),
+('Egg White (Large)', '33', 'g', 17, 3.60, 0.24, 0.06),
+('Salmon (Cooked)', '100', 'g', 206, 22.10, 0.00, 12.35),
+('Almonds (Raw)', '30', 'g', 173, 6.36, 6.48, 14.94),
+('Sweet Potato (Baked)', '100', 'g', 90, 2.01, 20.71, 0.15),
+('Oats (Dry)', '100', 'g', 389, 16.89, 66.27, 6.90),
+('Greek Yogurt (Non-fat)', '100', 'g', 59, 10.19, 3.60, 0.39),
+('Spinach (Raw)', '100', 'g', 23, 2.86, 3.63, 0.39),
+('Avocado (Raw)', '100', 'g', 160, 2.00, 8.53, 14.66),
+('Banana', '100', 'g', 89, 1.09, 22.84, 0.33),
+('Apple', '100', 'g', 52, 0.26, 13.81, 0.17),
+('Peanut Butter (Smooth)', '32', 'g', 188, 8.03, 6.31, 16.06),
+('Tuna (Canned in Water)', '100', 'g', 86, 19.44, 0.00, 0.96),
+('Lentils (Cooked)', '100', 'g', 116, 9.02, 20.13, 0.38),
+('Quinoa (Cooked)', '100', 'g', 120, 4.40, 21.30, 1.92),
+('Olive Oil', '15', 'ml', 119, 0.00, 0.00, 13.50),
+('Cottage Cheese (Low fat)', '100', 'g', 84, 11.12, 4.30, 2.25),
+('Beef (Ground, 90% Lean)', '100', 'g', 176, 20.00, 0.00, 10.00),
+('Turkey Breast (Cooked)', '100', 'g', 135, 30.13, 0.00, 0.74),
+('Black Beans (Cooked)', '100', 'g', 132, 8.86, 23.71, 0.54),
+('Chia Seeds', '28', 'g', 138, 4.68, 11.94, 8.71),
+('Walnuts', '30', 'g', 196, 4.58, 4.11, 19.57),
+('Blueberries (Raw)', '100', 'g', 57, 0.74, 14.49, 0.33),
+('Strawberries (Raw)', '100', 'g', 32, 0.67, 7.68, 0.30),
+('Carrots (Raw)', '100', 'g', 41, 0.93, 9.58, 0.24),
+('Tomato (Raw)', '100', 'g', 18, 0.88, 3.89, 0.20),
+('Cucumber (Raw)', '100', 'g', 15, 0.65, 3.63, 0.11),
+('Whey Protein Isolate', '30', 'g', 110, 25.00, 1.00, 0.50);

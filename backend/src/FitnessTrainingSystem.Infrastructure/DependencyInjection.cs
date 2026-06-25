@@ -38,6 +38,8 @@ public static class DependencyInjection
         services.AddScoped<IProductPackageService, ProductPackageService>();
         services.AddScoped<IOrderService, OrderService>();
         services.AddScoped<IExerciseService, ExerciseService>();
+        services.AddScoped<IPtService, PtService>();
+        services.AddScoped<IFoodService, FoodService>();
 
         return services;
     }

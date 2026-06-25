@@ -12,6 +12,8 @@ import {
     Td,
     Badge,
     Spinner,
+    Button,
+    useToast
 } from '@chakra-ui/react'
 import useSWR from 'swr'
 import apiClient from '../../lib/axios'
@@ -30,7 +32,52 @@ interface PtDto {
 const fetcher = (url: string) => apiClient.get(url).then(res => res.data)
 
 const AdminPTs: React.FC = () => {
-    const { data: pts, error, isLoading } = useSWR<PtDto[]>('/pt', fetcher)
+    const { data: pts, error, isLoading, mutate } = useSWR<PtDto[]>('/pt', fetcher)
+    const toast = useToast()
+
+    const handleActivate = async (id: number) => {
+        try {
+            await apiClient.put(`/pt/${id}/activate`)
+            toast({
+                title: 'Success',
+                description: 'PT activated successfully.',
+                status: 'success',
+                duration: 3000,
+                isClosable: true,
+            })
+            mutate()
+        } catch (error) {
+            toast({
+                title: 'Error',
+                description: 'Failed to activate PT.',
+                status: 'error',
+                duration: 3000,
+                isClosable: true,
+            })
+        }
+    }
+
+    const handleDeactivate = async (id: number) => {
+        try {
+            await apiClient.put(`/pt/${id}/deactivate`)
+            toast({
+                title: 'Success',
+                description: 'PT deactivated successfully.',
+                status: 'success',
+                duration: 3000,
+                isClosable: true,
+            })
+            mutate()
+        } catch (error) {
+            toast({
+                title: 'Error',
+                description: 'Failed to deactivate PT.',
+                status: 'error',
+                duration: 3000,
+                isClosable: true,
+            })
+        }
+    }
 
     return (
         <AdminLayout>
@@ -58,6 +105,7 @@ const AdminPTs: React.FC = () => {
                                     <Th color="#8A8A93" borderColor="#1e2028">Experience</Th>
                                     <Th color="#8A8A93" borderColor="#1e2028" isNumeric>Rating</Th>
                                     <Th color="#8A8A93" borderColor="#1e2028">Status</Th>
+                                    <Th color="#8A8A93" borderColor="#1e2028">Actions</Th>
                                 </Tr>
                             </Thead>
                             <Tbody>
@@ -79,6 +127,17 @@ const AdminPTs: React.FC = () => {
                                             >
                                                 {pt.status || '-'}
                                             </Badge>
+                                        </Td>
+                                        <Td borderColor="#1e2028">
+                                            {pt.status !== 'Active' ? (
+                                                <Button size="xs" colorScheme="green" mr="2" onClick={() => handleActivate(pt.id)}>
+                                                    Activate
+                                                </Button>
+                                            ) : (
+                                                <Button size="xs" colorScheme="red" onClick={() => handleDeactivate(pt.id)}>
+                                                    Deactivate
+                                                </Button>
+                                            )}
                                         </Td>
                                     </Tr>
                                 ))}
