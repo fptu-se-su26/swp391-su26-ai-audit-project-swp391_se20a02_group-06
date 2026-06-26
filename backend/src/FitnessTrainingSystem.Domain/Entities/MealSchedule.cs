@@ -9,19 +9,7 @@ public partial class MealSchedule
 
     public int UserId { get; set; }
 
-    public int? AiRecommendationId { get; set; }
-
-    public string ScheduleName { get; set; } = null!;
-
-    public TimeOnly? EatTime { get; set; }
-
-    public int? TotalCaloriesTarget { get; set; }
-
-    public DateTime? CreatedAt { get; set; }
-
-    public virtual AiRecommendation? AiRecommendation { get; set; }
-
-    public virtual ICollection<MealScheduleItem> MealScheduleItems { get; set; } = new List<MealScheduleItem>();
-
-    public virtual User User { get; set; } = null!;
+    public User User { get; set; } = null!;
+    public AiRecommendation? AiRecommendation { get; set; }
+    public ICollection<MealScheduleItem> MealScheduleItems { get; set; } = new List<MealScheduleItem>();
 }

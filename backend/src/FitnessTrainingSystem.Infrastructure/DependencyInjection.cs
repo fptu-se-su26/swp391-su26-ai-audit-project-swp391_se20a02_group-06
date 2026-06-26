@@ -28,11 +28,19 @@ public static class DependencyInjection
             options.UseMySql(
                 connectionString,
                 serverVersion,
-                builder => builder.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName)
-            ));
-
+                builder => 
+                {
+                    builder.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName);
+                    builder.EnableRetryOnFailure();
+                }
+            ).UseSnakeCaseNamingConvention());
         services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
         services.AddScoped<IAuthService, AuthService>();
+        services.AddScoped<IProductPackageService, ProductPackageService>();
+        services.AddScoped<IOrderService, OrderService>();
+        services.AddScoped<IExerciseService, ExerciseService>();
+        services.AddScoped<IPtService, PtService>();
+        services.AddScoped<IFoodService, FoodService>();
 
         // 🚀 ĐĂNG KÝ HỆ THỐNG TRUY CẬP AI DƯỚI ĐÂY
         services.AddHttpClient<IGeminiAiService, GeminiAiService>();

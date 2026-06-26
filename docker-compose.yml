@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  mysql-db:
+    image: mysql:8.0.36
+    container_name: fitness-training-db
+    environment:
+      MYSQL_ROOT_PASSWORD: "Alex32@NAM"
+      MYSQL_ROOT_HOST: "%"
+      MYSQL_DATABASE: "FitnessProject"
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+      - ./data/fitness.sql:/docker-entrypoint-initdb.d/init.sql
+    restart: unless-stopped
+
+volumes:
+  mysql-data:

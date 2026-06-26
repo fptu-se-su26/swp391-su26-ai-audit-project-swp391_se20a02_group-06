@@ -6,7 +6,7 @@ interface AuthState {
   refreshToken: string | null
   roleId: number | null
   isAuthenticated: boolean
-  setTokens: (access: string, refresh: string, roleId: number | null) => void
+  setTokens: (access: string, refresh: string, roleId?: number | null) => void
   logout: () => void
 }
 
@@ -17,7 +17,13 @@ export const useAuthStore = create<AuthState>()(
       refreshToken: null,
       roleId: null,
       isAuthenticated: false,
-      setTokens: (accessToken, refreshToken, roleId) => set(state => ({ ...state, accessToken, refreshToken, roleId, isAuthenticated: true })),
+      setTokens: (accessToken, refreshToken, roleId) => set(state => ({ 
+        ...state, 
+        accessToken, 
+        refreshToken, 
+        isAuthenticated: true,
+        ...(roleId !== undefined && { roleId })
+      })),
       logout: () => set({ accessToken: null, refreshToken: null, roleId: null, isAuthenticated: false }),
     }),
     {
