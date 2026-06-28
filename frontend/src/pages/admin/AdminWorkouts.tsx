@@ -64,6 +64,8 @@ const AdminWorkouts: React.FC = () => {
         muscleGroup: '',
         difficulty: '',
         description: '',
+        videoUrl: '',
+        duration: '',
     })
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -81,9 +83,11 @@ const AdminWorkouts: React.FC = () => {
                 muscleGroup: formData.muscleGroup || null,
                 difficulty: parseInt(formData.difficulty),
                 description: formData.description || null,
+                videoUrl: formData.videoUrl || null,
+                duration: formData.duration ? parseInt(formData.duration) : null,
             })
             toast({ title: 'Exercise created', status: 'success', duration: 3000, isClosable: true })
-            setFormData({ title: '', muscleGroup: '', difficulty: '', description: '' })
+            setFormData({ title: '', muscleGroup: '', difficulty: '', description: '', videoUrl: '', duration: '' })
             onClose()
             mutate()
         } catch (error: any) {
@@ -137,6 +141,7 @@ const AdminWorkouts: React.FC = () => {
                                     <Th color="#8A8A93" borderColor="#1e2028">Muscle Group</Th>
                                     <Th color="#8A8A93" borderColor="#1e2028">Difficulty</Th>
                                     <Th color="#8A8A93" borderColor="#1e2028" isNumeric>Duration</Th>
+                                    <Th color="#8A8A93" borderColor="#1e2028">Video</Th>
                                     <Th color="#8A8A93" borderColor="#1e2028">Actions</Th>
                                 </Tr>
                             </Thead>
@@ -155,6 +160,20 @@ const AdminWorkouts: React.FC = () => {
                                         </Td>
                                         <Td color="#e2e1eb" borderColor="#1e2028" isNumeric>
                                             {ex.duration ? `${ex.duration} min` : '-'}
+                                        </Td>
+                                        <Td borderColor="#1e2028">
+                                            {ex.videoUrl ? (
+                                                <Button
+                                                    size="xs"
+                                                    colorScheme="blue"
+                                                    variant="outline"
+                                                    onClick={() => window.open(ex.videoUrl, '_blank')}
+                                                >
+                                                    Preview
+                                                </Button>
+                                            ) : (
+                                                <Text fontSize="xs" color="#8A8A93">No Video</Text>
+                                            )}
                                         </Td>
                                         <Td borderColor="#1e2028">
                                             <IconButton
@@ -230,6 +249,33 @@ const AdminWorkouts: React.FC = () => {
                                 value={formData.description}
                                 onChange={handleInputChange}
                                 placeholder="Optional description"
+                                bg="#0A0C10"
+                                border="1px solid #1e2028"
+                                _hover={{ borderColor: "#E03030" }}
+                                _focus={{ borderColor: "#E03030", boxShadow: "none" }}
+                            />
+                        </FormControl>
+                        <FormControl mb={4}>
+                            <FormLabel color="#8A8A93">Video URL</FormLabel>
+                            <Input
+                                name="videoUrl"
+                                value={formData.videoUrl}
+                                onChange={handleInputChange}
+                                placeholder="e.g. https://youtube.com/..."
+                                bg="#0A0C10"
+                                border="1px solid #1e2028"
+                                _hover={{ borderColor: "#E03030" }}
+                                _focus={{ borderColor: "#E03030", boxShadow: "none" }}
+                            />
+                        </FormControl>
+                        <FormControl mb={4}>
+                            <FormLabel color="#8A8A93">Duration (minutes)</FormLabel>
+                            <Input
+                                name="duration"
+                                type="number"
+                                value={formData.duration}
+                                onChange={handleInputChange}
+                                placeholder="e.g. 15"
                                 bg="#0A0C10"
                                 border="1px solid #1e2028"
                                 _hover={{ borderColor: "#E03030" }}

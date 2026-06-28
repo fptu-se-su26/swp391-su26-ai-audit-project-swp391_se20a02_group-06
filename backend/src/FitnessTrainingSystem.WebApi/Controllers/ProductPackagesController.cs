@@ -7,7 +7,7 @@ namespace FitnessTrainingSystem.WebApi.Controllers;
 
 [ApiController]
 [Route("api/product-packages")]
-[Authorize(Roles = "Admin")]
+[Authorize(Roles = "Admin,ADMIN")]
 public class ProductPackagesController : ControllerBase
 {
     private readonly IProductPackageService _productPackageService;

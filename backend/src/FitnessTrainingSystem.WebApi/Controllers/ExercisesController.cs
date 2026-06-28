@@ -36,7 +36,7 @@ public class ExercisesController : ControllerBase
     }
 
     [HttpPost]
-    [Authorize(Roles = "Admin,PT,PersonalTrainer")]
+    [Authorize(Roles = "Admin,ADMIN,PT,PersonalTrainer")]
     public async Task<IActionResult> Create([FromBody] CreateExerciseDto dto)
     {
         if (!ModelState.IsValid) return BadRequest(ModelState);
@@ -53,7 +53,7 @@ public class ExercisesController : ControllerBase
     }
 
     [HttpPut("{id}")]
-    [Authorize(Roles = "Admin,PT,PersonalTrainer")]
+    [Authorize(Roles = "Admin,ADMIN,PT,PersonalTrainer")]
     public async Task<IActionResult> Update(int id, [FromBody] UpdateExerciseDto dto)
     {
         if (!ModelState.IsValid) return BadRequest(ModelState);
@@ -65,7 +65,7 @@ public class ExercisesController : ControllerBase
     }
 
     [HttpDelete("{id}")]
-    [Authorize(Roles = "Admin,PT,PersonalTrainer")]
+    [Authorize(Roles = "Admin,ADMIN,PT,PersonalTrainer")]
     public async Task<IActionResult> Delete(int id)
     {
         var result = await _exerciseService.DeleteAsync(id);

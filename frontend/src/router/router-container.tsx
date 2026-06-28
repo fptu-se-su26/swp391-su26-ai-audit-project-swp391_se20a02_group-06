@@ -28,6 +28,7 @@ import AdminWorkouts from "../pages/admin/AdminWorkouts";
 import AdminPTs from "../pages/admin/AdminPTs";
 import AdminPlatform from "../pages/admin/AdminPlatform";
 import AdminPayments from "../pages/admin/AdminPayments";
+import AdminPackages from "../pages/admin/AdminPackages";
 
 const RouterContainer = () => {
     useEffect(() => {
@@ -94,6 +95,14 @@ const RouterContainer = () => {
                 element={
                     <AdminRoute>
                         <AdminPayments />
+                    </AdminRoute>
+                }
+            />
+            <Route
+                path="/admin/packages"
+                element={
+                    <AdminRoute>
+                        <AdminPackages />
                     </AdminRoute>
                 }
             />

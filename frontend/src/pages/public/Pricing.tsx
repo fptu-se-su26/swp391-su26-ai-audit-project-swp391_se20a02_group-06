@@ -100,7 +100,7 @@ const Pricing: React.FC = () => {
             px={{ base: '0', lg: '8' }}
           >
             {packages?.filter((p: any) => p.isActive !== false && !p.name.includes('(Old)')).map((pkg: any) => {
-              const isPopular = pkg.id === 2 || pkg.id === 6; // Just highlighting some plans based on ID
+              const isPopular = pkg.isPopular;
               return (
                 <Flex
                   key={pkg.id}
