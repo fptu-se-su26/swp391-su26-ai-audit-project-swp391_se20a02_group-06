@@ -1,39 +1,33 @@
 {
   "format": 1,
   "restore": {
-    "D:\\Documents\\GitHub\\swp391-su26-ai-audit-project-swp391_se20a02_group-06\\backend\\src\\FitnessTrainingSystem.Application\\FitnessTrainingSystem.Application.csproj": {}
+    "/Users/mac/Subject/SWP-projectFitness/swp391-su26-ai-audit-project-swp391_se20a02_group-06/backend/src/FitnessTrainingSystem.Application/FitnessTrainingSystem.Application.csproj": {}
   },
   "projects": {
-    "D:\\Documents\\GitHub\\swp391-su26-ai-audit-project-swp391_se20a02_group-06\\backend\\src\\FitnessTrainingSystem.Application\\FitnessTrainingSystem.Application.csproj": {
+    "/Users/mac/Subject/SWP-projectFitness/swp391-su26-ai-audit-project-swp391_se20a02_group-06/backend/src/FitnessTrainingSystem.Application/FitnessTrainingSystem.Application.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\Documents\\GitHub\\swp391-su26-ai-audit-project-swp391_se20a02_group-06\\backend\\src\\FitnessTrainingSystem.Application\\FitnessTrainingSystem.Application.csproj",
+        "projectUniqueName": "/Users/mac/Subject/SWP-projectFitness/swp391-su26-ai-audit-project-swp391_se20a02_group-06/backend/src/FitnessTrainingSystem.Application/FitnessTrainingSystem.Application.csproj",
         "projectName": "FitnessTrainingSystem.Application",
-        "projectPath": "D:\\Documents\\GitHub\\swp391-su26-ai-audit-project-swp391_se20a02_group-06\\backend\\src\\FitnessTrainingSystem.Application\\FitnessTrainingSystem.Application.csproj",
-        "packagesPath": "C:\\Users\\Minami\\.nuget\\packages\\",
-        "outputPath": "D:\\Documents\\GitHub\\swp391-su26-ai-audit-project-swp391_se20a02_group-06\\backend\\src\\FitnessTrainingSystem.Application\\obj\\",
+        "projectPath": "/Users/mac/Subject/SWP-projectFitness/swp391-su26-ai-audit-project-swp391_se20a02_group-06/backend/src/FitnessTrainingSystem.Application/FitnessTrainingSystem.Application.csproj",
+        "packagesPath": "/Users/mac/.nuget/packages/",
+        "outputPath": "/Users/mac/Subject/SWP-projectFitness/swp391-su26-ai-audit-project-swp391_se20a02_group-06/backend/src/FitnessTrainingSystem.Application/obj/",
         "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
-        ],
         "configFilePaths": [
-          "C:\\Users\\Minami\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+          "/Users/mac/.nuget/NuGet/NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net9.0"
         ],
         "sources": {
-          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
           "net9.0": {
             "targetAlias": "net9.0",
             "projectReferences": {
-              "D:\\Documents\\GitHub\\swp391-su26-ai-audit-project-swp391_se20a02_group-06\\backend\\src\\FitnessTrainingSystem.Domain\\FitnessTrainingSystem.Domain.csproj": {
-                "projectPath": "D:\\Documents\\GitHub\\swp391-su26-ai-audit-project-swp391_se20a02_group-06\\backend\\src\\FitnessTrainingSystem.Domain\\FitnessTrainingSystem.Domain.csproj"
+              "/Users/mac/Subject/SWP-projectFitness/swp391-su26-ai-audit-project-swp391_se20a02_group-06/backend/src/FitnessTrainingSystem.Domain/FitnessTrainingSystem.Domain.csproj": {
+                "projectPath": "/Users/mac/Subject/SWP-projectFitness/swp391-su26-ai-audit-project-swp391_se20a02_group-06/backend/src/FitnessTrainingSystem.Domain/FitnessTrainingSystem.Domain.csproj"
               }
             }
           }
@@ -65,6 +59,10 @@
             "MediatR": {
               "target": "Package",
               "version": "[14.1.0, )"
+            },
+            "Newtonsoft.Json": {
+              "target": "Package",
+              "version": "[13.0.4, )"
             }
           },
           "imports": [
@@ -83,32 +81,26 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.312/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/9.0.304/PortableRuntimeIdentifierGraph.json"
         }
       }
     },
-    "D:\\Documents\\GitHub\\swp391-su26-ai-audit-project-swp391_se20a02_group-06\\backend\\src\\FitnessTrainingSystem.Domain\\FitnessTrainingSystem.Domain.csproj": {
+    "/Users/mac/Subject/SWP-projectFitness/swp391-su26-ai-audit-project-swp391_se20a02_group-06/backend/src/FitnessTrainingSystem.Domain/FitnessTrainingSystem.Domain.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\Documents\\GitHub\\swp391-su26-ai-audit-project-swp391_se20a02_group-06\\backend\\src\\FitnessTrainingSystem.Domain\\FitnessTrainingSystem.Domain.csproj",
+        "projectUniqueName": "/Users/mac/Subject/SWP-projectFitness/swp391-su26-ai-audit-project-swp391_se20a02_group-06/backend/src/FitnessTrainingSystem.Domain/FitnessTrainingSystem.Domain.csproj",
         "projectName": "FitnessTrainingSystem.Domain",
-        "projectPath": "D:\\Documents\\GitHub\\swp391-su26-ai-audit-project-swp391_se20a02_group-06\\backend\\src\\FitnessTrainingSystem.Domain\\FitnessTrainingSystem.Domain.csproj",
-        "packagesPath": "C:\\Users\\Minami\\.nuget\\packages\\",
-        "outputPath": "D:\\Documents\\GitHub\\swp391-su26-ai-audit-project-swp391_se20a02_group-06\\backend\\src\\FitnessTrainingSystem.Domain\\obj\\",
+        "projectPath": "/Users/mac/Subject/SWP-projectFitness/swp391-su26-ai-audit-project-swp391_se20a02_group-06/backend/src/FitnessTrainingSystem.Domain/FitnessTrainingSystem.Domain.csproj",
+        "packagesPath": "/Users/mac/.nuget/packages/",
+        "outputPath": "/Users/mac/Subject/SWP-projectFitness/swp391-su26-ai-audit-project-swp391_se20a02_group-06/backend/src/FitnessTrainingSystem.Domain/obj/",
         "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
-        ],
         "configFilePaths": [
-          "C:\\Users\\Minami\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+          "/Users/mac/.nuget/NuGet/NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net9.0"
         ],
         "sources": {
-          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -148,7 +140,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.312/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/9.0.304/PortableRuntimeIdentifierGraph.json"
         }
       }
     }

@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+using FitnessTrainingSystem.Domain.Common;
 
 namespace FitnessTrainingSystem.Domain.Entities;
-
-public partial class Food
-{
-    public int Id { get; set; }
 
 public class Food : BaseEntity
 {

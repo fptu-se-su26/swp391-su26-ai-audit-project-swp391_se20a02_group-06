@@ -1,17 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
+using FitnessTrainingSystem.Domain.Common;
 
 namespace FitnessTrainingSystem.Domain.Entities;
 
-public partial class User
+public class User : BaseAuditableEntity
 {
-    public int Id { get; set; }
-
-    public string Fullname { get; set; } = null!;
-
-    public string Email { get; set; } = null!;
-
-    public string PasswordHash { get; set; } = null!;
+    public string Fullname { get; set; } = string.Empty;
+    public string Email { get; set; } = string.Empty;
+    public string? PasswordHash { get; set; }
     public string? GoogleId { get; set; }
     public string? Phone { get; set; }
     public string? AvatarUrl { get; set; }

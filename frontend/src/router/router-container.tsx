@@ -21,6 +21,7 @@ import Profile from "../pages/member/Profile";
 
 // Admin & PT Area
 import AdminRoute from "./AdminRoute";
+import PrivateRoute from "./PrivateRoute";
 import AdminDashboard from "../pages/admin/AdminDashboard";
 import AdminUsers from "../pages/admin/AdminUsers";
 import AdminWorkouts from "../pages/admin/AdminWorkouts";
@@ -97,14 +98,14 @@ const RouterContainer = () => {
                 }
             />
 
-            {/* Member Area Routes */}
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/workouts" element={<Workouts />} />
-            <Route path="/nutrition" element={<Nutrition />} />
-            <Route path="/progress" element={<Progress />} />
-            <Route path="/pt-booking" element={<PTBooking />} />
-            <Route path="/ai-chat" element={<AIChat />} />
-            <Route path="/profile" element={<Profile />} />
+            {/* Member Area Routes — Protected */}
+            <Route path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
+            <Route path="/workouts" element={<PrivateRoute><Workouts /></PrivateRoute>} />
+            <Route path="/nutrition" element={<PrivateRoute><Nutrition /></PrivateRoute>} />
+            <Route path="/progress" element={<PrivateRoute><Progress /></PrivateRoute>} />
+            <Route path="/pt-booking" element={<PrivateRoute><PTBooking /></PrivateRoute>} />
+            <Route path="/ai-chat" element={<PrivateRoute><AIChat /></PrivateRoute>} />
+            <Route path="/profile" element={<PrivateRoute><Profile /></PrivateRoute>} />
 
             {/* Default Route Redirect to Landing */}
             <Route path="*" element={<Navigate to="/" replace />} />

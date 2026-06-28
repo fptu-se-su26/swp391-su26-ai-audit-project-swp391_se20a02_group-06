@@ -113,7 +113,7 @@ public class AuthService : IAuthService
                     Email = payload.Email,
                     Fullname = payload.Name,
                     GoogleId = payload.Subject,
-                    PasswordHash = null, // No password for Google users
+                    PasswordHash = "", // Database column might not allow null, use empty string
                     RoleId = 3 // Default role: MEMBER
                 };
 

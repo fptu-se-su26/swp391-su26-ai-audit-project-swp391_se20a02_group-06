@@ -66,26 +66,11 @@ public partial class ApplicationDbContext : DbContext
             .UseCollation("utf8mb4_unicode_ci")
             .HasCharSet("utf8mb4");
 
-public class ApplicationDbContext : DbContext
-{
-    public DbSet<User> Users { get; set; }
-    public DbSet<ProductPackage> ProductPackages { get; set; }
-    public DbSet<Order> Orders { get; set; }
-    public DbSet<AiRecommendation> AiRecommendations { get; set; }
-    public DbSet<BodyMetric> BodyMetrics { get; set; }
-    public DbSet<Exercise> Exercises { get; set; }
-    public DbSet<Food> Foods { get; set; }
-    public DbSet<MealSchedule> MealSchedules { get; set; }
-    public DbSet<MealScheduleItem> MealScheduleItems { get; set; }
-    public DbSet<PtProfile> PtProfiles { get; set; }
-    public DbSet<Role> Roles { get; set; }
-    public DbSet<Schedule> Schedules { get; set; }
-    public DbSet<WorkoutSession> WorkoutSessions { get; set; }
-    public DbSet<WorkoutSessionDetail> WorkoutSessionDetails { get; set; }
-
+        modelBuilder.Entity<AiRecommendation>(entity =>
+        {
             entity.ToTable("ai_recommendations");
-
             entity.HasIndex(e => e.UserId, "user_id");
+        });
 
         modelBuilder.Entity<Schedule>()
             .HasOne(s => s.Pt)

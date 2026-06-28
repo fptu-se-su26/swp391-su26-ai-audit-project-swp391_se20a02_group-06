@@ -1,31 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
+using FitnessTrainingSystem.Domain.Common;
+using FitnessTrainingSystem.Domain.Enums;
 
 namespace FitnessTrainingSystem.Domain.Entities;
 
-public partial class Schedule
+public class Schedule : BaseEntity
 {
-    public int Id { get; set; }
-
-    public int PtId { get; set; }
-
-    public int MemberId { get; set; }
-
+    public int? PtId { get; set; }
+    public int? MemberId { get; set; }
     public DateTime StartTime { get; set; }
-
     public DateTime EndTime { get; set; }
-
-    public string? Status { get; set; }
-
+    public ScheduleStatus Status { get; set; } = ScheduleStatus.Pending;
     public string? MeetingUrl { get; set; }
 
-    public string? Note { get; set; }
-
-    public string? CancelReason { get; set; }
-
-    public DateTime? CreatedAt { get; set; }
-
-    public virtual User Member { get; set; } = null!;
-
-    public virtual User Pt { get; set; } = null!;
+    public User? Pt { get; set; }
+    public User? Member { get; set; }
 }

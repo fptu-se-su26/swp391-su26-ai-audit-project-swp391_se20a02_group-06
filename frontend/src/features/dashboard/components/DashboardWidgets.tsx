@@ -22,7 +22,7 @@ export const StatCard: React.FC<{
             {label}
         </Text>
         <Flex align="center" justify="space-between">
-            <Text fontSize="28px" fontWeight="800" color="white" lineHeight="1">
+            <Text as="div" fontSize="28px" fontWeight="800" color="white" lineHeight="1">
                 {value}
             </Text>
             <Box

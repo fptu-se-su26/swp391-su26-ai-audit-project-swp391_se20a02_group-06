@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import {
     Box,
     Flex,
@@ -9,6 +9,9 @@ import {
     HStack,
     Icon,
     IconButton,
+    Spinner,
+    Input,
+    Badge,
 } from '@chakra-ui/react'
 import {
     FiChevronLeft,
@@ -17,7 +20,10 @@ import {
     FiDroplet,
     FiZap,
     FiActivity,
+    FiSearch,
 } from 'react-icons/fi'
+import useSWR from 'swr'
+import apiClient from '../../lib/axios'
 import AppButton from '../../components/shared/Button/AppButton'
 import MemberLayout from '../../components/shared/Layout/MemberLayout.tsx'
 import {
@@ -29,9 +35,19 @@ import {
     MealSection,
 } from '../../features/nutrition/components/NutritionWidgets.tsx'
 
+const fetcher = (url: string) => apiClient.get(url).then((res) => res.data)
+
 /* ── Nutrition Page ─────────────────────────── */
 const Nutrition: React.FC = () => {
-    const dateStr = 'Oct 24, 2025'
+    const dateStr = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+    const [searchQuery, setSearchQuery] = useState('')
+
+    // Fetch foods from API
+    const { data: foods, isLoading, error } = useSWR('/foods', fetcher)
+
+    const filteredFoods = foods?.filter((food: any) =>
+        food.name.toLowerCase().includes(searchQuery.toLowerCase())
+    ) || []
 
     return (
         <MemberLayout>
@@ -81,11 +97,11 @@ const Nutrition: React.FC = () => {
                 </Flex>
 
                 {/* Main Grid: left content + right panel */}
-                <Grid templateColumns="1fr 280px" gap="5">
+                <Grid templateColumns={{ base: "1fr", lg: "1fr 280px" }} gap="5">
                     {/* LEFT */}
                     <Stack spacing="5">
                         {/* Calorie + Macros Row */}
-                        <Grid templateColumns="1fr 1fr 1fr 1fr" gap="3">
+                        <Grid templateColumns={{ base: "repeat(2, 1fr)", md: "1fr 1fr 1fr 1fr" }} gap="3">
                             {/* Calories Donut */}
                             <Box
                                 bg="#141720"
@@ -165,28 +181,68 @@ const Nutrition: React.FC = () => {
                             }
                         />
 
-                        {/* Dinner placeholder */}
-                        <MealSection
-                            label="Dinner"
-                            kcal={750}
-                            items={
-                                <Box
-                                    p="4"
-                                    bg="#0f1117"
-                                    border="1px dashed"
-                                    borderColor="#2e3040"
-                                    borderRadius="12px"
-                                    textAlign="center"
-                                >
-                                    <Text fontSize="12px" color="#8A8A93">
-                                        No meals logged yet
-                                    </Text>
-                                    <Text fontSize="11px" color="#6a6a73" mt="1">
-                                        Use the AI recommendation →
-                                    </Text>
-                                </Box>
-                            }
-                        />
+                        {/* Food Library */}
+                        <Box bg="#141720" border="1px solid" borderColor="#1e2028" borderRadius="16px" p="6" mt="4">
+                            <Flex justify="space-between" align="center" mb="4">
+                                <Heading fontSize="18px" fontWeight="700" color="white">
+                                    Food Library
+                                </Heading>
+                                <Flex align="center" bg="#0A0C10" border="1px solid" borderColor="#1e2028" borderRadius="8px" px="3" py="1">
+                                    <Icon as={FiSearch} color="#8A8A93" />
+                                    <Input
+                                        placeholder="Search foods..."
+                                        value={searchQuery}
+                                        onChange={(e) => setSearchQuery(e.target.value)}
+                                        variant="unstyled"
+                                        size="sm"
+                                        ml="2"
+                                        color="white"
+                                        _placeholder={{ color: '#8A8A93' }}
+                                    />
+                                </Flex>
+                            </Flex>
+
+                            {isLoading ? (
+                                <Flex justify="center" p="6">
+                                    <Spinner color="#E03030" />
+                                </Flex>
+                            ) : error ? (
+                                <Text color="red.500">Failed to load foods.</Text>
+                            ) : filteredFoods.length === 0 ? (
+                                <Text color="#8A8A93" p="4" textAlign="center">No foods found.</Text>
+                            ) : (
+                                <Grid templateColumns={{ base: "1fr", md: "1fr 1fr" }} gap="4">
+                                    {filteredFoods.map((food: any) => (
+                                        <Flex key={food.id} bg="#0A0C10" p="3" borderRadius="12px" border="1px solid" borderColor="#1e2028" align="center" justify="space-between">
+                                            <Box>
+                                                <Text color="white" fontWeight="600" fontSize="14px">{food.name}</Text>
+                                                <Text color="#8A8A93" fontSize="12px">
+                                                    {food.servingSize} {food.unit} • {food.calories} kcal
+                                                </Text>
+                                            </Box>
+                                            <HStack spacing="2">
+                                                <Badge bg="rgba(224, 48, 48, 0.1)" color="#E03030" px="2" py="0.5" borderRadius="md" fontSize="10px">
+                                                    {food.protein}g P
+                                                </Badge>
+                                                <Badge bg="rgba(59, 130, 246, 0.1)" color="#3b82f6" px="2" py="0.5" borderRadius="md" fontSize="10px">
+                                                    {food.carbs}g C
+                                                </Badge>
+                                                <Badge bg="rgba(245, 158, 11, 0.1)" color="#f59e0b" px="2" py="0.5" borderRadius="md" fontSize="10px">
+                                                    {food.fat}g F
+                                                </Badge>
+                                                <IconButton
+                                                    aria-label="Add food"
+                                                    icon={<FiPlus />}
+                                                    size="xs"
+                                                    colorScheme="red"
+                                                    variant="ghost"
+                                                />
+                                            </HStack>
+                                        </Flex>
+                                    ))}
+                                </Grid>
+                            )}
+                        </Box>
                     </Stack>
 
                     {/* RIGHT panel */}

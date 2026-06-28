@@ -27,7 +27,7 @@ public class UserController : ControllerBase
                 Name = u.Fullname,
                 Email = u.Email,
                 Plan = "-", // Or map from User plans if applicable
-                JoinDate = u.CreatedAt.HasValue ? u.CreatedAt.Value.ToString("MMM dd, yyyy") : "-",
+                JoinDate = u.CreatedAt.ToString("MMM dd, yyyy"),
                 Status = "Active" // Default to Active as there is no Status field yet
             })
             .ToListAsync();

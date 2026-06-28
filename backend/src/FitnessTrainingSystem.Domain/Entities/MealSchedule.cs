@@ -1,13 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
+using FitnessTrainingSystem.Domain.Common;
 
 namespace FitnessTrainingSystem.Domain.Entities;
 
-public partial class MealSchedule
+public class MealSchedule : BaseAuditableEntity
 {
-    public int Id { get; set; }
-
     public int UserId { get; set; }
+    public int? AiRecommendationId { get; set; }
+    public string ScheduleName { get; set; } = string.Empty;
+    public TimeSpan? EatTime { get; set; }
+    public int? TotalCaloriesTarget { get; set; }
 
     public User User { get; set; } = null!;
     public AiRecommendation? AiRecommendation { get; set; }

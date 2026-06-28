@@ -3,6 +3,7 @@ import {
     Box,
     Flex,
     Heading,
+    Text,
     Table,
     Thead,
     Tbody,
@@ -10,6 +11,7 @@ import {
     Th,
     Td,
     Badge,
+    Spinner,
     useDisclosure,
     Modal,
     ModalOverlay,
@@ -23,19 +25,45 @@ import {
     FormLabel,
     Input,
     Select,
+    useToast,
+    IconButton,
 } from '@chakra-ui/react'
+import { FiTrash2 } from 'react-icons/fi'
+import useSWR from 'swr'
+import apiClient from '../../lib/axios'
 import AdminLayout from '../../components/shared/Layout/AdminLayout.tsx'
 import AppButton from '../../components/shared/Button/AppButton'
-import { workoutsMock } from '../../mock/admin/workoutsMock.ts'
+
+interface ExerciseDto {
+    id: number
+    title: string
+    description?: string
+    videoUrl?: string
+    muscleGroup?: string
+    difficulty: number // 0=Beginner, 1=Intermediate, 2=Advanced
+    duration?: number
+    createdBy?: number
+    creatorName?: string
+}
+
+const difficultyLabels: Record<number, string> = {
+    0: 'Beginner',
+    1: 'Intermediate',
+    2: 'Advanced',
+}
+
+const fetcher = (url: string) => apiClient.get(url).then(res => res.data)
 
 const AdminWorkouts: React.FC = () => {
     const { isOpen, onOpen, onClose } = useDisclosure()
-    const [workouts, setWorkouts] = useState(workoutsMock)
+    const toast = useToast()
+    const { data: exercises, error, isLoading, mutate } = useSWR<ExerciseDto[]>('/exercises', fetcher)
+    const [isSubmitting, setIsSubmitting] = useState(false)
     const [formData, setFormData] = useState({
         title: '',
-        creator: '',
-        type: '',
-        level: '',
+        muscleGroup: '',
+        difficulty: '',
+        description: '',
     })
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -43,21 +71,44 @@ const AdminWorkouts: React.FC = () => {
         setFormData(prev => ({ ...prev, [name]: value }))
     }
 
-    const handleSubmit = () => {
-        if (!formData.title || !formData.creator || !formData.type || !formData.level) return;
+    const handleSubmit = async () => {
+        if (!formData.title || !formData.difficulty) return
 
-        const newWorkout = {
-            id: workouts.length > 0 ? Math.max(...workouts.map(w => w.id)) + 1 : 1,
-            title: formData.title,
-            creator: formData.creator,
-            type: formData.type,
-            level: formData.level,
-            uses: 0,
+        setIsSubmitting(true)
+        try {
+            await apiClient.post('/exercises', {
+                title: formData.title,
+                muscleGroup: formData.muscleGroup || null,
+                difficulty: parseInt(formData.difficulty),
+                description: formData.description || null,
+            })
+            toast({ title: 'Exercise created', status: 'success', duration: 3000, isClosable: true })
+            setFormData({ title: '', muscleGroup: '', difficulty: '', description: '' })
+            onClose()
+            mutate()
+        } catch (error: any) {
+            toast({
+                title: 'Failed to create exercise',
+                description: error.response?.data?.message || 'Something went wrong.',
+                status: 'error', duration: 3000, isClosable: true,
+            })
+        } finally {
+            setIsSubmitting(false)
         }
+    }
 
-        setWorkouts([...workouts, newWorkout])
-        setFormData({ title: '', creator: '', type: '', level: '' })
-        onClose()
+    const handleDelete = async (id: number) => {
+        try {
+            await apiClient.delete(`/exercises/${id}`)
+            toast({ title: 'Exercise deleted', status: 'success', duration: 3000, isClosable: true })
+            mutate()
+        } catch (error: any) {
+            toast({
+                title: 'Failed to delete',
+                description: error.response?.data?.message || 'Something went wrong.',
+                status: 'error', duration: 3000, isClosable: true,
+            })
+        }
     }
 
     return (
@@ -65,52 +116,77 @@ const AdminWorkouts: React.FC = () => {
             <Box p="7" maxW="1200px">
                 <Flex justify="space-between" align="center" mb="7">
                     <Heading fontSize="24px" fontWeight="800" color="white">
-                        Workout Management
+                        Exercise Management
                     </Heading>
-                    <AppButton label="Create Program" size="sm" onClick={onOpen} />
+                    <AppButton label="Create Exercise" size="sm" onClick={onOpen} />
                 </Flex>
 
                 <Box bg="#141720" border="1px solid" borderColor="#1e2028" borderRadius="16px" overflow="hidden">
-                    <Table variant="simple" size="sm">
-                        <Thead bg="#0A0C10">
-                            <Tr>
-                                <Th color="#8A8A93" borderColor="#1e2028">Program Title</Th>
-                                <Th color="#8A8A93" borderColor="#1e2028">Creator</Th>
-                                <Th color="#8A8A93" borderColor="#1e2028">Type</Th>
-                                <Th color="#8A8A93" borderColor="#1e2028">Level</Th>
-                                <Th color="#8A8A93" borderColor="#1e2028" isNumeric>Uses</Th>
-                            </Tr>
-                        </Thead>
-                        <Tbody>
-                            {workouts.map((w: any) => (
-                                <Tr key={w.id} _hover={{ bg: 'rgba(255,255,255,0.02)' }}>
-                                    <Td color="white" borderColor="#1e2028" fontWeight="600">{w.title}</Td>
-                                    <Td color="#e2e1eb" borderColor="#1e2028">{w.creator}</Td>
-                                    <Td borderColor="#1e2028">
-                                        <Badge bg="#2e3040" color="#E2E1EB" px="2" py="0.5" borderRadius="md">{w.type}</Badge>
-                                    </Td>
-                                    <Td color="#8A8A93" borderColor="#1e2028">{w.level}</Td>
-                                    <Td color="#e2e1eb" borderColor="#1e2028" isNumeric>{w.uses.toLocaleString()}</Td>
+                    {isLoading ? (
+                        <Flex justify="center" p="10">
+                            <Spinner color="red.500" />
+                        </Flex>
+                    ) : error ? (
+                        <Text color="red.500" p="5">Failed to load exercises</Text>
+                    ) : (
+                        <Table variant="simple" size="sm">
+                            <Thead bg="#0A0C10">
+                                <Tr>
+                                    <Th color="#8A8A93" borderColor="#1e2028">Title</Th>
+                                    <Th color="#8A8A93" borderColor="#1e2028">Creator</Th>
+                                    <Th color="#8A8A93" borderColor="#1e2028">Muscle Group</Th>
+                                    <Th color="#8A8A93" borderColor="#1e2028">Difficulty</Th>
+                                    <Th color="#8A8A93" borderColor="#1e2028" isNumeric>Duration</Th>
+                                    <Th color="#8A8A93" borderColor="#1e2028">Actions</Th>
                                 </Tr>
-                            ))}
-                        </Tbody>
-                    </Table>
+                            </Thead>
+                            <Tbody>
+                                {exercises?.map((ex) => (
+                                    <Tr key={ex.id} _hover={{ bg: 'rgba(255,255,255,0.02)' }}>
+                                        <Td color="white" borderColor="#1e2028" fontWeight="600">{ex.title}</Td>
+                                        <Td color="#e2e1eb" borderColor="#1e2028">{ex.creatorName || '-'}</Td>
+                                        <Td borderColor="#1e2028">
+                                            <Badge bg="#2e3040" color="#E2E1EB" px="2" py="0.5" borderRadius="md">
+                                                {ex.muscleGroup || '-'}
+                                            </Badge>
+                                        </Td>
+                                        <Td color="#8A8A93" borderColor="#1e2028">
+                                            {difficultyLabels[ex.difficulty] || '-'}
+                                        </Td>
+                                        <Td color="#e2e1eb" borderColor="#1e2028" isNumeric>
+                                            {ex.duration ? `${ex.duration} min` : '-'}
+                                        </Td>
+                                        <Td borderColor="#1e2028">
+                                            <IconButton
+                                                aria-label="Delete exercise"
+                                                icon={<FiTrash2 />}
+                                                size="xs"
+                                                colorScheme="red"
+                                                variant="ghost"
+                                                onClick={() => handleDelete(ex.id)}
+                                            />
+                                        </Td>
+                                    </Tr>
+                                ))}
+                            </Tbody>
+                        </Table>
+                    )}
                 </Box>
             </Box>
 
             <Modal isOpen={isOpen} onClose={onClose}>
                 <ModalOverlay />
                 <ModalContent bg="#141720" color="white" borderColor="#1e2028" borderWidth="1px">
-                    <ModalHeader>Create New Program</ModalHeader>
+                    <ModalHeader>Create New Exercise</ModalHeader>
                     <ModalCloseButton />
                     <ModalBody>
                         <FormControl mb={4}>
-                            <FormLabel color="#8A8A93">Program Title</FormLabel>
+                            <FormLabel color="#8A8A93">Title *</FormLabel>
                             <Input
                                 name="title"
                                 value={formData.title}
                                 onChange={handleInputChange}
-                                placeholder="e.g. Hypertrophy Phase 2"
+                                placeholder="e.g. Barbell Squat"
                                 bg="#0A0C10"
                                 border="1px solid #1e2028"
                                 _hover={{ borderColor: "#E03030" }}
@@ -118,12 +194,12 @@ const AdminWorkouts: React.FC = () => {
                             />
                         </FormControl>
                         <FormControl mb={4}>
-                            <FormLabel color="#8A8A93">Creator</FormLabel>
+                            <FormLabel color="#8A8A93">Muscle Group</FormLabel>
                             <Input
-                                name="creator"
-                                value={formData.creator}
+                                name="muscleGroup"
+                                value={formData.muscleGroup}
                                 onChange={handleInputChange}
-                                placeholder="e.g. Marcus Cole"
+                                placeholder="e.g. Legs, Chest"
                                 bg="#0A0C10"
                                 border="1px solid #1e2028"
                                 _hover={{ borderColor: "#E03030" }}
@@ -131,39 +207,34 @@ const AdminWorkouts: React.FC = () => {
                             />
                         </FormControl>
                         <FormControl mb={4}>
-                            <FormLabel color="#8A8A93">Type</FormLabel>
+                            <FormLabel color="#8A8A93">Difficulty *</FormLabel>
                             <Select
-                                name="type"
-                                value={formData.type}
+                                name="difficulty"
+                                value={formData.difficulty}
                                 onChange={handleInputChange}
                                 bg="#0A0C10"
                                 border="1px solid #1e2028"
                                 _hover={{ borderColor: "#E03030" }}
                                 _focus={{ borderColor: "#E03030", boxShadow: "none" }}
                             >
-                                <option value="" style={{ color: "black" }}>Select type</option>
-                                <option value="Strength" style={{ color: "black" }}>Strength</option>
-                                <option value="Cardio" style={{ color: "black" }}>Cardio</option>
-                                <option value="Full Body" style={{ color: "black" }}>Full Body</option>
-                                <option value="Flexibility" style={{ color: "black" }}>Flexibility</option>
+                                <option value="" style={{ color: "black" }}>Select difficulty</option>
+                                <option value="0" style={{ color: "black" }}>Beginner</option>
+                                <option value="1" style={{ color: "black" }}>Intermediate</option>
+                                <option value="2" style={{ color: "black" }}>Advanced</option>
                             </Select>
                         </FormControl>
                         <FormControl mb={4}>
-                            <FormLabel color="#8A8A93">Level</FormLabel>
-                            <Select
-                                name="level"
-                                value={formData.level}
+                            <FormLabel color="#8A8A93">Description</FormLabel>
+                            <Input
+                                name="description"
+                                value={formData.description}
                                 onChange={handleInputChange}
+                                placeholder="Optional description"
                                 bg="#0A0C10"
                                 border="1px solid #1e2028"
                                 _hover={{ borderColor: "#E03030" }}
                                 _focus={{ borderColor: "#E03030", boxShadow: "none" }}
-                            >
-                                <option value="" style={{ color: "black" }}>Select level</option>
-                                <option value="Beginner" style={{ color: "black" }}>Beginner</option>
-                                <option value="Intermediate" style={{ color: "black" }}>Intermediate</option>
-                                <option value="Advanced" style={{ color: "black" }}>Advanced</option>
-                            </Select>
+                            />
                         </FormControl>
                     </ModalBody>
 
@@ -171,7 +242,7 @@ const AdminWorkouts: React.FC = () => {
                         <Button variant="ghost" mr={3} onClick={onClose} color="#8A8A93" _hover={{ bg: "rgba(255,255,255,0.05)" }}>
                             Cancel
                         </Button>
-                        <Button bg="#E03030" color="white" _hover={{ bg: "#C92424" }} onClick={handleSubmit}>
+                        <Button bg="#E03030" color="white" _hover={{ bg: "#C92424" }} onClick={handleSubmit} isLoading={isSubmitting}>
                             Create
                         </Button>
                     </ModalFooter>

@@ -1,27 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
+using FitnessTrainingSystem.Domain.Common;
+using FitnessTrainingSystem.Domain.Enums;
 
 namespace FitnessTrainingSystem.Domain.Entities;
 
-public partial class Order
+public class Order : BaseEntity
 {
-    public int Id { get; set; }
-
-    public int UserId { get; set; }
-
-    public int PackageId { get; set; }
-
+    public int? UserId { get; set; }
+    public int? PackageId { get; set; }
     public decimal PricePaid { get; set; }
+    public PaymentStatus PaymentStatus { get; set; } = PaymentStatus.Pending;
+    public DateTime PurchasedAt { get; set; } = DateTime.UtcNow;
+    public DateTime? ExpiredAt { get; set; }
 
-    public string? PaymentStatus { get; set; }
-
-    public DateTime? PurchasedAt { get; set; }
-
-    public virtual ICollection<MembershipSubscription> MembershipSubscriptions { get; set; } = new List<MembershipSubscription>();
-
-    public virtual ProductPackage Package { get; set; } = null!;
-
-    public virtual ICollection<Payment> Payments { get; set; } = new List<Payment>();
-
-    public virtual User User { get; set; } = null!;
+    public User? User { get; set; }
+    public ProductPackage? Package { get; set; }
 }

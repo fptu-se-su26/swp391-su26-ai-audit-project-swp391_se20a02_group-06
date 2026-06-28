@@ -1,25 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
+using FitnessTrainingSystem.Domain.Common;
 
 namespace FitnessTrainingSystem.Domain.Entities;
 
-public partial class PtProfile
+public class PtProfile : BaseEntity
 {
-    public int Id { get; set; }
-
     public int UserId { get; set; }
-
     public string? Bio { get; set; }
-
-    public string? Specialization { get; set; }
-
     public int? ExperienceYears { get; set; }
+    public decimal Rating { get; set; } = 5.0m;
 
-    public string? CertificateUrl { get; set; }
-
-    public decimal? Rating { get; set; }
-
-    public decimal? HourlyRate { get; set; }
-
-    public virtual User User { get; set; } = null!;
+    public User User { get; set; } = null!;
 }
