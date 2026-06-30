@@ -1,6 +1,7 @@
 export type WorkoutPhase = 'intro' | 'setup' | 'loading' | 'results'
 
 export type WorkoutFormData = {
+    planType: 'daily' | 'weekly'
     goal: string
     gender: string
     age: string
@@ -20,7 +21,11 @@ export interface ExerciseCardData {
     tags: string[]
     sets: string
     setsLabel: string
+    description?: string
+    videoUrl?: string
+    imageUrl?: string
     isActive?: boolean
     isLocked?: boolean
     isDone?: boolean
+    isSkipped?: boolean
 }

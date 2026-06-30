@@ -68,16 +68,19 @@ Viết tại đây...
 
 | Nội dung | Thông tin |
 |---|---|
-| Ngày sử dụng |  |
-| Công cụ AI | ChatGPT / Gemini / Claude / GitHub Copilot / Cursor / Antigravity / Khác |
-| Mục đích sử dụng |  |
-| Phần việc liên quan | Requirement / Design / Database / Frontend / Backend / Testing / Debug / Report / Presentation / Other |
-| Mức độ sử dụng | Hỗ trợ ý tưởng / Hỗ trợ một phần / Hỗ trợ nhiều / Sinh chính nội dung |
+| Ngày sử dụng | 30/06/2026 |
+| Công cụ AI | Antigravity |
+| Mục đích sử dụng | Phát triển tính năng hiển thị danh sách bài tập, tạo Modal xem chi tiết video, xử lý luồng Daily/Weekly. |
+| Phần việc liên quan | Frontend |
+| Mức độ sử dụng | Sinh chính nội dung |
 
 #### 4.1. Prompt đã sử dụng
 
 ```text
-Dán nguyên văn prompt đã hỏi AI tại đây.
+- Phát triển giao diện Workout Setup (chia Daily / Weekly).
+- Làm UI danh sách bài tập, làm nút Mark Done / Skip.
+- Thêm Popup hiển thị video hướng dẫn dạng Youtube Player (size to, tỷ lệ 16:9).
+- Tích hợp thumbnail hình ảnh ngoài danh sách bài tập.
 ```
 
 #### 4.2. Kết quả AI gợi ý
@@ -85,7 +88,10 @@ Dán nguyên văn prompt đã hỏi AI tại đây.
 Tóm tắt nội dung AI đã trả lời hoặc gợi ý.
 
 ```text
-Viết tại đây...
+AI cung cấp mã nguồn (React, Chakra UI) để:
+- Sửa đổi WorkoutSetup thêm bước chọn Plan Type.
+- Sửa đổi WorkoutResults & ExerciseCard để thay đổi trạng thái UI mờ/sáng tuỳ theo trạng thái Done/Skip/Active.
+- Tạo ExerciseModal nhúng iframe video.
 ```
 
 #### 4.3. Phần sinh viên/nhóm đã sử dụng từ AI
@@ -93,7 +99,7 @@ Viết tại đây...
 Mô tả rõ phần nào được sử dụng lại từ gợi ý của AI.
 
 ```text
-Viết tại đây...
+Sử dụng toàn bộ cấu trúc Component được AI sinh ra, bao gồm logic xử lý state trong `useWorkoutStore` và giao diện Chakra UI.
 ```
 
 #### 4.4. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
@@ -101,26 +107,26 @@ Viết tại đây...
 Mô tả sinh viên/nhóm đã thay đổi, kiểm tra, sửa lỗi hoặc cải tiến gì so với gợi ý ban đầu của AI.
 
 ```text
-Viết tại đây...
+Kiểm tra lại UI trên trình duyệt, feedback lại cho AI để sửa lỗi hiển thị màu sắc và bổ sung ảnh thumbnail cho danh sách cũ.
 ```
 
 #### 4.5. Minh chứng
 
 | Loại minh chứng | Nội dung |
 |---|---|
-| Link commit |  |
-| File liên quan |  |
-| Screenshot |  |
-| Kết quả chạy/test |  |
-| Link video demo |  |
-| Ghi chú khác |  |
+| Link commit | (Commit sau khi hoàn tất) |
+| File liên quan | `WorkoutSetup.tsx`, `WorkoutResults.tsx`, `workout.ts`, `workoutExercises.ts` |
+| Screenshot | Đã kiểm tra UI ngoài thực tế |
+| Kết quả chạy/test | Thành công |
+| Link video demo | N/A |
+| Ghi chú khác | N/A |
 
 #### 4.6. Nhận xét cá nhân/nhóm
 
 Sinh viên/nhóm học được gì sau lần sử dụng AI này?
 
 ```text
-Viết tại đây...
+Học được cách ứng dụng AspectRatio của Chakra UI để render video 16:9, cũng như xử lý logic render danh sách liên tiếp với trạng thái (active, done, skipped).
 ```
 
 ---

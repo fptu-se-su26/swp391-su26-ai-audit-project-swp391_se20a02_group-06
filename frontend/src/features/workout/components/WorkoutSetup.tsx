@@ -30,9 +30,10 @@ interface WorkoutSetupProps {
 /* ─── Main Wizard ──────────────────────────── */
 const WorkoutSetup: React.FC<WorkoutSetupProps> = ({ onComplete }) => {
     const [step, setStep] = useState(0)
-    const TOTAL = 4
+    const TOTAL = 5
 
     const [form, setForm] = useState<WorkoutFormData>({
+        planType: 'daily',
         goal: '',
         gender: '',
         age: '',
@@ -62,6 +63,7 @@ const WorkoutSetup: React.FC<WorkoutSetupProps> = ({ onComplete }) => {
         if (step === 0) return !!form.goal
         if (step === 1) return !!form.gender && !!form.age && !!form.height && !!form.weight
         if (step === 2) return form.muscles.length > 0
+        if (step === 3) return !!form.planType
         return true
     }
 
@@ -71,11 +73,11 @@ const WorkoutSetup: React.FC<WorkoutSetupProps> = ({ onComplete }) => {
     }
     const back = () => setStep((s) => s - 1)
 
-    /* Step titles */
     const stepMeta = [
         { title: 'Mục tiêu tập luyện', sub: 'Chọn mục tiêu chính để AI hiệu chỉnh chương trình.' },
         { title: 'Thông tin cơ bản', sub: 'Giúp AI tính toán chương trình phù hợp với bạn.' },
         { title: 'Nhóm cơ muốn tập', sub: 'Chọn vùng cơ bạn muốn AISTHEA tập trung vào.' },
+        { title: 'Loại kế hoạch', sub: 'Bạn muốn tạo bài tập cho 1 ngày hay lên lịch cả tuần?' },
         { title: 'Điều kiện & Lịch tập', sub: 'Tuỳ chỉnh thời lượng, tần suất và dụng cụ.' },
     ]
 
@@ -258,6 +260,7 @@ const WorkoutSetup: React.FC<WorkoutSetupProps> = ({ onComplete }) => {
                                         { label: 'Mục tiêu', sub: 'Goal & Level', done: true },
                                         { label: 'Cơ bản', sub: 'Age, Weight, Goal', done: true },
                                         { label: 'Nhóm cơ', sub: 'Muscle Targeting', active: true },
+                                        { label: 'Kế hoạch', sub: 'Daily or Weekly', done: false },
                                         { label: 'Lịch tập', sub: 'Availability', done: false },
                                     ].map((item, i) => (
                                         <HStack key={i} spacing="3" align="flex-start">
@@ -372,8 +375,53 @@ const WorkoutSetup: React.FC<WorkoutSetupProps> = ({ onComplete }) => {
                         </Flex>
                     )}
 
-                    {/* ── STEP 3: Schedule & conditions ── */}
+                    {/* ── STEP 3: Plan Type ── */}
                     {step === 3 && (
+                        <Stack spacing="5">
+                            <SectionLabel>Chọn loại kế hoạch</SectionLabel>
+                            <Grid templateColumns="repeat(2, 1fr)" gap="4">
+                                <Box
+                                    p="5"
+                                    bg={form.planType === 'daily' ? 'rgba(224,48,48,0.1)' : '#141720'}
+                                    border="1.5px solid"
+                                    borderColor={form.planType === 'daily' ? '#E03030' : '#2e3040'}
+                                    borderRadius="16px"
+                                    cursor="pointer"
+                                    transition="all 0.2s"
+                                    onClick={() => set('planType', 'daily')}
+                                    _hover={{ borderColor: form.planType === 'daily' ? '#E03030' : '#3e4050' }}
+                                >
+                                    <Heading fontSize="18px" fontWeight="800" color={form.planType === 'daily' ? 'white' : '#E2E1EB'} mb="2">
+                                        Theo ngày
+                                    </Heading>
+                                    <Text fontSize="13px" color="#8A8A93">
+                                        Tạo nhanh một buổi tập đơn lẻ cho ngày hôm nay.
+                                    </Text>
+                                </Box>
+                                <Box
+                                    p="5"
+                                    bg={form.planType === 'weekly' ? 'rgba(224,48,48,0.1)' : '#141720'}
+                                    border="1.5px solid"
+                                    borderColor={form.planType === 'weekly' ? '#E03030' : '#2e3040'}
+                                    borderRadius="16px"
+                                    cursor="pointer"
+                                    transition="all 0.2s"
+                                    onClick={() => set('planType', 'weekly')}
+                                    _hover={{ borderColor: form.planType === 'weekly' ? '#E03030' : '#3e4050' }}
+                                >
+                                    <Heading fontSize="18px" fontWeight="800" color={form.planType === 'weekly' ? 'white' : '#E2E1EB'} mb="2">
+                                        Hàng tuần
+                                    </Heading>
+                                    <Text fontSize="13px" color="#8A8A93">
+                                        Lên lịch tập chi tiết cho cả tuần theo tần suất bạn chọn.
+                                    </Text>
+                                </Box>
+                            </Grid>
+                        </Stack>
+                    )}
+
+                    {/* ── STEP 4: Schedule & conditions ── */}
+                    {step === 4 && (
                         <Stack spacing="5">
                             {/* Duration */}
                             <Box>
@@ -391,19 +439,21 @@ const WorkoutSetup: React.FC<WorkoutSetupProps> = ({ onComplete }) => {
                             </Box>
 
                             {/* Frequency */}
-                            <Box>
-                                <SectionLabel>Tần suất mỗi tuần</SectionLabel>
-                                <HStack spacing="2">
-                                    {[3, 4, 5].map((f) => (
-                                        <OptionChip
-                                            key={f}
-                                            label={`${f} buổi/tuần`}
-                                            selected={form.frequency === f}
-                                            onClick={() => set('frequency', f)}
-                                        />
-                                    ))}
-                                </HStack>
-                            </Box>
+                            {form.planType === 'weekly' && (
+                                <Box>
+                                    <SectionLabel>Tần suất mỗi tuần</SectionLabel>
+                                    <HStack spacing="2">
+                                        {[3, 4, 5].map((f) => (
+                                            <OptionChip
+                                                key={f}
+                                                label={`${f} buổi/tuần`}
+                                                selected={form.frequency === f}
+                                                onClick={() => set('frequency', f)}
+                                            />
+                                        ))}
+                                    </HStack>
+                                </Box>
+                            )}
 
                             {/* Equipment */}
                             <Box>
@@ -465,11 +515,11 @@ const WorkoutSetup: React.FC<WorkoutSetupProps> = ({ onComplete }) => {
                                 <Text fontSize="11px" fontWeight="700" color="#8A8A93" textTransform="uppercase" letterSpacing="wider" mb="3">
                                     Tóm tắt chương trình
                                 </Text>
-                                <Grid templateColumns="repeat(4, 1fr)" gap="3">
+                                <Grid templateColumns={form.planType === 'weekly' ? "repeat(4, 1fr)" : "repeat(3, 1fr)"} gap="3">
                                     {[
                                         { val: form.level, label: 'Level' },
                                         { val: `${form.duration}m`, label: 'Thời gian' },
-                                        { val: `${form.frequency}x`, label: 'Tuần' },
+                                        ...(form.planType === 'weekly' ? [{ val: `${form.frequency}x`, label: 'Tuần' }] : []),
                                         { val: `${form.targetCalories}`, label: 'kcal' },
                                     ].map((s, i) => (
                                         <Box key={i} textAlign="center">
