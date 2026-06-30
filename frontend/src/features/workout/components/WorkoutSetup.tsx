@@ -7,9 +7,6 @@ import {
     Text,
     Stack,
     HStack,
-    Input,
-    InputGroup,
-    InputRightAddon,
 } from '@chakra-ui/react'
 import AppButton from '../../../components/shared/Button/AppButton'
 import type { WorkoutFormData } from '../types/workout'
@@ -30,7 +27,7 @@ interface WorkoutSetupProps {
 /* ─── Main Wizard ──────────────────────────── */
 const WorkoutSetup: React.FC<WorkoutSetupProps> = ({ onComplete }) => {
     const [step, setStep] = useState(0)
-    const TOTAL = 5
+    const TOTAL = 4
 
     const [form, setForm] = useState<WorkoutFormData>({
         planType: 'daily',
@@ -61,9 +58,8 @@ const WorkoutSetup: React.FC<WorkoutSetupProps> = ({ onComplete }) => {
 
     const canNext = () => {
         if (step === 0) return !!form.goal
-        if (step === 1) return !!form.gender && !!form.age && !!form.height && !!form.weight
-        if (step === 2) return form.muscles.length > 0
-        if (step === 3) return !!form.planType
+        if (step === 1) return form.muscles.length > 0
+        if (step === 2) return !!form.planType
         return true
     }
 
@@ -75,7 +71,6 @@ const WorkoutSetup: React.FC<WorkoutSetupProps> = ({ onComplete }) => {
 
     const stepMeta = [
         { title: 'Mục tiêu tập luyện', sub: 'Chọn mục tiêu chính để AI hiệu chỉnh chương trình.' },
-        { title: 'Thông tin cơ bản', sub: 'Giúp AI tính toán chương trình phù hợp với bạn.' },
         { title: 'Nhóm cơ muốn tập', sub: 'Chọn vùng cơ bạn muốn AISTHEA tập trung vào.' },
         { title: 'Loại kế hoạch', sub: 'Bạn muốn tạo bài tập cho 1 ngày hay lên lịch cả tuần?' },
         { title: 'Điều kiện & Lịch tập', sub: 'Tuỳ chỉnh thời lượng, tần suất và dụng cụ.' },
@@ -158,107 +153,14 @@ const WorkoutSetup: React.FC<WorkoutSetupProps> = ({ onComplete }) => {
                         </Stack>
                     )}
 
-                    {/* ── STEP 1: Basic info ── */}
+                    {/* ── STEP 1: Target muscles ── */}
                     {step === 1 && (
-                        <Stack spacing="4">
-                            <Box>
-                                <SectionLabel>Giới tính</SectionLabel>
-                                <HStack spacing="3">
-                                    {[
-                                        { id: 'male', label: 'Nam' },
-                                        { id: 'female', label: 'Nữ' },
-                                    ].map((g) => (
-                                        <Box
-                                            key={g.id}
-                                            flex="1"
-                                            py="3"
-                                            borderRadius="12px"
-                                            border="1.5px solid"
-                                            borderColor={form.gender === g.id ? '#E03030' : '#2e3040'}
-                                            bg={form.gender === g.id ? 'rgba(224,48,48,0.1)' : '#141720'}
-                                            cursor="pointer"
-                                            textAlign="center"
-                                            transition="all 0.15s"
-                                            onClick={() => set('gender', g.id)}
-                                        >
-                                            <Text fontSize="15px" fontWeight="700" color={form.gender === g.id ? 'white' : '#8A8A93'}>
-                                                {g.label}
-                                            </Text>
-                                        </Box>
-                                    ))}
-                                </HStack>
-                            </Box>
-
-                            <Grid templateColumns="repeat(3, 1fr)" gap="3">
-                                {[
-                                    { key: 'age' as const, label: 'Tuổi', unit: 'tuổi', placeholder: '25' },
-                                    { key: 'height' as const, label: 'Chiều cao', unit: 'cm', placeholder: '170' },
-                                    { key: 'weight' as const, label: 'Cân nặng', unit: 'kg', placeholder: '65' },
-                                ].map((field) => (
-                                    <Box key={field.key}>
-                                        <SectionLabel>{field.label}</SectionLabel>
-                                        <InputGroup size="md">
-                                            <Input
-                                                type="number"
-                                                placeholder={field.placeholder}
-                                                value={form[field.key]}
-                                                onChange={(e) => set(field.key, e.target.value)}
-                                                bg="#0f1117"
-                                                border="1.5px solid"
-                                                borderColor="#2e3040"
-                                                color="white"
-                                                borderRadius="10px"
-                                                h="44px"
-                                                _placeholder={{ color: '#4e5060' }}
-                                                _focus={{ borderColor: '#E03030', boxShadow: '0 0 0 1px #E03030' }}
-                                                _hover={{ borderColor: '#3e4050' }}
-                                            />
-                                            <InputRightAddon
-                                                bg="#1e2028"
-                                                border="1.5px solid"
-                                                borderColor="#2e3040"
-                                                color="#8A8A93"
-                                                fontSize="11px"
-                                                fontWeight="600"
-                                                h="44px"
-                                                borderRadius="0 10px 10px 0"
-                                            >
-                                                {field.unit}
-                                            </InputRightAddon>
-                                        </InputGroup>
-                                    </Box>
-                                ))}
-                            </Grid>
-
-                            {/* BMI preview */}
-                            {form.height && form.weight && (
-                                <Box
-                                    p="4"
-                                    bg="rgba(224,48,48,0.06)"
-                                    border="1px solid"
-                                    borderColor="rgba(224,48,48,0.2)"
-                                    borderRadius="12px"
-                                >
-                                    <Flex justify="space-between">
-                                        <Text fontSize="12px" color="#8A8A93">BMI ước tính</Text>
-                                        <Text fontSize="13px" fontWeight="700" color="#E03030">
-                                            {(Number(form.weight) / (Number(form.height) / 100) ** 2).toFixed(1)}
-                                        </Text>
-                                    </Flex>
-                                </Box>
-                            )}
-                        </Stack>
-                    )}
-
-                    {/* ── STEP 2: Target muscles ── */}
-                    {step === 2 && (
                         <Flex gap="5" h="100%">
                             {/* Left: step sidebar */}
                             <Box w="160px" flexShrink={0}>
                                 <Stack spacing="4" mb="5">
                                     {[
                                         { label: 'Mục tiêu', sub: 'Goal & Level', done: true },
-                                        { label: 'Cơ bản', sub: 'Age, Weight, Goal', done: true },
                                         { label: 'Nhóm cơ', sub: 'Muscle Targeting', active: true },
                                         { label: 'Kế hoạch', sub: 'Daily or Weekly', done: false },
                                         { label: 'Lịch tập', sub: 'Availability', done: false },
@@ -375,8 +277,8 @@ const WorkoutSetup: React.FC<WorkoutSetupProps> = ({ onComplete }) => {
                         </Flex>
                     )}
 
-                    {/* ── STEP 3: Plan Type ── */}
-                    {step === 3 && (
+                    {/* ── STEP 2: Plan Type ── */}
+                    {step === 2 && (
                         <Stack spacing="5">
                             <SectionLabel>Chọn loại kế hoạch</SectionLabel>
                             <Grid templateColumns="repeat(2, 1fr)" gap="4">
@@ -420,8 +322,8 @@ const WorkoutSetup: React.FC<WorkoutSetupProps> = ({ onComplete }) => {
                         </Stack>
                     )}
 
-                    {/* ── STEP 4: Schedule & conditions ── */}
-                    {step === 4 && (
+                    {/* ── STEP 3: Schedule & conditions ── */}
+                    {step === 3 && (
                         <Stack spacing="5">
                             {/* Duration */}
                             <Box>

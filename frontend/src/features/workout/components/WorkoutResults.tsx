@@ -15,7 +15,6 @@ import {
     ModalContent,
     ModalHeader,
     ModalBody,
-    ModalFooter,
     ModalCloseButton
 } from '@chakra-ui/react'
 import AppButton from '../../../components/shared/Button/AppButton'
@@ -23,51 +22,7 @@ import MemberLayout from '../../../components/shared/Layout/MemberLayout.tsx'
 import type { ExerciseCardData } from '../types/workout'
 import { useWorkoutStore } from '../../../store/useWorkoutStore.ts'
 
-const WeekStrip: React.FC<{ selectedDay: number; onSelect: (i: number) => void }> = ({
-    selectedDay,
-    onSelect,
-}) => {
-    const days = [
-        { label: 'MON', date: 12 },
-        { label: 'TUE', date: 13 },
-        { label: 'WED', date: 14 },
-        { label: 'THU', date: 15 },
-        { label: 'FRI', date: 16 },
-        { label: 'SAT', date: 17 },
-        { label: 'SUN', date: 18 },
-    ]
-    return (
-        <HStack spacing="2">
-            {days.map((d, i) => {
-                const isActive = i === selectedDay
-                return (
-                    <Box
-                        key={i}
-                        px="3"
-                        py="2"
-                        borderRadius="10px"
-                        bg={isActive ? '#E03030' : 'transparent'}
-                        border="1px solid"
-                        borderColor={isActive ? '#E03030' : '#1e2028'}
-                        cursor="pointer"
-                        textAlign="center"
-                        minW="48px"
-                        transition="all 0.15s"
-                        _hover={{ borderColor: isActive ? '#E03030' : '#3e4050' }}
-                        onClick={() => onSelect(i)}
-                    >
-                        <Text fontSize="9px" fontWeight="700" color={isActive ? 'rgba(255,255,255,0.8)' : '#8A8A93'} textTransform="uppercase" letterSpacing="wider">
-                            {d.label}
-                        </Text>
-                        <Text fontSize="15px" fontWeight="800" color={isActive ? 'white' : '#E2E1EB'} lineHeight="1.2">
-                            {d.date}
-                        </Text>
-                    </Box>
-                )
-            })}
-        </HStack>
-    )
-}
+
 
 const MiniStat: React.FC<{ value: string; label: string }> = ({
     value,
@@ -192,7 +147,6 @@ const ExerciseCard: React.FC<ExerciseCardProps> = ({
 
 const WorkoutResults: React.FC = () => {
     const { formData: data, exercises, resetWorkout, markExerciseDone, skipExercise } = useWorkoutStore()
-    const [selectedDay, setSelectedDay] = useState(2)
     const [selectedExercise, setSelectedExercise] = useState<(ExerciseCardData & { arrayIndex: number }) | null>(null)
 
     if (!data) return null

@@ -135,51 +135,60 @@ Học được cách ứng dụng AspectRatio của Chakra UI để render video
 
 | Nội dung | Thông tin |
 |---|---|
-| Ngày sử dụng |  |
-| Công cụ AI | ChatGPT / Gemini / Claude / GitHub Copilot / Cursor / Antigravity / Khác |
-| Mục đích sử dụng |  |
-| Phần việc liên quan | Requirement / Design / Database / Frontend / Backend / Testing / Debug / Report / Presentation / Other |
-| Mức độ sử dụng | Hỗ trợ ý tưởng / Hỗ trợ một phần / Hỗ trợ nhiều / Sinh chính nội dung |
+| Ngày sử dụng | 30/06/2026 |
+| Công cụ AI | Antigravity |
+| Mục đích sử dụng | Phát triển API BodyMetrics và thiết kế lại trang Profile |
+| Phần việc liên quan | Fullstack (Frontend & Backend) |
+| Mức độ sử dụng | Sinh chính nội dung |
 
 #### 4.1. Prompt đã sử dụng
 
 ```text
-Dán nguyên văn prompt đã hỏi AI tại đây.
+- Viết API C# để cập nhật BodyMetrics (thêm chiều cao, cân nặng, tính BMI).
+- Xoá bước nhập thông tin cơ bản trong Workout Setup (giảm từ 5 bước xuống 4 bước).
+- Code lại giao diện trang Profile, thêm Popup để người dùng nhập Body Metrics.
+- Chạy npm run build và fix các lỗi build (TypeScript).
 ```
 
 #### 4.2. Kết quả AI gợi ý
 
 ```text
-Viết tại đây...
+AI cung cấp mã nguồn cho cả Backend và Frontend:
+- Cập nhật entity `BodyMetric` và chạy EF migrations.
+- Tạo `BodyMetricsController`, `IBodyMetricService` và `BodyMetricService`.
+- Sửa lại file `WorkoutSetup.tsx` để xóa bước thông tin cơ bản.
+- Tạo component `BodyMetricsModal.tsx` và code trang `Profile.tsx` với Chakra UI.
+- Fix lỗi cấu hình Axios gây ra URL trùng lặp `/api/api/...`.
+- Fix toàn bộ lỗi unused variables khi chạy `npm run build`.
 ```
 
 #### 4.3. Phần sinh viên/nhóm đã sử dụng từ AI
 
 ```text
-Viết tại đây...
+Sử dụng toàn bộ source code Entity, API Controller, các Service ở Backend và toàn bộ giao diện React, Chakra UI được AI thiết kế cho Profile.
 ```
 
 #### 4.4. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
 
 ```text
-Viết tại đây...
+Phát hiện lỗi 404 khi POST API, kiểm tra tab Network và yêu cầu AI sửa lại đường dẫn Axios cũng như restart lại tiến trình Backend server.
 ```
 
 #### 4.5. Minh chứng
 
 | Loại minh chứng | Nội dung |
 |---|---|
-| Link commit |  |
-| File liên quan |  |
-| Screenshot |  |
-| Kết quả chạy/test |  |
-| Link video demo |  |
-| Ghi chú khác |  |
+| Link commit | (Commit sau khi hoàn tất) |
+| File liên quan | `Profile.tsx`, `BodyMetricsModal.tsx`, `BodyMetricService.cs`, `BodyMetricsController.cs` |
+| Screenshot | Đã kiểm tra UI Profile thực tế hiển thị form điền BMI |
+| Kết quả chạy/test | Thành công, API gọi trả về 200 OK |
+| Link video demo | N/A |
+| Ghi chú khác | Build dự án thành công không còn lỗi |
 
 #### 4.6. Nhận xét cá nhân/nhóm
 
 ```text
-Viết tại đây...
+Học được cách debug lỗi HTTP 404 khi kết hợp giữa Frontend và Backend, cũng như cách AI đọc lỗi log từ console để fix TypeScript build error (unused imports, type-only import).
 ```
 
 ---

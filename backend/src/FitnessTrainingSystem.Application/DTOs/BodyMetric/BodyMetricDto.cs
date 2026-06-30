@@ -1,16 +1,13 @@
-using FitnessTrainingSystem.Domain.Common;
+namespace FitnessTrainingSystem.Application.DTOs.BodyMetric;
 
-namespace FitnessTrainingSystem.Domain.Entities;
-
-public class BodyMetric : BaseEntity
+public class BodyMetricDto
 {
+    public int Id { get; set; }
     public int UserId { get; set; }
     public decimal? Height { get; set; }
     public decimal Weight { get; set; }
     public decimal? BodyFatPercentage { get; set; }
     public decimal? MuscleMass { get; set; }
     public decimal? Bmi { get; set; }
-    public DateTime RecordedAt { get; set; } = DateTime.UtcNow;
-
-    public User User { get; set; } = null!;
+    public DateTime RecordedAt { get; set; }
 }

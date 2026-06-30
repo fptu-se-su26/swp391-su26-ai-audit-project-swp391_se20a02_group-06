@@ -1,7 +1,7 @@
 import apiClient from '../../../lib/axios'
 import type { ExerciseCardData, WorkoutFormData } from '../types/workout'
 
-export const generateExercises = async (data: WorkoutFormData): Promise<ExerciseCardData[]> => {
+export const generateExercises = async (_data: WorkoutFormData): Promise<ExerciseCardData[]> => {
     try {
         const response = await apiClient.get('/exercises')
         const allExercises: any[] = response.data

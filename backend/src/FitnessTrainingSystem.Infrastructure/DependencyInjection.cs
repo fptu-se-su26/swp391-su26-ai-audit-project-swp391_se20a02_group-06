@@ -41,6 +41,7 @@ public static class DependencyInjection
         services.AddScoped<IExerciseService, ExerciseService>();
         services.AddScoped<IPtService, PtService>();
         services.AddScoped<IFoodService, FoodService>();
+        services.AddScoped<IBodyMetricService, BodyMetricService>();
 
         // 🚀 ĐĂNG KÝ HỆ THỐNG TRUY CẬP AI DƯỚI ĐÂY
         services.AddHttpClient<IGeminiAiService, GeminiAiService>();
