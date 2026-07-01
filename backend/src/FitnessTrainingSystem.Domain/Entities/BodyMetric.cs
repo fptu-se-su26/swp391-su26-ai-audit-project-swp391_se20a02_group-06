@@ -1,25 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
+using FitnessTrainingSystem.Domain.Common;
 
 namespace FitnessTrainingSystem.Domain.Entities;
 
-public partial class BodyMetric
+public class BodyMetric : BaseEntity
 {
-    public int Id { get; set; }
-
     public int UserId { get; set; }
-
     public decimal? Height { get; set; }
-
     public decimal Weight { get; set; }
-
     public decimal? BodyFatPercentage { get; set; }
-
     public decimal? MuscleMass { get; set; }
-
     public decimal? Bmi { get; set; }
+    public DateTime RecordedAt { get; set; } = DateTime.UtcNow;
 
-    public DateTime? RecordedAt { get; set; }
-
-    public virtual User User { get; set; } = null!;
+    public User User { get; set; } = null!;
 }

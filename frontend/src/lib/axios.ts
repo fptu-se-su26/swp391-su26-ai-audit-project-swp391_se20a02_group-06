@@ -10,9 +10,18 @@ const apiClient = axios.create({
 // Request interceptor to add the auth token header to requests
 apiClient.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('token')
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`
+    // Zustand persist stores state under 'auth-storage' as JSON: { state: { accessToken, ... }, version: 0 }
+    try {
+      const raw = localStorage.getItem('auth-storage')
+      if (raw) {
+        const parsed = JSON.parse(raw)
+        const token = parsed?.state?.accessToken
+        if (token) {
+          config.headers.Authorization = `Bearer ${token}`
+        }
+      }
+    } catch {
+      // Ignore parse errors
     }
     return config
   },

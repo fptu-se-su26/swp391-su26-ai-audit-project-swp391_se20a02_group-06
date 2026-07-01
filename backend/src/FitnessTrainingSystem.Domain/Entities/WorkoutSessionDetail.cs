@@ -1,25 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
+using FitnessTrainingSystem.Domain.Common;
 
 namespace FitnessTrainingSystem.Domain.Entities;
 
-public partial class WorkoutSessionDetail
+public class WorkoutSessionDetail : BaseEntity
 {
-    public int Id { get; set; }
-
     public int WorkoutSessionId { get; set; }
-
     public int ExerciseId { get; set; }
+    public int? SetsDone { get; set; } = 0;
+    public int? RepsDone { get; set; } = 0;
+    public int? DurationSeconds { get; set; } = 0;
+    public decimal? CaloriesBurned { get; set; } = 0.0m;
 
-    public int? SetsDone { get; set; }
-
-    public int? RepsDone { get; set; }
-
-    public int? DurationSeconds { get; set; }
-
-    public decimal? CaloriesBurned { get; set; }
-
-    public virtual Exercise Exercise { get; set; } = null!;
-
-    public virtual WorkoutSession WorkoutSession { get; set; } = null!;
+    public WorkoutSession WorkoutSession { get; set; } = null!;
+    public Exercise Exercise { get; set; } = null!;
 }

@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+using FitnessTrainingSystem.Domain.Common;
 
 namespace FitnessTrainingSystem.Domain.Entities;
 
-public partial class Role
+public class Role : BaseEntity
 {
-    public int Id { get; set; }
+    public string RoleName { get; set; } = string.Empty;
 
-    public string RoleName { get; set; } = null!;
-
-    public virtual ICollection<User> Users { get; set; } = new List<User>();
+    public ICollection<User> Users { get; set; } = new List<User>();
 }
