@@ -15,6 +15,7 @@ public partial class ApplicationDbContext : DbContext
     }
 
     public virtual DbSet<AiRecommendation> AiRecommendations { get; set; }
+    public virtual DbSet<EmailOTP> EmailOTPs { get; set; }
 
     public virtual DbSet<BodyMetric> BodyMetrics { get; set; }
 
@@ -57,8 +58,8 @@ public partial class ApplicationDbContext : DbContext
     public virtual DbSet<WorkoutSessionDetail> WorkoutSessionDetails { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseMySql("server=localhost;database=FitnessProject;user=root;password=Levandat2004^", Microsoft.EntityFrameworkCore.ServerVersion.Parse("8.0.42-mysql"));
+    {
+    }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -83,5 +84,17 @@ public partial class ApplicationDbContext : DbContext
             .WithMany(u => u.MemberSchedules)
             .HasForeignKey(s => s.MemberId)
             .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<EmailOTP>(entity =>
+        {
+            entity.ToTable("EmailOTP");
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Id).HasMaxLength(36);
+            entity.Property(e => e.Email).HasMaxLength(100);
+            entity.Property(e => e.Purpose).HasMaxLength(50);
+            entity.HasIndex(e => e.Email).HasDatabaseName("IX_EmailOTP_Email");
+            entity.HasIndex(e => e.Purpose).HasDatabaseName("IX_EmailOTP_Purpose");
+            entity.HasIndex(e => e.ExpiredAt).HasDatabaseName("IX_EmailOTP_ExpiredAt");
+        });
     }
 }

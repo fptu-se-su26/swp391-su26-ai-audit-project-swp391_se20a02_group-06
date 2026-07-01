@@ -3,8 +3,21 @@ using FitnessTrainingSystem.Infrastructure;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 
-// Load environment variables from .env file
-DotNetEnv.Env.Load();
+// Load environment variables from .env file in the backend root directory
+var envPath = Path.Combine(Directory.GetCurrentDirectory(), "..", "..", ".env");
+if (File.Exists(envPath))
+{
+    DotNetEnv.Env.Load(envPath);
+}
+else
+{
+    // Fallback if running from backend root directly
+    var fallbackPath = Path.Combine(Directory.GetCurrentDirectory(), ".env");
+    if (File.Exists(fallbackPath))
+    {
+        DotNetEnv.Env.Load(fallbackPath);
+    }
+}
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Configuration.AddEnvironmentVariables();

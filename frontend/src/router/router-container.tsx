@@ -9,6 +9,7 @@ import About from "../pages/public/About";
 // Pages - Auth
 import Login from "../pages/auth/Login";
 import Register from "../pages/auth/Register";
+import ForgotPassword from "../pages/auth/ForgotPassword";
 
 // Pages - Member Area
 import Dashboard from "../pages/member/Dashboard";
@@ -44,6 +45,7 @@ const RouterContainer = () => {
             {/* Auth Pages */}
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
 
             {/* Public Marketing Pages */}
             <Route path="/pricing" element={<Pricing />} />

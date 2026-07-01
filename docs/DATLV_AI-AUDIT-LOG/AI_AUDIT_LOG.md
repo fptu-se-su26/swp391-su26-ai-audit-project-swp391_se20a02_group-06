@@ -197,51 +197,53 @@ Học được cách debug lỗi HTTP 404 khi kết hợp giữa Frontend và Ba
 
 | Nội dung | Thông tin |
 |---|---|
-| Ngày sử dụng |  |
-| Công cụ AI | ChatGPT / Gemini / Claude / GitHub Copilot / Cursor / Antigravity / Khác |
-| Mục đích sử dụng |  |
-| Phần việc liên quan | Requirement / Design / Database / Frontend / Backend / Testing / Debug / Report / Presentation / Other |
-| Mức độ sử dụng | Hỗ trợ ý tưởng / Hỗ trợ một phần / Hỗ trợ nhiều / Sinh chính nội dung |
+| Ngày sử dụng | 01/07/2026 |
+| Công cụ AI | Antigravity |
+| Mục đích sử dụng | Sửa lỗi 401 Unauthorized ở Profile, hiển thị Avatar Google, fix lỗi NullReferenceException của EF Core, và viết file UPDATE_GUIDE.md |
+| Phần việc liên quan | Frontend / Backend / Database / Report |
+| Mức độ sử dụng | Sinh chính nội dung |
 
 #### 4.1. Prompt đã sử dụng
 
 ```text
-Dán nguyên văn prompt đã hỏi AI tại đây.
+"không đăng nhập được là vì sao tìm hiểu nguyên nhân cho tôi... lấy tên user chưa đúng, không lấy được ảnh avatar google... thêm tài liệu UPDATE_GUIDE.md để team pull code về chạy trơn tru"
 ```
 
 #### 4.2. Kết quả AI gợi ý
 
 ```text
-Viết tại đây...
+AI phát hiện lỗi do frontend đang đọc token sai (dùng Zustand để lưu nhưng lại gọi localStorage.getItem('token')). AI cũng phát hiện bug phiên bản của Pomelo 8.0.2 khi chạy trên .NET 9 gây lỗi khởi động DB. AI gợi ý nâng lên .NET 9, map trường AvatarUrl và tạo task list chi tiết.
 ```
 
 #### 4.3. Phần sinh viên/nhóm đã sử dụng từ AI
 
 ```text
-Viết tại đây...
+- Sử dụng đoạn code fix Token ở `user.ts` (lấy từ `useAuthStore`).
+- Dùng đoạn code map `AvatarUrl` vào `UserProfileDto.cs` ở Backend.
+- Sử dụng file tài liệu hướng dẫn `UPDATE_GUIDE.md` AI viết cho team.
 ```
 
 #### 4.4. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
 
 ```text
-Viết tại đây...
+Nhóm đã chủ động yêu cầu AI ẩn các button tính năng chưa hoàn thiện (Two-Factor Auth) trên giao diện, và yêu cầu AI bổ sung link tải .NET 9 SDK chi tiết vào document để đảm bảo toàn đội có thể cài đặt chính xác.
 ```
 
 #### 4.5. Minh chứng
 
 | Loại minh chứng | Nội dung |
 |---|---|
-| Link commit |  |
-| File liên quan |  |
-| Screenshot |  |
-| Kết quả chạy/test |  |
-| Link video demo |  |
-| Ghi chú khác |  |
+| Link commit | (Bổ sung sau) |
+| File liên quan | `user.ts`, `UserController.cs`, `Profile.tsx`, `UPDATE_GUIDE.md` |
+| Screenshot | (Bổ sung sau) |
+| Kết quả chạy/test | Profile tải đầy đủ thông tin, hiển thị Avatar Google, đổi mật khẩu thành công. Backend chạy ổn định không lỗi EF Core. |
+| Link video demo | (Bổ sung sau) |
+| Ghi chú khác | Update hệ thống lên .NET 9 |
 
 #### 4.6. Nhận xét cá nhân/nhóm
 
 ```text
-Viết tại đây...
+AI phân tích lỗi rất nhanh (từ lỗi logic FE đến lỗi thư viện hệ thống BE) và đưa ra các giải pháp toàn diện. Rất hữu ích trong việc tiết kiệm thời gian debug hệ thống phức tạp.
 ```
 
 ---

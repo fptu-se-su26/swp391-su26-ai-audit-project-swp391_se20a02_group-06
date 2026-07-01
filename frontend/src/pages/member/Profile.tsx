@@ -22,37 +22,69 @@ import {
 import { FiSearch, FiBell, FiEdit2, FiCheck, FiChevronRight } from 'react-icons/fi'
 import MemberLayout from '../../components/shared/Layout/MemberLayout'
 import BodyMetricsModal from './components/BodyMetricsModal'
+import ChangePasswordModal from './components/ChangePasswordModal'
 import { getLatestBodyMetric, addBodyMetric, type BodyMetric } from '../../api/bodyMetrics'
+import { getProfile, type UserProfile } from '../../api/user'
+
+const formatTimeAgo = (dateString: string | null) => {
+    if (!dateString) return 'Never changed';
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffTime = Math.abs(now.getTime() - date.getTime());
+    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+    
+    if (diffDays === 0) return 'Changed today';
+    if (diffDays < 30) return `Last changed ${diffDays} days ago`;
+    const diffMonths = Math.floor(diffDays / 30);
+    if (diffMonths < 12) return `Last changed ${diffMonths} months ago`;
+    const diffYears = Math.floor(diffDays / 365);
+    return `Last changed ${diffYears} years ago`;
+}
 
 const Profile: React.FC = () => {
     const [metric, setMetric] = useState<BodyMetric | null>(null)
+    const [profile, setProfile] = useState<UserProfile | null>(null)
     const [loading, setLoading] = useState(true)
-    const [isModalOpen, setIsModalOpen] = useState(false)
+    const [isMetricModalOpen, setIsMetricModalOpen] = useState(false)
+    const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false)
     const toast = useToast()
 
-    const loadMetric = async () => {
+    const loadData = async () => {
         try {
-            const data = await getLatestBodyMetric()
-            if (data) {
-                setMetric(data)
+            setLoading(true)
+            const [metricData, profileData] = await Promise.all([
+                getLatestBodyMetric(),
+                getProfile()
+            ])
+            
+            if (metricData) {
+                setMetric(metricData)
             } else {
-                setIsModalOpen(true)
+                setIsMetricModalOpen(true)
+            }
+
+            if (profileData) {
+                setProfile(profileData)
             }
         } catch (error) {
-            console.error("Failed to fetch metric", error)
+            console.error("Failed to fetch data", error)
         } finally {
             setLoading(false)
         }
     }
 
     useEffect(() => {
-        loadMetric()
+        loadData()
     }, [])
 
     const handleSaveMetrics = async (data: { age: number; gender: string; height: number; weight: number }) => {
         const newMetric = await addBodyMetric(data)
         setMetric(newMetric)
         toast({ title: 'Đã lưu thông tin Body Metrics', status: 'success', duration: 3000 })
+    }
+
+    const handlePasswordSuccess = () => {
+        loadData() // Reload to get updated passwordChangedAt
     }
 
     return (
@@ -81,7 +113,7 @@ const Profile: React.FC = () => {
                         <Box p="3" bg="#111318" border="1px solid #1e2028" borderRadius="12px" cursor="pointer" _hover={{ bg: '#1a1c23' }}>
                             <Icon as={FiBell} color="#8A8A93" boxSize="5" />
                         </Box>
-                        <Avatar size="sm" name="Alex Mercer" src="https://bit.ly/dan-abramov" border="2px solid #2e3040" />
+                        <Avatar size="sm" name={profile?.name || "Member"} src={profile?.avatarUrl || ""} border="2px solid #2e3040" />
                     </HStack>
                 </Flex>
 
@@ -93,7 +125,7 @@ const Profile: React.FC = () => {
                             <Flex justify="space-between" align="flex-start">
                                 <Box>
                                     <Heading fontSize="20px" fontWeight="800" color="white" mb="2">
-                                        Athlete Profile
+                                        {profile?.name ? `${profile.name} Profile` : "Member Profile"}
                                     </Heading>
                                     <Text fontSize="14px" color="#8A8A93">
                                         Manage your biometric data and account preferences
@@ -109,7 +141,7 @@ const Profile: React.FC = () => {
                                         _hover={{ bg: '#1e2028' }}
                                         size="sm"
                                         borderRadius="8px"
-                                        onClick={() => setIsModalOpen(true)}
+                                        onClick={() => setIsMetricModalOpen(true)}
                                     >
                                         Edit Profile
                                     </Button>
@@ -195,24 +227,28 @@ const Profile: React.FC = () => {
                             <Heading fontSize="16px" fontWeight="700" color="white" mb="5">
                                 Account Information
                             </Heading>
-                            <Grid templateColumns="repeat(2, 1fr)" gap="6">
-                                <Box>
-                                    <Text fontSize="13px" color="#8A8A93" mb="1">User Name</Text>
-                                    <Text fontSize="15px" fontWeight="600" color="white">Alex Mercer</Text>
-                                </Box>
-                                <Box>
-                                    <Text fontSize="13px" color="#8A8A93" mb="1">Email Address</Text>
-                                    <Text fontSize="15px" fontWeight="600" color="white">alex.titan@example.com</Text>
-                                </Box>
-                                <Box>
-                                    <Text fontSize="13px" color="#8A8A93" mb="1">Membership Tier</Text>
-                                    <Badge bg="rgba(224,48,48,0.1)" color="#E03030" px="2" py="0.5" borderRadius="4px">Pro Athlete</Badge>
-                                </Box>
-                                <Box>
-                                    <Text fontSize="13px" color="#8A8A93" mb="1">Join Date</Text>
-                                    <Text fontSize="15px" fontWeight="600" color="white">Oct 12, 2023</Text>
-                                </Box>
-                            </Grid>
+                            {loading ? (
+                                <Flex justify="center"><Spinner color="#E03030" /></Flex>
+                            ) : (
+                                <Grid templateColumns="repeat(2, 1fr)" gap="6">
+                                    <Box>
+                                        <Text fontSize="13px" color="#8A8A93" mb="1">User Name</Text>
+                                        <Text fontSize="15px" fontWeight="600" color="white">{profile?.name || '--'}</Text>
+                                    </Box>
+                                    <Box>
+                                        <Text fontSize="13px" color="#8A8A93" mb="1">Email Address</Text>
+                                        <Text fontSize="15px" fontWeight="600" color="white">{profile?.email || '--'}</Text>
+                                    </Box>
+                                    <Box>
+                                        <Text fontSize="13px" color="#8A8A93" mb="1">Membership Tier</Text>
+                                        <Badge bg="rgba(224,48,48,0.1)" color="#E03030" px="2" py="0.5" borderRadius="4px">{profile?.tier || '--'}</Badge>
+                                    </Box>
+                                    <Box>
+                                        <Text fontSize="13px" color="#8A8A93" mb="1">Join Date</Text>
+                                        <Text fontSize="15px" fontWeight="600" color="white">{profile?.joinDate || '--'}</Text>
+                                    </Box>
+                                </Grid>
+                            )}
                         </Box>
 
                         {/* Security & Access */}
@@ -224,17 +260,17 @@ const Profile: React.FC = () => {
                                 <Flex justify="space-between" align="center" p="4" bg="#0A0C10" borderRadius="12px" border="1px solid #1e2028">
                                     <Box>
                                         <Text fontSize="14px" fontWeight="600" color="white">Password</Text>
-                                        <Text fontSize="12px" color="#8A8A93">Last changed 3 months ago</Text>
+                                        <Text fontSize="12px" color="#8A8A93">{loading ? 'Loading...' : formatTimeAgo(profile?.passwordChangedAt || null)}</Text>
                                     </Box>
-                                    <Button size="sm" variant="outline" border="1px solid #2e3040" color="#E2E1EB" _hover={{ bg: '#1e2028' }}>Update</Button>
+                                    <Button size="sm" variant="outline" border="1px solid #2e3040" color="#E2E1EB" _hover={{ bg: '#1e2028' }} onClick={() => setIsPasswordModalOpen(true)}>Update</Button>
                                 </Flex>
-                                <Flex justify="space-between" align="center" p="4" bg="#0A0C10" borderRadius="12px" border="1px solid #1e2028">
+                                {/* <Flex justify="space-between" align="center" p="4" bg="#0A0C10" borderRadius="12px" border="1px solid #1e2028">
                                     <Box>
                                         <Text fontSize="14px" fontWeight="600" color="white">Two-Factor Auth</Text>
                                         <Text fontSize="12px" color="#8A8A93">Add an extra layer of security</Text>
                                     </Box>
                                     <Button size="sm" variant="outline" border="1px solid #2e3040" color="#E2E1EB" _hover={{ bg: '#1e2028' }}>Enable</Button>
-                                </Flex>
+                                </Flex> */}
                             </Stack>
                         </Box>
                     </Stack>
@@ -250,12 +286,12 @@ const Profile: React.FC = () => {
                                 h="100px" 
                                 bg="linear-gradient(180deg, rgba(224,48,48,0.15) 0%, rgba(17,19,24,0) 100%)" 
                             />
-                            <Avatar size="2xl" name="Alex Mercer" src="https://bit.ly/dan-abramov" border="4px solid #111318" mt="4" mb="4" position="relative" zIndex="1" />
+                            <Avatar size="2xl" name={profile?.name || "User"} src={profile?.avatarUrl || ""} border="4px solid #111318" mt="4" mb="4" position="relative" zIndex="1" />
                             <Heading fontSize="22px" fontWeight="800" color="white" mb="1">
-                                Alex "Titan" Mercer
+                                {profile?.name || "Member"}
                             </Heading>
                             <Text fontSize="14px" color="#8A8A93" mb="6">
-                                Pro Athlete Tier
+                                {profile?.tier || '--'} Tier
                             </Text>
                             
                             <Divider borderColor="#2e3040" mb="6" />
@@ -263,18 +299,18 @@ const Profile: React.FC = () => {
                             <VStack align="stretch" spacing="4">
                                 <Flex justify="space-between" align="center">
                                     <Text fontSize="13px" color="#8A8A93">Workouts Completed</Text>
-                                    <Text fontSize="14px" fontWeight="700" color="white">142</Text>
+                                    <Text fontSize="14px" fontWeight="700" color="white">{loading ? '--' : profile?.workoutsCompleted}</Text>
                                 </Flex>
                                 <Flex justify="space-between" align="center">
                                     <Text fontSize="13px" color="#8A8A93">Current Streak</Text>
                                     <HStack spacing="1">
-                                        <Text fontSize="14px" fontWeight="700" color="#E03030">12 Days</Text>
+                                        <Text fontSize="14px" fontWeight="700" color="#E03030">{loading ? '--' : `${profile?.currentStreak} Days`}</Text>
                                         <Text fontSize="14px" color="white">🔥</Text>
                                     </HStack>
                                 </Flex>
                                 <Flex justify="space-between" align="center">
                                     <Text fontSize="13px" color="#8A8A93">Active Plan</Text>
-                                    <Badge bg="rgba(72,187,120,0.1)" color="#48BB78" px="2" py="0.5" borderRadius="4px">Hypertrophy Pro</Badge>
+                                    <Badge bg="rgba(72,187,120,0.1)" color="#48BB78" px="2" py="0.5" borderRadius="4px">{loading ? '--' : profile?.activePlan}</Badge>
                                 </Flex>
                             </VStack>
 
@@ -287,9 +323,15 @@ const Profile: React.FC = () => {
             </Box>
 
             <BodyMetricsModal 
-                isOpen={isModalOpen} 
-                onClose={() => setIsModalOpen(false)} 
+                isOpen={isMetricModalOpen} 
+                onClose={() => setIsMetricModalOpen(false)} 
                 onSave={handleSaveMetrics} 
+            />
+            
+            <ChangePasswordModal
+                isOpen={isPasswordModalOpen}
+                onClose={() => setIsPasswordModalOpen(false)}
+                onSuccess={handlePasswordSuccess}
             />
         </MemberLayout>
     )

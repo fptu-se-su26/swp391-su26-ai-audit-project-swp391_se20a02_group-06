@@ -14,6 +14,7 @@ public class User : BaseAuditableEntity
     public DateTime? DateOfBirth { get; set; }
     public string? Status { get; set; } = "ACTIVE";
     public DateTime? UpdatedAt { get; set; }
+    public DateTime? PasswordChangedAt { get; set; }
     public int? RoleId { get; set; }
 
     // Navigation properties
