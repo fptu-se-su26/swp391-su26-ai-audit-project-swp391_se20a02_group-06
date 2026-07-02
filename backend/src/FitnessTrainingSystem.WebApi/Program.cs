@@ -18,6 +18,14 @@ builder.Services.AddOpenApi();
 builder.Services.AddControllers();
 
 var jwtSettings = builder.Configuration.GetSection("JwtSettings");
+var jwtSecretKey = jwtSettings["SecretKey"];
+if (string.IsNullOrWhiteSpace(jwtSecretKey))
+{
+    throw new InvalidOperationException(
+        "JWT SecretKey is not configured. Please set 'JwtSettings__SecretKey' in your .env file or appsettings.json. " +
+        "See .env.example for reference.");
+}
+
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
@@ -29,7 +37,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateIssuerSigningKey = true,
             ValidIssuer = jwtSettings["Issuer"],
             ValidAudience = jwtSettings["Audience"],
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings["SecretKey"]!))
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSecretKey))
         };
     });
 

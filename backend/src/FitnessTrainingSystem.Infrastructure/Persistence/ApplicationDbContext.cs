@@ -56,10 +56,6 @@ public partial class ApplicationDbContext : DbContext
 
     public virtual DbSet<WorkoutSessionDetail> WorkoutSessionDetails { get; set; }
 
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseMySql("server=localhost;database=FitnessProject;user=root;password=Levandat2004^", Microsoft.EntityFrameworkCore.ServerVersion.Parse("8.0.42-mysql"));
-
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder
@@ -83,5 +79,23 @@ public partial class ApplicationDbContext : DbContext
             .WithMany(u => u.MemberSchedules)
             .HasForeignKey(s => s.MemberId)
             .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<Exercise>()
+            .HasOne(e => e.Creator)
+            .WithMany()
+            .HasForeignKey(e => e.CreatedBy);
+
+        modelBuilder.Entity<Exercise>()
+            .HasOne(e => e.MuscleGroup)
+            .WithMany(m => m.Exercises)
+            .HasForeignKey(e => e.MuscleGroupId);
+
+        modelBuilder.Entity<Exercise>()
+            .Property(e => e.Difficulty)
+            .HasConversion<string>();
+
+        modelBuilder.Entity<ProductPackage>()
+            .Property(p => p.Type)
+            .HasConversion<string>();
     }
 }
