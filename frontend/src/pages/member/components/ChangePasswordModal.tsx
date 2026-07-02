@@ -69,10 +69,17 @@ const ChangePasswordModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) =>
                                 type="password" 
                                 value={currentPassword} 
                                 onChange={(e) => setCurrentPassword(e.target.value)}
-                                bg="#0A0C10" 
-                                border="1px solid #1e2028" 
-                                color="white"
-                                _focus={{ borderColor: '#E03030' }}
+                                bg="#0A0A0A"
+                                borderColor="#262626"
+                                color="#e2e1eb"
+                                h="42px"
+                                _placeholder={{ color: '#8A8A93' }}
+                                _hover={{ borderColor: '#E03030' }}
+                                _focus={{
+                                  borderColor: '#E03030',
+                                  boxShadow: '0 0 0 1px #E03030',
+                                  bg: '#0A0A0A',
+                                }}
                             />
                         </FormControl>
                         <FormControl>
@@ -81,10 +88,17 @@ const ChangePasswordModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) =>
                                 type="password" 
                                 value={newPassword} 
                                 onChange={(e) => setNewPassword(e.target.value)}
-                                bg="#0A0C10" 
-                                border="1px solid #1e2028" 
-                                color="white"
-                                _focus={{ borderColor: '#E03030' }}
+                                bg="#0A0A0A"
+                                borderColor="#262626"
+                                color="#e2e1eb"
+                                h="42px"
+                                _placeholder={{ color: '#8A8A93' }}
+                                _hover={{ borderColor: '#E03030' }}
+                                _focus={{
+                                  borderColor: '#E03030',
+                                  boxShadow: '0 0 0 1px #E03030',
+                                  bg: '#0A0A0A',
+                                }}
                             />
                         </FormControl>
                         <FormControl>
@@ -93,10 +107,17 @@ const ChangePasswordModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) =>
                                 type="password" 
                                 value={confirmPassword} 
                                 onChange={(e) => setConfirmPassword(e.target.value)}
-                                bg="#0A0C10" 
-                                border="1px solid #1e2028" 
-                                color="white"
-                                _focus={{ borderColor: '#E03030' }}
+                                bg="#0A0A0A"
+                                borderColor="#262626"
+                                color="#e2e1eb"
+                                h="42px"
+                                _placeholder={{ color: '#8A8A93' }}
+                                _hover={{ borderColor: '#E03030' }}
+                                _focus={{
+                                  borderColor: '#E03030',
+                                  boxShadow: '0 0 0 1px #E03030',
+                                  bg: '#0A0A0A',
+                                }}
                             />
                         </FormControl>
                     </VStack>

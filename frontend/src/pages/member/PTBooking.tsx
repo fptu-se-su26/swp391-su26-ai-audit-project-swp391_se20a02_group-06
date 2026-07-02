@@ -1,7 +1,7 @@
 import React from 'react'
-import { Avatar, Box, Flex, Grid, Heading, Icon, IconButton } from '@chakra-ui/react'
-import { FiBell, FiSettings } from 'react-icons/fi'
+import { Box, Flex, Grid, Heading } from '@chakra-ui/react'
 import MemberLayout from '../../components/shared/Layout/MemberLayout.tsx'
+import HeaderActions from '../../components/shared/Header/HeaderActions.tsx'
 import PTBookingModal from '../../features/pt/components/PTBookingModal.tsx'
 import PTCalendar from '../../features/pt/components/PTCalendar.tsx'
 import PTCoachCard from '../../features/pt/components/PTCoachCard.tsx'
@@ -9,8 +9,6 @@ import PTSessionPanel from '../../features/pt/components/PTSessionPanel.tsx'
 import { usePTBooking } from '../../features/pt/hooks/usePTBooking.ts'
 import { MOCK_COACH } from '../../features/pt/types/pt.ts'
 
-const MEMBER_AVATAR_URL =
-    'https://lh3.googleusercontent.com/aida-public/AB6AXuD3PMe9IyKrw0EOIdL772Dk-WDQV-pgB9z_txDSrg48pRsQLlDW05myJJxmSR2BSsuXi2T2tk0g63EhJ2B8iTM-qu67pwHSI_g0mgWoqBwWfeBBil_ui2hcz_BU-0ZENiBUdjGxRKoGKzdDfTBD8uEsoHygm0z-Tgm1hON3YB2QDDA8YkLuvGoO1QFzNIQxAOci2oGjLcRrVpLC0DOgYn_4uPYJ2fvv_eYQLeZ7woEi38c6L_fFDRy09w2xQLy_dZhjGHHVeqqt7Xv6'
 
 const PTBooking: React.FC = () => {
     const booking = usePTBooking()
@@ -23,36 +21,7 @@ const PTBooking: React.FC = () => {
                         Elite Performance Coaching
                     </Heading>
 
-                    <Flex align="center" gap="2">
-                        <Box position="relative">
-                            <IconButton
-                                aria-label="Notifications"
-                                icon={<Icon as={FiBell} boxSize="18px" />}
-                                variant="ghost"
-                                color="#C8C6C5"
-                                borderRadius="10px"
-                                _hover={{ bg: 'rgba(255,255,255,0.05)', color: '#E03030' }}
-                            />
-                            <Box position="absolute" top="9px" right="9px" w="8px" h="8px" borderRadius="full" bg="#E03030" />
-                        </Box>
-                        <IconButton
-                            aria-label="Settings"
-                            icon={<Icon as={FiSettings} boxSize="18px" />}
-                            variant="ghost"
-                            color="#C8C6C5"
-                            borderRadius="10px"
-                            _hover={{ bg: 'rgba(255,255,255,0.05)', color: '#E03030' }}
-                        />
-                        <Avatar
-                            src={MEMBER_AVATAR_URL}
-                            name="Alex Morgan"
-                            size="sm"
-                            bg="#262626"
-                            border="1px solid"
-                            borderColor="#33343c"
-                            ml="1"
-                        />
-                    </Flex>
+                        <HeaderActions />
                 </Flex>
 
                 <Grid templateColumns={{ base: '1fr', xl: '390px minmax(0, 1fr)' }} gap={{ base: '6', xl: '8' }} alignItems="start">
