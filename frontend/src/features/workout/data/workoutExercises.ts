@@ -18,10 +18,10 @@ export const generateExercises = async (_data: WorkoutFormData): Promise<Exercis
             return {
                 index: idx + 1,
                 name: ex.title || 'Unknown Exercise',
-                tags: ex.muscleGroup ? [ex.muscleGroup] : ['Toàn thân'],
+                tags: ex.muscleGroup ? [ex.muscleGroup] : ['Full Body'],
                 sets: isCardio ? '3 x 30s' : '3 x 12',
                 setsLabel: isCardio ? 'Sets / Time' : 'Sets / Reps',
-                description: ex.description || 'Thực hiện động tác có kiểm soát. Hãy chắc chắn rằng bạn đang gồng cơ cốt lõi (core) và duy trì nhịp thở đều đặn. Hít vào khi hạ xuống và thở ra khi dùng lực đẩy lên. Nghỉ 60 giây giữa các hiệp.',
+                description: ex.description || 'Perform the movement with control. Make sure to engage your core and maintain steady breathing. Inhale as you lower and exhale as you exert force to push up. Rest 60 seconds between sets.',
                 videoUrl: 'https://www.youtube.com/embed/IODxDxX7oi4', // Mock video URL
                 imageUrl: ex.thumbnailUrl || 'https://img.youtube.com/vi/IODxDxX7oi4/0.jpg', // Mock image URL
                 isActive: idx === 0,
