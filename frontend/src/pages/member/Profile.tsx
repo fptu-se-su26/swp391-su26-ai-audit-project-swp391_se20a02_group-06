@@ -15,7 +15,9 @@ import {
     Spinner,
     useToast
 } from '@chakra-ui/react'
-import { FiEdit2, FiCheck, FiChevronRight } from 'react-icons/fi'
+import { FiEdit2, FiCheck, FiLogOut } from 'react-icons/fi'
+import { useNavigate } from 'react-router-dom'
+import { useAuthStore } from '../../store/useAuthStore'
 import MemberLayout from '../../components/shared/Layout/MemberLayout'
 import BodyMetricsModal from './components/BodyMetricsModal'
 import ChangePasswordModal from './components/ChangePasswordModal'
@@ -28,7 +30,7 @@ const formatTimeAgo = (dateString: string | null) => {
     const now = new Date();
     const diffTime = Math.abs(now.getTime() - date.getTime());
     const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-    
+
     if (diffDays === 0) return 'Changed today';
     if (diffDays < 30) return `Last changed ${diffDays} days ago`;
     const diffMonths = Math.floor(diffDays / 30);
@@ -44,6 +46,13 @@ const Profile: React.FC = () => {
     const [isMetricModalOpen, setIsMetricModalOpen] = useState(false)
     const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false)
     const toast = useToast()
+    const navigate = useNavigate()
+    const logout = useAuthStore(state => state.logout)
+
+    const handleLogout = () => {
+        logout()
+        navigate('/login')
+    }
 
     const loadData = async () => {
         try {
@@ -52,7 +61,7 @@ const Profile: React.FC = () => {
                 getLatestBodyMetric(),
                 getProfile()
             ])
-            
+
             if (metricData) {
                 setMetric(metricData)
             } else {
@@ -76,7 +85,7 @@ const Profile: React.FC = () => {
     const handleSaveMetrics = async (data: { age: number; gender: string; height: number; weight: number }) => {
         const newMetric = await addBodyMetric(data)
         setMetric(newMetric)
-        toast({ title: 'Đã lưu thông tin Body Metrics', status: 'success', duration: 3000 })
+        toast({ title: 'Body Metrics saved successfully', status: 'success', duration: 3000 })
     }
 
     const handlePasswordSuccess = () => {
@@ -109,12 +118,12 @@ const Profile: React.FC = () => {
                                     </Text>
                                 </Box>
                                 <HStack spacing="3">
-                                    <Button 
-                                        leftIcon={<FiEdit2 />} 
-                                        variant="outline" 
-                                        border="1px solid #2e3040" 
-                                        bg="transparent" 
-                                        color="#E2E1EB" 
+                                    <Button
+                                        leftIcon={<FiEdit2 />}
+                                        variant="outline"
+                                        border="1px solid #2e3040"
+                                        bg="transparent"
+                                        color="#E2E1EB"
                                         _hover={{ bg: '#1e2028' }}
                                         size="sm"
                                         borderRadius="8px"
@@ -122,10 +131,10 @@ const Profile: React.FC = () => {
                                     >
                                         Edit Profile
                                     </Button>
-                                    <Button 
-                                        leftIcon={<FiCheck />} 
-                                        bg="#E03030" 
-                                        color="white" 
+                                    <Button
+                                        leftIcon={<FiCheck />}
+                                        bg="#E03030"
+                                        color="white"
                                         _hover={{ bg: '#c22727' }}
                                         size="sm"
                                         borderRadius="8px"
@@ -143,7 +152,7 @@ const Profile: React.FC = () => {
                                     Biometric Overview
                                 </Heading>
                             </Flex>
-                            
+
                             {loading ? (
                                 <Flex justify="center" p="10"><Spinner color="#E03030" /></Flex>
                             ) : (
@@ -255,13 +264,13 @@ const Profile: React.FC = () => {
                     {/* Right Column - ID Card */}
                     <Box>
                         <Box bg="#111318" border="1px solid #1e2028" borderRadius="24px" p="6" textAlign="center" position="relative" overflow="hidden">
-                            <Box 
-                                position="absolute" 
-                                top="0" 
-                                left="0" 
-                                right="0" 
-                                h="100px" 
-                                bg="linear-gradient(180deg, rgba(224,48,48,0.15) 0%, rgba(17,19,24,0) 100%)" 
+                            <Box
+                                position="absolute"
+                                top="0"
+                                left="0"
+                                right="0"
+                                h="100px"
+                                bg="linear-gradient(180deg, rgba(224,48,48,0.15) 0%, rgba(17,19,24,0) 100%)"
                             />
                             <Avatar size="2xl" name={profile?.name || "User"} src={profile?.avatarUrl || ""} border="4px solid #111318" mt="4" mb="4" position="relative" zIndex="1" />
                             <Heading fontSize="22px" fontWeight="800" color="white" mb="1">
@@ -270,7 +279,7 @@ const Profile: React.FC = () => {
                             <Text fontSize="14px" color="#8A8A93" mb="6">
                                 {profile?.tier || '--'} Tier
                             </Text>
-                            
+
                             <Divider borderColor="#2e3040" mb="6" />
 
                             <VStack align="stretch" spacing="4">
@@ -291,20 +300,28 @@ const Profile: React.FC = () => {
                                 </Flex>
                             </VStack>
 
-                            <Button w="full" mt="8" bg="#1e2028" color="white" _hover={{ bg: '#2e3040' }} rightIcon={<FiChevronRight />}>
-                                View Public Profile
+                            <Button 
+                                w="full" 
+                                mt="8" 
+                                bg="#1e2028" 
+                                color="white" 
+                                _hover={{ bg: '#e03030', color: 'white' }} 
+                                rightIcon={<FiLogOut />}
+                                onClick={handleLogout}
+                            >
+                                Logout
                             </Button>
                         </Box>
                     </Box>
                 </Grid>
             </Box>
 
-            <BodyMetricsModal 
-                isOpen={isMetricModalOpen} 
-                onClose={() => setIsMetricModalOpen(false)} 
-                onSave={handleSaveMetrics} 
+            <BodyMetricsModal
+                isOpen={isMetricModalOpen}
+                onClose={() => setIsMetricModalOpen(false)}
+                onSave={handleSaveMetrics}
             />
-            
+
             <ChangePasswordModal
                 isOpen={isPasswordModalOpen}
                 onClose={() => setIsPasswordModalOpen(false)}

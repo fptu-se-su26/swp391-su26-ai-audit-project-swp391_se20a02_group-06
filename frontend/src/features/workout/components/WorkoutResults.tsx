@@ -163,7 +163,7 @@ const WorkoutResults: React.FC = () => {
 
     const completedCount = exercises.filter((e) => e.isDone).length
     
-    // Tìm index của bài tập active đầu tiên (chưa done, chưa skip)
+    // Find the index of the first active exercise (not done, not skipped)
     const activeIndex = exercises.findIndex(ex => !ex.isDone && !ex.isSkipped)
 
     if (data.planType === 'weekly') {
@@ -173,13 +173,14 @@ const WorkoutResults: React.FC = () => {
                     <Heading fontSize="32px" fontWeight="900" color="white" mb="4">
                         Weekly Plan
                     </Heading>
-                    <Text fontSize="16px" color="#8A8A93" mb="8" textAlign="center" maxW="400px">
-                        Tính năng tạo lịch trình tập luyện hàng tuần đang được phát triển. Vui lòng quay lại sau!
+                    <Text color="#8A8A93" textAlign="center" mt="8">
+                        Weekly workout plan generation is in development. Please check back later!
                     </Text>
-                    <AppButton
-                        label="Tạo lại bài tập"
-                        variant="outline" h="40px" px="6"
+                    <AppButton 
+                        mt="4" 
+                        label="Regenerate Workout" 
                         onClick={resetWorkout}
+                        variant="outline"
                     />
                 </Box>
             </MemberLayout>
@@ -192,7 +193,7 @@ const WorkoutResults: React.FC = () => {
                 <Box flex="1" p="7" pb="28" maxW="900px">
                     <Flex align="center" gap="3" mb="1" flexWrap="wrap">
                         <Heading fontSize="24px" fontWeight="800" color="white">
-                            Hôm nay — {goalNames[data.goal] ?? 'Custom Phase'}
+                            Today — {goalNames[data.goal] ?? 'Custom Phase'}
                         </Heading>
                         <Badge
                             bg="rgba(224,48,48,0.15)" color="#E03030"
@@ -209,7 +210,7 @@ const WorkoutResults: React.FC = () => {
                         cursor="pointer" _hover={{ color: '#E03030' }}
                         display="inline-block" onClick={resetWorkout}
                     >
-                        Tạo lại bài tập mới
+                        Regenerate Workout
                     </Text>
 
                     <HStack spacing="3" mb="6">
@@ -295,18 +296,18 @@ const WorkoutResults: React.FC = () => {
                         
                         <Flex justify="space-between" align="center" bg="#0A0C10" p="4" borderRadius="12px" border="1px solid" borderColor="#1e2028" mb="6">
                             <Box>
-                                <Text fontSize="12px" color="#8A8A93" mb="1">Mục tiêu</Text>
+                                <Text fontSize="12px" color="#8A8A93" mb="1">Target Goal</Text>
                                 <Text fontSize="18px" fontWeight="800" color="#E03030">{selectedExercise?.sets}</Text>
                                 <Text fontSize="10px" fontWeight="600" color="#8A8A93" textTransform="uppercase">{selectedExercise?.setsLabel}</Text>
                             </Box>
                         </Flex>
 
                         <Text fontSize="14px" color="#E2E1EB" mb="6" lineHeight="1.6">
-                            {selectedExercise?.description || "Không có hướng dẫn chi tiết."}
+                            {selectedExercise?.description || "No detailed instructions available."}
                         </Text>
                         
                         <AppButton 
-                            label="Hoàn thành bài tập này" 
+                            label="Complete this exercise" 
                             variant="solid" w="full" h="48px" fontSize="15px"
                             onClick={() => {
                                 if (selectedExercise) {

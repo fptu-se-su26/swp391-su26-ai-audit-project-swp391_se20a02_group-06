@@ -31,11 +31,11 @@ const ChangePasswordModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) =>
 
     const handleSubmit = async () => {
         if (!currentPassword || !newPassword || !confirmPassword) {
-            toast({ title: 'Vui lòng điền đủ thông tin', status: 'warning', duration: 3000 })
+            toast({ title: 'Please fill in all fields', status: 'warning', duration: 3000 })
             return
         }
         if (newPassword !== confirmPassword) {
-            toast({ title: 'Mật khẩu mới không khớp', status: 'error', duration: 3000 })
+            toast({ title: 'New passwords do not match', status: 'error', duration: 3000 })
             return
         }
 
@@ -44,14 +44,14 @@ const ChangePasswordModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) =>
         setLoading(false)
 
         if (success) {
-            toast({ title: 'Đổi mật khẩu thành công', status: 'success', duration: 3000 })
+            toast({ title: 'Password changed successfully', status: 'success', duration: 3000 })
             setCurrentPassword('')
             setNewPassword('')
             setConfirmPassword('')
             onSuccess()
             onClose()
         } else {
-            toast({ title: 'Mật khẩu hiện tại không đúng', status: 'error', duration: 3000 })
+            toast({ title: 'Current password is incorrect', status: 'error', duration: 3000 })
         }
     }
 
@@ -59,12 +59,12 @@ const ChangePasswordModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) =>
         <Modal isOpen={isOpen} onClose={onClose} isCentered>
             <ModalOverlay bg="blackAlpha.700" backdropFilter="blur(5px)" />
             <ModalContent bg="#111318" border="1px solid #1e2028" borderRadius="20px">
-                <ModalHeader color="white">Đổi mật khẩu</ModalHeader>
+                <ModalHeader color="white">Change Password</ModalHeader>
                 <ModalCloseButton color="white" />
                 <ModalBody>
                     <VStack spacing={4}>
                         <FormControl>
-                            <FormLabel color="#8A8A93" fontSize="13px">Mật khẩu hiện tại</FormLabel>
+                            <FormLabel color="#8A8A93" fontSize="13px">Current Password</FormLabel>
                             <Input 
                                 type="password" 
                                 value={currentPassword} 
@@ -83,7 +83,7 @@ const ChangePasswordModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) =>
                             />
                         </FormControl>
                         <FormControl>
-                            <FormLabel color="#8A8A93" fontSize="13px">Mật khẩu mới</FormLabel>
+                            <FormLabel color="#8A8A93" fontSize="13px">New Password</FormLabel>
                             <Input 
                                 type="password" 
                                 value={newPassword} 
@@ -102,7 +102,7 @@ const ChangePasswordModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) =>
                             />
                         </FormControl>
                         <FormControl>
-                            <FormLabel color="#8A8A93" fontSize="13px">Nhập lại mật khẩu mới</FormLabel>
+                            <FormLabel color="#8A8A93" fontSize="13px">Confirm New Password</FormLabel>
                             <Input 
                                 type="password" 
                                 value={confirmPassword} 
@@ -123,8 +123,8 @@ const ChangePasswordModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) =>
                     </VStack>
                 </ModalBody>
                 <ModalFooter>
-                    <Button variant="ghost" mr={3} onClick={onClose} color="#8A8A93" _hover={{ bg: '#1a1c23' }}>
-                        Hủy
+                    <Button variant="ghost" mr={3} onClick={onClose} color="#8A8A93" _hover={{ bg: '#1e2028' }}>
+                        Cancel
                     </Button>
                     <Button 
                         bg="#E03030" 
@@ -133,7 +133,7 @@ const ChangePasswordModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) =>
                         onClick={handleSubmit}
                         isLoading={loading}
                     >
-                        Lưu mật khẩu
+                        Save Password
                     </Button>
                 </ModalFooter>
             </ModalContent>

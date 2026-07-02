@@ -6,10 +6,10 @@ interface WorkoutLoadingProps {
 }
 
 const loadingPhases = [
-    'Phân tích thông tin của bạn...',
-    'Tối ưu hóa chương trình AI...',
-    'Xây dựng lịch tập cá nhân...',
-    'Hoàn thiện bài tập cho bạn...',
+    'Analyzing your profile...',
+    'Optimizing AI program...',
+    'Building personal schedule...',
+    'Finalizing your workout...',
 ]
 
 const WorkoutLoading: React.FC<WorkoutLoadingProps> = ({ onComplete }) => {
@@ -17,7 +17,7 @@ const WorkoutLoading: React.FC<WorkoutLoadingProps> = ({ onComplete }) => {
     const [phase, setPhase] = useState(0)
 
     useEffect(() => {
-        // Tăng progress từ 0 đến 100 trong ~3 giây
+        // Increase progress from 0 to 100 in ~3 seconds
         const interval = setInterval(() => {
             setProgress((prev) => {
                 const next = prev + 1.4

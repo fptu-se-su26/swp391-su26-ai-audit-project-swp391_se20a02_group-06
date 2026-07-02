@@ -34,7 +34,7 @@ const BodyMetricsModal: React.FC<BodyMetricsModalProps> = ({ isOpen, onClose, on
 
     const handleSave = async () => {
         if (!gender || !age || !height || !weight) {
-            toast({ title: 'Vui lòng điền đủ thông tin', status: 'warning', duration: 3000 })
+            toast({ title: 'Please fill in all information', status: 'warning', duration: 3000 })
             return
         }
 
@@ -48,7 +48,7 @@ const BodyMetricsModal: React.FC<BodyMetricsModalProps> = ({ isOpen, onClose, on
             })
             onClose()
         } catch (error: any) {
-            toast({ title: 'Lỗi', description: error.message, status: 'error', duration: 3000 })
+            toast({ title: 'Error', description: error.message, status: 'error', duration: 3000 })
         } finally {
             setLoading(false)
         }
@@ -59,21 +59,21 @@ const BodyMetricsModal: React.FC<BodyMetricsModalProps> = ({ isOpen, onClose, on
             <ModalOverlay bg="rgba(10,12,16,0.8)" backdropFilter="blur(10px)" />
             <ModalContent bg="#111318" border="1px solid #1e2028" borderRadius="24px" p="2">
                 <ModalHeader color="white" textAlign="center" pt="6" pb="2">
-                    <Text fontSize="20px" fontWeight="800">Thông tin cơ bản</Text>
+                    <Text fontSize="20px" fontWeight="800">Basic Information</Text>
                     <Text fontSize="13px" fontWeight="400" color="#8A8A93" mt="1">
-                        Giúp AI tính toán chương trình phù hợp với bạn.
+                        Help AI calculate the best program for you.
                     </Text>
                 </ModalHeader>
                 <ModalBody pb="6">
                     <Stack spacing="5">
                         <Box>
                             <Text fontSize="12px" fontWeight="700" color="#8A8A93" mb="2" textTransform="uppercase" letterSpacing="wider">
-                                Giới tính
+                                Gender
                             </Text>
                             <HStack spacing="3">
                                 {[
-                                    { id: 'male', label: 'Nam' },
-                                    { id: 'female', label: 'Nữ' },
+                                    { id: 'male', label: 'Male' },
+                                    { id: 'female', label: 'Female' },
                                 ].map((g) => (
                                     <Box
                                         key={g.id}
@@ -98,7 +98,7 @@ const BodyMetricsModal: React.FC<BodyMetricsModalProps> = ({ isOpen, onClose, on
 
                         <Grid templateColumns="repeat(3, 1fr)" gap="3">
                             <Box>
-                                <Text fontSize="12px" fontWeight="700" color="#8A8A93" mb="2" textTransform="uppercase" letterSpacing="wider">Tuổi</Text>
+                                <Text fontSize="12px" fontWeight="700" color="#8A8A93" mb="2" textTransform="uppercase" letterSpacing="wider">Age</Text>
                                 <InputGroup size="md">
                                     <Input
                                         type="number"
@@ -113,12 +113,12 @@ const BodyMetricsModal: React.FC<BodyMetricsModalProps> = ({ isOpen, onClose, on
                                         _focus={{ borderColor: '#E03030', boxShadow: 'none' }}
                                     />
                                     <InputRightAddon bg="#1e2028" border="1.5px solid #2e3040" color="#8A8A93" fontSize="11px" fontWeight="600" h="44px" borderRadius="0 10px 10px 0">
-                                        tuổi
+                                        years
                                     </InputRightAddon>
                                 </InputGroup>
                             </Box>
                             <Box>
-                                <Text fontSize="12px" fontWeight="700" color="#8A8A93" mb="2" textTransform="uppercase" letterSpacing="wider">Chiều cao</Text>
+                                <Text fontSize="12px" fontWeight="700" color="#8A8A93" mb="2" textTransform="uppercase" letterSpacing="wider">Height</Text>
                                 <InputGroup size="md">
                                     <Input
                                         type="number"
@@ -138,7 +138,7 @@ const BodyMetricsModal: React.FC<BodyMetricsModalProps> = ({ isOpen, onClose, on
                                 </InputGroup>
                             </Box>
                             <Box>
-                                <Text fontSize="12px" fontWeight="700" color="#8A8A93" mb="2" textTransform="uppercase" letterSpacing="wider">Cân nặng</Text>
+                                <Text fontSize="12px" fontWeight="700" color="#8A8A93" mb="2" textTransform="uppercase" letterSpacing="wider">Weight</Text>
                                 <InputGroup size="md">
                                     <Input
                                         type="number"
@@ -162,7 +162,7 @@ const BodyMetricsModal: React.FC<BodyMetricsModalProps> = ({ isOpen, onClose, on
                 </ModalBody>
                 <ModalFooter borderTop="1px solid #1e2028" pt="4" pb="2">
                     <AppButton
-                        label="Lưu thông tin"
+                        label="Save Information"
                         w="full"
                         h="48px"
                         fontSize="14px"

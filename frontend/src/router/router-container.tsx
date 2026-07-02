@@ -33,7 +33,7 @@ import AdminPackages from "../pages/admin/AdminPackages";
 
 const RouterContainer = () => {
     useEffect(() => {
-        window.history.scrollRestoration = "manual"; // Ngăn trình duyệt nhớ vị trí scroll
+        window.history.scrollRestoration = "manual"; // Prevent browser from remembering scroll position
         window.scrollTo(0, 0);
     }, []);
 
