@@ -5,12 +5,18 @@ namespace FitnessTrainingSystem.Infrastructure.Persistence;
 
 public partial class ApplicationDbContext : DbContext
 {
+<<<<<<< Updated upstream
     public ApplicationDbContext()
     {
     }
+=======
+    public DbSet<FitnessTrainingSystem.Domain.Entities.User> Users { get; set; }
+    
+>>>>>>> Stashed changes
 
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
         : base(options)
+        
     {
     }
 

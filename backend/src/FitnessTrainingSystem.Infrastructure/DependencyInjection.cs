@@ -48,7 +48,11 @@ public static class DependencyInjection
         services.AddScoped<IMuscleGroupService, MuscleGroupService>();
 
         // 🚀 ĐĂNG KÝ HỆ THỐNG TRUY CẬP AI DƯỚI ĐÂY
-        services.AddHttpClient<IGeminiAiService, GeminiAiService>();
+        // Đăng ký HttpClient ánh xạ Interface có sẵn của bạn vào Class thực thi Python mới
+        services.AddHttpClient<IGeminiAiService, PythonGeminiAiService>(client =>
+{
+        client.BaseAddress = new Uri("http://localhost:8000/"); // Đường dẫn local của con Python
+});
 
         return services;
     }
