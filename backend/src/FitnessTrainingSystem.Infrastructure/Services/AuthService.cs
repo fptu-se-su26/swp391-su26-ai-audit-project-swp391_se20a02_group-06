@@ -23,7 +23,7 @@ public class AuthService : IAuthService
 
     public async Task<AuthResponseDto> RegisterAsync(RegisterRequestDto request)
     {
-        var existingUser = await _context.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
+        var existingUser = await _context.Users.Include(u => u.Role).FirstOrDefaultAsync(u => u.Email == request.Email);
         if (existingUser != null)
         {
             throw new Exception("User with this email already exists.");
@@ -38,11 +38,15 @@ public class AuthService : IAuthService
         {
             Fullname = request.Fullname,
             Email = request.Email,
-            PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.Password)
+            PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.Password),
+            RoleId = 3 // Default role: MEMBER
         };
 
         _context.Users.Add(user);
         await _context.SaveChangesAsync();
+
+        // Reload user to get the role details for the token
+        await _context.Entry(user).Reference(u => u.Role).LoadAsync();
 
         var token = _jwtTokenGenerator.GenerateToken(user);
 
@@ -51,13 +55,14 @@ public class AuthService : IAuthService
             UserId = user.Id,
             Fullname = user.Fullname,
             Email = user.Email,
-            Token = token
+            Token = token,
+            RoleId = user.RoleId
         };
     }
 
     public async Task<AuthResponseDto> LoginAsync(LoginRequestDto request)
     {
-        var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
+        var user = await _context.Users.Include(u => u.Role).FirstOrDefaultAsync(u => u.Email == request.Email);
         
         if (user == null)
         {
@@ -81,7 +86,8 @@ public class AuthService : IAuthService
             UserId = user.Id,
             Fullname = user.Fullname,
             Email = user.Email,
-            Token = token
+            Token = token,
+            RoleId = user.RoleId
         };
     }
 
@@ -97,7 +103,7 @@ public class AuthService : IAuthService
         {
             var payload = await GoogleJsonWebSignature.ValidateAsync(request.Credential, settings);
 
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == payload.Email);
+            var user = await _context.Users.Include(u => u.Role).FirstOrDefaultAsync(u => u.Email == payload.Email);
 
             if (user == null)
             {
@@ -107,7 +113,8 @@ public class AuthService : IAuthService
                     Email = payload.Email,
                     Fullname = payload.Name,
                     GoogleId = payload.Subject,
-                    PasswordHash = null // No password for Google users
+                    PasswordHash = "", // Database column might not allow null, use empty string
+                    RoleId = 3 // Default role: MEMBER
                 };
 
                 _context.Users.Add(user);
@@ -121,6 +128,12 @@ public class AuthService : IAuthService
                 await _context.SaveChangesAsync();
             }
 
+            // Ensure Role is loaded for token generation
+            if (user.Role == null)
+            {
+                await _context.Entry(user).Reference(u => u.Role).LoadAsync();
+            }
+
             var token = _jwtTokenGenerator.GenerateToken(user);
 
             return new AuthResponseDto
@@ -128,7 +141,8 @@ public class AuthService : IAuthService
                 UserId = user.Id,
                 Fullname = user.Fullname,
                 Email = user.Email,
-                Token = token
+                Token = token,
+                RoleId = user.RoleId
             };
         }
         catch (InvalidJwtException)

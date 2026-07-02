@@ -17,440 +17,982 @@ namespace FitnessTrainingSystem.Infrastructure.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
+                .UseCollation("utf8mb4_unicode_ci")
                 .HasAnnotation("ProductVersion", "9.0.0")
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
+            MySqlModelBuilderExtensions.HasCharSet(modelBuilder, "utf8mb4");
             MySqlModelBuilderExtensions.AutoIncrementColumns(modelBuilder);
 
             modelBuilder.Entity("FitnessTrainingSystem.Domain.Entities.AiRecommendation", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnName("id");
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("AiResponse")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("longtext")
+                        .HasColumnName("ai_response");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime(6)");
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("created_at");
 
                     b.Property<int>("Type")
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnName("type");
 
                     b.Property<int?>("UserId")
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnName("user_id");
 
                     b.Property<string>("UserRequest")
-                        .HasColumnType("longtext");
+                        .HasColumnType("longtext")
+                        .HasColumnName("user_request");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_ai_recommendations");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex(new[] { "UserId" }, "user_id")
+                        .HasDatabaseName("ix_ai_recommendations_user_id");
 
-                    b.ToTable("AiRecommendation");
+                    b.ToTable("ai_recommendations", (string)null);
                 });
 
             modelBuilder.Entity("FitnessTrainingSystem.Domain.Entities.BodyMetric", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnName("id");
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<decimal?>("Bmi")
+                        .HasColumnType("decimal(65,30)")
+                        .HasColumnName("bmi");
+
                     b.Property<decimal?>("BodyFatPercentage")
-                        .HasColumnType("decimal(65,30)");
+                        .HasColumnType("decimal(65,30)")
+                        .HasColumnName("body_fat_percentage");
+
+                    b.Property<decimal?>("Height")
+                        .HasColumnType("decimal(65,30)")
+                        .HasColumnName("height");
 
                     b.Property<decimal?>("MuscleMass")
-                        .HasColumnType("decimal(65,30)");
+                        .HasColumnType("decimal(65,30)")
+                        .HasColumnName("muscle_mass");
 
                     b.Property<DateTime>("RecordedAt")
-                        .HasColumnType("datetime(6)");
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("recorded_at");
 
                     b.Property<int>("UserId")
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnName("user_id");
 
                     b.Property<decimal>("Weight")
-                        .HasColumnType("decimal(65,30)");
+                        .HasColumnType("decimal(65,30)")
+                        .HasColumnName("weight");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_body_metrics");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("UserId")
+                        .HasDatabaseName("ix_body_metrics_user_id");
 
-                    b.ToTable("BodyMetric");
+                    b.ToTable("body_metrics", (string)null);
                 });
 
             modelBuilder.Entity("FitnessTrainingSystem.Domain.Entities.Exercise", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnName("id");
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime(6)");
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("created_at");
 
                     b.Property<int?>("CreatedBy")
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnName("created_by");
 
                     b.Property<int?>("CreatorId")
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnName("creator_id");
 
                     b.Property<string>("Description")
-                        .HasColumnType("longtext");
+                        .HasColumnType("longtext")
+                        .HasColumnName("description");
 
                     b.Property<int>("Difficulty")
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnName("difficulty");
 
                     b.Property<int?>("Duration")
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnName("duration");
 
                     b.Property<string>("MuscleGroup")
-                        .HasColumnType("longtext");
+                        .HasColumnType("longtext")
+                        .HasColumnName("muscle_group");
+
+                    b.Property<int?>("MuscleGroupId")
+                        .HasColumnType("int")
+                        .HasColumnName("muscle_group_id");
 
                     b.Property<string>("Title")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("longtext")
+                        .HasColumnName("title");
 
                     b.Property<string>("VideoUrl")
-                        .HasColumnType("longtext");
+                        .HasColumnType("longtext")
+                        .HasColumnName("video_url");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_exercises");
 
-                    b.HasIndex("CreatorId");
+                    b.HasIndex("CreatorId")
+                        .HasDatabaseName("ix_exercises_creator_id");
 
-                    b.ToTable("Exercise");
+                    b.HasIndex("MuscleGroupId")
+                        .HasDatabaseName("ix_exercises_muscle_group_id");
+
+                    b.ToTable("exercises", (string)null);
                 });
 
             modelBuilder.Entity("FitnessTrainingSystem.Domain.Entities.Food", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnName("id");
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("Calories")
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnName("calories");
 
                     b.Property<decimal>("Carbs")
-                        .HasColumnType("decimal(65,30)");
+                        .HasColumnType("decimal(65,30)")
+                        .HasColumnName("carbs");
 
                     b.Property<decimal>("Fat")
-                        .HasColumnType("decimal(65,30)");
+                        .HasColumnType("decimal(65,30)")
+                        .HasColumnName("fat");
+
+                    b.Property<string>("ImageUrl")
+                        .HasColumnType("longtext")
+                        .HasColumnName("image_url");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("longtext")
+                        .HasColumnName("name");
 
                     b.Property<decimal>("Protein")
-                        .HasColumnType("decimal(65,30)");
+                        .HasColumnType("decimal(65,30)")
+                        .HasColumnName("protein");
 
-                    b.HasKey("Id");
+                    b.Property<string>("ServingSize")
+                        .HasColumnType("longtext")
+                        .HasColumnName("serving_size");
 
-                    b.ToTable("Food");
+                    b.Property<string>("Unit")
+                        .HasColumnType("longtext")
+                        .HasColumnName("unit");
+
+                    b.HasKey("Id")
+                        .HasName("pk_foods");
+
+                    b.ToTable("foods", (string)null);
                 });
 
             modelBuilder.Entity("FitnessTrainingSystem.Domain.Entities.MealSchedule", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnName("id");
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int?>("AiRecommendationId")
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnName("ai_recommendation_id");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime(6)");
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("created_at");
 
                     b.Property<TimeSpan?>("EatTime")
-                        .HasColumnType("time(6)");
+                        .HasColumnType("time(6)")
+                        .HasColumnName("eat_time");
 
                     b.Property<string>("ScheduleName")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("longtext")
+                        .HasColumnName("schedule_name");
 
                     b.Property<int?>("TotalCaloriesTarget")
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnName("total_calories_target");
 
                     b.Property<int>("UserId")
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnName("user_id");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_meal_schedules");
 
-                    b.HasIndex("AiRecommendationId");
+                    b.HasIndex("AiRecommendationId")
+                        .HasDatabaseName("ix_meal_schedules_ai_recommendation_id");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("UserId")
+                        .HasDatabaseName("ix_meal_schedules_user_id");
 
-                    b.ToTable("MealSchedule");
+                    b.ToTable("meal_schedules", (string)null);
                 });
 
-            modelBuilder.Entity("FitnessTrainingSystem.Domain.Entities.Menu", b =>
+            modelBuilder.Entity("FitnessTrainingSystem.Domain.Entities.MealScheduleItem", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnName("id");
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Amount")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("longtext")
+                        .HasColumnName("amount");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime(6)");
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("created_at");
 
                     b.Property<int>("FoodId")
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnName("food_id");
 
                     b.Property<bool>("IsEaten")
-                        .HasColumnType("tinyint(1)");
+                        .HasColumnType("tinyint(1)")
+                        .HasColumnName("is_eaten");
 
                     b.Property<int>("MealScheduleId")
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnName("meal_schedule_id");
+
+                    b.HasKey("Id")
+                        .HasName("pk_meal_schedule_items");
+
+                    b.HasIndex("FoodId")
+                        .HasDatabaseName("ix_meal_schedule_items_food_id");
+
+                    b.HasIndex("MealScheduleId")
+                        .HasDatabaseName("ix_meal_schedule_items_meal_schedule_id");
+
+                    b.ToTable("meal_schedule_items", (string)null);
+                });
+
+            modelBuilder.Entity("FitnessTrainingSystem.Domain.Entities.MembershipSubscription", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("id");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("EndDate")
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("end_date");
+
+                    b.Property<int?>("OrderId")
+                        .HasColumnType("int")
+                        .HasColumnName("order_id");
+
+                    b.Property<int>("PackageId")
+                        .HasColumnType("int")
+                        .HasColumnName("package_id");
+
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("start_date");
+
+                    b.Property<string>("Status")
+                        .HasColumnType("longtext")
+                        .HasColumnName("status");
 
                     b.Property<int>("UserId")
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnName("user_id");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_membership_subscriptions");
 
-                    b.HasIndex("FoodId");
+                    b.HasIndex("OrderId")
+                        .HasDatabaseName("ix_membership_subscriptions_order_id");
 
-                    b.HasIndex("MealScheduleId");
+                    b.HasIndex("PackageId")
+                        .HasDatabaseName("ix_membership_subscriptions_package_id");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("UserId")
+                        .HasDatabaseName("ix_membership_subscriptions_user_id");
 
-                    b.ToTable("Menu");
+                    b.ToTable("membership_subscriptions", (string)null);
+                });
+
+            modelBuilder.Entity("FitnessTrainingSystem.Domain.Entities.MuscleGroup", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("id");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Description")
+                        .HasColumnType("longtext")
+                        .HasColumnName("description");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("longtext")
+                        .HasColumnName("name");
+
+                    b.HasKey("Id")
+                        .HasName("pk_muscle_groups");
+
+                    b.ToTable("muscle_groups", (string)null);
+                });
+
+            modelBuilder.Entity("FitnessTrainingSystem.Domain.Entities.Notification", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("id");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("longtext")
+                        .HasColumnName("content");
+
+                    b.Property<DateTime?>("CreatedAt")
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("created_at");
+
+                    b.Property<bool?>("IsRead")
+                        .HasColumnType("tinyint(1)")
+                        .HasColumnName("is_read");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("longtext")
+                        .HasColumnName("title");
+
+                    b.Property<string>("Type")
+                        .HasColumnType("longtext")
+                        .HasColumnName("type");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int")
+                        .HasColumnName("user_id");
+
+                    b.HasKey("Id")
+                        .HasName("pk_notifications");
+
+                    b.HasIndex("UserId")
+                        .HasDatabaseName("ix_notifications_user_id");
+
+                    b.ToTable("notifications", (string)null);
                 });
 
             modelBuilder.Entity("FitnessTrainingSystem.Domain.Entities.Order", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnName("id");
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime?>("ExpiredAt")
-                        .HasColumnType("datetime(6)");
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("expired_at");
 
                     b.Property<int?>("PackageId")
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnName("package_id");
 
                     b.Property<int>("PaymentStatus")
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnName("payment_status");
 
                     b.Property<decimal>("PricePaid")
-                        .HasColumnType("decimal(65,30)");
+                        .HasColumnType("decimal(65,30)")
+                        .HasColumnName("price_paid");
 
                     b.Property<DateTime>("PurchasedAt")
-                        .HasColumnType("datetime(6)");
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("purchased_at");
 
                     b.Property<int?>("UserId")
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnName("user_id");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_orders");
 
-                    b.HasIndex("PackageId");
+                    b.HasIndex("PackageId")
+                        .HasDatabaseName("ix_orders_package_id");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("UserId")
+                        .HasDatabaseName("ix_orders_user_id");
 
-                    b.ToTable("Order");
+                    b.ToTable("orders", (string)null);
+                });
+
+            modelBuilder.Entity("FitnessTrainingSystem.Domain.Entities.Payment", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("id");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("decimal(65,30)")
+                        .HasColumnName("amount");
+
+                    b.Property<int>("OrderId")
+                        .HasColumnType("int")
+                        .HasColumnName("order_id");
+
+                    b.Property<DateTime?>("PaidAt")
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("paid_at");
+
+                    b.Property<string>("PaymentMethod")
+                        .IsRequired()
+                        .HasColumnType("longtext")
+                        .HasColumnName("payment_method");
+
+                    b.Property<string>("Status")
+                        .HasColumnType("longtext")
+                        .HasColumnName("status");
+
+                    b.Property<string>("TransactionCode")
+                        .HasColumnType("longtext")
+                        .HasColumnName("transaction_code");
+
+                    b.HasKey("Id")
+                        .HasName("pk_payments");
+
+                    b.HasIndex("OrderId")
+                        .HasDatabaseName("ix_payments_order_id");
+
+                    b.ToTable("payments", (string)null);
                 });
 
             modelBuilder.Entity("FitnessTrainingSystem.Domain.Entities.ProductPackage", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnName("id");
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Description")
-                        .HasColumnType("longtext");
+                        .HasColumnType("longtext")
+                        .HasColumnName("description");
 
                     b.Property<int>("DurationDays")
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnName("duration_days");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("tinyint(1)")
+                        .HasColumnName("is_active");
+
+                    b.Property<bool>("IsPopular")
+                        .HasColumnType("tinyint(1)")
+                        .HasColumnName("is_popular");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("longtext")
+                        .HasColumnName("name");
 
                     b.Property<decimal>("Price")
-                        .HasColumnType("decimal(65,30)");
+                        .HasColumnType("decimal(65,30)")
+                        .HasColumnName("price");
 
                     b.Property<int>("Type")
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnName("type");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_product_packages");
 
-                    b.ToTable("ProductPackage");
+                    b.ToTable("product_packages", (string)null);
                 });
 
             modelBuilder.Entity("FitnessTrainingSystem.Domain.Entities.PtProfile", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnName("id");
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Bio")
-                        .HasColumnType("longtext");
+                        .HasColumnType("longtext")
+                        .HasColumnName("bio");
 
                     b.Property<int?>("ExperienceYears")
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnName("experience_years");
 
                     b.Property<decimal>("Rating")
-                        .HasColumnType("decimal(65,30)");
+                        .HasColumnType("decimal(65,30)")
+                        .HasColumnName("rating");
 
                     b.Property<int>("UserId")
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnName("user_id");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_pt_profiles");
 
                     b.HasIndex("UserId")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasDatabaseName("ix_pt_profiles_user_id");
 
-                    b.ToTable("PtProfile");
+                    b.ToTable("pt_profiles", (string)null);
+                });
+
+            modelBuilder.Entity("FitnessTrainingSystem.Domain.Entities.PtUploadRequest", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("id");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("AdminId")
+                        .HasColumnType("int")
+                        .HasColumnName("admin_id");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("longtext")
+                        .HasColumnName("description");
+
+                    b.Property<int?>("ExerciseId")
+                        .HasColumnType("int")
+                        .HasColumnName("exercise_id");
+
+                    b.Property<int>("PtId")
+                        .HasColumnType("int")
+                        .HasColumnName("pt_id");
+
+                    b.Property<string>("ReviewNote")
+                        .HasColumnType("longtext")
+                        .HasColumnName("review_note");
+
+                    b.Property<DateTime?>("ReviewedAt")
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("reviewed_at");
+
+                    b.Property<string>("Status")
+                        .HasColumnType("longtext")
+                        .HasColumnName("status");
+
+                    b.Property<DateTime?>("SubmittedAt")
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("submitted_at");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("longtext")
+                        .HasColumnName("title");
+
+                    b.Property<string>("VideoUrl")
+                        .IsRequired()
+                        .HasColumnType("longtext")
+                        .HasColumnName("video_url");
+
+                    b.HasKey("Id")
+                        .HasName("pk_pt_upload_requests");
+
+                    b.HasIndex("AdminId")
+                        .HasDatabaseName("ix_pt_upload_requests_admin_id");
+
+                    b.HasIndex("ExerciseId")
+                        .HasDatabaseName("ix_pt_upload_requests_exercise_id");
+
+                    b.HasIndex("PtId")
+                        .HasDatabaseName("ix_pt_upload_requests_pt_id");
+
+                    b.ToTable("pt_upload_requests", (string)null);
                 });
 
             modelBuilder.Entity("FitnessTrainingSystem.Domain.Entities.Role", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnName("id");
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("RoleName")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("longtext")
+                        .HasColumnName("role_name");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_roles");
 
-                    b.ToTable("Role");
+                    b.ToTable("roles", (string)null);
                 });
 
             modelBuilder.Entity("FitnessTrainingSystem.Domain.Entities.Schedule", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnName("id");
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("EndTime")
-                        .HasColumnType("datetime(6)");
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("end_time");
 
                     b.Property<string>("MeetingUrl")
-                        .HasColumnType("longtext");
+                        .HasColumnType("longtext")
+                        .HasColumnName("meeting_url");
 
                     b.Property<int?>("MemberId")
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnName("member_id");
 
                     b.Property<int?>("PtId")
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnName("pt_id");
 
                     b.Property<DateTime>("StartTime")
-                        .HasColumnType("datetime(6)");
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("start_time");
 
                     b.Property<int>("Status")
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnName("status");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_schedules");
 
-                    b.HasIndex("MemberId");
+                    b.HasIndex("MemberId")
+                        .HasDatabaseName("ix_schedules_member_id");
 
-                    b.HasIndex("PtId");
+                    b.HasIndex("PtId")
+                        .HasDatabaseName("ix_schedules_pt_id");
 
-                    b.ToTable("Schedule");
+                    b.ToTable("schedules", (string)null);
                 });
 
             modelBuilder.Entity("FitnessTrainingSystem.Domain.Entities.User", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnName("id");
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("AvatarUrl")
+                        .HasColumnType("longtext")
+                        .HasColumnName("avatar_url");
+
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime(6)");
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("created_at");
+
+                    b.Property<DateTime?>("DateOfBirth")
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("date_of_birth");
 
                     b.Property<string>("Email")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("longtext")
+                        .HasColumnName("email");
 
                     b.Property<string>("Fullname")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("longtext")
+                        .HasColumnName("fullname");
+
+                    b.Property<string>("Gender")
+                        .HasColumnType("longtext")
+                        .HasColumnName("gender");
 
                     b.Property<string>("GoogleId")
-                        .HasColumnType("longtext");
+                        .HasColumnType("longtext")
+                        .HasColumnName("google_id");
 
                     b.Property<string>("PasswordHash")
-                        .HasColumnType("longtext");
+                        .HasColumnType("longtext")
+                        .HasColumnName("password_hash");
 
                     b.Property<string>("Phone")
-                        .HasColumnType("longtext");
+                        .HasColumnType("longtext")
+                        .HasColumnName("phone");
 
                     b.Property<int?>("RoleId")
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnName("role_id");
 
-                    b.HasKey("Id");
+                    b.Property<string>("Status")
+                        .HasColumnType("longtext")
+                        .HasColumnName("status");
 
-                    b.HasIndex("RoleId");
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("updated_at");
 
-                    b.ToTable("Users");
+                    b.HasKey("Id")
+                        .HasName("pk_users");
+
+                    b.HasIndex("RoleId")
+                        .HasDatabaseName("ix_users_role_id");
+
+                    b.ToTable("users", (string)null);
                 });
 
-            modelBuilder.Entity("FitnessTrainingSystem.Domain.Entities.WorkoutLog", b =>
+            modelBuilder.Entity("FitnessTrainingSystem.Domain.Entities.WorkoutPlan", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnName("id");
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("ExerciseId")
-                        .HasColumnType("int");
+                    b.Property<int?>("AiRecommendationId")
+                        .HasColumnType("int")
+                        .HasColumnName("ai_recommendation_id");
 
-                    b.Property<DateTime>("LoggedAt")
-                        .HasColumnType("datetime(6)");
+                    b.Property<DateTime?>("CreatedAt")
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("created_at");
+
+                    b.Property<bool?>("CreatedByAi")
+                        .HasColumnType("tinyint(1)")
+                        .HasColumnName("created_by_ai");
+
+                    b.Property<string>("Goal")
+                        .HasColumnType("longtext")
+                        .HasColumnName("goal");
+
+                    b.Property<int?>("TargetCalories")
+                        .HasColumnType("int")
+                        .HasColumnName("target_calories");
+
+                    b.Property<int?>("TargetDurationMinutes")
+                        .HasColumnType("int")
+                        .HasColumnName("target_duration_minutes");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("longtext")
+                        .HasColumnName("title");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int")
+                        .HasColumnName("user_id");
+
+                    b.HasKey("Id")
+                        .HasName("pk_workout_plans");
+
+                    b.HasIndex("AiRecommendationId")
+                        .HasDatabaseName("ix_workout_plans_ai_recommendation_id");
+
+                    b.HasIndex("UserId")
+                        .HasDatabaseName("ix_workout_plans_user_id");
+
+                    b.ToTable("workout_plans", (string)null);
+                });
+
+            modelBuilder.Entity("FitnessTrainingSystem.Domain.Entities.WorkoutPlanExercise", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("id");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("DurationSeconds")
+                        .HasColumnType("int")
+                        .HasColumnName("duration_seconds");
+
+                    b.Property<int>("ExerciseId")
+                        .HasColumnType("int")
+                        .HasColumnName("exercise_id");
+
+                    b.Property<int?>("ExerciseOrder")
+                        .HasColumnType("int")
+                        .HasColumnName("exercise_order");
 
                     b.Property<int?>("Reps")
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnName("reps");
+
+                    b.Property<int?>("RestSeconds")
+                        .HasColumnType("int")
+                        .HasColumnName("rest_seconds");
 
                     b.Property<int?>("Sets")
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnName("sets");
 
-                    b.Property<int?>("UserId")
-                        .HasColumnType("int");
+                    b.Property<int>("WorkoutPlanId")
+                        .HasColumnType("int")
+                        .HasColumnName("workout_plan_id");
 
-                    b.Property<decimal?>("WeightKg")
-                        .HasColumnType("decimal(65,30)");
+                    b.HasKey("Id")
+                        .HasName("pk_workout_plan_exercises");
 
-                    b.HasKey("Id");
+                    b.HasIndex("ExerciseId")
+                        .HasDatabaseName("ix_workout_plan_exercises_exercise_id");
 
-                    b.HasIndex("ExerciseId");
+                    b.HasIndex("WorkoutPlanId")
+                        .HasDatabaseName("ix_workout_plan_exercises_workout_plan_id");
 
-                    b.HasIndex("UserId");
+                    b.ToTable("workout_plan_exercises", (string)null);
+                });
 
-                    b.ToTable("WorkoutLog");
+            modelBuilder.Entity("FitnessTrainingSystem.Domain.Entities.WorkoutSession", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("id");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime?>("CompletedAt")
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("completed_at");
+
+                    b.Property<DateTime?>("StartedAt")
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("started_at");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("longtext")
+                        .HasColumnName("status");
+
+                    b.Property<decimal?>("TotalCaloriesBurned")
+                        .HasColumnType("decimal(65,30)")
+                        .HasColumnName("total_calories_burned");
+
+                    b.Property<int?>("TotalDurationMinutes")
+                        .HasColumnType("int")
+                        .HasColumnName("total_duration_minutes");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int")
+                        .HasColumnName("user_id");
+
+                    b.Property<int?>("WorkoutPlanId")
+                        .HasColumnType("int")
+                        .HasColumnName("workout_plan_id");
+
+                    b.HasKey("Id")
+                        .HasName("pk_workout_sessions");
+
+                    b.HasIndex("UserId")
+                        .HasDatabaseName("ix_workout_sessions_user_id");
+
+                    b.HasIndex("WorkoutPlanId")
+                        .HasDatabaseName("ix_workout_sessions_workout_plan_id");
+
+                    b.ToTable("workout_sessions", (string)null);
+                });
+
+            modelBuilder.Entity("FitnessTrainingSystem.Domain.Entities.WorkoutSessionDetail", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("id");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<decimal?>("CaloriesBurned")
+                        .HasColumnType("decimal(65,30)")
+                        .HasColumnName("calories_burned");
+
+                    b.Property<int?>("DurationSeconds")
+                        .HasColumnType("int")
+                        .HasColumnName("duration_seconds");
+
+                    b.Property<int>("ExerciseId")
+                        .HasColumnType("int")
+                        .HasColumnName("exercise_id");
+
+                    b.Property<int?>("RepsDone")
+                        .HasColumnType("int")
+                        .HasColumnName("reps_done");
+
+                    b.Property<int?>("SetsDone")
+                        .HasColumnType("int")
+                        .HasColumnName("sets_done");
+
+                    b.Property<int>("WorkoutSessionId")
+                        .HasColumnType("int")
+                        .HasColumnName("workout_session_id");
+
+                    b.HasKey("Id")
+                        .HasName("pk_workout_session_details");
+
+                    b.HasIndex("ExerciseId")
+                        .HasDatabaseName("ix_workout_session_details_exercise_id");
+
+                    b.HasIndex("WorkoutSessionId")
+                        .HasDatabaseName("ix_workout_session_details_workout_session_id");
+
+                    b.ToTable("workout_session_details", (string)null);
                 });
 
             modelBuilder.Entity("FitnessTrainingSystem.Domain.Entities.AiRecommendation", b =>
                 {
                     b.HasOne("FitnessTrainingSystem.Domain.Entities.User", "User")
                         .WithMany("AiRecommendations")
-                        .HasForeignKey("UserId");
+                        .HasForeignKey("UserId")
+                        .HasConstraintName("fk_ai_recommendations_users_user_id");
 
                     b.Navigation("User");
                 });
@@ -461,7 +1003,8 @@ namespace FitnessTrainingSystem.Infrastructure.Migrations
                         .WithMany("BodyMetrics")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_body_metrics_users_user_id");
 
                     b.Navigation("User");
                 });
@@ -470,7 +1013,13 @@ namespace FitnessTrainingSystem.Infrastructure.Migrations
                 {
                     b.HasOne("FitnessTrainingSystem.Domain.Entities.User", "Creator")
                         .WithMany("CreatedExercises")
-                        .HasForeignKey("CreatorId");
+                        .HasForeignKey("CreatorId")
+                        .HasConstraintName("fk_exercises_users_creator_id");
+
+                    b.HasOne("FitnessTrainingSystem.Domain.Entities.MuscleGroup", null)
+                        .WithMany("Exercises")
+                        .HasForeignKey("MuscleGroupId")
+                        .HasConstraintName("fk_exercises_muscle_groups_muscle_group_id");
 
                     b.Navigation("Creator");
                 });
@@ -479,42 +1028,78 @@ namespace FitnessTrainingSystem.Infrastructure.Migrations
                 {
                     b.HasOne("FitnessTrainingSystem.Domain.Entities.AiRecommendation", "AiRecommendation")
                         .WithMany("MealSchedules")
-                        .HasForeignKey("AiRecommendationId");
+                        .HasForeignKey("AiRecommendationId")
+                        .HasConstraintName("fk_meal_schedules_ai_recommendations_ai_recommendation_id");
 
                     b.HasOne("FitnessTrainingSystem.Domain.Entities.User", "User")
                         .WithMany("MealSchedules")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_meal_schedules_users_user_id");
 
                     b.Navigation("AiRecommendation");
 
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("FitnessTrainingSystem.Domain.Entities.Menu", b =>
+            modelBuilder.Entity("FitnessTrainingSystem.Domain.Entities.MealScheduleItem", b =>
                 {
                     b.HasOne("FitnessTrainingSystem.Domain.Entities.Food", "Food")
-                        .WithMany("Menus")
+                        .WithMany("MealScheduleItems")
                         .HasForeignKey("FoodId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_meal_schedule_items_foods_food_id");
 
                     b.HasOne("FitnessTrainingSystem.Domain.Entities.MealSchedule", "MealSchedule")
-                        .WithMany("Menus")
+                        .WithMany("MealScheduleItems")
                         .HasForeignKey("MealScheduleId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("FitnessTrainingSystem.Domain.Entities.User", "User")
-                        .WithMany("Menus")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_meal_schedule_items_meal_schedules_meal_schedule_id");
 
                     b.Navigation("Food");
 
                     b.Navigation("MealSchedule");
+                });
+
+            modelBuilder.Entity("FitnessTrainingSystem.Domain.Entities.MembershipSubscription", b =>
+                {
+                    b.HasOne("FitnessTrainingSystem.Domain.Entities.Order", "Order")
+                        .WithMany()
+                        .HasForeignKey("OrderId")
+                        .HasConstraintName("fk_membership_subscriptions_orders_order_id");
+
+                    b.HasOne("FitnessTrainingSystem.Domain.Entities.ProductPackage", "Package")
+                        .WithMany()
+                        .HasForeignKey("PackageId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_membership_subscriptions_product_packages_package_id");
+
+                    b.HasOne("FitnessTrainingSystem.Domain.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_membership_subscriptions_users_user_id");
+
+                    b.Navigation("Order");
+
+                    b.Navigation("Package");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("FitnessTrainingSystem.Domain.Entities.Notification", b =>
+                {
+                    b.HasOne("FitnessTrainingSystem.Domain.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_notifications_users_user_id");
 
                     b.Navigation("User");
                 });
@@ -523,15 +1108,29 @@ namespace FitnessTrainingSystem.Infrastructure.Migrations
                 {
                     b.HasOne("FitnessTrainingSystem.Domain.Entities.ProductPackage", "Package")
                         .WithMany("Orders")
-                        .HasForeignKey("PackageId");
+                        .HasForeignKey("PackageId")
+                        .HasConstraintName("fk_orders_product_packages_package_id");
 
                     b.HasOne("FitnessTrainingSystem.Domain.Entities.User", "User")
                         .WithMany("Orders")
-                        .HasForeignKey("UserId");
+                        .HasForeignKey("UserId")
+                        .HasConstraintName("fk_orders_users_user_id");
 
                     b.Navigation("Package");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("FitnessTrainingSystem.Domain.Entities.Payment", b =>
+                {
+                    b.HasOne("FitnessTrainingSystem.Domain.Entities.Order", "Order")
+                        .WithMany()
+                        .HasForeignKey("OrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_payments_orders_order_id");
+
+                    b.Navigation("Order");
                 });
 
             modelBuilder.Entity("FitnessTrainingSystem.Domain.Entities.PtProfile", b =>
@@ -540,9 +1139,36 @@ namespace FitnessTrainingSystem.Infrastructure.Migrations
                         .WithOne("PtProfile")
                         .HasForeignKey("FitnessTrainingSystem.Domain.Entities.PtProfile", "UserId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_pt_profiles_users_user_id");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("FitnessTrainingSystem.Domain.Entities.PtUploadRequest", b =>
+                {
+                    b.HasOne("FitnessTrainingSystem.Domain.Entities.User", "Admin")
+                        .WithMany()
+                        .HasForeignKey("AdminId")
+                        .HasConstraintName("fk_pt_upload_requests_users_admin_id");
+
+                    b.HasOne("FitnessTrainingSystem.Domain.Entities.Exercise", "Exercise")
+                        .WithMany()
+                        .HasForeignKey("ExerciseId")
+                        .HasConstraintName("fk_pt_upload_requests_exercises_exercise_id");
+
+                    b.HasOne("FitnessTrainingSystem.Domain.Entities.User", "Pt")
+                        .WithMany()
+                        .HasForeignKey("PtId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_pt_upload_requests_users_pt_id");
+
+                    b.Navigation("Admin");
+
+                    b.Navigation("Exercise");
+
+                    b.Navigation("Pt");
                 });
 
             modelBuilder.Entity("FitnessTrainingSystem.Domain.Entities.Schedule", b =>
@@ -550,12 +1176,14 @@ namespace FitnessTrainingSystem.Infrastructure.Migrations
                     b.HasOne("FitnessTrainingSystem.Domain.Entities.User", "Member")
                         .WithMany("MemberSchedules")
                         .HasForeignKey("MemberId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .HasConstraintName("fk_schedules_users_member_id");
 
                     b.HasOne("FitnessTrainingSystem.Domain.Entities.User", "Pt")
                         .WithMany("PtSchedules")
                         .HasForeignKey("PtId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .HasConstraintName("fk_schedules_users_pt_id");
 
                     b.Navigation("Member");
 
@@ -566,24 +1194,88 @@ namespace FitnessTrainingSystem.Infrastructure.Migrations
                 {
                     b.HasOne("FitnessTrainingSystem.Domain.Entities.Role", "Role")
                         .WithMany("Users")
-                        .HasForeignKey("RoleId");
+                        .HasForeignKey("RoleId")
+                        .HasConstraintName("fk_users_roles_role_id");
 
                     b.Navigation("Role");
                 });
 
-            modelBuilder.Entity("FitnessTrainingSystem.Domain.Entities.WorkoutLog", b =>
+            modelBuilder.Entity("FitnessTrainingSystem.Domain.Entities.WorkoutPlan", b =>
                 {
-                    b.HasOne("FitnessTrainingSystem.Domain.Entities.Exercise", "Exercise")
-                        .WithMany("WorkoutLogs")
-                        .HasForeignKey("ExerciseId");
+                    b.HasOne("FitnessTrainingSystem.Domain.Entities.AiRecommendation", "AiRecommendation")
+                        .WithMany()
+                        .HasForeignKey("AiRecommendationId")
+                        .HasConstraintName("fk_workout_plans_ai_recommendations_ai_recommendation_id");
 
                     b.HasOne("FitnessTrainingSystem.Domain.Entities.User", "User")
-                        .WithMany("WorkoutLogs")
-                        .HasForeignKey("UserId");
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_workout_plans_users_user_id");
+
+                    b.Navigation("AiRecommendation");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("FitnessTrainingSystem.Domain.Entities.WorkoutPlanExercise", b =>
+                {
+                    b.HasOne("FitnessTrainingSystem.Domain.Entities.Exercise", "Exercise")
+                        .WithMany()
+                        .HasForeignKey("ExerciseId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_workout_plan_exercises_exercises_exercise_id");
+
+                    b.HasOne("FitnessTrainingSystem.Domain.Entities.WorkoutPlan", "WorkoutPlan")
+                        .WithMany("WorkoutPlanExercises")
+                        .HasForeignKey("WorkoutPlanId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_workout_plan_exercises_workout_plans_workout_plan_id");
 
                     b.Navigation("Exercise");
 
+                    b.Navigation("WorkoutPlan");
+                });
+
+            modelBuilder.Entity("FitnessTrainingSystem.Domain.Entities.WorkoutSession", b =>
+                {
+                    b.HasOne("FitnessTrainingSystem.Domain.Entities.User", "User")
+                        .WithMany("WorkoutSessions")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_workout_sessions_users_user_id");
+
+                    b.HasOne("FitnessTrainingSystem.Domain.Entities.WorkoutPlan", null)
+                        .WithMany("WorkoutSessions")
+                        .HasForeignKey("WorkoutPlanId")
+                        .HasConstraintName("fk_workout_sessions_workout_plans_workout_plan_id");
+
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("FitnessTrainingSystem.Domain.Entities.WorkoutSessionDetail", b =>
+                {
+                    b.HasOne("FitnessTrainingSystem.Domain.Entities.Exercise", "Exercise")
+                        .WithMany("WorkoutSessionDetails")
+                        .HasForeignKey("ExerciseId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_workout_session_details_exercises_exercise_id");
+
+                    b.HasOne("FitnessTrainingSystem.Domain.Entities.WorkoutSession", "WorkoutSession")
+                        .WithMany("WorkoutSessionDetails")
+                        .HasForeignKey("WorkoutSessionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_workout_session_details_workout_sessions_workout_session_id");
+
+                    b.Navigation("Exercise");
+
+                    b.Navigation("WorkoutSession");
                 });
 
             modelBuilder.Entity("FitnessTrainingSystem.Domain.Entities.AiRecommendation", b =>
@@ -593,17 +1285,22 @@ namespace FitnessTrainingSystem.Infrastructure.Migrations
 
             modelBuilder.Entity("FitnessTrainingSystem.Domain.Entities.Exercise", b =>
                 {
-                    b.Navigation("WorkoutLogs");
+                    b.Navigation("WorkoutSessionDetails");
                 });
 
             modelBuilder.Entity("FitnessTrainingSystem.Domain.Entities.Food", b =>
                 {
-                    b.Navigation("Menus");
+                    b.Navigation("MealScheduleItems");
                 });
 
             modelBuilder.Entity("FitnessTrainingSystem.Domain.Entities.MealSchedule", b =>
                 {
-                    b.Navigation("Menus");
+                    b.Navigation("MealScheduleItems");
+                });
+
+            modelBuilder.Entity("FitnessTrainingSystem.Domain.Entities.MuscleGroup", b =>
+                {
+                    b.Navigation("Exercises");
                 });
 
             modelBuilder.Entity("FitnessTrainingSystem.Domain.Entities.ProductPackage", b =>
@@ -628,15 +1325,25 @@ namespace FitnessTrainingSystem.Infrastructure.Migrations
 
                     b.Navigation("MemberSchedules");
 
-                    b.Navigation("Menus");
-
                     b.Navigation("Orders");
 
                     b.Navigation("PtProfile");
 
                     b.Navigation("PtSchedules");
 
-                    b.Navigation("WorkoutLogs");
+                    b.Navigation("WorkoutSessions");
+                });
+
+            modelBuilder.Entity("FitnessTrainingSystem.Domain.Entities.WorkoutPlan", b =>
+                {
+                    b.Navigation("WorkoutPlanExercises");
+
+                    b.Navigation("WorkoutSessions");
+                });
+
+            modelBuilder.Entity("FitnessTrainingSystem.Domain.Entities.WorkoutSession", b =>
+                {
+                    b.Navigation("WorkoutSessionDetails");
                 });
 #pragma warning restore 612, 618
         }

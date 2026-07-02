@@ -5,6 +5,7 @@ export interface AuthResponse {
   fullname: string
   email: string
   token: string
+  roleId: number | null
 }
 
 export const authService = {

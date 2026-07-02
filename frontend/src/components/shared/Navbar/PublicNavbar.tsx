@@ -8,7 +8,7 @@ import { useAuthStore } from '../../../store/useAuthStore'
 const navLinks = [
   { label: 'Features', href: '/#features' },
   { label: 'Pricing', href: '/pricing' },
-  { label: 'Training', href: '/#training' },
+  { label: 'Training', href: '/dashboard' },
   { label: 'About', href: '/about' },
 ]
 
@@ -22,6 +22,13 @@ const PublicNavbar: React.FC = () => {
 
   const handleNavClick = (href: string) => {
     setIsMobileMenuOpen(false)
+
+    // Redirect to login if trying to access protected routes while not authenticated
+    if (href === '/dashboard' && !isAuthenticated) {
+      navigate('/login')
+      return
+    }
+
     if (href.startsWith('/#')) {
       const targetId = href.replace('/#', '#')
       if (location.pathname !== '/') {

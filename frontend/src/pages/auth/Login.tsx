@@ -55,9 +55,18 @@ const Login: React.FC = () => {
 
   const loginWithGoogle = <GoogleLogin
     onSuccess={async (credentialResponse) => {
-      const response = await authService.googleLogin(credentialResponse.credential!)
-      setTokens(response.token, '')
-      navigate('/')
+      try {
+        const response = await authService.googleLogin(credentialResponse.credential!)
+        setTokens(response.token, '', response.roleId)
+        toast({ title: 'Login Successful', description: `Welcome, ${response.fullname}!`, status: 'success', duration: 3000, isClosable: true, position: 'top-right' })
+        if (response.roleId === 1 || response.roleId === 2) {
+          navigate('/admin')
+        } else {
+          navigate('/dashboard')
+        }
+      } catch (error: any) {
+        toast({ title: 'Google Login Failed', description: error.response?.data?.message || 'Could not sign in with Google.', status: 'error', duration: 3000, isClosable: true, position: 'top-right' })
+      }
     }}
     onError={() => toast({ title: 'Google Login Failed', status: 'error' })}
   />
@@ -67,9 +76,13 @@ const Login: React.FC = () => {
     setIsLoading(true)
     try {
       const response = await authService.login(data)
-      setTokens(response.token, '')
+      setTokens(response.token, '', response.roleId)
       toast({ title: 'Login Successful', description: `Welcome back, ${response.fullname}!`, status: 'success', duration: 3000, isClosable: true, position: 'top-right' })
-      navigate('/')
+      if (response.roleId === 1 || response.roleId === 2) {
+        navigate('/admin')
+      } else {
+        navigate('/dashboard')
+      }
     } catch (error: any) {
       toast({ title: 'Login Failed', description: error.response?.data?.message || 'Invalid credentials.', status: 'error', duration: 3000, isClosable: true, position: 'top-right' })
     } finally {
@@ -260,7 +273,7 @@ const Login: React.FC = () => {
                   fontSize="12px"
                   color="#ffb4ac"
                   _hover={{ color: '#ffdad6', textDecoration: 'none' }}
-                  href="#"
+                  onClick={() => navigate('/forgot-password')}
                 >
                   Forgot password?
                 </Link>

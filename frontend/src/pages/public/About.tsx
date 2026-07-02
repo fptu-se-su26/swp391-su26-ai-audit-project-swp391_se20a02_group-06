@@ -10,14 +10,22 @@ import {
   Image,
 } from '@chakra-ui/react'
 import { useNavigate } from 'react-router-dom'
+import { useAuthStore } from '../../store/useAuthStore'
 import PublicNavbar from '../../components/shared/Navbar/PublicNavbar'
 import PublicFooter from '../../components/shared/Footer/PublicFooter'
 import AppButton from '../../components/shared/Button/AppButton'
 
 const About: React.FC = () => {
   const navigate = useNavigate()
-  const handleLoginClick = () => navigate('/login')
+  const { isAuthenticated, roleId } = useAuthStore()
 
+  const handleLoginClick = () => {
+    if (isAuthenticated) {
+      navigate(roleId === 1 ? '/admin' : '/dashboard')
+    } else {
+      navigate('/login')
+    }
+  }
 
   const values = [
     {
@@ -322,7 +330,7 @@ const About: React.FC = () => {
           <HStack spacing="4" flexWrap="wrap" justify="center">
             <AppButton
               variant="solid"
-              label="Start Free Trial"
+              label={isAuthenticated ? "Go to Dashboard" : "Start Free Trial"}
               px="8"
               py="6"
               fontSize="14px"

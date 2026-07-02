@@ -1,0 +1,6 @@
+fastapi
+uvicorn
+pydantic
+google-genai
+httpx
+python-dotenv==1.0.1
