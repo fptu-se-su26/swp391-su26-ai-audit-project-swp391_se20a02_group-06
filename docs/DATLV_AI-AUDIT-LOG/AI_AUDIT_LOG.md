@@ -248,6 +248,63 @@ AI phân tích lỗi rất nhanh (từ lỗi logic FE đến lỗi thư viện h
 
 ---
 
+### Lần sử dụng AI số 4
+
+| Nội dung | Thông tin |
+|---|---|
+| Ngày sử dụng | 02/07/2026 |
+| Công cụ AI | Antigravity |
+| Mục đích sử dụng | Đồng bộ hoá giao diện (UI Consistency), tái cấu trúc (Refactor) Header Component, và dọn dẹp code. |
+| Phần việc liên quan | Frontend |
+| Mức độ sử dụng | Sinh chính nội dung |
+
+#### 4.1. Prompt đã sử dụng
+
+```text
+"sửa lại chiều cao của các oo nhập liệu cho đúng với dự án nó đang bị nhỏ... ở đâu có notification, setting, avatar thì lấy giống ở dashboard cho tôi... avatar ở dashboard chưa đúng... xoá search, notification, và avatar, 3 cái trên đó luôn"
+```
+
+#### 4.2. Kết quả AI gợi ý
+
+```text
+AI đề xuất kế hoạch (Implementation Plan):
+1. Chuẩn hoá toàn bộ chiều cao các thẻ Input (Quên mật khẩu, Đổi mật khẩu) về 42px.
+2. Tạo shared component `HeaderActions.tsx` gọi trực tiếp `getProfile` API để hiển thị đúng Avatar Google và tái sử dụng cho Dashboard, PT Booking.
+3. Xoá trắng HStack thừa thãi ở trang Profile theo yêu cầu.
+4. Tự động chạy TypeScript check (`tsc`) và xoá các import dư thừa (unused variables) để tránh lỗi build.
+```
+
+#### 4.3. Phần sinh viên/nhóm đã sử dụng từ AI
+
+```text
+Chấp thuận toàn bộ code do AI sửa đổi (Refactor) bao gồm component `HeaderActions.tsx` và các sửa đổi UI trên `Dashboard.tsx`, `PTBooking.tsx`, `Profile.tsx`, `ChangePasswordModal.tsx`, `ForgotPassword.tsx`.
+```
+
+#### 4.4. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
+
+```text
+Bổ sung yêu cầu chi tiết ("xoá search, notification, và avatar, 3 cái trên đó luôn") khi AI hỏi lại trong file Plan để tránh việc AI xoá nhầm các component khác của trang Profile. Trực tiếp chạy lệnh git để commit và lưu trữ lại phiên bản hoàn chỉnh.
+```
+
+#### 4.5. Minh chứng
+
+| Loại minh chứng | Nội dung |
+|---|---|
+| Link commit | (Commit sau khi hoàn tất Lần 4) |
+| File liên quan | `HeaderActions.tsx`, `Dashboard.tsx`, `Profile.tsx`, `PTBooking.tsx`, `ForgotPassword.tsx` |
+| Screenshot | Giao diện Header đồng nhất, Avatar hiển thị chuẩn xác ở mọi trang |
+| Kết quả chạy/test | Build thành công, `npm run build` không báo lỗi unused variables |
+| Link video demo | N/A |
+| Ghi chú khác | N/A |
+
+#### 4.6. Nhận xét cá nhân/nhóm
+
+```text
+Học được tư duy Component hóa (Componentization) trong React. Thay vì copy-paste cùng một khối UI (chuông, settings, avatar) ở nhiều trang, việc gom lại thành một Shared Component giúp dễ bảo trì và đồng bộ. 
+```
+
+---
+
 ## 5. Bảng tổng hợp mức độ sử dụng AI
 
 Đánh dấu mức độ AI hỗ trợ ở từng hạng mục.
@@ -314,7 +371,7 @@ Mô tả phần sinh viên tự làm, phần AI hỗ trợ và phần đã tự 
 
 | Thành viên | MSSV | Nhiệm vụ chính | Có sử dụng AI không? | Minh chứng đóng góp |
 |---|---|---|---|---|
-| Lê Văn Đạt | (Tự điền) | Code giao diện FE, API Auth/Profile, Review & Merge Code nhánh `feature/dat/fe` | Có | Git commit trên `feature/dat/fe` & `dev` |
+| Lê Văn Đạt | DE180983 | Code giao diện FE, API Auth/Profile, Review & Merge Code nhánh `feature/dat/fe` | Có | Git commit trên `feature/dat/fe` & `dev` |
 | (Thành viên 2) | (Tự điền) | (Bổ sung nhiệm vụ thực tế) | Có/Không | (Bổ sung sau) |
 | (Thành viên 3) | (Tự điền) | (Bổ sung nhiệm vụ thực tế) | Có/Không | (Bổ sung sau) |
 

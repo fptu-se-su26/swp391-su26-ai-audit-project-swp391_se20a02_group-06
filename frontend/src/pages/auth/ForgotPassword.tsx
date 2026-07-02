@@ -150,11 +150,17 @@ const ForgotPassword = () => {
                     placeholder="Enter your email" 
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    bg="blackAlpha.400" 
-                    border="1px solid" 
-                    borderColor="whiteAlpha.200" 
-                    color="white" 
-                    _focus={{ borderColor: 'brand.primary', boxShadow: 'none' }}
+                    bg="#0A0A0A"
+                    borderColor="#262626"
+                    color="#e2e1eb"
+                    h="42px"
+                    _placeholder={{ color: '#8A8A93' }}
+                    _hover={{ borderColor: '#e03030' }}
+                    _focus={{
+                      borderColor: '#e03030',
+                      boxShadow: '0 0 0 1px #e03030',
+                      bg: '#0A0A0A',
+                    }}
                   />
                 </FormControl>
                 
@@ -175,11 +181,17 @@ const ForgotPassword = () => {
                     placeholder="Enter new password" 
                     value={newPassword}
                     onChange={(e) => setNewPassword(e.target.value)}
-                    bg="blackAlpha.400" 
-                    border="1px solid" 
-                    borderColor="whiteAlpha.200" 
-                    color="white" 
-                    _focus={{ borderColor: 'brand.primary', boxShadow: 'none' }}
+                    bg="#0A0A0A"
+                    borderColor="#262626"
+                    color="#e2e1eb"
+                    h="42px"
+                    _placeholder={{ color: '#8A8A93' }}
+                    _hover={{ borderColor: '#e03030' }}
+                    _focus={{
+                      borderColor: '#e03030',
+                      boxShadow: '0 0 0 1px #e03030',
+                      bg: '#0A0A0A',
+                    }}
                   />
                 </FormControl>
 
@@ -190,11 +202,17 @@ const ForgotPassword = () => {
                     placeholder="Confirm new password" 
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
-                    bg="blackAlpha.400" 
-                    border="1px solid" 
-                    borderColor="whiteAlpha.200" 
-                    color="white" 
-                    _focus={{ borderColor: 'brand.primary', boxShadow: 'none' }}
+                    bg="#0A0A0A"
+                    borderColor="#262626"
+                    color="#e2e1eb"
+                    h="42px"
+                    _placeholder={{ color: '#8A8A93' }}
+                    _hover={{ borderColor: '#e03030' }}
+                    _focus={{
+                      borderColor: '#e03030',
+                      boxShadow: '0 0 0 1px #e03030',
+                      bg: '#0A0A0A',
+                    }}
                   />
                 </FormControl>
                 

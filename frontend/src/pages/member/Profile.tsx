@@ -9,17 +9,13 @@ import {
     VStack,
     Avatar,
     Grid,
-    Input,
-    InputGroup,
-    InputLeftElement,
-    Icon,
     Button,
     Badge,
     Divider,
     Spinner,
     useToast
 } from '@chakra-ui/react'
-import { FiSearch, FiBell, FiEdit2, FiCheck, FiChevronRight } from 'react-icons/fi'
+import { FiEdit2, FiCheck, FiChevronRight } from 'react-icons/fi'
 import MemberLayout from '../../components/shared/Layout/MemberLayout'
 import BodyMetricsModal from './components/BodyMetricsModal'
 import ChangePasswordModal from './components/ChangePasswordModal'
@@ -95,26 +91,7 @@ const Profile: React.FC = () => {
                     <Heading fontSize="24px" fontWeight="800" color="white">
                         Control Center
                     </Heading>
-                    <HStack spacing="4">
-                        <InputGroup w="300px">
-                            <InputLeftElement pointerEvents="none">
-                                <Icon as={FiSearch} color="#8A8A93" />
-                            </InputLeftElement>
-                            <Input 
-                                placeholder="Search settings..." 
-                                bg="#111318" 
-                                border="1px solid #1e2028"
-                                color="white"
-                                _placeholder={{ color: '#4e5060' }}
-                                _focus={{ borderColor: '#E03030', boxShadow: 'none' }}
-                                borderRadius="12px"
-                            />
-                        </InputGroup>
-                        <Box p="3" bg="#111318" border="1px solid #1e2028" borderRadius="12px" cursor="pointer" _hover={{ bg: '#1a1c23' }}>
-                            <Icon as={FiBell} color="#8A8A93" boxSize="5" />
-                        </Box>
-                        <Avatar size="sm" name={profile?.name || "Member"} src={profile?.avatarUrl || ""} border="2px solid #2e3040" />
-                    </HStack>
+
                 </Flex>
 
                 <Grid templateColumns="1fr 340px" gap="6">
