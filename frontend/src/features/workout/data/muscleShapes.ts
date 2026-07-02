@@ -1,4 +1,4 @@
-export const muscleZones: { id: string; label: string; d: string }[] = [
+export const muscleShapes: { id: string; label: string; d: string }[] = [
     {
         id: 'shoulders',
         label: 'Shoulders',

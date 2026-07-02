@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import {
     Box,
     Flex,
@@ -18,7 +18,8 @@ import {
     SectionLabel,
     StepDots,
 } from './WorkoutSetupControls'
-import { muscleZones } from '../data/muscleZones'
+import { muscleShapes } from '../data/muscleShapes'
+import { getMuscleGroups } from '../../../api/muscleGroups'
 
 interface WorkoutSetupProps {
     onComplete: (data: WorkoutFormData) => void
@@ -44,6 +45,30 @@ const WorkoutSetup: React.FC<WorkoutSetupProps> = ({ onComplete }) => {
         targetCalories: 300,
     })
 
+    const [muscleZones, setMuscleZones] = useState<{ id: string; label: string; d: string }[]>(muscleShapes)
+
+    useEffect(() => {
+        const fetchMuscles = async () => {
+            try {
+                const apiMuscles = await getMuscleGroups()
+                // Map API data to SVG shapes
+                const mappedZones = apiMuscles.map(apiM => {
+                    // Try to find a shape matching the name
+                    const shape = muscleShapes.find(s => s.label.toLowerCase() === apiM.name.toLowerCase() || s.id === apiM.name.toLowerCase())
+                    return {
+                        id: apiM.id.toString(), // use DB id or keep name
+                        label: apiM.name,
+                        d: shape?.d || '' // default empty path if not found
+                    }
+                })
+                setMuscleZones(mappedZones)
+            } catch (err) {
+                console.error("Failed to fetch muscle groups:", err)
+            }
+        }
+        fetchMuscles()
+    }, [])
+
     const set = (key: keyof WorkoutFormData, value: WorkoutFormData[keyof WorkoutFormData]) =>
         setForm((prev) => ({ ...prev, [key]: value }))
 
@@ -57,9 +82,9 @@ const WorkoutSetup: React.FC<WorkoutSetupProps> = ({ onComplete }) => {
         })
 
     const canNext = () => {
-        if (step === 0) return !!form.goal
-        if (step === 1) return form.muscles.length > 0
-        if (step === 2) return !!form.planType
+        if (step === 0) return !!form.planType
+        if (step === 1) return !!form.goal
+        if (step === 2) return form.muscles.length > 0
         return true
     }
 
@@ -70,9 +95,9 @@ const WorkoutSetup: React.FC<WorkoutSetupProps> = ({ onComplete }) => {
     const back = () => setStep((s) => s - 1)
 
     const stepMeta = [
+        { title: 'Plan Type', sub: 'Do you want a single day or a full week plan?' },
         { title: 'Training Goal', sub: 'Choose your main goal for the AI to adjust your program.' },
         { title: 'Target Muscles', sub: 'Select the target muscles you want AISTHEA to focus on.' },
-        { title: 'Plan Type', sub: 'Do you want a single day or a full week plan?' },
         { title: 'Availability & Schedule', sub: 'Customize duration, frequency, and equipment.' },
     ]
 
@@ -115,8 +140,8 @@ const WorkoutSetup: React.FC<WorkoutSetupProps> = ({ onComplete }) => {
 
                 {/* Body */}
                 <Box px="8" pb="6">
-                    {/* ── STEP 0: Goal selection ── */}
-                    {step === 0 && (
+                    {/* ── STEP 1: Goal selection ── */}
+                    {step === 1 && (
                         <Stack spacing="5">
                             <SectionLabel>Select your goal</SectionLabel>
                             <Grid templateColumns="repeat(2, 1fr)" gap="3">
@@ -153,8 +178,8 @@ const WorkoutSetup: React.FC<WorkoutSetupProps> = ({ onComplete }) => {
                         </Stack>
                     )}
 
-                    {/* ── STEP 1: Target muscles ── */}
-                    {step === 1 && (
+                    {/* ── STEP 2: Target muscles ── */}
+                    {step === 2 && (
                         <Flex gap="5" h="100%">
                             {/* Left: step sidebar */}
                             <Box w="160px" flexShrink={0}>
@@ -235,7 +260,7 @@ const WorkoutSetup: React.FC<WorkoutSetupProps> = ({ onComplete }) => {
 
                             {/* Right: body diagram */}
                             <Box flex="1">
-                                <BodyDiagram selected={form.muscles} onToggle={(id) => toggleArr('muscles', id)} />
+                                <BodyDiagram selected={form.muscles} onToggle={(id) => toggleArr('muscles', id)} muscleZones={muscleZones} />
                                 <Flex
                                     justify="center"
                                     mt="3"
@@ -263,7 +288,7 @@ const WorkoutSetup: React.FC<WorkoutSetupProps> = ({ onComplete }) => {
                                     ))}
                                     <OptionChip
                                         label="Full Body"
-                                        selected={form.muscles.length === muscleZones.length}
+                                        selected={form.muscles.length === muscleZones.length && muscleZones.length > 0}
                                         onClick={() => {
                                             if (form.muscles.length === muscleZones.length) {
                                                 setForm((p) => ({ ...p, muscles: [] }))
@@ -277,8 +302,8 @@ const WorkoutSetup: React.FC<WorkoutSetupProps> = ({ onComplete }) => {
                         </Flex>
                     )}
 
-                    {/* ── STEP 2: Plan Type ── */}
-                    {step === 2 && (
+                    {/* ── STEP 0: Plan Type ── */}
+                    {step === 0 && (
                         <Stack spacing="5">
                             <SectionLabel>Select plan type</SectionLabel>
                             <Grid templateColumns="repeat(2, 1fr)" gap="4">
@@ -302,20 +327,18 @@ const WorkoutSetup: React.FC<WorkoutSetupProps> = ({ onComplete }) => {
                                 </Box>
                                 <Box
                                     p="5"
-                                    bg={form.planType === 'weekly' ? 'rgba(224,48,48,0.1)' : '#141720'}
+                                    bg="#141720"
                                     border="1.5px solid"
-                                    borderColor={form.planType === 'weekly' ? '#E03030' : '#2e3040'}
+                                    borderColor="#2e3040"
                                     borderRadius="16px"
-                                    cursor="pointer"
-                                    transition="all 0.2s"
-                                    onClick={() => set('planType', 'weekly')}
-                                    _hover={{ borderColor: form.planType === 'weekly' ? '#E03030' : '#3e4050' }}
+                                    opacity={0.5}
+                                    cursor="not-allowed"
                                 >
-                                    <Heading fontSize="18px" fontWeight="800" color={form.planType === 'weekly' ? 'white' : '#E2E1EB'} mb="2">
+                                    <Heading fontSize="18px" fontWeight="800" color="#E2E1EB" mb="2">
                                         Weekly
                                     </Heading>
                                     <Text fontSize="13px" color="#8A8A93">
-                                        Create a detailed weekly plan based on your frequency.
+                                        Coming soon
                                     </Text>
                                 </Box>
                             </Grid>
