@@ -3,82 +3,47 @@ using FitnessTrainingSystem.Domain.Entities;
 
 namespace FitnessTrainingSystem.Infrastructure.Persistence;
 
-public partial class ApplicationDbContext : DbContext
+public class ApplicationDbContext : DbContext
 {
-<<<<<<< Updated upstream
-    public ApplicationDbContext()
-    {
-    }
-=======
-    public DbSet<FitnessTrainingSystem.Domain.Entities.User> Users { get; set; }
-    
->>>>>>> Stashed changes
+    // --- KHAI BÁO TOÀN BỘ ĐẦY ĐỦ CÁC ĐỐI TƯỢNG ĐÃ CÓ TRONG THƯ MỤC ENTITIES ---
+    public DbSet<User> Users { get; set; }
+    public DbSet<AiRecommendation> AiRecommendations { get; set; }
+    public DbSet<BodyMetric> BodyMetrics { get; set; }
+    public DbSet<EmailOTP> EmailOTPs { get; set; }
+    public DbSet<Exercise> Exercises { get; set; }
+    public DbSet<Food> Foods { get; set; }
+    public DbSet<MealSchedule> MealSchedules { get; set; }
+    public DbSet<MealScheduleItem> MealScheduleItems { get; set; }
+    public DbSet<MembershipSubscription> MembershipSubscriptions { get; set; }
+    public DbSet<Menu> Menus { get; set; }
+    public DbSet<MuscleGroup> MuscleGroups { get; set; }
+    public DbSet<Notification> Notifications { get; set; }
+    public DbSet<Order> Orders { get; set; }
+    public DbSet<Payment> Payments { get; set; }
+    public DbSet<ProductPackage> ProductPackages { get; set; }
+    public DbSet<PtProfile> PtProfiles { get; set; }
+    public DbSet<PtUploadRequest> PtUploadRequests { get; set; }
+    public DbSet<Role> Roles { get; set; }
+    public DbSet<Schedule> Schedules { get; set; }
+    public DbSet<WorkoutLog> WorkoutLogs { get; set; }
+    public DbSet<WorkoutPlan> WorkoutPlans { get; set; }
+    public DbSet<WorkoutPlanExercise> WorkoutPlanExercises { get; set; }
+    public DbSet<WorkoutSession> WorkoutSessions { get; set; }
+    public DbSet<WorkoutSessionDetail> WorkoutSessionDetails { get; set; }
 
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
         : base(options)
-        
-    {
-    }
-
-    public virtual DbSet<AiRecommendation> AiRecommendations { get; set; }
-    public virtual DbSet<EmailOTP> EmailOTPs { get; set; }
-
-    public virtual DbSet<BodyMetric> BodyMetrics { get; set; }
-
-    public virtual DbSet<Exercise> Exercises { get; set; }
-
-    public virtual DbSet<Food> Foods { get; set; }
-
-    public virtual DbSet<MealSchedule> MealSchedules { get; set; }
-
-    public virtual DbSet<MealScheduleItem> MealScheduleItems { get; set; }
-
-    public virtual DbSet<MembershipSubscription> MembershipSubscriptions { get; set; }
-
-    public virtual DbSet<MuscleGroup> MuscleGroups { get; set; }
-
-    public virtual DbSet<Notification> Notifications { get; set; }
-
-    public virtual DbSet<Order> Orders { get; set; }
-
-    public virtual DbSet<Payment> Payments { get; set; }
-
-    public virtual DbSet<ProductPackage> ProductPackages { get; set; }
-
-    public virtual DbSet<PtProfile> PtProfiles { get; set; }
-
-    public virtual DbSet<PtUploadRequest> PtUploadRequests { get; set; }
-
-    public virtual DbSet<Role> Roles { get; set; }
-
-    public virtual DbSet<Schedule> Schedules { get; set; }
-
-    public virtual DbSet<User> Users { get; set; }
-
-    public virtual DbSet<WorkoutPlan> WorkoutPlans { get; set; }
-
-    public virtual DbSet<WorkoutPlanExercise> WorkoutPlanExercises { get; set; }
-
-    public virtual DbSet<WorkoutSession> WorkoutSessions { get; set; }
-
-    public virtual DbSet<WorkoutSessionDetail> WorkoutSessionDetails { get; set; }
-
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder
-            .UseCollation("utf8mb4_unicode_ci")
-            .HasCharSet("utf8mb4");
+        base.OnModelCreating(modelBuilder);
+        
+        // Tự động áp dụng tất cả các cấu hình Fluent API có trong Assembly này
+        modelBuilder.ApplyConfigurationsFromAssembly(typeof(ApplicationDbContext).Assembly);
 
-        modelBuilder.Entity<AiRecommendation>(entity =>
-        {
-            entity.ToTable("ai_recommendations");
-            entity.HasIndex(e => e.UserId, "user_id");
-        });
-
+        // Giữ cấu hình tránh lỗi Cascade Delete vòng lặp cho bảng Schedule
         modelBuilder.Entity<Schedule>()
             .HasOne(s => s.Pt)
             .WithMany(u => u.PtSchedules)
@@ -90,17 +55,5 @@ public partial class ApplicationDbContext : DbContext
             .WithMany(u => u.MemberSchedules)
             .HasForeignKey(s => s.MemberId)
             .OnDelete(DeleteBehavior.Restrict);
-
-        modelBuilder.Entity<EmailOTP>(entity =>
-        {
-            entity.ToTable("EmailOTP");
-            entity.HasKey(e => e.Id);
-            entity.Property(e => e.Id).HasMaxLength(36);
-            entity.Property(e => e.Email).HasMaxLength(100);
-            entity.Property(e => e.Purpose).HasMaxLength(50);
-            entity.HasIndex(e => e.Email).HasDatabaseName("IX_EmailOTP_Email");
-            entity.HasIndex(e => e.Purpose).HasDatabaseName("IX_EmailOTP_Purpose");
-            entity.HasIndex(e => e.ExpiredAt).HasDatabaseName("IX_EmailOTP_ExpiredAt");
-        });
     }
 }
