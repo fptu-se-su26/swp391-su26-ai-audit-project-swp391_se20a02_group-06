@@ -16,6 +16,7 @@ export type WorkoutFormData = {
 }
 
 export interface ExerciseCardData {
+    id: number
     index: number
     name: string
     tags: string[]

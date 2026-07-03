@@ -46,6 +46,7 @@ public static class DependencyInjection
         services.AddScoped<FitnessTrainingSystem.Application.Interfaces.IEmailService, FitnessTrainingSystem.Infrastructure.Services.EmailService>();
         services.AddScoped<FitnessTrainingSystem.Application.Interfaces.IOTPService, FitnessTrainingSystem.Infrastructure.Services.OTPService>();
         services.AddScoped<IMuscleGroupService, MuscleGroupService>();
+        services.AddScoped<IWorkoutService, WorkoutService>();
 
         // 🚀 ĐĂNG KÝ HỆ THỐNG TRUY CẬP AI DƯỚI ĐÂY
         services.AddHttpClient<IGeminiAiService, GeminiAiService>();

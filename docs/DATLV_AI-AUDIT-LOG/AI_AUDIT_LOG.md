@@ -305,6 +305,64 @@ Học được tư duy Component hóa (Componentization) trong React. Thay vì c
 
 ---
 
+### Lần sử dụng AI số 5
+
+| Nội dung | Thông tin |
+|---|---|
+| Ngày sử dụng | 04/07/2026 |
+| Công cụ AI | Antigravity |
+| Mục đích sử dụng | Tích hợp Database thực tế cho luồng Tập Luyện (Workout Flow), lưu trữ Session, History và sửa lỗi Routing. |
+| Phần việc liên quan | Fullstack (Frontend & Backend) |
+| Mức độ sử dụng | Sinh chính nội dung |
+
+#### 4.1. Prompt đã sử dụng
+
+```text
+"tôi có bảng này dùng thật vào dự án luôn cho tôi hiện tại tạo bài tập ra nó chưa có dữ liệu, xử lý và gắn vào luồn hiện tại. và làm chức năng lưu lích sử bài tập của người dụng lại cho tôi... Complete Workout xong nó nhảy ra trang chủ luôn... thanh tiếng trình phải đầy có nghĩa phải tập đủ hoặc đáng dấu đã tập xong thì mới bấm nút complete workout được. và bấm xong thì nhảy đến tab nutrition."
+```
+
+#### 4.2. Kết quả AI gợi ý
+
+```text
+AI đề xuất và thực hiện Implementation Plan chi tiết:
+1. Backend: Dựng `WorkoutService.cs`, `WorkoutsController.cs` và các DTOs để INSERT trực tiếp `WorkoutPlan` và `WorkoutSession` xuống bảng MySQL thông qua Entity Framework.
+2. Frontend: Viết `api/workouts.ts` gọi backend. Cập nhật `useWorkoutStore.ts` lưu `activePlanId`, `activeSessionId`.
+3. Cập nhật `WorkoutResults.tsx`: Thêm logic kiểm tra điều kiện `completedCount === exercises.length` để khoá/mở nút "Complete Workout".
+4. Fix lỗi nhảy trang chủ: Sửa sai lệch Route từ `/member/nutrition` sang `/nutrition` để không dính Default Catch-all Route `*`.
+5. Cập nhật `Progress.tsx`: Call API fetch dữ liệu History thật từ DB lên thay vì dùng UI tĩnh.
+```
+
+#### 4.3. Phần sinh viên/nhóm đã sử dụng từ AI
+
+```text
+Sử dụng toàn bộ logic tương tác Entity Framework của Backend do AI thiết kế và các luồng gọi axios (API calls) trên Frontend. Chấp thuận phương pháp phân luồng logic session: Create Plan -> Start Session -> Complete Session.
+```
+
+#### 4.4. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
+
+```text
+Sinh viên theo dõi tab Console, phân tích các bug 404 và báo lại cho AI để AI nhận diện được đó là log rác cũ hoặc lỗi do Backend chưa restart. Yêu cầu AI chuyển hướng từ Progress sang Nutrition theo đúng flow UX mới của dự án.
+```
+
+#### 4.5. Minh chứng
+
+| Loại minh chứng | Nội dung |
+|---|---|
+| Link commit | (Commit thay đổi Database Workout) |
+| File liên quan | `WorkoutService.cs`, `WorkoutsController.cs`, `WorkoutResults.tsx`, `Progress.tsx`, `router-container.tsx` |
+| Screenshot | Đã kiểm tra UI: Nút Complete Workout bị mờ, dữ liệu lịch sử hiện đúng ngày và danh sách bài tập. |
+| Kết quả chạy/test | Thành công, dữ liệu WorkoutSessionDetails ghi nhận chính xác xuống MySQL Workbench. |
+| Link video demo | N/A |
+| Ghi chú khác | Flow AI tạo bài tập đã gắn chặt chẽ vào DB |
+
+#### 4.6. Nhận xét cá nhân/nhóm
+
+```text
+Học được cách debug lỗi Routing trong React Router v6 (nhầm path dẫn đến rơi vào Route Catch-all và bị đẩy về trang chủ). Hiểu rõ quy trình map dữ liệu phức tạp từ 1 chiều (Plan -> PlanExercises) sang 1 chiều song song (Session -> SessionDetails) bằng Entity Framework.
+```
+
+---
+
 ## 5. Bảng tổng hợp mức độ sử dụng AI
 
 Đánh dấu mức độ AI hỗ trợ ở từng hạng mục.
