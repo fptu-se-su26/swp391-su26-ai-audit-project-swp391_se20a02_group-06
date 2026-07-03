@@ -1,7 +1,6 @@
-using FitnessTrainingSystem.Application.DTOs.User;
-using FitnessTrainingSystem.Infrastructure.Persistence;
+using FitnessTrainingSystem.Application.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace FitnessTrainingSystem.WebApi.Controllers;
 
@@ -9,31 +8,33 @@ namespace FitnessTrainingSystem.WebApi.Controllers;
 [Route("api/[controller]")]
 public class PtController : ControllerBase
 {
-    private readonly ApplicationDbContext _context;
+    private readonly IPtService _ptService;
 
-    public PtController(ApplicationDbContext context)
+    public PtController(IPtService ptService)
     {
-        _context = context;
+        _ptService = ptService;
     }
 
     [HttpGet]
     public async Task<IActionResult> GetPTs()
     {
-        // RoleId = 2 is PT
-        var pts = await _context.Users
-            .Where(u => u.RoleId == 2)
-            .Include(u => u.PtProfile)
-            .Select(u => new PtDto
-            {
-                Id = u.Id,
-                Name = u.Fullname,
-                Email = u.Email,
-                Rating = u.PtProfile != null ? u.PtProfile.Rating : null,
-                Experience = u.PtProfile != null && u.PtProfile.ExperienceYears.HasValue ? $"{u.PtProfile.ExperienceYears.Value} Years" : "-",
-                Status = "Active" // Default to Active as there is no Status field yet
-            })
-            .ToListAsync();
-
+        var pts = await _ptService.GetAllAsync();
         return Ok(pts);
+    }
+
+    [HttpPut("{id}/activate")]
+    public async Task<IActionResult> ActivatePt(int id)
+    {
+        var result = await _ptService.ActivateAsync(id);
+        if (!result) return NotFound();
+        return Ok(new { message = "PT activated successfully" });
+    }
+
+    [HttpPut("{id}/deactivate")]
+    public async Task<IActionResult> DeactivatePt(int id)
+    {
+        var result = await _ptService.DeactivateAsync(id);
+        if (!result) return NotFound();
+        return Ok(new { message = "PT deactivated successfully" });
     }
 }

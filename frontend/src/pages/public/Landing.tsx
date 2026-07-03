@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import hero1 from '../../assets/landing/hero1.png'
 import hero2 from '../../assets/landing/hero2.png'
 import hero3 from '../../assets/landing/hero3.png'
@@ -15,6 +15,7 @@ import {
   HStack,
 } from '@chakra-ui/react'
 import { useNavigate } from 'react-router-dom'
+import { useAuthStore } from '../../store/useAuthStore'
 import {
   FiCheck,
   FiCheckCircle,
@@ -30,6 +31,7 @@ import {
 import PublicNavbar from '../../components/shared/Navbar/PublicNavbar'
 import PublicFooter from '../../components/shared/Footer/PublicFooter'
 import AppButton from '../../components/shared/Button/AppButton'
+import { getProductPackages, type ProductPackage } from '../../api/productPackages'
 
 // Hero athlete gallery images from Stitch
 const heroImages = [
@@ -93,8 +95,35 @@ const aboutCards = [
 const Landing: React.FC = () => {
   const navigate = useNavigate()
   const [isYearly, setIsYearly] = useState(false)
+  const [packages, setPackages] = useState<ProductPackage[]>([])
+  const { isAuthenticated, roleId } = useAuthStore()
 
-  const handleLoginClick = () => navigate('/login')
+  useEffect(() => {
+    const fetchPackages = async () => {
+      const data = await getProductPackages()
+      setPackages(data)
+    }
+    fetchPackages()
+  }, [])
+
+  const handleLoginClick = () => {
+    if (isAuthenticated) {
+      navigate(roleId === 1 ? '/admin' : '/dashboard')
+    } else {
+      navigate('/login')
+    }
+  }
+
+  const filteredPackages = packages
+    .filter(p => isYearly ? p.durationDays >= 180 : p.durationDays < 180)
+    .sort((a, b) => {
+      // Prioritize popular packages
+      if (a.isPopular && !b.isPopular) return -1;
+      if (!a.isPopular && b.isPopular) return 1;
+      // Secondary sort by price or duration if needed, currently leaving as is
+      return 0;
+    })
+    .slice(0, 3);
 
   return (
     <Box minH="100vh" bg="#0c0e14" color="#e2e1eb" overflowX="hidden">
@@ -181,7 +210,7 @@ const Landing: React.FC = () => {
               <Stack direction={{ base: 'column', sm: 'row' }} spacing="4" pt="2">
                 <AppButton
                   variant="solid"
-                  label="Start Free Trial"
+                  label={isAuthenticated ? "Go to Dashboard" : "Start Free Trial"}
                   px="8"
                   py="6"
                   fontSize="md"
@@ -349,7 +378,7 @@ const Landing: React.FC = () => {
               />
               <AppButton
                 variant={isYearly ? 'solid' : 'ghost'}
-                label="Yearly (-20%)"
+                label="Yearly"
                 size="sm"
                 px="6"
                 onClick={() => setIsYearly(true)}
@@ -363,148 +392,76 @@ const Landing: React.FC = () => {
             gap="6"
             w="full"
             alignItems="stretch"
+            justifyContent="center"
           >
-            {/* Foundation */}
-            <Box
-              bg="#1a1b22"
-              border="1px solid"
-              borderColor="#33343c"
-              borderRadius="32px"
-              p="8"
-              display="flex"
-              flexDirection="column"
-              gap="6"
-              transition="all 0.2s"
-              _hover={{ borderColor: '#e5bdb9' }}
-            >
-              <Stack spacing="2">
-                <Text fontSize="lg" fontWeight="600" color="white">Foundation</Text>
-                <Text fontSize="4xl" fontWeight="bold" color="white">
-                  {isYearly ? '$23' : '$29'}
-                  <Text as="span" fontSize="sm" color="#8A8A93" fontWeight="400">/mo</Text>
-                </Text>
-                <Text fontSize="xs" color="#8A8A93">For those starting their elite journey.</Text>
-              </Stack>
-              <Box h="1px" bg="#33343c" />
-              <Stack spacing="4" flex="1">
-                {['Basic AI Workouts', 'Progress Tracking', 'Community Access'].map((feat, i) => (
-                  <HStack key={i} spacing="2" fontSize="sm" color="#8A8A93">
-                    <Icon as={FiCheckCircle} color="#e03030" fontSize="18px" />
-                    <Text>{feat}</Text>
-                  </HStack>
-                ))}
-              </Stack>
-              <AppButton
-                variant="outline"
-                label="Select Foundation"
-                w="full"
-                mt="auto"
-                py="6"
-                onClick={handleLoginClick}
-              />
-            </Box>
-
-            {/* Pro Athlete (Highlighted) */}
-            <Box
-              bg="#33343c"
-              border="2px solid"
-              borderColor="#e03030"
-              borderRadius="32px"
-              p="8"
-              display="flex"
-              flexDirection="column"
-              gap="6"
-              boxShadow="0 20px 60px rgba(224, 48, 48, 0.1)"
-              position="relative"
-              transform={{ base: 'none', md: 'scale(1.05)' }}
-              zIndex="1"
-            >
-              {/* Most Popular Badge */}
+            {filteredPackages.map((pkg) => (
               <Box
-                position="absolute"
-                top="0"
-                left="50%"
-                transform="translate(-50%, -50%)"
-                bg="#e03030"
-                color="white"
-                px="6"
-                py="1.5"
-                borderRadius="full"
-                fontSize="10px"
-                fontWeight="700"
-                textTransform="uppercase"
-                letterSpacing="widest"
-                boxShadow="lg"
+                key={pkg.id}
+                bg={pkg.isPopular ? "#33343c" : "#1a1b22"}
+                border={pkg.isPopular ? "2px solid" : "1px solid"}
+                borderColor={pkg.isPopular ? "#e03030" : "#33343c"}
+                borderRadius="32px"
+                p="8"
+                display="flex"
+                flexDirection="column"
+                gap="6"
+                boxShadow={pkg.isPopular ? "0 20px 60px rgba(224, 48, 48, 0.1)" : "none"}
+                position="relative"
+                transform={pkg.isPopular ? { base: 'none', md: 'scale(1.05)' } : "none"}
+                zIndex={pkg.isPopular ? 1 : 0}
+                transition="all 0.2s"
+                _hover={{ borderColor: pkg.isPopular ? '#e03030' : '#e5bdb9' }}
               >
-                MOST POPULAR
+                {pkg.isPopular && (
+                  <Box
+                    position="absolute"
+                    top="0"
+                    left="50%"
+                    transform="translate(-50%, -50%)"
+                    bg="#e03030"
+                    color="white"
+                    px="6"
+                    py="1.5"
+                    borderRadius="full"
+                    fontSize="10px"
+                    fontWeight="700"
+                    textTransform="uppercase"
+                    letterSpacing="widest"
+                    boxShadow="lg"
+                  >
+                    MOST POPULAR
+                  </Box>
+                )}
+                <Stack spacing="2">
+                  <Text fontSize="lg" fontWeight="600" color="white">{pkg.name}</Text>
+                  <Text fontSize="4xl" fontWeight="bold" color="white">
+                    {pkg.price.toLocaleString('vi-VN')} ₫
+                  </Text>
+                  <Text fontSize="xs" color="#8A8A93">Duration: {pkg.durationDays} days</Text>
+                  <Box py="2">
+                    <Text fontSize="sm" color="#8A8A93" noOfLines={2}>{pkg.description}</Text>
+                  </Box>
+                </Stack>
+                <Box h="1px" bg={pkg.isPopular ? "rgba(224, 48, 48, 0.3)" : "#33343c"} />
+                <Stack spacing="4" flex="1">
+                  {['Access to Platform', 'Progress Tracking'].map((feat, i) => (
+                    <HStack key={i} spacing="2" fontSize="sm" color={pkg.isPopular ? "white" : "#8A8A93"}>
+                      <Icon as={pkg.isPopular ? FiCheck : FiCheckCircle} color="#e03030" fontSize={pkg.isPopular ? "20px" : "18px"} />
+                      <Text>{feat}</Text>
+                    </HStack>
+                  ))}
+                </Stack>
+                <AppButton
+                  variant={pkg.isPopular ? "solid" : "outline"}
+                  label="Purchase Plan"
+                  w="full"
+                  mt="auto"
+                  py="6"
+                  _hover={pkg.isPopular ? { brightness: '110%', boxShadow: 'lg' } : undefined}
+                  onClick={handleLoginClick}
+                />
               </Box>
-              <Stack spacing="2">
-                <Text fontSize="lg" fontWeight="600" color="white">Pro Athlete</Text>
-                <Text fontSize="4xl" fontWeight="bold" color="white">
-                  {isYearly ? '$71' : '$89'}
-                  <Text as="span" fontSize="sm" color="#8A8A93" fontWeight="400">/mo</Text>
-                </Text>
-                <Text fontSize="xs" color="#8A8A93">Complete data-driven performance optimization.</Text>
-              </Stack>
-              <Box h="1px" bg="rgba(224, 48, 48, 0.3)" />
-              <Stack spacing="4" flex="1">
-                {['Advanced AI Programming', 'Nutrition Integration', 'Video Form Analysis', 'Wearable Data Sync'].map((feat, i) => (
-                  <HStack key={i} spacing="2" fontSize="sm" color="white">
-                    <Icon as={FiCheck} color="#e03030" fontSize="20px" />
-                    <Text>{feat}</Text>
-                  </HStack>
-                ))}
-              </Stack>
-              <AppButton
-                variant="solid"
-                label="Get Pro Access"
-                w="full"
-                mt="auto"
-                py="6"
-                _hover={{ brightness: '110%', boxShadow: 'lg' }}
-                onClick={handleLoginClick}
-              />
-            </Box>
-
-            {/* Elite Coached */}
-            <Box
-              bg="#1a1b22"
-              border="1px solid"
-              borderColor="#33343c"
-              borderRadius="32px"
-              p="8"
-              display="flex"
-              flexDirection="column"
-              gap="6"
-              transition="all 0.2s"
-              _hover={{ borderColor: '#e5bdb9' }}
-            >
-              <Stack spacing="2">
-                <Text fontSize="lg" fontWeight="600" color="white">Elite Coached</Text>
-                <Text fontSize="4xl" fontWeight="bold" color="white">
-                  {isYearly ? '$159' : '$199'}
-                  <Text as="span" fontSize="sm" color="#8A8A93" fontWeight="400">/mo</Text>
-                </Text>
-                <Text fontSize="xs" color="#8A8A93">Human expertise meets machine precision.</Text>
-              </Stack>
-              <Box h="1px" bg="#33343c" />
-              <Stack spacing="4" flex="1">
-                {['Everything in Pro', '1-on-1 Human PT Checks', 'Custom Strategy Sessions'].map((feat, i) => (
-                  <HStack key={i} spacing="2" fontSize="sm" color="#8A8A93">
-                    <Icon as={FiCheckCircle} color="#e03030" fontSize="18px" />
-                    <Text>{feat}</Text>
-                  </HStack>
-                ))}
-              </Stack>
-              <AppButton
-                variant="outline"
-                label="Book Coaching"
-                w="full"
-                mt="auto"
-                py="6"
-                onClick={handleLoginClick}
-              />
-            </Box>
+            ))}
           </Grid>
         </Stack>
 

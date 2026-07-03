@@ -1,23 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
+using FitnessTrainingSystem.Domain.Common;
 
 namespace FitnessTrainingSystem.Domain.Entities;
 
-public partial class MealScheduleItem
+public class MealScheduleItem : BaseAuditableEntity
 {
-    public int Id { get; set; }
-
     public int MealScheduleId { get; set; }
-
     public int FoodId { get; set; }
+    public string Amount { get; set; } = string.Empty;
+    public bool IsEaten { get; set; } = false;
 
-    public string Amount { get; set; } = null!;
-
-    public bool? IsEaten { get; set; }
-
-    public DateTime? CreatedAt { get; set; }
-
-    public virtual Food Food { get; set; } = null!;
-
-    public virtual MealSchedule MealSchedule { get; set; } = null!;
+    public MealSchedule MealSchedule { get; set; } = null!;
+    public Food Food { get; set; } = null!;
 }

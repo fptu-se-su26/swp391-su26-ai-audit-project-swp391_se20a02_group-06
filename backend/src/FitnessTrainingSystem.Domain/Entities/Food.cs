@@ -1,27 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
+using FitnessTrainingSystem.Domain.Common;
 
 namespace FitnessTrainingSystem.Domain.Entities;
 
-public partial class Food
+public class Food : BaseEntity
 {
-    public int Id { get; set; }
-
-    public string Name { get; set; } = null!;
-
+    public string Name { get; set; } = string.Empty;
     public string? ServingSize { get; set; }
-
     public string? Unit { get; set; }
-
     public int Calories { get; set; }
-
-    public decimal? Protein { get; set; }
-
-    public decimal? Carbs { get; set; }
-
-    public decimal? Fat { get; set; }
-
+    public decimal Protein { get; set; } = 0.0m;
+    public decimal Carbs { get; set; } = 0.0m;
+    public decimal Fat { get; set; } = 0.0m;
     public string? ImageUrl { get; set; }
 
-    public virtual ICollection<MealScheduleItem> MealScheduleItems { get; set; } = new List<MealScheduleItem>();
+    public ICollection<MealScheduleItem> MealScheduleItems { get; set; } = new List<MealScheduleItem>();
 }

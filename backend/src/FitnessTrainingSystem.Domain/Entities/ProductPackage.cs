@@ -1,27 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
+using FitnessTrainingSystem.Domain.Common;
+using FitnessTrainingSystem.Domain.Enums;
 
 namespace FitnessTrainingSystem.Domain.Entities;
 
-public partial class ProductPackage
+public class ProductPackage : BaseEntity
 {
-    public int Id { get; set; }
-
-    public string Name { get; set; } = null!;
-
-    public string Type { get; set; } = null!;
-
+    public string Name { get; set; } = string.Empty;
+    public PackageType Type { get; set; }
     public decimal Price { get; set; }
-
     public int DurationDays { get; set; }
-
     public string? Description { get; set; }
+    public bool IsActive { get; set; } = true;
+    public bool IsPopular { get; set; } = false;
 
-    public bool? IsActive { get; set; }
-
-    public DateTime? CreatedAt { get; set; }
-
-    public virtual ICollection<MembershipSubscription> MembershipSubscriptions { get; set; } = new List<MembershipSubscription>();
-
-    public virtual ICollection<Order> Orders { get; set; } = new List<Order>();
+    public ICollection<Order> Orders { get; set; } = new List<Order>();
 }

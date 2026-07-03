@@ -24,6 +24,8 @@ import { useNavigate } from 'react-router-dom'
 import AppButton from '../../components/shared/Button/AppButton'
 import { authService } from '../../features/auth/authService'
 import { useAuthStore } from '../../store/useAuthStore'
+import { authApi } from '../../api/auth'
+import { OTPModal } from '../../features/auth/components/OTPModal'
 
 // Validation Schema using Zod
 const registerSchema = z
@@ -48,6 +50,8 @@ const Register: React.FC = () => {
   const toast = useToast()
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
+  const [isOtpModalOpen, setIsOtpModalOpen] = useState(false)
+  const [registerData, setRegisterData] = useState<RegisterFormInputs | null>(null)
 
   const {
     register,
@@ -86,38 +90,54 @@ const Register: React.FC = () => {
   const onSubmit = async (data: RegisterFormInputs) => {
     setIsLoading(true)
     try {
-      const response = await authService.register({
-        fullname: data.fullName,
-        email: data.email,
-        password: data.password,
-        confirmPassword: data.confirmPassword
-      })
-      setTokens(response.token, '', response.roleId)
-      toast({
-        title: 'Registration Successful',
-        description: `Welcome to AISTHEA, ${response.fullname}! Let's start training.`,
-        status: 'success',
-        duration: 4000,
-        isClosable: true,
-        position: 'top-right',
-      })
-      if (response.roleId === 1 || response.roleId === 2) {
-        navigate('/admin')
-      } else {
-        navigate('/dashboard')
-      }
+      await authApi.sendRegisterOTP({ email: data.email })
+      setRegisterData(data)
+      setIsOtpModalOpen(true)
     } catch (error: any) {
       toast({
-        title: 'Registration Failed',
-        description: error.response?.data?.message || 'An error occurred during registration.',
+        title: 'Failed to send OTP',
+        description: error.response?.data?.message || 'Please try again later.',
         status: 'error',
         duration: 3000,
         isClosable: true,
-        position: 'top-right',
       })
     } finally {
       setIsLoading(false)
     }
+  }
+
+  const handleVerifyOtp = async (otp: string) => {
+    if (!registerData) return
+    await authApi.verifyRegisterOTP({ email: registerData.email, otpCode: otp })
+    
+    // Once verified, perform actual registration
+    const response = await authService.register({
+      fullname: registerData.fullName,
+      email: registerData.email,
+      password: registerData.password,
+      confirmPassword: registerData.confirmPassword
+    })
+    
+    setTokens(response.token, '', response.roleId)
+    setIsOtpModalOpen(false)
+    
+    toast({
+      title: 'Registration Successful',
+      description: `Welcome to AISTHEA, ${response.fullname}! Let's start training.`,
+      status: 'success',
+      duration: 4000,
+      isClosable: true,
+    })
+    if (response.roleId === 1 || response.roleId === 2) {
+      navigate('/admin')
+    } else {
+      navigate('/dashboard')
+    }
+  }
+
+  const handleResendOtp = async () => {
+    if (!registerData) return
+    await authApi.sendRegisterOTP({ email: registerData.email })
   }
 
   return (
@@ -387,23 +407,20 @@ const Register: React.FC = () => {
 
         {/* Back to Login Link */}
         <Box textAlign="center" mt="2">
-          <Link
-            fontSize="12px"
-            color="#e5bdb9"
-            _hover={{ color: 'white', textDecoration: 'none' }}
-            onClick={() => navigate('/login')}
-            display="flex"
-            alignItems="center"
-            justifyContent="center"
-            gap="1"
-          >
-            <Box as="span" className="material-symbols-outlined" fontSize="16px">
-              arrow_back
-            </Box>
-            Back to Login
-          </Link>
+            <Text fontSize="12px" color="#e5bdb9">
+              Have an account? <Link color="brand.primary" onClick={() => navigate('/login')}>Login</Link>
+            </Text>
         </Box>
       </Box>
+      {registerData && (
+        <OTPModal 
+          isOpen={isOtpModalOpen} 
+          onClose={() => setIsOtpModalOpen(false)} 
+          email={registerData.email}
+          onVerify={handleVerifyOtp}
+          onResend={handleResendOtp}
+        />
+      )}
     </Box>
   )
 }

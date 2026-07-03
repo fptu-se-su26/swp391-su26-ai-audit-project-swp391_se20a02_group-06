@@ -3,7 +3,7 @@ import { Box, Flex, Heading, Text, HStack, IconButton } from '@chakra-ui/react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { FiMenu, FiX } from 'react-icons/fi'
 import AppButton from '../Button/AppButton'
-import { useAuthStore } from '../../../store/authStore'
+import { useAuthStore } from '../../../store/useAuthStore'
 
 const navLinks = [
   { label: 'Features', href: '/#features' },
@@ -22,6 +22,13 @@ const PublicNavbar: React.FC = () => {
 
   const handleNavClick = (href: string) => {
     setIsMobileMenuOpen(false)
+
+    // Redirect to login if trying to access protected routes while not authenticated
+    if (href === '/dashboard' && !isAuthenticated) {
+      navigate('/login')
+      return
+    }
+
     if (href.startsWith('/#')) {
       const targetId = href.replace('/#', '#')
       if (location.pathname !== '/') {
