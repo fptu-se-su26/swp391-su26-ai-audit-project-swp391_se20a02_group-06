@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { Route, Routes, Navigate } from "react-router-dom";
+import { useAuthStore } from "../store/useAuthStore";
 
 // Pages - Public
 import Landing from "../pages/public/Landing";
@@ -32,20 +33,30 @@ import AdminPayments from "../pages/admin/AdminPayments";
 import AdminPackages from "../pages/admin/AdminPackages";
 
 const RouterContainer = () => {
+    const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+
     useEffect(() => {
         window.history.scrollRestoration = "manual"; // Prevent browser from remembering scroll position
         window.scrollTo(0, 0);
     }, []);
+
+    // Wrapper: redirects authenticated users away from auth pages
+    const GuestRoute = ({ children }: { children: React.ReactNode }) => {
+        if (isAuthenticated) {
+            return <Navigate to="/dashboard" replace />;
+        }
+        return <>{children}</>;
+    };
 
     return (
         <Routes>
             {/* Public Homepage / Landing Page */}
             <Route path="/" element={<Landing />} />
 
-            {/* Auth Pages */}
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/forgot-password" element={<ForgotPassword />} />
+            {/* Auth Pages — redirect to dashboard if already logged in */}
+            <Route path="/login" element={<GuestRoute><Login /></GuestRoute>} />
+            <Route path="/register" element={<GuestRoute><Register /></GuestRoute>} />
+            <Route path="/forgot-password" element={<GuestRoute><ForgotPassword /></GuestRoute>} />
 
             {/* Public Marketing Pages */}
             <Route path="/pricing" element={<Pricing />} />
