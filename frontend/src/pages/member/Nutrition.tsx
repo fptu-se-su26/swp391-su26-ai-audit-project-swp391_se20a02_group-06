@@ -24,6 +24,8 @@ import {
 } from 'react-icons/fi'
 import useSWR from 'swr'
 import apiClient from '../../lib/axios'
+import { getDailySummary, logWater } from '../../api/nutrition'
+import type { DailyNutritionSummary } from '../../api/nutrition'
 import AppButton from '../../components/shared/Button/AppButton'
 import MemberLayout from '../../components/shared/Layout/MemberLayout.tsx'
 import {
@@ -39,8 +41,37 @@ const fetcher = (url: string) => apiClient.get(url).then((res) => res.data)
 
 /* ── Nutrition Page ─────────────────────────── */
 const Nutrition: React.FC = () => {
-    const dateStr = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+    const [selectedDate, setSelectedDate] = useState<Date>(new Date())
     const [searchQuery, setSearchQuery] = useState('')
+
+    const dateStr = selectedDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+    const apiDateStr = selectedDate.toISOString().split('T')[0] // yyyy-MM-dd
+
+    // Fetch daily summary
+    const { data: summary, isLoading: isSummaryLoading, mutate: mutateSummary } = useSWR<DailyNutritionSummary>(
+        `/nutrition/daily?date=${apiDateStr}`,
+        () => getDailySummary(apiDateStr)
+    )
+
+    const handleLogWater = async () => {
+        try {
+            await logWater(apiDateStr, 1)
+            mutateSummary() // Refresh summary
+        } catch (error) {
+            console.error("Failed to log water", error)
+        }
+    }
+
+    const goPrevDay = () => setSelectedDate(d => {
+        const newDate = new Date(d)
+        newDate.setDate(newDate.getDate() - 1)
+        return newDate
+    })
+    const goNextDay = () => setSelectedDate(d => {
+        const newDate = new Date(d)
+        newDate.setDate(newDate.getDate() + 1)
+        return newDate
+    })
 
     // Fetch foods from API
     const { data: foods, isLoading, error } = useSWR('/foods', fetcher)
@@ -59,27 +90,21 @@ const Nutrition: React.FC = () => {
                             aria-label="Previous day"
                             icon={<Icon as={FiChevronLeft} />}
                             variant="ghost"
-                            size="sm"
-                            color="#8A8A93"
-                            borderRadius="8px"
-                            _hover={{ bg: '#1e2028', color: '#E2E1EB' }}
+                            color="white"
+                            _hover={{ bg: '#1e2028' }}
+                            onClick={goPrevDay}
                         />
-                        <Box>
-                            <Heading fontSize="22px" fontWeight="800" color="white">
-                                Today
-                            </Heading>
-                            <Text fontSize="12px" color="#8A8A93">
-                                {dateStr}
-                            </Text>
-                        </Box>
+                        <Text fontSize="16px" fontWeight="700" color="white" minW="130px" textAlign="center">
+                            {dateStr}
+                        </Text>
                         <IconButton
                             aria-label="Next day"
                             icon={<Icon as={FiChevronRight} />}
                             variant="ghost"
-                            size="sm"
-                            color="#8A8A93"
-                            borderRadius="8px"
-                            _hover={{ bg: '#1e2028', color: '#E2E1EB' }}
+                            color="white"
+                            _hover={{ bg: '#1e2028' }}
+                            onClick={goNextDay}
+                            isDisabled={new Date(new Date().setHours(0,0,0,0)).getTime() <= selectedDate.getTime()}
                         />
                     </HStack>
                     <AppButton
@@ -101,6 +126,9 @@ const Nutrition: React.FC = () => {
                     {/* LEFT */}
                     <Stack spacing="5">
                         {/* Calorie + Macros Row */}
+                        {isSummaryLoading ? (
+                            <Flex justify="center" py="10"><Spinner color="#E03030" /></Flex>
+                        ) : (
                         <Grid templateColumns={{ base: "repeat(2, 1fr)", md: "1fr 1fr 1fr 1fr" }} gap="3">
                             {/* Calories Donut */}
                             <Box
@@ -116,9 +144,9 @@ const Nutrition: React.FC = () => {
                                 <Text fontSize="13px" fontWeight="700" color="white" mb="3">
                                     Calories
                                 </Text>
-                                <DonutRing current={1850} total={2400} />
+                                <DonutRing current={summary?.caloriesConsumed || 0} total={summary?.caloriesTarget || 2000} />
                                 <Text fontSize="12px" color="#8A8A93" mt="3">
-                                    550 kcal remaining
+                                    {summary?.caloriesRemaining || 0} kcal remaining
                                 </Text>
                             </Box>
 
@@ -126,28 +154,29 @@ const Nutrition: React.FC = () => {
                             <MacroCard
                                 label="Protein"
                                 icon={FiZap}
-                                current={140}
-                                total={180}
+                                current={summary?.protein.currentGrams || 0}
+                                total={summary?.protein.targetGrams || 1}
                                 unit="g"
                                 color="#E03030"
                             />
                             <MacroCard
                                 label="Carbs"
                                 icon={FiActivity}
-                                current={120}
-                                total={250}
+                                current={summary?.carbs.currentGrams || 0}
+                                total={summary?.carbs.targetGrams || 1}
                                 unit="g"
                                 color="#3b82f6"
                             />
                             <MacroCard
                                 label="Fat"
                                 icon={FiDroplet}
-                                current={45}
-                                total={70}
+                                current={summary?.fat.currentGrams || 0}
+                                total={summary?.fat.targetGrams || 1}
                                 unit="g"
-                                color="#f59e0b"
+                                color="#eab308"
                             />
                         </Grid>
+                        )}
 
                         {/* Breakfast */}
                         <MealSection
@@ -247,8 +276,19 @@ const Nutrition: React.FC = () => {
 
                     {/* RIGHT panel */}
                     <Stack spacing="4">
+                        {!summary?.hasBodyMetrics && (
+                            <Box bg="#2e1414" p="4" borderRadius="14px" border="1px solid #E03030" color="white" fontSize="13px">
+                                <Text fontWeight="700" mb="1" color="#E03030">Update Body Metrics</Text>
+                                <Text color="#8A8A93">Your daily targets are using default values. Go to Profile to update your height and weight for accurate calculations.</Text>
+                            </Box>
+                        )}
+
                         {/* Hydration */}
-                        <HydrationTracker current={6} total={8} />
+                        <HydrationTracker 
+                            current={summary?.waterConsumedGlasses || 0} 
+                            total={summary?.waterTargetGlasses || 8} 
+                            onLogWater={handleLogWater}
+                        />
 
                         {/* AI Recommendation */}
                         <AIDinnerCard />
@@ -261,14 +301,20 @@ const Nutrition: React.FC = () => {
                             borderRadius="14px"
                             p="4"
                         >
-                            <Text fontSize="11px" fontWeight="700" color="#8A8A93" textTransform="uppercase" letterSpacing="wider" mb="3">
-                                Daily Summary
-                            </Text>
-                            <Stack spacing="2">
+                            <Flex justify="space-between" align="center" mb="3">
+                                <Text fontSize="11px" fontWeight="700" color="#8A8A93" textTransform="uppercase" letterSpacing="wider">
+                                    Daily Summary
+                                </Text>
+                                {summary?.fitnessGoal && (
+                                    <Badge bg="#1e2028" color="white" fontSize="10px">{summary.fitnessGoal.replace('_', ' ')}</Badge>
+                                )}
+                            </Flex>
+                            <Stack spacing="3">
                                 {[
-                                    { label: 'Total Calories', val: '1,850 / 2,400', pct: 77 },
-                                    { label: 'Protein', val: '140 / 180g', pct: 78 },
-                                    { label: 'Water', val: '6 / 8 Glasses', pct: 75 },
+                                    { label: 'Total Calories', val: `${summary?.caloriesConsumed || 0} / ${summary?.caloriesTarget || 0}`, pct: ((summary?.caloriesConsumed || 0) / (summary?.caloriesTarget || 1)) * 100 },
+                                    { label: 'Net Calories (in - out)', val: `${summary?.netCalories || 0} kcal`, pct: summary?.caloriesTarget ? Math.abs((summary?.netCalories || 0)) / summary.caloriesTarget * 100 : 0 },
+                                    { label: 'Protein', val: `${summary?.protein.currentGrams || 0} / ${summary?.protein.targetGrams || 0}g`, pct: summary?.protein.percentage || 0 },
+                                    { label: 'Water', val: `${summary?.waterConsumedGlasses || 0} / ${summary?.waterTargetGlasses || 0} Glasses`, pct: ((summary?.waterConsumedGlasses || 0) / (summary?.waterTargetGlasses || 1)) * 100 },
                                 ].map((s, i) => (
                                     <Box key={i}>
                                         <Flex justify="space-between" mb="1">
@@ -280,7 +326,7 @@ const Nutrition: React.FC = () => {
                                                 h="full"
                                                 borderRadius="full"
                                                 bg="#E03030"
-                                                style={{ width: `${s.pct}%` }}
+                                                style={{ width: `${Math.min(s.pct, 100)}%` }}
                                             />
                                         </Box>
                                     </Box>
