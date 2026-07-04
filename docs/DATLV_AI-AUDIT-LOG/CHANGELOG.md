@@ -241,6 +241,7 @@ DD/MM/YYYY
 | 3 | Sửa lỗi hiển thị ảnh Hero trang chủ bằng ảnh Local | Đạt | `Landing.tsx`, `assets/landing` | Commit 719f0be / 95b31d2 |
 | 4 | Xoá thư mục `docs-me` khỏi Git tracking | Đạt | Terminal | Commit 2760c79 |
 | 5 |  |  |  |  |
+| 6 | Thêm chức năng Nutrition, đồng bộ Mock DB | Đạt | `Nutrition.tsx`, `NutritionService.cs`, `mock_data.sql` | Commit c9c75ad |
 
 ## AI có hỗ trợ không?
 

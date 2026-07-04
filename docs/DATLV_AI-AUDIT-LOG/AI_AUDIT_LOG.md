@@ -363,6 +363,69 @@ Học được cách debug lỗi Routing trong React Router v6 (nhầm path dẫ
 
 ---
 
+---
+
+### Lần sử dụng AI số 6
+
+| Nội dung | Thông tin |
+|---|---|
+| Ngày sử dụng | 05/07/2026 |
+| Công cụ AI | Antigravity |
+| Mục đích sử dụng | Xây dựng chức năng Nutrition: Tính toán mục tiêu Calories/Macros hàng ngày (BMR, TDEE), lưu log hydration và setup DB mock data |
+| Phần việc liên quan | Fullstack (React UI + .NET Core API + MySQL) |
+| Mức độ sử dụng | Sinh chính nội dung |
+
+#### 4.1. Prompt đã sử dụng
+
+```text
+- "tôi muốn bạn làm 2 phần cho tôi là phần calories, và hydation, dailysummary, phân tích ra cần nạp bao nhiêu protein, cab, fat, uống bao nhiêu nước, dựa trên thể trạng profile."
+- "cho tôi plan để duyệt nữa nhé /feature"
+- "chạy DB cho đồng bộ đi nào /commit"
+```
+
+#### 4.2. Kết quả AI gợi ý
+
+```text
+- Thiết kế Database bảng DailyNutritionLog lưu targets & consumed macros.
+- Viết API GET /api/nutrition/daily và POST /api/nutrition/water.
+- Tự động tính toán BMR (Mifflin-St Jeor), TDEE, lượng nước mục tiêu theo thông số BodyMetrics.
+- Tích hợp giao diện Frontend Nutrition với React + ChakraUI, fetch data bằng SWR.
+- Tạo file dữ liệu mẫu `mock_data.sql` và fix các bug 404, lỗi liên quan đến React StrictMode.
+```
+
+#### 4.3. Phần sinh viên/nhóm đã sử dụng từ AI
+
+```text
+- Tái sử dụng 100% cấu trúc Backend (Controller, Service, Entity).
+- Giữ nguyên các công thức tính toán y khoa (BMR, TDEE, Macros) từ gợi ý của AI.
+- Sử dụng UI components và SWR fetching do AI sinh ra.
+```
+
+#### 4.4. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
+
+```text
+- Cung cấp DB file mock_data.sql mẫu của project để AI đồng bộ thay vì tự generate data random.
+- Yêu cầu sửa lỗi logic khi bấm tăng giảm ngày trên UI (bị nhảy 2 ngày do React StrictMode).
+- Yêu cầu AI fix lỗi lệch cấu trúc schema khi insert `exercises` mock data.
+```
+
+#### 4.5. Minh chứng
+
+| Loại minh chứng | Nội dung |
+|---|---|
+| Link commit | c9c75ad |
+| File liên quan | DailyNutritionLog.cs, NutritionService.cs, NutritionController.cs, Nutrition.tsx, mock_data.sql |
+| Screenshot | Đã check UI các vòng tròn phần trăm hiển thị data chuẩn |
+| Kết quả chạy/test | Build FE/BE pass |
+| Link video demo | N/A |
+| Ghi chú khác | N/A |
+
+#### 4.6. Nhận xét cá nhân/nhóm
+
+```text
+Học được cách áp dụng công thức BMR/TDEE vào code logic Backend. Thấy được sức mạnh của việc đồng bộ DB mock. Rút kinh nghiệm việc React StrictMode gây double render làm sai logic cộng trừ Date.
+```
+
 ## 5. Bảng tổng hợp mức độ sử dụng AI
 
 Đánh dấu mức độ AI hỗ trợ ở từng hạng mục.
