@@ -105,5 +105,25 @@ public partial class ApplicationDbContext : DbContext
                   .IsUnique()
                   .HasDatabaseName("IX_DailyNutritionLog_UserId_LogDate");
         });
+
+        modelBuilder.Entity<PtUploadRequest>(entity =>
+        {
+            entity.ToTable("pt_upload_requests");
+            entity.HasOne(r => r.Pt)
+                .WithMany()
+                .HasForeignKey(r => r.PtId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasOne(r => r.Admin)
+                .WithMany()
+                .HasForeignKey(r => r.AdminId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasOne(r => r.RequestedByUser)
+                .WithMany()
+                .HasForeignKey(r => r.RequestedBy)
+                .OnDelete(DeleteBehavior.Restrict);
+        });
     }
 }
+

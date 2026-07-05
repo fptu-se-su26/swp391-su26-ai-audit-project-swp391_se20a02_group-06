@@ -15,6 +15,7 @@
     "@emotion/styled": "^11.14.1",
     "@fontsource/be-vietnam-pro": "^5.2.8",
     "@hookform/resolvers": "^5.2.2",
+    "@microsoft/signalr": "^10.0.0",
     "@react-oauth/google": "^0.13.5",
     "axios": "^1.16.1",
     "dayjs": "^1.11.20",

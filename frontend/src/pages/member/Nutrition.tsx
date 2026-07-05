@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import {
     Box,
     Flex,
@@ -12,6 +12,15 @@ import {
     Spinner,
     Input,
     Badge,
+    Modal,
+    ModalOverlay,
+    ModalContent,
+    ModalHeader,
+    ModalBody,
+    ModalFooter,
+    Button,
+    Select,
+    useToast,
 } from '@chakra-ui/react'
 import {
     FiChevronLeft,
@@ -24,7 +33,7 @@ import {
 } from 'react-icons/fi'
 import useSWR from 'swr'
 import apiClient from '../../lib/axios'
-import { getDailySummary, logWater } from '../../api/nutrition'
+import { getDailySummary, logWater, updateReminderSettings } from '../../api/nutrition'
 import type { DailyNutritionSummary } from '../../api/nutrition'
 import AppButton from '../../components/shared/Button/AppButton'
 import MemberLayout from '../../components/shared/Layout/MemberLayout.tsx'
@@ -41,8 +50,15 @@ const fetcher = (url: string) => apiClient.get(url).then((res) => res.data)
 
 /* ── Nutrition Page ─────────────────────────── */
 const Nutrition: React.FC = () => {
+    const toast = useToast()
     const [selectedDate, setSelectedDate] = useState<Date>(new Date())
     const [searchQuery, setSearchQuery] = useState('')
+
+    // Waking hours reminder settings state
+    const [showPreferenceModal, setShowPreferenceModal] = useState(false)
+    const [startTime, setStartTime] = useState('07:00')
+    const [endTime, setEndTime] = useState('22:00')
+    const [isSavingSettings, setIsSavingSettings] = useState(false)
 
     const dateStr = selectedDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
     const apiDateStr = selectedDate.toISOString().split('T')[0] // yyyy-MM-dd
@@ -52,6 +68,71 @@ const Nutrition: React.FC = () => {
         `/nutrition/daily?date=${apiDateStr}`,
         () => getDailySummary(apiDateStr)
     )
+
+    useEffect(() => {
+        if (summary) {
+            if (!summary.waterReminderStartTime || !summary.waterReminderEndTime) {
+                setShowPreferenceModal(true)
+            } else {
+                setStartTime(summary.waterReminderStartTime)
+                setEndTime(summary.waterReminderEndTime)
+            }
+        }
+    }, [summary])
+
+    const handleSaveReminderSettings = async () => {
+        setIsSavingSettings(true)
+        try {
+            await updateReminderSettings(startTime, endTime)
+            toast({
+                title: 'Reminder settings updated! 🥛',
+                description: `Chúng tôi sẽ nhắc bạn uống nước từ ${startTime} đến ${endTime}.`,
+                status: 'success',
+                duration: 3000,
+                isClosable: true,
+            })
+            mutateSummary()
+            setShowPreferenceModal(false)
+        } catch (error) {
+            console.error('Failed to save reminder settings:', error)
+            toast({
+                title: 'Lỗi cập nhật cấu hình',
+                status: 'error',
+                duration: 3000,
+                isClosable: true,
+            })
+        } finally {
+            setIsSavingSettings(false)
+        }
+    }
+
+    const calculateIntervalText = (start: string, end: string, target: number) => {
+        try {
+            const [startH, startM] = start.split(':').map(Number)
+            const [endH, endM] = end.split(':').map(Number)
+            
+            let startMins = startH * 60 + startM
+            let endMins = endH * 60 + endM
+            
+            if (endMins < startMins) {
+                endMins += 24 * 60
+            }
+            
+            const wakingMins = endMins - startMins
+            if (wakingMins <= 0 || target <= 0) return ""
+
+            const intervalMins = Math.round(wakingMins / target)
+            if (intervalMins < 60) {
+                return `Hệ thống nhắc nhở mỗi ${intervalMins} phút.`
+            } else {
+                const hrs = Math.floor(intervalMins / 60)
+                const mins = intervalMins % 60
+                return `Hệ thống nhắc nhở mỗi ${hrs}h${mins > 0 ? ` ${mins}m` : ''} một lần.`
+            }
+        } catch (e) {
+            return ""
+        }
+    }
 
     const handleLogWater = async () => {
         try {
@@ -290,6 +371,58 @@ const Nutrition: React.FC = () => {
                             onLogWater={handleLogWater}
                         />
 
+                        {/* Water Reminder Schedule Panel */}
+                        {summary && (
+                            <Box
+                                bg="#141720"
+                                border="1px solid"
+                                borderColor="#1e2028"
+                                borderRadius="14px"
+                                p="5"
+                                boxShadow="0 4px 20px rgba(0, 0, 0, 0.2)"
+                            >
+                                <Flex align="center" justify="space-between" mb="3">
+                                    <Text fontSize="13px" fontWeight="700" color="white">
+                                        Water Reminder Schedule
+                                    </Text>
+                                    <Badge bg="rgba(0, 168, 150, 0.1)" color="teal.300">Active</Badge>
+                                </Flex>
+                                {summary.waterReminderStartTime && summary.waterReminderEndTime ? (
+                                    <Stack spacing="3">
+                                        <HStack justify="space-between">
+                                            <Text fontSize="12px" color="#8A8A93">Waking Hours</Text>
+                                            <Text fontSize="12px" color="white" fontWeight="600">
+                                                {summary.waterReminderStartTime} - {summary.waterReminderEndTime}
+                                            </Text>
+                                        </HStack>
+                                        <Text fontSize="11px" color="teal.300" fontStyle="italic">
+                                            {calculateIntervalText(summary.waterReminderStartTime, summary.waterReminderEndTime, summary.waterTargetGlasses)}
+                                        </Text>
+                                        <Button
+                                            size="xs"
+                                            colorScheme="teal"
+                                            variant="outline"
+                                            w="full"
+                                            borderRadius="8px"
+                                            onClick={() => setShowPreferenceModal(true)}
+                                        >
+                                            Change Settings
+                                        </Button>
+                                    </Stack>
+                                ) : (
+                                    <Button
+                                        size="sm"
+                                        colorScheme="teal"
+                                        w="full"
+                                        borderRadius="8px"
+                                        onClick={() => setShowPreferenceModal(true)}
+                                    >
+                                        Configure Reminders
+                                    </Button>
+                                )}
+                            </Box>
+                        )}
+
                         {/* AI Recommendation */}
                         <AIDinnerCard />
 
@@ -336,6 +469,108 @@ const Nutrition: React.FC = () => {
                     </Stack>
                 </Grid>
             </Box>
+
+            {/* Water Reminder Preferences Modal */}
+            <Modal isOpen={showPreferenceModal} onClose={() => {
+                if (summary?.waterReminderStartTime && summary?.waterReminderEndTime) {
+                    setShowPreferenceModal(false)
+                }
+            }} isCentered size="md">
+                <ModalOverlay bg="blackAlpha.800" backdropFilter="blur(6px)" />
+                <ModalContent
+                    bg="#141720"
+                    border="1px solid"
+                    borderColor="#1e2028"
+                    borderRadius="16px"
+                    color="white"
+                    p="4"
+                    boxShadow="0 10px 30px rgba(0, 0, 0, 0.5)"
+                >
+                    <ModalHeader fontSize="20px" fontWeight="800" color="white" textAlign="center" pb="0">
+                        🥛 Cấu hình giờ nhắc uống nước
+                    </ModalHeader>
+                    {(!summary?.waterReminderStartTime || !summary?.waterReminderEndTime) && (
+                        <Text fontSize="12px" color="#8A8A93" textAlign="center" mt="2" px="4">
+                            Chào mừng bạn! Vui lòng cài đặt thời gian thức dậy và đi ngủ để hệ thống tự động tính toán tần suất nhắc uống nước phù hợp trong ngày.
+                        </Text>
+                    )}
+                    <ModalBody py="6">
+                        <Stack spacing="5">
+                            <Box>
+                                <Text fontSize="13px" fontWeight="700" color="#8A8A93" mb="2">
+                                    Thời gian thức dậy (Bắt đầu nhắc)
+                                </Text>
+                                <Select
+                                    bg="#0A0C10"
+                                    borderColor="#1e2028"
+                                    color="white"
+                                    value={startTime}
+                                    onChange={(e) => setStartTime(e.target.value)}
+                                    _focus={{ borderColor: 'teal.500' }}
+                                >
+                                    {Array.from({ length: 10 }).map((_, i) => {
+                                        const h = i + 5; // 05:00 to 14:00
+                                        const timeVal = `${h < 10 ? '0' : ''}${h}:00`;
+                                        return <option key={timeVal} value={timeVal} style={{ background: '#141720' }}>{timeVal}</option>
+                                    })}
+                                </Select>
+                            </Box>
+
+                            <Box>
+                                <Text fontSize="13px" fontWeight="700" color="#8A8A93" mb="2">
+                                    Thời gian đi ngủ (Dừng nhắc)
+                                </Text>
+                                <Select
+                                    bg="#0A0C10"
+                                    borderColor="#1e2028"
+                                    color="white"
+                                    value={endTime}
+                                    onChange={(e) => setEndTime(e.target.value)}
+                                    _focus={{ borderColor: 'teal.500' }}
+                                >
+                                    {Array.from({ length: 8 }).map((_, i) => {
+                                        const h = i + 20; // 20:00 to 03:00 (of next day)
+                                        const actualH = h >= 24 ? h - 24 : h;
+                                        const timeVal = `${actualH < 10 ? '0' : ''}${actualH}:00`;
+                                        return <option key={timeVal} value={timeVal} style={{ background: '#141720' }}>{timeVal}</option>
+                                    })}
+                                </Select>
+                            </Box>
+
+                            {summary && (
+                                <Box bg="#0A0C10" p="4" borderRadius="12px" border="1px solid" borderColor="#1e2028">
+                                    <Text fontSize="12px" color="teal.300" textAlign="center" fontWeight="500">
+                                        {calculateIntervalText(startTime, endTime, summary.waterTargetGlasses)}
+                                    </Text>
+                                </Box>
+                            )}
+                        </Stack>
+                    </ModalBody>
+                    <ModalFooter justifyContent="center" gap="3" pt="0">
+                        {summary?.waterReminderStartTime && summary?.waterReminderEndTime && (
+                            <Button
+                                variant="outline"
+                                colorScheme="gray"
+                                color="white"
+                                borderRadius="10px"
+                                onClick={() => setShowPreferenceModal(false)}
+                                isDisabled={isSavingSettings}
+                            >
+                                Hủy bỏ
+                            </Button>
+                        )}
+                        <Button
+                            colorScheme="teal"
+                            w="160px"
+                            borderRadius="10px"
+                            onClick={handleSaveReminderSettings}
+                            isLoading={isSavingSettings}
+                        >
+                            Lưu cấu hình
+                        </Button>
+                    </ModalFooter>
+                </ModalContent>
+            </Modal>
         </MemberLayout>
     )
 }

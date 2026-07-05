@@ -4,6 +4,9 @@ import { BrowserRouter, HashRouter } from 'react-router-dom'
 import theme from './lib/chakra-theme.ts'
 import RouterContainer from './router/router-container'
 
+import { NotificationProvider } from './context/NotificationContext'
+import NotificationTestWidget from './components/shared/Header/NotificationTestWidget'
+
 const Router = import.meta.env.PROD ? HashRouter : BrowserRouter
 
 const googleClientId =
@@ -17,7 +20,10 @@ function App() {
       <ChakraProvider theme={theme}>
         <GoogleOAuthProvider clientId={googleClientId}>
           <Router>
-            <RouterContainer />
+            <NotificationProvider>
+              <RouterContainer />
+              <NotificationTestWidget />
+            </NotificationProvider>
           </Router>
         </GoogleOAuthProvider>
       </ChakraProvider>
