@@ -367,6 +367,70 @@ Lệnh `/commit` của custom workflow rất hữu ích để đảm bảo chu�
 
 ---
 
+### Prompt số 5
+
+| Nội dung | Thông tin |
+|---|---|
+| Ngày sử dụng | 05/07/2026 |
+| Công cụ AI | Antigravity |
+| Mục đích | Sửa lỗi phân quyền chéo vai trò, múi giờ và cấu hình thời gian thức nhắc nước tự động thông minh |
+| Phần việc liên quan | Coding / Debug / Database |
+| Mức độ sử dụng | Hỏi sinh code / Hỏi debug / Hỏi tối ưu |
+
+#### 5.1. Prompt nguyên văn
+
+```text
+- "đang ở admin bấm test water reminder thì vẫn nhận đưuocj thông báo và bấm vào thì lại nhảy sang user, fix lại lỗi, hiển thị thông báo đúng role, chặt chẽ, không ở role này mà hiển thị thoong báo role kia."
+- "láy thời gian đúng real -time cho tôi"
+- "ở phần user thông báo nhắc nhở uống nước phải là tự động. chia đúng thời gian chuẩn trừ thời gian ngủ buổi tối đến sáng là không thông báo uóng nước. uống phải tính từ lúc thức dậy đến trước lúc đi ngủ. thêm UI thời gian bắt đầu và kết thúc nhắc nhở uống nước. là trong thời gian đó thì phải tính toán nhắc nhở thời gian uống nước sao cho đúng với thẻ trạng mà đã tính số lượng nước. cho tôi plan của bạn về việc này đẻ tôi củng cố cho đúng logic của tôi"
+```
+
+#### 5.2. Bối cảnh khi viết prompt
+
+```text
+Phát hiện lỗi phân quyền chéo khi Admin có thể nhận được thông báo nước của Member khi chạy test, và khi click thì bị điều hướng sai trang. Ngoài ra, thông báo bị hiển thị sai múi giờ do UTC, và người dùng Member cần tự cấu hình giờ thức/ngủ để hệ thống tính toán tần suất nhắc nước hợp lý theo thể trạng.
+```
+
+#### 5.3. Kết quả AI trả về
+
+```text
+- Chèn [Authorize(Roles = "Member,MEMBER")] ở backend controller và lọc hiển thị nút test nước ở client.
+- Sửa đổi hàm formatTime chèn thêm suffix 'Z' để chuyển múi giờ chính xác.
+- Triển khai cột DB mới, viết API, thêm popup modal tự động và sidebar panel thiết lập giờ thức/ngủ, đồng thời cập nhật service quét background 30 phút/lần tính tần suất nhắc nước động.
+```
+
+#### 5.4. Kết quả đã áp dụng vào bài
+
+```text
+- Đã áp dụng toàn bộ code phân quyền và sửa múi giờ.
+- Triển khai thành công tính năng đặt giờ thức/ngủ nhắc nước.
+```
+
+#### 5.5. Phần sinh viên/nhóm đã chỉnh sửa hoặc cải tiến
+
+```text
+Tự tạo migration EF Core, update DB vật lý và dọn dẹp các import unused.
+```
+
+#### 5.6. Đánh giá chất lượng prompt
+
+- [x] Prompt rõ ràng
+- [x] Prompt có đủ bối cảnh
+- [x] Prompt tạo ra kết quả tốt
+
+#### 5.7. Minh chứng liên quan
+
+| Loại minh chứng | Nội dung |
+|---|---|
+| Link commit | 78d5b981ae67b60af43751fda748eb369a60a549 |
+| File liên quan | User.cs, NutritionService.cs, NotificationsController.cs, WaterReminderBackgroundService.cs, Nutrition.tsx, NotificationBell.tsx, NotificationTestWidget.tsx |
+| Screenshot | N/A |
+| Kết quả chạy/test | Build FE/BE thành công, database migration chạy chuẩn |
+| Link tài liệu/báo cáo | docs/DATLV_AI-AUDIT-LOG/AI_AUDIT_LOG.md |
+| Ghi chú khác | N/A |
+
+---
+
 ## 6. Prompt quan trọng nhất
 
 Chọn một prompt có ảnh hưởng lớn nhất đến bài tập/project.

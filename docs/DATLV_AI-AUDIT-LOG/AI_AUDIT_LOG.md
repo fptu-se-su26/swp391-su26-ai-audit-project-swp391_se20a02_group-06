@@ -426,6 +426,131 @@ Học được cách debug lỗi Routing trong React Router v6 (nhầm path dẫ
 Học được cách áp dụng công thức BMR/TDEE vào code logic Backend. Thấy được sức mạnh của việc đồng bộ DB mock. Rút kinh nghiệm việc React StrictMode gây double render làm sai logic cộng trừ Date.
 ```
 
+---
+
+### Lần sử dụng AI số 7
+
+| Nội dung | Thông tin |
+|---|---|
+| Ngày sử dụng | 05/07/2026 |
+| Công cụ AI | Antigravity |
+| Mục đích sử dụng | Thiết kế và tích hợp Hệ thống thông báo Realtime đa chiều dùng SignalR (Backend) và React Context (Frontend). |
+| Phần việc liên quan | Fullstack (SignalR, BackgroundServices, Controllers, React Context, Dropdown UI) |
+| Mức độ sử dụng | Sinh chính nội dung |
+
+#### 4.1. Prompt đã sử dụng
+
+```text
+Thiết kế chức năng thông báo realtime:
+1. PT nhận thông báo khi Admin yêu cầu request tạo bài tập mới, cảnh báo deadline sắp hết và thông báo duyệt/từ chối.
+2. Admin nhận thông báo khi PT nộp/upload bài tập.
+3. User (Member) nhận thông báo nhắc nhở uống nước định kỳ (tương tác trực tiếp trên thông báo để log nước + chuyển trang Nutrition).
+Thông báo phải realtime, hiển thị trên toàn bộ các trang.
+```
+
+#### 4.2. Kết quả AI gợi ý
+
+```text
+AI đề xuất và sinh toàn bộ mã nguồn cho:
+- NotificationHub, INotificationService & NotificationService ở Backend.
+- Hai Hosted Service chạy ngầm: ExerciseDeadlineReminderService (quét deadline PT) và WaterReminderBackgroundService (quét nhắc nhở uống nước cho Member).
+- API Controller và thiết lập CORS credentials, JWT query string extractor.
+- React Context NotificationContext để tự kết nối SignalR, lưu trữ danh sách thông báo và số lượng chưa đọc.
+- Component dùng chung NotificationBell thay thế chuông tĩnh ở cả giao diện Admin và Member/PT.
+- Nút Test Water Reminder nổi góc màn hình để trigger kiểm thử nhanh.
+```
+
+#### 4.3. Phần sinh viên/nhóm đã sử dụng từ AI
+
+```text
+Sử dụng toàn bộ cấu trúc Service, Hub, Background Services, React Context, và UI dropdown của NotificationBell.
+```
+
+#### 4.4. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
+
+```text
+- Chuyển lệnh cài đặt từ npm sang pnpm vì dự án sử dụng pnpm-lock.yaml.
+- Thêm FrameworkReference cho Microsoft.AspNetCore.App vào file .csproj của Infrastructure để nhận diện các lớp SignalR và BackgroundService.
+- Sửa lỗi build TypeScript do unused import FiBell trong AdminPrimitives.tsx.
+```
+
+#### 4.5. Minh chứng
+
+| Loại minh chứng | Nội dung |
+|---|---|
+| Link commit | N/A |
+| File liên quan | NotificationHub.cs, NotificationService.cs, ExerciseDeadlineReminderService.cs, WaterReminderBackgroundService.cs, NotificationsController.cs, NotificationBell.tsx, NotificationContext.tsx, App.tsx, HeaderActions.tsx, AdminPrimitives.tsx, Program.cs, DependencyInjection.cs, FitnessTrainingSystem.Infrastructure.csproj |
+| Screenshot | Chuông thông báo hiển thị số lượng chưa đọc, bấm "I drank a glass" tự động log nước và chuyển trang |
+| Kết quả chạy/test | Build FE/BE thành công, SignalR connect và push realtime chuẩn xác |
+| Link video demo | N/A |
+| Ghi chú khác | N/A |
+
+#### 4.6. Nhận xét cá nhân/nhóm
+
+```text
+Nắm được cách thức triển khai realtime với SignalR trong dự án thực tế. Biết cách tích hợp tương tác trực tiếp lên thông báo (uống nước) và tối ưu hóa trải nghiệm người dùng trên tất cả các trang. Học hỏi thêm cách xử lý background task chạy ngầm hiệu quả trong .NET Core.
+```
+
+---
+
+### Lần sử dụng AI số 8
+
+| Nội dung | Thông tin |
+|---|---|
+| Ngày sử dụng | 05/07/2026 |
+| Công cụ AI | Antigravity |
+| Mục đích sử dụng | Sửa lỗi phân quyền chéo vai trò, lệch múi giờ hiển thị thông báo và triển khai cấu hình giờ Thức/Ngủ cho người dùng với cơ chế tính tần suất nhắc nước động. |
+| Phần việc liên quan | Fullstack (Database, Backend, BackgroundServices, Frontend UI & API) |
+| Mức độ sử dụng | Sinh chính nội dung |
+
+#### 4.1. Prompt đã sử dụng
+
+```text
+- "đang ở admin bấm test water reminder thì vẫn nhận đưuocj thông báo và bấm vào thì lại nhảy sang user, fix lại lỗi, hiển thị thông báo đúng role, chặt chẽ, không ở role này mà hiển thị thoong báo role kia."
+- "láy thời gian đúng real -time cho tôi"
+- "ở phần user thông báo nhắc nhở uống nước phải là tự động. chia đúng thời gian chuẩn trừ thời gian ngủ buổi tối đến sáng là không thông báo uóng nước. uống phải tính từ lúc thức dậy đến trước lúc đi ngủ. thêm UI thời gian bắt đầu và kết thúc nhắc nhở uống nước. là trong thời gian đó thì phải tính toán nhắc nhở thời gian uống nước sao cho đúng với thẻ trạng mà đã tính số lượng nước. cho tôi plan của bạn về việc này đẻ tôi củng cố cho đúng logic của tôi"
+```
+
+#### 4.2. Kết quả AI gợi ý
+
+```text
+AI đề xuất và triển khai:
+- Sửa đổi phân quyền chéo: Ẩn nút test nước với Admin/PT, áp dụng [Authorize(Roles = "Member,MEMBER")] ở backend controller, và thêm role check trước khi chuyển trang ở client.
+- Múi giờ: Tự động chèn hậu tố 'Z' vào chuỗi thời gian UTC trần từ DB để trình duyệt parse đúng giờ địa phương Việt Nam (GMT+7).
+- Cấu hình giờ Thức/Ngủ: Thêm các cột WaterReminderStartTime/EndTime vào User entity, tạo EF migration, viết API lưu cài đặt, tự động bật popup modal khi user chưa cấu hình, hiển thị panel cấu hình và tính toán tần suất nhắc nước động trong WaterReminderBackgroundService.
+```
+
+#### 4.3. Phần sinh viên/nhóm đã sử dụng từ AI
+
+```text
+Sử dụng toàn bộ logic phân quyền, format múi giờ, modal popup, sidebar panel và thuật toán lập lịch nhắc nước động.
+```
+
+#### 4.4. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
+
+```text
+Chạy lệnh dotnet ef migrations & database update để cập nhật DB vật lý, build kiểm tra TypeScript compile lỗi unused import.
+```
+
+#### 4.5. Minh chứng
+
+| Loại minh chứng | Nội dung |
+|---|---|
+| Link commit | 78d5b981ae67b60af43751fda748eb369a60a549 |
+| File liên quan | User.cs, NutritionService.cs, NutritionController.cs, WaterReminderBackgroundService.cs, Nutrition.tsx, NotificationBell.tsx, NotificationTestWidget.tsx, UpdateReminderSettingsDto.cs, NutritionDtos.cs, INutritionService.cs |
+| Screenshot | Giao diện panel cấu hình giờ nhắc nước, Modal popup tự động hiện ra |
+| Kết quả chạy/test | Build pass thành công, database migration chạy chuẩn |
+| Link video demo | N/A |
+| Ghi chú khác | N/A |
+
+#### 4.6. Nhận xét cá nhân/nhóm
+
+```text
+Cải thiện khả năng phân quyền hệ thống chặt chẽ hơn. Hiểu thêm về xử lý timezone và kỹ thuật lập lịch background động dựa trên tương tác thực tế của người dùng.
+```
+
+---
+
 ## 5. Bảng tổng hợp mức độ sử dụng AI
 
 Đánh dấu mức độ AI hỗ trợ ở từng hạng mục.
