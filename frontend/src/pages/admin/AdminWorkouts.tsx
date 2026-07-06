@@ -33,6 +33,7 @@ import useSWR from 'swr'
 import apiClient from '../../lib/axios'
 import AdminLayout from '../../components/shared/Layout/AdminLayout.tsx'
 import AppButton from '../../components/shared/Button/AppButton'
+import { uploadVideo } from '../../api/upload'
 
 interface ExerciseDto {
     id: number
@@ -59,6 +60,7 @@ const AdminWorkouts: React.FC = () => {
     const toast = useToast()
     const { data: exercises, error, isLoading, mutate } = useSWR<ExerciseDto[]>('/exercises', fetcher)
     const [isSubmitting, setIsSubmitting] = useState(false)
+    const [isUploadingVideo, setIsUploadingVideo] = useState(false)
     const [formData, setFormData] = useState({
         title: '',
         muscleGroup: '',
@@ -71,6 +73,26 @@ const AdminWorkouts: React.FC = () => {
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = e.target
         setFormData(prev => ({ ...prev, [name]: value }))
+    }
+
+    const handleVideoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0]
+        if (!file) return
+
+        setIsUploadingVideo(true)
+        try {
+            const { url } = await uploadVideo(file)
+            setFormData(prev => ({ ...prev, videoUrl: url }))
+            toast({ title: 'Video uploaded', status: 'success', duration: 3000, isClosable: true })
+        } catch (error: any) {
+            toast({
+                title: 'Failed to upload video',
+                description: error.response?.data?.message || 'Something went wrong.',
+                status: 'error', duration: 3000, isClosable: true,
+            })
+        } finally {
+            setIsUploadingVideo(false)
+        }
     }
 
     const handleSubmit = async () => {
@@ -257,16 +279,37 @@ const AdminWorkouts: React.FC = () => {
                         </FormControl>
                         <FormControl mb={4}>
                             <FormLabel color="#8A8A93">Video URL</FormLabel>
-                            <Input
-                                name="videoUrl"
-                                value={formData.videoUrl}
-                                onChange={handleInputChange}
-                                placeholder="e.g. https://youtube.com/..."
-                                bg="#0A0C10"
-                                border="1px solid #1e2028"
-                                _hover={{ borderColor: "#E03030" }}
-                                _focus={{ borderColor: "#E03030", boxShadow: "none" }}
-                            />
+                            <Flex gap={2} align="center">
+                                <Input
+                                    name="videoUrl"
+                                    value={formData.videoUrl}
+                                    onChange={handleInputChange}
+                                    placeholder="e.g. https://youtube.com/..."
+                                    bg="#0A0C10"
+                                    border="1px solid #1e2028"
+                                    _hover={{ borderColor: "#E03030" }}
+                                    _focus={{ borderColor: "#E03030", boxShadow: "none" }}
+                                />
+                                <Button
+                                    as="label"
+                                    htmlFor="video-upload"
+                                    bg="#333"
+                                    color="white"
+                                    _hover={{ bg: "#444" }}
+                                    isLoading={isUploadingVideo}
+                                    cursor="pointer"
+                                    px={6}
+                                >
+                                    Upload
+                                </Button>
+                                <Input
+                                    id="video-upload"
+                                    type="file"
+                                    accept="video/mp4,video/mpeg,video/quicktime,video/x-msvideo,video/webm"
+                                    display="none"
+                                    onChange={handleVideoUpload}
+                                />
+                            </Flex>
                         </FormControl>
                         <FormControl mb={4}>
                             <FormLabel color="#8A8A93">Duration (minutes)</FormLabel>
