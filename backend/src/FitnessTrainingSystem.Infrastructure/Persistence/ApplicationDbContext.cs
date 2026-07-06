@@ -57,6 +57,8 @@ public partial class ApplicationDbContext : DbContext
 
     public virtual DbSet<WorkoutSessionDetail> WorkoutSessionDetails { get; set; }
 
+    public virtual DbSet<DailyNutritionLog> DailyNutritionLogs { get; set; }
+
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
     }
@@ -95,6 +97,13 @@ public partial class ApplicationDbContext : DbContext
             entity.HasIndex(e => e.Email).HasDatabaseName("IX_EmailOTP_Email");
             entity.HasIndex(e => e.Purpose).HasDatabaseName("IX_EmailOTP_Purpose");
             entity.HasIndex(e => e.ExpiredAt).HasDatabaseName("IX_EmailOTP_ExpiredAt");
+        });
+
+        modelBuilder.Entity<DailyNutritionLog>(entity =>
+        {
+            entity.HasIndex(e => new { e.UserId, e.LogDate })
+                  .IsUnique()
+                  .HasDatabaseName("IX_DailyNutritionLog_UserId_LogDate");
         });
     }
 }

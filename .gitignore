@@ -26,3 +26,6 @@ pnpm-debug.log*
 docs-me/ 
 bin/
 obj/
+
+# Agents
+.agents/workflows/

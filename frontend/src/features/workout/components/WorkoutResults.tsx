@@ -1,4 +1,5 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import {
     AspectRatio,
     Badge,
@@ -21,8 +22,7 @@ import AppButton from '../../../components/shared/Button/AppButton'
 import MemberLayout from '../../../components/shared/Layout/MemberLayout.tsx'
 import type { ExerciseCardData } from '../types/workout'
 import { useWorkoutStore } from '../../../store/useWorkoutStore.ts'
-
-
+import { startWorkoutSession, completeWorkoutSession } from '../../../api/workouts.ts'
 
 const MiniStat: React.FC<{ value: string; label: string }> = ({
     value,
@@ -146,8 +146,49 @@ const ExerciseCard: React.FC<ExerciseCardProps> = ({
 }
 
 const WorkoutResults: React.FC = () => {
-    const { formData: data, exercises, resetWorkout, markExerciseDone, skipExercise } = useWorkoutStore()
+    const { formData: data, exercises, resetWorkout, markExerciseDone, skipExercise, activePlanId, activeSessionId, setActiveSessionId } = useWorkoutStore()
     const [selectedExercise, setSelectedExercise] = useState<(ExerciseCardData & { arrayIndex: number }) | null>(null)
+    const navigate = useNavigate()
+
+    useEffect(() => {
+        // Automatically start the session when arriving on this page
+        if (!activeSessionId && activePlanId) {
+            startWorkoutSession({ workoutPlanId: activePlanId })
+                .then(session => setActiveSessionId(session.id))
+                .catch(console.error)
+        }
+    }, [activeSessionId, activePlanId, setActiveSessionId])
+
+    const handleCompleteWorkout = async () => {
+        if (!activeSessionId) {
+            resetWorkout()
+            navigate('/nutrition')
+            return
+        }
+
+        const doneExercises = exercises.filter(e => e.isDone)
+        const totalDuration = data?.duration || 30 // Fallback
+        const totalCalories = data?.targetCalories || (doneExercises.length * 30) // Estimate
+        
+        try {
+            await completeWorkoutSession(activeSessionId, {
+                totalDurationMinutes: totalDuration,
+                totalCaloriesBurned: totalCalories,
+                details: doneExercises.map(ex => ({
+                    exerciseId: ex.id,
+                    setsDone: parseInt(ex.sets.split('x')[0]) || 3,
+                    repsDone: parseInt(ex.sets.split('x')[1]) || 12,
+                    durationSeconds: 0,
+                    caloriesBurned: 30 // Estimate per exercise
+                }))
+            })
+        } catch (error) {
+            console.error("Failed to complete session:", error)
+        } finally {
+            resetWorkout()
+            navigate('/nutrition')
+        }
+    }
 
     if (!data) return null
 
@@ -252,10 +293,15 @@ const WorkoutResults: React.FC = () => {
                             />
                         </Box>
                     </Box>
-                    <Box onClick={resetWorkout}>
+                    <Box 
+                        onClick={completedCount === exercises.length ? handleCompleteWorkout : undefined}
+                        opacity={completedCount === exercises.length ? 1 : 0.5}
+                        cursor={completedCount === exercises.length ? 'pointer' : 'not-allowed'}
+                    >
                         <AppButton
-                            label="Complete Workout"
+                            label={completedCount === exercises.length ? "Complete Workout" : "Finish All First"}
                             variant="solid" h="40px" px="6" fontSize="13px"
+                            isDisabled={completedCount !== exercises.length}
                         />
                     </Box>
                 </Box>

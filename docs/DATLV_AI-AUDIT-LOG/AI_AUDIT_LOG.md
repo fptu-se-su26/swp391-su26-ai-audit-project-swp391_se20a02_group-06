@@ -305,6 +305,127 @@ Học được tư duy Component hóa (Componentization) trong React. Thay vì c
 
 ---
 
+### Lần sử dụng AI số 5
+
+| Nội dung | Thông tin |
+|---|---|
+| Ngày sử dụng | 04/07/2026 |
+| Công cụ AI | Antigravity |
+| Mục đích sử dụng | Tích hợp Database thực tế cho luồng Tập Luyện (Workout Flow), lưu trữ Session, History và sửa lỗi Routing. |
+| Phần việc liên quan | Fullstack (Frontend & Backend) |
+| Mức độ sử dụng | Sinh chính nội dung |
+
+#### 4.1. Prompt đã sử dụng
+
+```text
+"tôi có bảng này dùng thật vào dự án luôn cho tôi hiện tại tạo bài tập ra nó chưa có dữ liệu, xử lý và gắn vào luồn hiện tại. và làm chức năng lưu lích sử bài tập của người dụng lại cho tôi... Complete Workout xong nó nhảy ra trang chủ luôn... thanh tiếng trình phải đầy có nghĩa phải tập đủ hoặc đáng dấu đã tập xong thì mới bấm nút complete workout được. và bấm xong thì nhảy đến tab nutrition."
+```
+
+#### 4.2. Kết quả AI gợi ý
+
+```text
+AI đề xuất và thực hiện Implementation Plan chi tiết:
+1. Backend: Dựng `WorkoutService.cs`, `WorkoutsController.cs` và các DTOs để INSERT trực tiếp `WorkoutPlan` và `WorkoutSession` xuống bảng MySQL thông qua Entity Framework.
+2. Frontend: Viết `api/workouts.ts` gọi backend. Cập nhật `useWorkoutStore.ts` lưu `activePlanId`, `activeSessionId`.
+3. Cập nhật `WorkoutResults.tsx`: Thêm logic kiểm tra điều kiện `completedCount === exercises.length` để khoá/mở nút "Complete Workout".
+4. Fix lỗi nhảy trang chủ: Sửa sai lệch Route từ `/member/nutrition` sang `/nutrition` để không dính Default Catch-all Route `*`.
+5. Cập nhật `Progress.tsx`: Call API fetch dữ liệu History thật từ DB lên thay vì dùng UI tĩnh.
+```
+
+#### 4.3. Phần sinh viên/nhóm đã sử dụng từ AI
+
+```text
+Sử dụng toàn bộ logic tương tác Entity Framework của Backend do AI thiết kế và các luồng gọi axios (API calls) trên Frontend. Chấp thuận phương pháp phân luồng logic session: Create Plan -> Start Session -> Complete Session.
+```
+
+#### 4.4. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
+
+```text
+Sinh viên theo dõi tab Console, phân tích các bug 404 và báo lại cho AI để AI nhận diện được đó là log rác cũ hoặc lỗi do Backend chưa restart. Yêu cầu AI chuyển hướng từ Progress sang Nutrition theo đúng flow UX mới của dự án.
+```
+
+#### 4.5. Minh chứng
+
+| Loại minh chứng | Nội dung |
+|---|---|
+| Link commit | (Commit thay đổi Database Workout) |
+| File liên quan | `WorkoutService.cs`, `WorkoutsController.cs`, `WorkoutResults.tsx`, `Progress.tsx`, `router-container.tsx` |
+| Screenshot | Đã kiểm tra UI: Nút Complete Workout bị mờ, dữ liệu lịch sử hiện đúng ngày và danh sách bài tập. |
+| Kết quả chạy/test | Thành công, dữ liệu WorkoutSessionDetails ghi nhận chính xác xuống MySQL Workbench. |
+| Link video demo | N/A |
+| Ghi chú khác | Flow AI tạo bài tập đã gắn chặt chẽ vào DB |
+
+#### 4.6. Nhận xét cá nhân/nhóm
+
+```text
+Học được cách debug lỗi Routing trong React Router v6 (nhầm path dẫn đến rơi vào Route Catch-all và bị đẩy về trang chủ). Hiểu rõ quy trình map dữ liệu phức tạp từ 1 chiều (Plan -> PlanExercises) sang 1 chiều song song (Session -> SessionDetails) bằng Entity Framework.
+```
+
+---
+
+---
+
+### Lần sử dụng AI số 6
+
+| Nội dung | Thông tin |
+|---|---|
+| Ngày sử dụng | 05/07/2026 |
+| Công cụ AI | Antigravity |
+| Mục đích sử dụng | Xây dựng chức năng Nutrition: Tính toán mục tiêu Calories/Macros hàng ngày (BMR, TDEE), lưu log hydration và setup DB mock data |
+| Phần việc liên quan | Fullstack (React UI + .NET Core API + MySQL) |
+| Mức độ sử dụng | Sinh chính nội dung |
+
+#### 4.1. Prompt đã sử dụng
+
+```text
+- "tôi muốn bạn làm 2 phần cho tôi là phần calories, và hydation, dailysummary, phân tích ra cần nạp bao nhiêu protein, cab, fat, uống bao nhiêu nước, dựa trên thể trạng profile."
+- "cho tôi plan để duyệt nữa nhé /feature"
+- "chạy DB cho đồng bộ đi nào /commit"
+```
+
+#### 4.2. Kết quả AI gợi ý
+
+```text
+- Thiết kế Database bảng DailyNutritionLog lưu targets & consumed macros.
+- Viết API GET /api/nutrition/daily và POST /api/nutrition/water.
+- Tự động tính toán BMR (Mifflin-St Jeor), TDEE, lượng nước mục tiêu theo thông số BodyMetrics.
+- Tích hợp giao diện Frontend Nutrition với React + ChakraUI, fetch data bằng SWR.
+- Tạo file dữ liệu mẫu `mock_data.sql` và fix các bug 404, lỗi liên quan đến React StrictMode.
+```
+
+#### 4.3. Phần sinh viên/nhóm đã sử dụng từ AI
+
+```text
+- Tái sử dụng 100% cấu trúc Backend (Controller, Service, Entity).
+- Giữ nguyên các công thức tính toán y khoa (BMR, TDEE, Macros) từ gợi ý của AI.
+- Sử dụng UI components và SWR fetching do AI sinh ra.
+```
+
+#### 4.4. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
+
+```text
+- Cung cấp DB file mock_data.sql mẫu của project để AI đồng bộ thay vì tự generate data random.
+- Yêu cầu sửa lỗi logic khi bấm tăng giảm ngày trên UI (bị nhảy 2 ngày do React StrictMode).
+- Yêu cầu AI fix lỗi lệch cấu trúc schema khi insert `exercises` mock data.
+```
+
+#### 4.5. Minh chứng
+
+| Loại minh chứng | Nội dung |
+|---|---|
+| Link commit | c9c75ad |
+| File liên quan | DailyNutritionLog.cs, NutritionService.cs, NutritionController.cs, Nutrition.tsx, mock_data.sql |
+| Screenshot | Đã check UI các vòng tròn phần trăm hiển thị data chuẩn |
+| Kết quả chạy/test | Build FE/BE pass |
+| Link video demo | N/A |
+| Ghi chú khác | N/A |
+
+#### 4.6. Nhận xét cá nhân/nhóm
+
+```text
+Học được cách áp dụng công thức BMR/TDEE vào code logic Backend. Thấy được sức mạnh của việc đồng bộ DB mock. Rút kinh nghiệm việc React StrictMode gây double render làm sai logic cộng trừ Date.
+```
+
 ## 5. Bảng tổng hợp mức độ sử dụng AI
 
 Đánh dấu mức độ AI hỗ trợ ở từng hạng mục.

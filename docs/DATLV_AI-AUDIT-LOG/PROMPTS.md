@@ -291,6 +291,82 @@ Viết tại đây...
 
 ---
 
+### Prompt số 4
+
+| Nội dung | Thông tin |
+|---|---|
+| Ngày sử dụng | 05/07/2026 |
+| Công cụ AI | Antigravity |
+| Mục đích | Viết tài liệu giải thích logic nghiệp vụ Nutrition và đồng bộ Database team |
+| Phần việc liên quan | Requirement / Database / Report |
+| Mức độ sử dụng | Hỏi sinh tài liệu / Hỏi setup |
+
+#### 5.1. Prompt nguyên văn
+
+```text
+- "cho tôi 1 docs giải thích chi tiết về việc tính những thông số trên để tôi chia sẽ cho team tôi hiểu và và nghiệp vụ cho đúng"
+- "tạo 1 file để team tôi chạy DB cho đồng bộ đi nào"
+- "/commit"
+```
+
+#### 5.2. Bối cảnh khi viết prompt
+
+```text
+Team cần một tài liệu mô tả chính xác công thức Y khoa (Mifflin-St Jeor, tính TDEE, chia tỉ lệ Macros) mà AI đã dùng để code Backend, nhằm đảm bảo mọi thành viên hiểu đúng nghiệp vụ của trang Nutrition. Ngoài ra, do Database có sự sai lệch với file mock_data cũ nên cần đồng bộ lại toàn bộ dữ liệu mẫu (mock_data.sql) cho cả team. Cuối cùng, thực hiện commit để lưu lại kết quả công việc bằng quy trình tự động.
+```
+
+#### 5.3. Kết quả AI trả về
+
+```text
+- AI tự động viết file tài liệu chuẩn Markdown NUTRITION_BUSINESS_LOGIC.md trình bày rõ ràng các công thức tính BMR, TDEE, Calories Target và Macros, đi kèm giải thích ý nghĩa từng field trong Database.
+- Xác nhận file data/mock_data.sql đã chứa toàn bộ dữ liệu cần thiết để đồng bộ.
+- Chạy toàn bộ quy trình /commit: build project, tạo commit tự động, và append các audit log (vào AI_AUDIT_LOG.md, CHANGELOG.md, PROMPTS.md).
+```
+
+#### 5.4. Kết quả đã áp dụng vào bài
+
+```text
+- Giữ nguyên tài liệu mô tả nghiệp vụ NUTRITION_BUSINESS_LOGIC.md để sử dụng.
+- Dùng cấu trúc `mock_data.sql` đã được fix lỗi để import Database cho toàn team.
+- Hoàn tất commit và cập nhật Audit Log thành công.
+```
+
+#### 5.5. Phần sinh viên/nhóm đã chỉnh sửa hoặc cải tiến
+
+```text
+N/A - Kết quả tự động của AI đáp ứng hoàn toàn nhu cầu báo cáo và đồng bộ của team.
+```
+
+#### 5.6. Đánh giá chất lượng prompt
+
+- [x] Prompt rõ ràng
+- [x] Prompt có đủ bối cảnh
+- [ ] Prompt còn thiếu thông tin
+- [x] Prompt tạo ra kết quả tốt
+- [ ] Prompt tạo ra kết quả chưa phù hợp
+- [ ] Cần hỏi lại AI nhiều lần
+- [ ] Cần tự kiểm tra và chỉnh sửa nhiều
+- [ ] Kết quả AI có lỗi hoặc chưa chính xác
+
+#### 5.7. Minh chứng liên quan
+
+| Loại minh chứng | Nội dung |
+|---|---|
+| Link commit | c9c75ad |
+| File liên quan | NUTRITION_BUSINESS_LOGIC.md, data/mock_data.sql |
+| Screenshot | Đã check tài liệu chi tiết |
+| Kết quả chạy/test | Đã chạy lệnh import MySQL thành công |
+| Link tài liệu/báo cáo | docs/NUTRITION_BUSINESS_LOGIC.md |
+| Ghi chú khác | N/A |
+
+#### 5.8. Ghi chú thêm
+
+```text
+Lệnh `/commit` của custom workflow rất hữu ích để đảm bảo chuẩn hoá báo cáo AI cho toàn dự án mà không tốn công copy-paste thủ công.
+```
+
+---
+
 ## 6. Prompt quan trọng nhất
 
 Chọn một prompt có ảnh hưởng lớn nhất đến bài tập/project.

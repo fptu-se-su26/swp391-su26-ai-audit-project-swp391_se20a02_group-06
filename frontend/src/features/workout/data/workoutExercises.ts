@@ -16,6 +16,7 @@ export const generateExercises = async (_data: WorkoutFormData): Promise<Exercis
         return selected.map((ex, idx) => {
             const isCardio = ex.muscleGroup?.toLowerCase().includes('cardio') || ex.title?.toLowerCase().includes('jump')
             return {
+                id: ex.id,
                 index: idx + 1,
                 name: ex.title || 'Unknown Exercise',
                 tags: ex.muscleGroup ? [ex.muscleGroup] : ['Full Body'],
