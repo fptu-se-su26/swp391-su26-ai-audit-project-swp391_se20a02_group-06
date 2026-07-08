@@ -1,7 +1,7 @@
 import type { ExerciseCardData, WorkoutFormData } from '../types/workout'
 
-export const generateExercises = (data: WorkoutFormData): ExerciseCardData[] => {
-    const bank: Record<string, ExerciseCardData[]> = {
+export const generateExercises = async (data: WorkoutFormData): Promise<ExerciseCardData[]> => {
+    const bank: Record<string, Omit<ExerciseCardData, 'id'>[]> = {
         lose_weight: [
             { index: 1, name: 'Jump Squat', tags: ['Chân', 'Cardio'], sets: '4 x 15', setsLabel: 'Sets / Reps', isDone: true },
             { index: 2, name: 'Burpees', tags: ['Toàn thân'], sets: '3 x 12', setsLabel: 'Sets / Reps', isActive: true },
@@ -41,12 +41,13 @@ export const generateExercises = (data: WorkoutFormData): ExerciseCardData[] => 
     }
 
     const base = bank[data.goal] ?? bank['build_muscle']
+    const baseWithIds = base.map((ex, idx) => ({ ...ex, id: idx + 1 })) as ExerciseCardData[]
 
     if (data.level === 'Beginner') {
-        return base.slice(0, 3).map((ex) => ({ ...ex, sets: ex.sets.replace('4', '3').replace('5', '3') }))
+        return baseWithIds.slice(0, 3).map((ex) => ({ ...ex, sets: ex.sets.replace('4', '3').replace('5', '3') }))
     }
     if (data.level === 'Advanced') {
-        return base.map((ex) => ({ ...ex, isLocked: false, sets: ex.isLocked ? '5 x 10' : ex.sets }))
+        return baseWithIds.map((ex) => ({ ...ex, isLocked: false, sets: ex.isLocked ? '5 x 10' : ex.sets }))
     }
-    return base
+    return baseWithIds
 }

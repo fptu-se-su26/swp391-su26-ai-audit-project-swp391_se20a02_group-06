@@ -28,7 +28,7 @@ public class ExerciseService : IExerciseService
                 VideoUrl = e.VideoUrl,
                 MuscleGroup = e.MuscleGroup != null ? e.MuscleGroup.Name : null,
                 Difficulty = e.Difficulty,
-                Duration = e.DurationMinutes,
+                Duration = e.Duration,
                 CreatedBy = e.CreatedBy,
                 CreatorName = e.Creator != null ? e.Creator.Fullname : null
             })
@@ -52,7 +52,7 @@ public class ExerciseService : IExerciseService
             VideoUrl = exercise.VideoUrl,
             MuscleGroup = exercise.MuscleGroup?.Name,
             Difficulty = exercise.Difficulty,
-            Duration = exercise.DurationMinutes,
+            Duration = exercise.Duration,
             CreatedBy = exercise.CreatedBy,
             CreatorName = exercise.Creator?.Fullname
         };
@@ -61,11 +61,10 @@ public class ExerciseService : IExerciseService
     public async Task<ExerciseDto> CreateAsync(CreateExerciseDto dto, int createdByUserId)
     {
         int? muscleGroupId = null;
-        if (!string.IsNullOrWhiteSpace(dto.MuscleGroup))
+        if (!string.IsNullOrEmpty(dto.MuscleGroup))
         {
-            var mg = await _context.MuscleGroups.FirstOrDefaultAsync(m => m.Name.ToLower() == dto.MuscleGroup.ToLower());
-            if (mg != null) muscleGroupId = mg.Id;
-            else if (int.TryParse(dto.MuscleGroup, out int parsedId)) muscleGroupId = parsedId;
+            var mg = await _context.MuscleGroups.FirstOrDefaultAsync(m => m.Name == dto.MuscleGroup);
+            muscleGroupId = mg?.Id;
         }
 
         var exercise = new Exercise
@@ -75,7 +74,7 @@ public class ExerciseService : IExerciseService
             VideoUrl = dto.VideoUrl,
             MuscleGroupId = muscleGroupId,
             Difficulty = dto.Difficulty,
-            DurationMinutes = dto.Duration,
+            Duration = dto.Duration,
             CreatedBy = createdByUserId
         };
 
@@ -91,11 +90,10 @@ public class ExerciseService : IExerciseService
         if (exercise == null) return false;
 
         int? muscleGroupId = null;
-        if (!string.IsNullOrWhiteSpace(dto.MuscleGroup))
+        if (!string.IsNullOrEmpty(dto.MuscleGroup))
         {
-            var mg = await _context.MuscleGroups.FirstOrDefaultAsync(m => m.Name.ToLower() == dto.MuscleGroup.ToLower());
-            if (mg != null) muscleGroupId = mg.Id;
-            else if (int.TryParse(dto.MuscleGroup, out int parsedId)) muscleGroupId = parsedId;
+            var mg = await _context.MuscleGroups.FirstOrDefaultAsync(m => m.Name == dto.MuscleGroup);
+            muscleGroupId = mg?.Id;
         }
 
         exercise.Title = dto.Title;
@@ -103,7 +101,7 @@ public class ExerciseService : IExerciseService
         exercise.VideoUrl = dto.VideoUrl;
         exercise.MuscleGroupId = muscleGroupId;
         exercise.Difficulty = dto.Difficulty;
-        exercise.DurationMinutes = dto.Duration;
+        exercise.Duration = dto.Duration;
 
         _context.Exercises.Update(exercise);
         await _context.SaveChangesAsync();

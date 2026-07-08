@@ -273,7 +273,7 @@ const Login: React.FC = () => {
                   fontSize="12px"
                   color="#ffb4ac"
                   _hover={{ color: '#ffdad6', textDecoration: 'none' }}
-                  href="#"
+                  onClick={() => navigate('/forgot-password')}
                 >
                   Forgot password?
                 </Link>

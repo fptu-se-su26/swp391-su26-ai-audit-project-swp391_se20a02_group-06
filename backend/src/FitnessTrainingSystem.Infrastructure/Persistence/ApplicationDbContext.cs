@@ -15,6 +15,7 @@ public partial class ApplicationDbContext : DbContext
     }
 
     public virtual DbSet<AiRecommendation> AiRecommendations { get; set; }
+    public virtual DbSet<EmailOTP> EmailOTPs { get; set; }
 
     public virtual DbSet<BodyMetric> BodyMetrics { get; set; }
 
@@ -56,6 +57,20 @@ public partial class ApplicationDbContext : DbContext
 
     public virtual DbSet<WorkoutSessionDetail> WorkoutSessionDetails { get; set; }
 
+    public virtual DbSet<DailyNutritionLog> DailyNutritionLogs { get; set; }
+
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+    }
+
+    protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
+    {
+        configurationBuilder.Properties<FitnessTrainingSystem.Domain.Enums.RecommendationType>().HaveConversion<string>();
+        configurationBuilder.Properties<FitnessTrainingSystem.Domain.Enums.ExerciseDifficulty>().HaveConversion<string>();
+        configurationBuilder.Properties<FitnessTrainingSystem.Domain.Enums.PackageType>().HaveConversion<string>();
+        configurationBuilder.Properties<FitnessTrainingSystem.Domain.Enums.ScheduleStatus>().HaveConversion<string>();
+    }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder
@@ -80,22 +95,23 @@ public partial class ApplicationDbContext : DbContext
             .HasForeignKey(s => s.MemberId)
             .OnDelete(DeleteBehavior.Restrict);
 
-        modelBuilder.Entity<Exercise>()
-            .HasOne(e => e.Creator)
-            .WithMany()
-            .HasForeignKey(e => e.CreatedBy);
+        modelBuilder.Entity<EmailOTP>(entity =>
+        {
+            entity.ToTable("EmailOTP");
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Id).HasMaxLength(36);
+            entity.Property(e => e.Email).HasMaxLength(100);
+            entity.Property(e => e.Purpose).HasMaxLength(50);
+            entity.HasIndex(e => e.Email).HasDatabaseName("IX_EmailOTP_Email");
+            entity.HasIndex(e => e.Purpose).HasDatabaseName("IX_EmailOTP_Purpose");
+            entity.HasIndex(e => e.ExpiredAt).HasDatabaseName("IX_EmailOTP_ExpiredAt");
+        });
 
-        modelBuilder.Entity<Exercise>()
-            .HasOne(e => e.MuscleGroup)
-            .WithMany(m => m.Exercises)
-            .HasForeignKey(e => e.MuscleGroupId);
-
-        modelBuilder.Entity<Exercise>()
-            .Property(e => e.Difficulty)
-            .HasConversion<string>();
-
-        modelBuilder.Entity<ProductPackage>()
-            .Property(p => p.Type)
-            .HasConversion<string>();
+        modelBuilder.Entity<DailyNutritionLog>(entity =>
+        {
+            entity.HasIndex(e => new { e.UserId, e.LogDate })
+                  .IsUnique()
+                  .HasDatabaseName("IX_DailyNutritionLog_UserId_LogDate");
+        });
     }
 }

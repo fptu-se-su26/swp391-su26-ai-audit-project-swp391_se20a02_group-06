@@ -11,11 +11,8 @@ import {
     Avatar,
     Badge,
     Button,
-    IconButton,
 } from '@chakra-ui/react'
 import {
-    FiBell,
-    FiSettings,
     FiZap,
     FiCpu,
     FiPlay,
@@ -23,6 +20,7 @@ import {
 } from 'react-icons/fi'
 import AppButton from '../../components/shared/Button/AppButton'
 import MemberLayout from '../../components/shared/Layout/MemberLayout.tsx'
+import HeaderActions from '../../components/shared/Header/HeaderActions.tsx'
 import {
     GoalRing,
     MacroBar,
@@ -40,33 +38,7 @@ const Dashboard: React.FC = () => {
                 {/* Top Bar */}
                 <Flex justify="space-between" align="center" mb="7">
                     <Box />
-                    <HStack spacing="3">
-                        <IconButton
-                            aria-label="Notifications"
-                            icon={<Icon as={FiBell} boxSize="18px" />}
-                            variant="ghost"
-                            color="#8A8A93"
-                            _hover={{ color: 'white', bg: 'rgba(255,255,255,0.05)' }}
-                            borderRadius="10px"
-                        />
-                        <IconButton
-                            aria-label="Settings"
-                            icon={<Icon as={FiSettings} boxSize="18px" />}
-                            variant="ghost"
-                            color="#8A8A93"
-                            _hover={{ color: 'white', bg: 'rgba(255,255,255,0.05)' }}
-                            borderRadius="10px"
-                        />
-                        <Avatar
-                            size="sm"
-                            name="Alex"
-                            bg="#E03030"
-                            color="white"
-                            fontSize="12px"
-                            fontWeight="700"
-                            cursor="pointer"
-                        />
-                    </HStack>
+                        <HeaderActions />
                 </Flex>
 
                 {/* Stat Cards Row */}

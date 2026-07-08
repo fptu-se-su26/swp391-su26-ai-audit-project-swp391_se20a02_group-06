@@ -85,7 +85,7 @@ CREATE TABLE IF NOT EXISTS `FitnessProject`.`exercises` (
   `muscle_group_id` INT NULL DEFAULT NULL,
   `difficulty` ENUM('BEGINNER', 'INTERMEDIATE', 'ADVANCED') NOT NULL,
   `equipment` VARCHAR(100) NULL DEFAULT 'No Equipment',
-  `duration_minutes` INT NULL DEFAULT NULL,
+  `duration` INT NULL DEFAULT NULL,
   `calories_burn_per_min` DECIMAL(5,2) NULL DEFAULT '0.00',
   `created_by` INT NULL DEFAULT NULL,
   `status` ENUM('PENDING', 'APPROVED', 'REJECTED') NULL DEFAULT 'APPROVED',
@@ -324,6 +324,7 @@ CREATE TABLE IF NOT EXISTS `FitnessProject`.`product_packages` (
   `duration_days` INT NOT NULL,
   `description` TEXT NULL DEFAULT NULL,
   `is_active` TINYINT(1) NULL DEFAULT '1',
+  `is_popular` TINYINT(1) NULL DEFAULT '0',
   `created_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`))
 ENGINE = InnoDB
@@ -462,6 +463,8 @@ CREATE TABLE IF NOT EXISTS `FitnessProject`.`users` (
   `status` ENUM('ACTIVE', 'INACTIVE', 'BANNED') NULL DEFAULT 'ACTIVE',
   `created_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` TIMESTAMP NULL DEFAULT NULL,
+  `password_changed_at` DATETIME NULL DEFAULT NULL,
+  `fitness_goal` VARCHAR(50) NULL DEFAULT 'MAINTAIN',
   PRIMARY KEY (`id`),
   UNIQUE INDEX `email` (`email` ASC) VISIBLE,
   INDEX `role_id` (`role_id` ASC) VISIBLE,
@@ -607,11 +610,11 @@ INSERT IGNORE INTO `FitnessProject`.`roles` (`id`, `role_name`) VALUES
 (3, 'MEMBER');
 
 INSERT IGNORE INTO `FitnessProject`.`users` (`id`, `fullname`, `email`, `password_hash`, `phone`, `role_id`) 
-VALUES (1, 'Nguyễn Văn Admin', 'admin@fitness.com', '$2a$11$5I3trWCyKCoczywUHf4Efena5j5zz2fTUfdMJOu1oHvumqT/uG7Lm', '0123456789', 1);
+VALUES (1, 'Nguyễn Văn Admin', 'admin@fitness.com', '$2a$11$1Bjs3dENbnKx99Muw8XbTu4bHmgNIdZS491RU1URKMeOPR37XjmWi', '0123456789', 1);
 INSERT IGNORE INTO `FitnessProject`.`users` (`id`, `fullname`, `email`, `password_hash`, `phone`, `role_id`)
-VALUES (2, 'Huấn Luyện Viên', 'pt@fitness.com', '$2b$11$QbbtuuGLDxSqaadlwugXMOnHqQ/keN8K29EjcbWDOhcbllpbWxfDW', '0123456789', 2);
+VALUES (2, 'Huấn Luyện Viên', 'pt@fitness.com', '$2a$11$t9nhk9K0pu1kiGHvH9FaBOOcIo5fEKnEKE5gkh8pVue3UaOAhcHHq', '0123456789', 2);
 INSERT IGNORE INTO `FitnessProject`.`users` (`id`, `fullname`, `email`, `password_hash`, `phone`, `role_id`) 
-VALUES (3, 'Hội Viên', 'member@fitness.com', '$2b$11$ekkaBTTFfKh9ME5J7631ruokCQTNdR3DGaVm53VdSdeEhF7NMSoue', '0123456789', 3);
+VALUES (3, 'Hội Viên', 'member@fitness.com', '$2a$11$xMG3qPdRx6zlnIXt4sUrv.iTSaunifiOyqeeJS/AZIZgQlXDsFrAm', '0123456789', 3);
 
 INSERT IGNORE INTO `FitnessProject`.`foods` (`name`, `serving_size`, `unit`, `calories`, `protein`, `carbs`, `fat`) VALUES 
 ('Chicken Breast (Cooked)', '100', 'g', 165, 31.02, 0.00, 3.57),
@@ -656,7 +659,7 @@ INSERT IGNORE INTO `FitnessProject`.`muscle_groups` (`id`, `name`, `description`
 
 -- Seed Exercises
 INSERT IGNORE INTO `FitnessProject`.`exercises` 
-(`title`, `description`, `muscle_group_id`, `difficulty`, `equipment`, `duration_minutes`, `calories_burn_per_min`, `created_by`, `status`) VALUES
+(`title`, `description`, `muscle_group_id`, `difficulty`, `equipment`, `duration`, `calories_burn_per_min`, `created_by`, `status`) VALUES
 -- Chest (Muscle Group 1)
 ('Barbell Bench Press', 'Lie on a flat bench and press a barbell upwards.', 1, 'INTERMEDIATE', 'Barbell, Bench', 10, 5.0, 1, 'APPROVED'),
 ('Incline Dumbbell Press', 'Press dumbbells upwards on an incline bench.', 1, 'INTERMEDIATE', 'Dumbbells, Incline Bench', 10, 4.5, 1, 'APPROVED'),
@@ -719,4 +722,48 @@ CREATE INDEX `IX_EmailOTP_Email` ON `EmailOTP` (`Email`);
 CREATE INDEX `IX_EmailOTP_Purpose` ON `EmailOTP` (`Purpose`);
 CREATE INDEX `IX_EmailOTP_ExpiredAt` ON `EmailOTP` (`ExpiredAt`);
 
-ALTER TABLE FitnessProject.users ADD COLUMN password_changed_at DATETIME NULL;
+
+
+-- -----------------------------------------------------
+-- Table `FitnessProject`.`__EFMigrationsHistory`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `FitnessProject`.`__EFMigrationsHistory` ;
+
+CREATE TABLE IF NOT EXISTS `FitnessProject`.`__EFMigrationsHistory` (
+  `migration_id` VARCHAR(150) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_0900_ai_ci' NOT NULL,
+  `product_version` VARCHAR(32) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_0900_ai_ci' NOT NULL,
+  PRIMARY KEY (`migration_id`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_0900_ai_ci;
+
+-- -----------------------------------------------------
+-- Table `FitnessProject`.`daily_nutrition_logs`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `FitnessProject`.`daily_nutrition_logs` ;
+
+CREATE TABLE IF NOT EXISTS `FitnessProject`.`daily_nutrition_logs` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `user_id` INT NOT NULL,
+  `log_date` DATETIME(6) NOT NULL,
+  `calories_target` INT NOT NULL,
+  `protein_target_grams` DECIMAL(65,30) NOT NULL,
+  `carbs_target_grams` DECIMAL(65,30) NOT NULL,
+  `fat_target_grams` DECIMAL(65,30) NOT NULL,
+  `water_target_glasses` INT NOT NULL,
+  `calories_consumed` INT NOT NULL,
+  `protein_consumed_grams` DECIMAL(65,30) NOT NULL,
+  `carbs_consumed_grams` DECIMAL(65,30) NOT NULL,
+  `fat_consumed_grams` DECIMAL(65,30) NOT NULL,
+  `water_consumed_glasses` INT NOT NULL,
+  `calories_burned` DECIMAL(65,30) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE INDEX `IX_DailyNutritionLog_UserId_LogDate` (`user_id` ASC, `log_date` ASC) VISIBLE,
+  CONSTRAINT `fk_daily_nutrition_logs_users_user_id`
+    FOREIGN KEY (`user_id`)
+    REFERENCES `FitnessProject`.`users` (`id`)
+    ON DELETE CASCADE)
+ENGINE = InnoDB
+AUTO_INCREMENT = 6
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_unicode_ci;

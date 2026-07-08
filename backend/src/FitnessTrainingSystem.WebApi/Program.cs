@@ -3,8 +3,21 @@ using FitnessTrainingSystem.Infrastructure;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 
-// Load environment variables from .env file
-DotNetEnv.Env.Load();
+// Load environment variables from .env file in the backend root directory
+var envPath = Path.Combine(Directory.GetCurrentDirectory(), "..", "..", ".env");
+if (File.Exists(envPath))
+{
+    DotNetEnv.Env.Load(envPath);
+}
+else
+{
+    // Fallback if running from backend root directly
+    var fallbackPath = Path.Combine(Directory.GetCurrentDirectory(), ".env");
+    if (File.Exists(fallbackPath))
+    {
+        DotNetEnv.Env.Load(fallbackPath);
+    }
+}
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Configuration.AddEnvironmentVariables();
@@ -18,14 +31,6 @@ builder.Services.AddOpenApi();
 builder.Services.AddControllers();
 
 var jwtSettings = builder.Configuration.GetSection("JwtSettings");
-var jwtSecretKey = jwtSettings["SecretKey"];
-if (string.IsNullOrWhiteSpace(jwtSecretKey))
-{
-    throw new InvalidOperationException(
-        "JWT SecretKey is not configured. Please set 'JwtSettings__SecretKey' in your .env file or appsettings.json. " +
-        "See .env.example for reference.");
-}
-
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
@@ -37,7 +42,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateIssuerSigningKey = true,
             ValidIssuer = jwtSettings["Issuer"],
             ValidAudience = jwtSettings["Audience"],
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSecretKey))
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings["SecretKey"]!))
         };
     });
 
