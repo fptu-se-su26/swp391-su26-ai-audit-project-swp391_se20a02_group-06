@@ -26,6 +26,10 @@ public class DailyNutritionSummaryDto
     // User state
     public bool HasBodyMetrics { get; set; }
     public string FitnessGoal { get; set; } = "MAINTAIN";
+
+    // Water Reminder Preferences
+    public string? WaterReminderStartTime { get; set; }
+    public string? WaterReminderEndTime { get; set; }
 }
 
 public class MacroSummaryDto

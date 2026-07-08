@@ -144,7 +144,7 @@ public class NutritionService : INutritionService
             await _context.SaveChangesAsync();
         }
 
-        return MapToSummaryDto(log, hasMetrics, fitnessGoal);
+        return MapToSummaryDto(log, hasMetrics, fitnessGoal, user);
     }
 
     public async Task<DailyNutritionSummaryDto> LogWaterAsync(int userId, DateTime date, LogWaterDto dto)
@@ -176,10 +176,22 @@ public class NutritionService : INutritionService
         bool hasMetrics = user?.BodyMetrics.Any() ?? false;
         string goal = user?.FitnessGoal ?? "MAINTAIN";
 
-        return MapToSummaryDto(log!, hasMetrics, goal);
+        return MapToSummaryDto(log!, hasMetrics, goal, user);
     }
 
-    private DailyNutritionSummaryDto MapToSummaryDto(DailyNutritionLog log, bool hasMetrics, string fitnessGoal)
+    public async Task<bool> UpdateReminderSettingsAsync(int userId, UpdateReminderSettingsDto dto)
+    {
+        var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
+        if (user == null) return false;
+
+        user.WaterReminderStartTime = dto.StartTime;
+        user.WaterReminderEndTime = dto.EndTime;
+
+        await _context.SaveChangesAsync();
+        return true;
+    }
+
+    private DailyNutritionSummaryDto MapToSummaryDto(DailyNutritionLog log, bool hasMetrics, string fitnessGoal, User? user)
     {
         int calRemaining = log.CaloriesTarget - log.CaloriesConsumed;
         if (calRemaining < 0) calRemaining = 0;
@@ -225,7 +237,10 @@ public class NutritionService : INutritionService
             WaterConsumedGlasses = log.WaterConsumedGlasses,
 
             HasBodyMetrics = hasMetrics,
-            FitnessGoal = fitnessGoal
+            FitnessGoal = fitnessGoal,
+
+            WaterReminderStartTime = user?.WaterReminderStartTime,
+            WaterReminderEndTime = user?.WaterReminderEndTime
         };
     }
 }

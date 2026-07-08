@@ -137,6 +137,22 @@ const AdminWorkouts: React.FC = () => {
         }
     }
 
+    const handlePreviewVideo = (url?: string) => {
+        if (!url) return
+        const trimmed = url.trim()
+        if (/^(https?:\/\/)/i.test(trimmed)) {
+            window.open(trimmed, '_blank')
+        } else {
+            toast({
+                title: 'Invalid Video Link',
+                description: `The video URL '${url}' is not a valid absolute web link (must start with http:// or https://).`,
+                status: 'error',
+                duration: 4000,
+                isClosable: true
+            })
+        }
+    }
+
     return (
         <AdminLayout>
             <Box p="7" maxW="1200px">
@@ -189,7 +205,7 @@ const AdminWorkouts: React.FC = () => {
                                                     size="xs"
                                                     colorScheme="blue"
                                                     variant="outline"
-                                                    onClick={() => window.open(ex.videoUrl, '_blank')}
+                                                    onClick={() => handlePreviewVideo(ex.videoUrl)}
                                                 >
                                                     Preview
                                                 </Button>
