@@ -11,6 +11,7 @@ public class Exercise : BaseAuditableEntity
     public int? MuscleGroupId { get; set; }
     public MuscleGroup? MuscleGroup { get; set; }
     public ExerciseDifficulty Difficulty { get; set; }
+    [System.ComponentModel.DataAnnotations.Schema.Column("duration")]
     public int? DurationMinutes { get; set; }
     public int? CreatedBy { get; set; }
 

@@ -126,21 +126,13 @@ public partial class ApplicationDbContext : DbContext
 
         modelBuilder.Entity<Exercise>()
             .HasOne(e => e.Creator)
-            .WithMany()
+            .WithMany(u => u.CreatedExercises)
             .HasForeignKey(e => e.CreatedBy);
 
         modelBuilder.Entity<Exercise>()
             .HasOne(e => e.MuscleGroup)
             .WithMany(m => m.Exercises)
             .HasForeignKey(e => e.MuscleGroupId);
-
-        modelBuilder.Entity<Exercise>()
-            .Property(e => e.Difficulty)
-            .HasConversion<string>();
-
-        modelBuilder.Entity<ProductPackage>()
-            .Property(p => p.Type)
-            .HasConversion<string>();
     }
 }
 
