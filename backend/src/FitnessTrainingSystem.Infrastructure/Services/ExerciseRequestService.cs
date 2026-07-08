@@ -155,13 +155,20 @@ public class ExerciseRequestService : IExerciseRequestService
                 throw new Exception("Cannot approve a request without a submitted exercise title.");
             }
 
+            int? mgId = null;
+            if (!string.IsNullOrEmpty(request.MuscleGroup))
+            {
+                var mg = await _context.MuscleGroups.FirstOrDefaultAsync(m => m.Name == request.MuscleGroup);
+                if (mg != null) mgId = mg.Id;
+            }
+
             // Create new Exercise
             var exercise = new Exercise
             {
                 Title = request.Title,
                 Description = request.Description,
                 VideoUrl = request.VideoUrl,
-                MuscleGroup = request.MuscleGroup,
+                MuscleGroupId = mgId,
                 Difficulty = request.Difficulty ?? ExerciseDifficulty.Intermediate,
                 Duration = request.Duration,
                 CreatedBy = request.PtId,

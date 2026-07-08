@@ -33,7 +33,7 @@ import {
 } from 'react-icons/fi'
 import useSWR from 'swr'
 import apiClient from '../../lib/axios'
-import { getDailySummary, logWater } from '../../api/nutrition'
+import { getDailySummary, logWater, updateReminderSettings } from '../../api/nutrition'
 import type { DailyNutritionSummary } from '../../api/nutrition'
 import AppButton from '../../components/shared/Button/AppButton'
 import MemberLayout from '../../components/shared/Layout/MemberLayout.tsx'
@@ -50,8 +50,15 @@ const fetcher = (url: string) => apiClient.get(url).then((res) => res.data)
 
 /* ── Nutrition Page ─────────────────────────── */
 const Nutrition: React.FC = () => {
+    const toast = useToast()
     const [selectedDate, setSelectedDate] = useState<Date>(new Date())
     const [searchQuery, setSearchQuery] = useState('')
+
+    // Water reminder preference state
+    const [showPreferenceModal, setShowPreferenceModal] = useState(false)
+    const [startTime, setStartTime] = useState('07:00')
+    const [endTime, setEndTime] = useState('22:00')
+    const [isSavingSettings, setIsSavingSettings] = useState(false)
 
     const dateStr = selectedDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
     const apiDateStr = selectedDate.toISOString().split('T')[0] // yyyy-MM-dd
@@ -61,6 +68,65 @@ const Nutrition: React.FC = () => {
         `/nutrition/daily?date=${apiDateStr}`,
         () => getDailySummary(apiDateStr)
     )
+
+    useEffect(() => {
+        if (summary) {
+            if (!summary.waterReminderStartTime || !summary.waterReminderEndTime) {
+                setShowPreferenceModal(true)
+            } else {
+                setStartTime(summary.waterReminderStartTime)
+                setEndTime(summary.waterReminderEndTime)
+            }
+        }
+    }, [summary])
+
+    const handleSaveReminderSettings = async () => {
+        setIsSavingSettings(true)
+        try {
+            await updateReminderSettings(startTime, endTime)
+            toast({
+                title: 'Reminder settings updated! 💧',
+                description: `Chúng tôi sẽ nhắc bạn uống nước từ ${startTime} đến ${endTime}.`,
+                status: 'success',
+                duration: 3000,
+                isClosable: true,
+            })
+            mutateSummary()
+            setShowPreferenceModal(false)
+        } catch (error) {
+            console.error('Failed to save reminder settings:', error)
+            toast({
+                title: 'Lỗi cập nhật cấu hình',
+                status: 'error',
+                duration: 3000,
+                isClosable: true,
+            })
+        } finally {
+            setIsSavingSettings(false)
+        }
+    }
+
+    const calculateIntervalText = (start: string, end: string, target: number) => {
+        try {
+            const [startH, startM] = start.split(':').map(Number)
+            const [endH, endM] = end.split(':').map(Number)
+            let startMins = startH * 60 + startM
+            let endMins = endH * 60 + endM
+            if (endMins < startMins) endMins += 24 * 60
+            const wakingMins = endMins - startMins
+            if (wakingMins <= 0 || target <= 0) return ''
+            const intervalMins = Math.round(wakingMins / target)
+            if (intervalMins < 60) {
+                return `Hệ thống nhắc nhở mỗi ${intervalMins} phút.`
+            } else {
+                const hrs = Math.floor(intervalMins / 60)
+                const mins = intervalMins % 60
+                return `Hệ thống nhắc nhở mỗi ${hrs}h${mins > 0 ? ` ${mins}m` : ''} một lần.`
+            }
+        } catch (e) {
+            return ''
+        }
+    }
 
     const handleLogWater = async () => {
         try {

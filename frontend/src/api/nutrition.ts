@@ -14,6 +14,8 @@ export interface DailyNutritionSummary {
     waterConsumedGlasses: number
     hasBodyMetrics: boolean
     fitnessGoal: string
+    waterReminderStartTime?: string
+    waterReminderEndTime?: string
 }
 
 export interface MacroSummary {
@@ -29,5 +31,10 @@ export const getDailySummary = async (date: string): Promise<DailyNutritionSumma
 
 export const logWater = async (date: string, glasses: number = 1): Promise<DailyNutritionSummary> => {
     const response = await apiClient.post(`/nutrition/water?date=${date}`, { glasses })
+    return response.data
+}
+
+export const updateReminderSettings = async (startTime: string, endTime: string): Promise<{ success: boolean }> => {
+    const response = await apiClient.put('/nutrition/reminder-settings', { startTime, endTime })
     return response.data
 }
