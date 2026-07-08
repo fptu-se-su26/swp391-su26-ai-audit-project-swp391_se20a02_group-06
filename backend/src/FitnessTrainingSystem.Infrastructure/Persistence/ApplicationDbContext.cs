@@ -62,7 +62,6 @@ public partial class ApplicationDbContext : DbContext
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
     }
-
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder
@@ -124,6 +123,24 @@ public partial class ApplicationDbContext : DbContext
                 .HasForeignKey(r => r.RequestedBy)
                 .OnDelete(DeleteBehavior.Restrict);
         });
+
+        modelBuilder.Entity<Exercise>()
+            .HasOne(e => e.Creator)
+            .WithMany()
+            .HasForeignKey(e => e.CreatedBy);
+
+        modelBuilder.Entity<Exercise>()
+            .HasOne(e => e.MuscleGroup)
+            .WithMany(m => m.Exercises)
+            .HasForeignKey(e => e.MuscleGroupId);
+
+        modelBuilder.Entity<Exercise>()
+            .Property(e => e.Difficulty)
+            .HasConversion<string>();
+
+        modelBuilder.Entity<ProductPackage>()
+            .Property(p => p.Type)
+            .HasConversion<string>();
     }
 }
 
