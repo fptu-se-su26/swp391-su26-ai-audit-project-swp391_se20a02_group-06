@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import {
     Box,
     Flex,
@@ -12,6 +12,15 @@ import {
     Spinner,
     Input,
     Badge,
+    Modal,
+    ModalOverlay,
+    ModalContent,
+    ModalHeader,
+    ModalBody,
+    ModalFooter,
+    Button,
+    Select,
+    useToast,
 } from '@chakra-ui/react'
 import {
     FiChevronLeft,
@@ -336,6 +345,108 @@ const Nutrition: React.FC = () => {
                     </Stack>
                 </Grid>
             </Box>
+
+            {/* Water Reminder Preferences Modal */}
+            <Modal isOpen={showPreferenceModal} onClose={() => {
+                if (summary?.waterReminderStartTime && summary?.waterReminderEndTime) {
+                    setShowPreferenceModal(false)
+                }
+            }} isCentered size="md">
+                <ModalOverlay bg="blackAlpha.800" backdropFilter="blur(6px)" />
+                <ModalContent
+                    bg="#141720"
+                    border="1px solid"
+                    borderColor="#1e2028"
+                    borderRadius="16px"
+                    color="white"
+                    p="4"
+                    boxShadow="0 10px 30px rgba(0, 0, 0, 0.5)"
+                >
+                    <ModalHeader fontSize="20px" fontWeight="800" color="white" textAlign="center" pb="0">
+                        🥛 Cấu hình giờ nhắc uống nước
+                    </ModalHeader>
+                    {(!summary?.waterReminderStartTime || !summary?.waterReminderEndTime) && (
+                        <Text fontSize="12px" color="#8A8A93" textAlign="center" mt="2" px="4">
+                            Chào mừng bạn! Vui lòng cài đặt thời gian thức dậy và đi ngủ để hệ thống tự động tính toán tần suất nhắc uống nước phù hợp trong ngày.
+                        </Text>
+                    )}
+                    <ModalBody py="6">
+                        <Stack spacing="5">
+                            <Box>
+                                <Text fontSize="13px" fontWeight="700" color="#8A8A93" mb="2">
+                                    Thời gian thức dậy (Bắt đầu nhắc)
+                                </Text>
+                                <Select
+                                    bg="#0A0C10"
+                                    borderColor="#1e2028"
+                                    color="white"
+                                    value={startTime}
+                                    onChange={(e) => setStartTime(e.target.value)}
+                                    _focus={{ borderColor: 'teal.500' }}
+                                >
+                                    {Array.from({ length: 10 }).map((_, i) => {
+                                        const h = i + 5; // 05:00 to 14:00
+                                        const timeVal = `${h < 10 ? '0' : ''}${h}:00`;
+                                        return <option key={timeVal} value={timeVal} style={{ background: '#141720' }}>{timeVal}</option>
+                                    })}
+                                </Select>
+                            </Box>
+
+                            <Box>
+                                <Text fontSize="13px" fontWeight="700" color="#8A8A93" mb="2">
+                                    Thời gian đi ngủ (Dừng nhắc)
+                                </Text>
+                                <Select
+                                    bg="#0A0C10"
+                                    borderColor="#1e2028"
+                                    color="white"
+                                    value={endTime}
+                                    onChange={(e) => setEndTime(e.target.value)}
+                                    _focus={{ borderColor: 'teal.500' }}
+                                >
+                                    {Array.from({ length: 8 }).map((_, i) => {
+                                        const h = i + 20; // 20:00 to 03:00 (of next day)
+                                        const actualH = h >= 24 ? h - 24 : h;
+                                        const timeVal = `${actualH < 10 ? '0' : ''}${actualH}:00`;
+                                        return <option key={timeVal} value={timeVal} style={{ background: '#141720' }}>{timeVal}</option>
+                                    })}
+                                </Select>
+                            </Box>
+
+                            {summary && (
+                                <Box bg="#0A0C10" p="4" borderRadius="12px" border="1px solid" borderColor="#1e2028">
+                                    <Text fontSize="12px" color="teal.300" textAlign="center" fontWeight="500">
+                                        {calculateIntervalText(startTime, endTime, summary.waterTargetGlasses)}
+                                    </Text>
+                                </Box>
+                            )}
+                        </Stack>
+                    </ModalBody>
+                    <ModalFooter justifyContent="center" gap="3" pt="0">
+                        {summary?.waterReminderStartTime && summary?.waterReminderEndTime && (
+                            <Button
+                                variant="outline"
+                                colorScheme="gray"
+                                color="white"
+                                borderRadius="10px"
+                                onClick={() => setShowPreferenceModal(false)}
+                                isDisabled={isSavingSettings}
+                            >
+                                Hủy bỏ
+                            </Button>
+                        )}
+                        <Button
+                            colorScheme="teal"
+                            w="160px"
+                            borderRadius="10px"
+                            onClick={handleSaveReminderSettings}
+                            isLoading={isSavingSettings}
+                        >
+                            Lưu cấu hình
+                        </Button>
+                    </ModalFooter>
+                </ModalContent>
+            </Modal>
         </MemberLayout>
     )
 }

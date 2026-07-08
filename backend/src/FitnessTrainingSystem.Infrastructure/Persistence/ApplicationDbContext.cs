@@ -115,3 +115,4 @@ public partial class ApplicationDbContext : DbContext
         });
     }
 }
+
