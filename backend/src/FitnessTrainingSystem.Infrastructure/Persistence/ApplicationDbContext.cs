@@ -15,6 +15,7 @@ public partial class ApplicationDbContext : DbContext
     }
 
     public virtual DbSet<AiRecommendation> AiRecommendations { get; set; }
+    public virtual DbSet<EmailOTP> EmailOTPs { get; set; }
 
     public virtual DbSet<BodyMetric> BodyMetrics { get; set; }
 
@@ -56,6 +57,11 @@ public partial class ApplicationDbContext : DbContext
 
     public virtual DbSet<WorkoutSessionDetail> WorkoutSessionDetails { get; set; }
 
+    public virtual DbSet<DailyNutritionLog> DailyNutritionLogs { get; set; }
+
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+    }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder
@@ -80,6 +86,44 @@ public partial class ApplicationDbContext : DbContext
             .HasForeignKey(s => s.MemberId)
             .OnDelete(DeleteBehavior.Restrict);
 
+        modelBuilder.Entity<EmailOTP>(entity =>
+        {
+            entity.ToTable("EmailOTP");
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Id).HasMaxLength(36);
+            entity.Property(e => e.Email).HasMaxLength(100);
+            entity.Property(e => e.Purpose).HasMaxLength(50);
+            entity.HasIndex(e => e.Email).HasDatabaseName("IX_EmailOTP_Email");
+            entity.HasIndex(e => e.Purpose).HasDatabaseName("IX_EmailOTP_Purpose");
+            entity.HasIndex(e => e.ExpiredAt).HasDatabaseName("IX_EmailOTP_ExpiredAt");
+        });
+
+        modelBuilder.Entity<DailyNutritionLog>(entity =>
+        {
+            entity.HasIndex(e => new { e.UserId, e.LogDate })
+                  .IsUnique()
+                  .HasDatabaseName("IX_DailyNutritionLog_UserId_LogDate");
+        });
+
+        modelBuilder.Entity<PtUploadRequest>(entity =>
+        {
+            entity.ToTable("pt_upload_requests");
+            entity.HasOne(r => r.Pt)
+                .WithMany()
+                .HasForeignKey(r => r.PtId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasOne(r => r.Admin)
+                .WithMany()
+                .HasForeignKey(r => r.AdminId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasOne(r => r.RequestedByUser)
+                .WithMany()
+                .HasForeignKey(r => r.RequestedBy)
+                .OnDelete(DeleteBehavior.Restrict);
+        });
+
         modelBuilder.Entity<Exercise>()
             .HasOne(e => e.Creator)
             .WithMany()
@@ -99,3 +143,4 @@ public partial class ApplicationDbContext : DbContext
             .HasConversion<string>();
     }
 }
+

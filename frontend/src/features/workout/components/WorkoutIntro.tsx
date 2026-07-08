@@ -27,11 +27,11 @@ const WorkoutIntro: React.FC<WorkoutIntroProps> = ({ onStart }) => {
                     <Heading fontSize="20px" fontWeight="700" color="white">
                         Workouts
                     </Heading>
-                    <Text fontSize="13px" color="#8A8A93" textAlign="center" maxW="340px">
-                        Tạo chương trình tập luyện cá nhân hoá theo mục tiêu, thể trạng và lịch tập của bạn.
+                    <Text fontSize="16px" color="#8A8A93" textAlign="center" maxW="400px" lineHeight="1.6">
+                        Create a personalized workout program based on your goals, body metrics, and schedule.
                     </Text>
                     <AppButton
-                        label="Bắt đầu"
+                        label="Start"
                         variant="solid"
                         h="38px"
                         px="6"

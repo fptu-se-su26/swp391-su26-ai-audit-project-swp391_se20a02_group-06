@@ -1,6 +1,5 @@
 import React from 'react'
 import { Box, Flex, Text } from '@chakra-ui/react'
-import { muscleZones } from '../data/muscleZones'
 
 export const StepDots: React.FC<{ current: number; total: number }> = ({ current, total }) => (
     <Flex align="center" justify="center" gap="3" mb="6">
@@ -89,7 +88,8 @@ export const LevelPill: React.FC<{ label: string; selected: boolean; onClick: ()
 export const BodyDiagram: React.FC<{
     selected: string[]
     onToggle: (id: string) => void
-}> = ({ selected, onToggle }) => (
+    muscleZones: { id: string; label: string; d: string }[]
+}> = ({ selected, onToggle, muscleZones }) => (
     <Box position="relative" display="flex" justifyContent="center">
         <svg width="260" height="440" viewBox="100 40 300 400">
             <circle cx="240" cy="70" r="28" fill="none" stroke="#2e3040" strokeWidth="2" />

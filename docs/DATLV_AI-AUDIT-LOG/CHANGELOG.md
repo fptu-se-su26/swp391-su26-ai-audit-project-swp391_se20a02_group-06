@@ -241,6 +241,9 @@ DD/MM/YYYY
 | 3 | Sửa lỗi hiển thị ảnh Hero trang chủ bằng ảnh Local | Đạt | `Landing.tsx`, `assets/landing` | Commit 719f0be / 95b31d2 |
 | 4 | Xoá thư mục `docs-me` khỏi Git tracking | Đạt | Terminal | Commit 2760c79 |
 | 5 |  |  |  |  |
+| 6 | Thêm chức năng Nutrition, đồng bộ Mock DB | Đạt | `Nutrition.tsx`, `NutritionService.cs`, `mock_data.sql` | Commit c9c75ad |
+| 7 | Thiết kế & tích hợp Hệ thống thông báo Realtime SignalR | Đạt | `NotificationHub.cs`, `NotificationService.cs`, `NotificationContext.tsx`, `NotificationBell.tsx` | Commit 78d5b98 |
+| 8 | Cấu hình giờ Thức/Ngủ, nhắc uống nước tự động thông minh | Đạt | `Nutrition.tsx`, `WaterReminderBackgroundService.cs` | Commit 78d5b98 |
 
 ## AI có hỗ trợ không?
 

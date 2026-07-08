@@ -291,6 +291,146 @@ Viết tại đây...
 
 ---
 
+### Prompt số 4
+
+| Nội dung | Thông tin |
+|---|---|
+| Ngày sử dụng | 05/07/2026 |
+| Công cụ AI | Antigravity |
+| Mục đích | Viết tài liệu giải thích logic nghiệp vụ Nutrition và đồng bộ Database team |
+| Phần việc liên quan | Requirement / Database / Report |
+| Mức độ sử dụng | Hỏi sinh tài liệu / Hỏi setup |
+
+#### 5.1. Prompt nguyên văn
+
+```text
+- "cho tôi 1 docs giải thích chi tiết về việc tính những thông số trên để tôi chia sẽ cho team tôi hiểu và và nghiệp vụ cho đúng"
+- "tạo 1 file để team tôi chạy DB cho đồng bộ đi nào"
+- "/commit"
+```
+
+#### 5.2. Bối cảnh khi viết prompt
+
+```text
+Team cần một tài liệu mô tả chính xác công thức Y khoa (Mifflin-St Jeor, tính TDEE, chia tỉ lệ Macros) mà AI đã dùng để code Backend, nhằm đảm bảo mọi thành viên hiểu đúng nghiệp vụ của trang Nutrition. Ngoài ra, do Database có sự sai lệch với file mock_data cũ nên cần đồng bộ lại toàn bộ dữ liệu mẫu (mock_data.sql) cho cả team. Cuối cùng, thực hiện commit để lưu lại kết quả công việc bằng quy trình tự động.
+```
+
+#### 5.3. Kết quả AI trả về
+
+```text
+- AI tự động viết file tài liệu chuẩn Markdown NUTRITION_BUSINESS_LOGIC.md trình bày rõ ràng các công thức tính BMR, TDEE, Calories Target và Macros, đi kèm giải thích ý nghĩa từng field trong Database.
+- Xác nhận file data/mock_data.sql đã chứa toàn bộ dữ liệu cần thiết để đồng bộ.
+- Chạy toàn bộ quy trình /commit: build project, tạo commit tự động, và append các audit log (vào AI_AUDIT_LOG.md, CHANGELOG.md, PROMPTS.md).
+```
+
+#### 5.4. Kết quả đã áp dụng vào bài
+
+```text
+- Giữ nguyên tài liệu mô tả nghiệp vụ NUTRITION_BUSINESS_LOGIC.md để sử dụng.
+- Dùng cấu trúc `mock_data.sql` đã được fix lỗi để import Database cho toàn team.
+- Hoàn tất commit và cập nhật Audit Log thành công.
+```
+
+#### 5.5. Phần sinh viên/nhóm đã chỉnh sửa hoặc cải tiến
+
+```text
+N/A - Kết quả tự động của AI đáp ứng hoàn toàn nhu cầu báo cáo và đồng bộ của team.
+```
+
+#### 5.6. Đánh giá chất lượng prompt
+
+- [x] Prompt rõ ràng
+- [x] Prompt có đủ bối cảnh
+- [ ] Prompt còn thiếu thông tin
+- [x] Prompt tạo ra kết quả tốt
+- [ ] Prompt tạo ra kết quả chưa phù hợp
+- [ ] Cần hỏi lại AI nhiều lần
+- [ ] Cần tự kiểm tra và chỉnh sửa nhiều
+- [ ] Kết quả AI có lỗi hoặc chưa chính xác
+
+#### 5.7. Minh chứng liên quan
+
+| Loại minh chứng | Nội dung |
+|---|---|
+| Link commit | c9c75ad |
+| File liên quan | NUTRITION_BUSINESS_LOGIC.md, data/mock_data.sql |
+| Screenshot | Đã check tài liệu chi tiết |
+| Kết quả chạy/test | Đã chạy lệnh import MySQL thành công |
+| Link tài liệu/báo cáo | docs/NUTRITION_BUSINESS_LOGIC.md |
+| Ghi chú khác | N/A |
+
+#### 5.8. Ghi chú thêm
+
+```text
+Lệnh `/commit` của custom workflow rất hữu ích để đảm bảo chuẩn hoá báo cáo AI cho toàn dự án mà không tốn công copy-paste thủ công.
+```
+
+---
+
+### Prompt số 5
+
+| Nội dung | Thông tin |
+|---|---|
+| Ngày sử dụng | 05/07/2026 |
+| Công cụ AI | Antigravity |
+| Mục đích | Sửa lỗi phân quyền chéo vai trò, múi giờ và cấu hình thời gian thức nhắc nước tự động thông minh |
+| Phần việc liên quan | Coding / Debug / Database |
+| Mức độ sử dụng | Hỏi sinh code / Hỏi debug / Hỏi tối ưu |
+
+#### 5.1. Prompt nguyên văn
+
+```text
+- "đang ở admin bấm test water reminder thì vẫn nhận đưuocj thông báo và bấm vào thì lại nhảy sang user, fix lại lỗi, hiển thị thông báo đúng role, chặt chẽ, không ở role này mà hiển thị thoong báo role kia."
+- "láy thời gian đúng real -time cho tôi"
+- "ở phần user thông báo nhắc nhở uống nước phải là tự động. chia đúng thời gian chuẩn trừ thời gian ngủ buổi tối đến sáng là không thông báo uóng nước. uống phải tính từ lúc thức dậy đến trước lúc đi ngủ. thêm UI thời gian bắt đầu và kết thúc nhắc nhở uống nước. là trong thời gian đó thì phải tính toán nhắc nhở thời gian uống nước sao cho đúng với thẻ trạng mà đã tính số lượng nước. cho tôi plan của bạn về việc này đẻ tôi củng cố cho đúng logic của tôi"
+```
+
+#### 5.2. Bối cảnh khi viết prompt
+
+```text
+Phát hiện lỗi phân quyền chéo khi Admin có thể nhận được thông báo nước của Member khi chạy test, và khi click thì bị điều hướng sai trang. Ngoài ra, thông báo bị hiển thị sai múi giờ do UTC, và người dùng Member cần tự cấu hình giờ thức/ngủ để hệ thống tính toán tần suất nhắc nước hợp lý theo thể trạng.
+```
+
+#### 5.3. Kết quả AI trả về
+
+```text
+- Chèn [Authorize(Roles = "Member,MEMBER")] ở backend controller và lọc hiển thị nút test nước ở client.
+- Sửa đổi hàm formatTime chèn thêm suffix 'Z' để chuyển múi giờ chính xác.
+- Triển khai cột DB mới, viết API, thêm popup modal tự động và sidebar panel thiết lập giờ thức/ngủ, đồng thời cập nhật service quét background 30 phút/lần tính tần suất nhắc nước động.
+```
+
+#### 5.4. Kết quả đã áp dụng vào bài
+
+```text
+- Đã áp dụng toàn bộ code phân quyền và sửa múi giờ.
+- Triển khai thành công tính năng đặt giờ thức/ngủ nhắc nước.
+```
+
+#### 5.5. Phần sinh viên/nhóm đã chỉnh sửa hoặc cải tiến
+
+```text
+Tự tạo migration EF Core, update DB vật lý và dọn dẹp các import unused.
+```
+
+#### 5.6. Đánh giá chất lượng prompt
+
+- [x] Prompt rõ ràng
+- [x] Prompt có đủ bối cảnh
+- [x] Prompt tạo ra kết quả tốt
+
+#### 5.7. Minh chứng liên quan
+
+| Loại minh chứng | Nội dung |
+|---|---|
+| Link commit | 78d5b981ae67b60af43751fda748eb369a60a549 |
+| File liên quan | User.cs, NutritionService.cs, NotificationsController.cs, WaterReminderBackgroundService.cs, Nutrition.tsx, NotificationBell.tsx, NotificationTestWidget.tsx |
+| Screenshot | N/A |
+| Kết quả chạy/test | Build FE/BE thành công, database migration chạy chuẩn |
+| Link tài liệu/báo cáo | docs/DATLV_AI-AUDIT-LOG/AI_AUDIT_LOG.md |
+| Ghi chú khác | N/A |
+
+---
+
 ## 6. Prompt quan trọng nhất
 
 Chọn một prompt có ảnh hưởng lớn nhất đến bài tập/project.

@@ -14,7 +14,7 @@ public class WorkoutSession : BaseEntity
 
     public User User { get; set; } = null!;
     // Note: If you add WorkoutPlan entity later, add the navigation property here
-    // public WorkoutPlan? WorkoutPlan { get; set; }
+    public WorkoutPlan? WorkoutPlan { get; set; }
 
     public ICollection<WorkoutSessionDetail> WorkoutSessionDetails { get; set; } = new List<WorkoutSessionDetail>();
 }
