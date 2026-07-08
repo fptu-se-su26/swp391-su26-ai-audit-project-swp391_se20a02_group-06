@@ -551,6 +551,65 @@ Cải thiện khả năng phân quyền hệ thống chặt chẽ hơn. Hiểu t
 
 ---
 
+---
+
+### Lần sử dụng AI số 9
+
+| Nội dung | Thông tin |
+|---|---|
+| Ngày sử dụng | 08/07/2026 |
+| Công cụ AI | Antigravity |
+| Mục đích sử dụng | Sửa lỗi không hiển thị Lịch sử bài tập và danh sách Bài tập (Workout) |
+| Phần việc liên quan | Backend / Database |
+| Mức độ sử dụng | Hỗ trợ nhiều |
+
+#### 4.1. Prompt đã sử dụng
+
+```text
+- tại sao lịch sử bài tập của tôi không hiển thị nữa. ở role user.
+- nó chưa hiển thị được bài tập nữa vì thế nên không có lịch sử bài tập là đúng rồi
+- đây nó lỗi đâu có bài tập đâu
+```
+
+#### 4.2. Kết quả AI gợi ý
+
+```text
+- AI đọc log lỗi Backend, phát hiện ra lỗi System.InvalidCastException khi EF Core ánh xạ cột difficulty kiểu INT trong database sang string.
+- Phát hiện lỗi EF Core sinh ra shadow property `user_id` do cấu hình mapping navigation chưa đúng.
+- Xóa cấu hình `.HasConversion<string>()` cho `Exercise.Difficulty` và chỉnh sửa `.WithMany(u => u.CreatedExercises)`.
+- Ánh xạ thuộc tính `DurationMinutes` vào cột `duration`.
+```
+
+#### 4.3. Phần sinh viên/nhóm đã sử dụng từ AI
+
+```text
+Giữ nguyên toàn bộ các thay đổi sửa lỗi EF Core mapping của AI trong ApplicationDbContext và Exercise.cs.
+```
+
+#### 4.4. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
+
+```text
+Cung cấp screenshot giao diện lỗi cho AI để khoanh vùng và xác nhận lỗi danh sách bài tập.
+```
+
+#### 4.5. Minh chứng
+
+| Loại minh chứng | Nội dung |
+|---|---|
+| Link commit | 40c88051b1ad8cb8fd3127f510e1e39a827f4980 |
+| File liên quan | Exercise.cs, ApplicationDbContext.cs |
+| Screenshot | Đã cung cấp lỗi UI "0 Exercises" |
+| Kết quả chạy/test | Build pass, Backend lấy danh sách bài tập thành công |
+| Link video demo | N/A |
+| Ghi chú khác | N/A |
+
+#### 4.6. Nhận xét cá nhân/nhóm
+
+```text
+- Quá trình merge code có thể sinh ra các lỗi ngầm về Database Schema mismatch so với Code (đặc biệt là Enum mapping).
+- Việc đọc backend server log là rất quan trọng để phát hiện ra nguyên nhân gốc rễ thay vì chỉ nhìn vào UI bị lỗi.
+```
+
 ## 5. Bảng tổng hợp mức độ sử dụng AI
 
 Đánh dấu mức độ AI hỗ trợ ở từng hạng mục.

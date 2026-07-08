@@ -431,6 +431,70 @@ Tự tạo migration EF Core, update DB vật lý và dọn dẹp các import un
 
 ---
 
+### Prompt số 6
+
+| Nội dung | Thông tin |
+|---|---|
+| Ngày sử dụng | 08/07/2026 |
+| Công cụ AI | Antigravity |
+| Mục đích | Tìm và sửa lỗi không hiển thị danh sách Bài tập và Lịch sử tập luyện |
+| Phần việc liên quan | Backend / Database |
+| Mức độ sử dụng | Hỏi debug |
+
+#### 5.1. Prompt nguyên văn
+
+```text
+- tại sao lịch sử bài tập của tôi không hiển thị nữa. ở role user.
+- nó chưa hiển thị được bài tập nữa vì thế nên không có lịch sử bài tập là đúng rồi
+- đây nó lỗi đâu có bài tập đâu (Kèm screenshot)
+```
+
+#### 5.2. Bối cảnh khi viết prompt
+
+```text
+Sau khi gộp nhánh, backend phát sinh lỗi runtime khi fetch bài tập (Exercise) dẫn tới trang Workouts trống và Lịch sử tập luyện trống, cần AI đọc log tìm lỗi.
+```
+
+#### 5.3. Kết quả AI trả về
+
+```text
+AI phân tích các file log `task-XXX.log`, nhận ra các lỗi:
+1. Thiếu thuộc tính `DurationMinutes` -> ánh xạ lại.
+2. Lỗi shadow property `user_id` -> sửa `WithMany`.
+3. Lỗi `InvalidCastException` cho enum `Difficulty` -> gỡ bỏ `HasConversion<string>()`.
+```
+
+#### 5.4. Kết quả đã áp dụng vào bài
+
+```text
+Áp dụng tất cả các fix mapping của AI vào Entity Framework Core.
+```
+
+#### 5.5. Phần sinh viên/nhóm đã chỉnh sửa hoặc cải tiến
+
+```text
+Chụp ảnh minh chứng phần hiển thị bị hỏng để cung cấp context cho AI định vị lỗi nhanh hơn.
+```
+
+#### 5.6. Đánh giá chất lượng prompt
+
+- [x] Prompt rõ ràng
+- [x] Prompt có đủ bối cảnh
+- [x] Prompt tạo ra kết quả tốt
+
+#### 5.7. Minh chứng liên quan
+
+| Loại minh chứng | Nội dung |
+|---|---|
+| Link commit | 40c88051b1ad8cb8fd3127f510e1e39a827f4980 |
+| File liên quan | Exercise.cs, ApplicationDbContext.cs |
+| Screenshot | Đã cung cấp lỗi UI "0 Exercises" |
+| Kết quả chạy/test | Build pass, Backend lấy danh sách bài tập thành công |
+| Link tài liệu/báo cáo | N/A |
+| Ghi chú khác | N/A |
+
+---
+
 ## 6. Prompt quan trọng nhất
 
 Chọn một prompt có ảnh hưởng lớn nhất đến bài tập/project.

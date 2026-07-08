@@ -244,6 +244,7 @@ DD/MM/YYYY
 | 6 | Thêm chức năng Nutrition, đồng bộ Mock DB | Đạt | `Nutrition.tsx`, `NutritionService.cs`, `mock_data.sql` | Commit c9c75ad |
 | 7 | Thiết kế & tích hợp Hệ thống thông báo Realtime SignalR | Đạt | `NotificationHub.cs`, `NotificationService.cs`, `NotificationContext.tsx`, `NotificationBell.tsx` | Commit 78d5b98 |
 | 8 | Cấu hình giờ Thức/Ngủ, nhắc uống nước tự động thông minh | Đạt | `Nutrition.tsx`, `WaterReminderBackgroundService.cs` | Commit 78d5b98 |
+| 9 | Sửa lỗi EF Core Mapping (InvalidCastException, shadow property) | Đạt | `Exercise.cs`, `ApplicationDbContext.cs` | Commit 40c8805 |
 
 ## AI có hỗ trợ không?
 
@@ -256,6 +257,7 @@ Nếu có, mô tả AI đã hỗ trợ phần nào:
 - AI (Antigravity/Gemini) hỗ trợ viết code tích hợp thư viện `@react-oauth/google` vào file `main.tsx` và gọi hàm `useGoogleLogin` trong `Login.tsx`.
 - AI hỗ trợ viết cấu trúc file `authStore.ts` sử dụng Zustand để lưu trữ state đăng nhập.
 - AI phát hiện và hướng dẫn sửa lỗi Terminal (do chạy lệnh sai thư mục gốc), hỗ trợ thao tác Git (pull nhánh main, rm tracking file).
+- AI (Antigravity) phát hiện và sửa các cấu hình EF Core bị sai lệch so với Database, nguyên nhân gây ra lỗi 500 khi fetch danh sách Bài tập và Lịch sử tập luyện.
 ```
 
 ## Commit/Screenshot minh chứng
