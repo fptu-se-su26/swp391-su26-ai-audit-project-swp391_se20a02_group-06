@@ -113,12 +113,31 @@ public class WorkoutService : IWorkoutService
         return MapToSessionDto(session!);
     }
 
-    public async Task<IEnumerable<WorkoutSessionDto>> GetUserWorkoutHistoryAsync(int userId)
+    public async Task<IEnumerable<WorkoutSessionDto>> GetUserWorkoutHistoryAsync(int userId, string filter = "all")
     {
-        var sessions = await _context.WorkoutSessions
+        var query = _context.WorkoutSessions
             .Include(s => s.WorkoutSessionDetails)
             .ThenInclude(d => d.Exercise)
             .Where(s => s.UserId == userId && s.Status == "COMPLETED")
+            .AsQueryable();
+
+        if (filter == "day")
+        {
+            var today = DateTime.UtcNow.Date;
+            query = query.Where(s => s.StartedAt >= today);
+        }
+        else if (filter == "week")
+        {
+            var lastWeek = DateTime.UtcNow.AddDays(-7);
+            query = query.Where(s => s.StartedAt >= lastWeek);
+        }
+        else if (filter == "month")
+        {
+            var lastMonth = DateTime.UtcNow.AddDays(-30);
+            query = query.Where(s => s.StartedAt >= lastMonth);
+        }
+
+        var sessions = await query
             .OrderByDescending(s => s.StartedAt)
             .ToListAsync();
 

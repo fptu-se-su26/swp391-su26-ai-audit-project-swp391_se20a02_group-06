@@ -16,8 +16,10 @@ import {
     ModalContent,
     ModalHeader,
     ModalBody,
-    ModalCloseButton
+    ModalCloseButton,
+    IconButton
 } from '@chakra-ui/react'
+import { FiChevronLeft, FiChevronRight } from 'react-icons/fi'
 import AppButton from '../../../components/shared/Button/AppButton'
 import MemberLayout from '../../../components/shared/Layout/MemberLayout.tsx'
 import type { ExerciseCardData } from '../types/workout'
@@ -311,19 +313,58 @@ const WorkoutResults: React.FC = () => {
             <Modal isOpen={!!selectedExercise} onClose={() => setSelectedExercise(null)} isCentered size="3xl">
                 <ModalOverlay backdropFilter="blur(4px)" bg="blackAlpha.800" />
                 <ModalContent bg="#111318" border="1px solid" borderColor="#1e2028" borderRadius="24px" overflow="hidden">
-                    <ModalHeader color="white" pt="6" pb="4">{selectedExercise?.name}</ModalHeader>
+                    <ModalHeader color="white" pt="6" pb="4" display="flex" alignItems="center" gap="2">
+                        {selectedExercise && selectedExercise.arrayIndex > 0 && (
+                            <IconButton 
+                                aria-label="Previous Exercise" 
+                                icon={<FiChevronLeft />} 
+                                size="sm" 
+                                variant="ghost" 
+                                color="#8A8A93" 
+                                _hover={{ color: 'white', bg: '#1e2028' }}
+                                onClick={() => {
+                                    const prevIdx = selectedExercise.arrayIndex - 1
+                                    setSelectedExercise({ ...exercises[prevIdx], arrayIndex: prevIdx })
+                                }}
+                            />
+                        )}
+                        <Text flex="1" noOfLines={1}>{selectedExercise?.name}</Text>
+                        {selectedExercise && selectedExercise.arrayIndex < exercises.length - 1 && (
+                            <IconButton 
+                                aria-label="Next Exercise" 
+                                icon={<FiChevronRight />} 
+                                size="sm" 
+                                variant="ghost" 
+                                color="#8A8A93" 
+                                mr="8"
+                                _hover={{ color: 'white', bg: '#1e2028' }}
+                                onClick={() => {
+                                    const nextIdx = selectedExercise.arrayIndex + 1
+                                    setSelectedExercise({ ...exercises[nextIdx], arrayIndex: nextIdx })
+                                }}
+                            />
+                        )}
+                    </ModalHeader>
                     <ModalCloseButton color="white" top="4" right="4" />
                     <ModalBody pb="6">
                         {/* Video Player */}
                         <Box mb="6" borderRadius="16px" overflow="hidden" position="relative" bg="#0A0C10" border="1px solid" borderColor="#1e2028">
                             <AspectRatio ratio={16 / 9} w="100%">
                                 {selectedExercise?.videoUrl ? (
-                                    <iframe
-                                        title={selectedExercise.name}
-                                        src={selectedExercise.videoUrl}
-                                        allowFullScreen
-                                        style={{ border: 'none' }}
-                                    />
+                                    selectedExercise.videoUrl.includes('youtube.com') || selectedExercise.videoUrl.includes('youtu.be') ? (
+                                        <iframe
+                                            title={selectedExercise.name}
+                                            src={selectedExercise.videoUrl}
+                                            allowFullScreen
+                                            style={{ border: 'none', width: '100%', height: '100%' }}
+                                        />
+                                    ) : (
+                                        <video
+                                            src={selectedExercise.videoUrl}
+                                            controls
+                                            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                                        />
+                                    )
                                 ) : (
                                     <Box display="flex" alignItems="center" justifyContent="center">
                                         <Text color="#8A8A93">No video available</Text>
@@ -353,12 +394,21 @@ const WorkoutResults: React.FC = () => {
                         </Text>
                         
                         <AppButton 
-                            label="Complete this exercise" 
+                            label={selectedExercise && selectedExercise.arrayIndex === exercises.length - 1 ? "Complete & Finish" : "Complete & Next"} 
                             variant="solid" w="full" h="48px" fontSize="15px"
                             onClick={() => {
                                 if (selectedExercise) {
                                     markExerciseDone(selectedExercise.arrayIndex)
-                                    setSelectedExercise(null)
+                                    // Find next exercise that is not done or skipped
+                                    let nextIndex = selectedExercise.arrayIndex + 1;
+                                    while (nextIndex < exercises.length && (exercises[nextIndex].isDone || exercises[nextIndex].isSkipped)) {
+                                        nextIndex++;
+                                    }
+                                    if (nextIndex < exercises.length) {
+                                        setSelectedExercise({ ...exercises[nextIndex], arrayIndex: nextIndex })
+                                    } else {
+                                        setSelectedExercise(null)
+                                    }
                                 }
                             }}
                         />
