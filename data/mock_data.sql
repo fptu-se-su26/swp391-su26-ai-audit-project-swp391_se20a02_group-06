@@ -8,6 +8,29 @@ SET FOREIGN_KEY_CHECKS=0;
 USE FitnessProject;
 
 -- ==========================================
+-- TRUNCATE ALL TABLES (clean re-seed)
+-- ==========================================
+TRUNCATE TABLE pt_upload_requests;
+TRUNCATE TABLE notifications;
+TRUNCATE TABLE meal_schedule_items;
+TRUNCATE TABLE meal_schedules;
+TRUNCATE TABLE workout_session_details;
+TRUNCATE TABLE workout_sessions;
+TRUNCATE TABLE workout_plan_exercises;
+TRUNCATE TABLE workout_plans;
+TRUNCATE TABLE ai_recommendations;
+TRUNCATE TABLE body_metrics;
+TRUNCATE TABLE schedules;
+TRUNCATE TABLE membership_subscriptions;
+TRUNCATE TABLE payments;
+TRUNCATE TABLE orders;
+TRUNCATE TABLE product_packages;
+TRUNCATE TABLE exercises;
+TRUNCATE TABLE muscle_groups;
+TRUNCATE TABLE foods;
+TRUNCATE TABLE pt_profiles;
+
+-- ==========================================
 -- PT_PROFILES  (PT = user_id 2)
 -- ==========================================
 INSERT IGNORE INTO pt_profiles (user_id, bio, experience_years, rating) VALUES
@@ -32,21 +55,16 @@ INSERT IGNORE INTO muscle_groups (id, name, description) VALUES
 -- EXERCISES  (created_by PT = 2 or Admin = 1)
 -- ==========================================
 INSERT IGNORE INTO exercises (id, title, description, video_url, muscle_group_id, difficulty, duration, created_by, created_at) VALUES
-(1,  'Barbell Bench Press',    'Classic flat-bench chest compound movement with a barbell.',                                'https://example.com/videos/bench-press',     1, 1, 45, 2, CURRENT_TIMESTAMP(6)),
-(2,  'Pull-Up',                'Upper-body pulling exercise targeting lats and biceps.',                                    'https://example.com/videos/pull-up',         2, 1, 30, 2, CURRENT_TIMESTAMP(6)),
-(3,  'Barbell Back Squat',     'King of leg exercises — full lower-body compound movement.',                                'https://example.com/videos/back-squat',      3, 2, 60, 2, CURRENT_TIMESTAMP(6)),
-(4,  'Overhead Press',         'Press a barbell overhead to build shoulder strength and stability.',                        'https://example.com/videos/ohp',             4, 1, 40, 2, CURRENT_TIMESTAMP(6)),
-(5,  'Dumbbell Bicep Curl',    'Isolation exercise for building bicep peak and size.',                                      'https://example.com/videos/bicep-curl',      5, 0, 20, 2, CURRENT_TIMESTAMP(6)),
-(6,  'Plank',                  'Isometric core hold building stability and endurance.',                                     'https://example.com/videos/plank',           6, 0, 15, 2, CURRENT_TIMESTAMP(6)),
-(7,  'Deadlift',               'Full-body posterior-chain compound lift.',                                                  'https://example.com/videos/deadlift',        2, 2, 50, 2, CURRENT_TIMESTAMP(6)),
-(8,  'HIIT Treadmill Sprint',  '30-second all-out sprints alternated with 30-second rest intervals.',                      'https://example.com/videos/hiit-treadmill',  7, 1, 20, 2, CURRENT_TIMESTAMP(6)),
-(9,  'Dumbbell Lunges',        'Unilateral leg exercise improving balance and quad strength.',                              'https://example.com/videos/lunges',          3, 0, 25, 2, CURRENT_TIMESTAMP(6)),
-(10, 'Cable Tricep Pushdown',  'Isolation movement for tricep mass and definition.',                                        'https://example.com/videos/tricep-pushdown', 5, 0, 20, 2, CURRENT_TIMESTAMP(6)),
-(11, 'Romanian Deadlift',      'Hip-hinge movement targeting hamstrings and glutes.',                                       'https://example.com/videos/rdl',             3, 1, 35, 2, CURRENT_TIMESTAMP(6)),
-(12, 'Battle Ropes',           'High-intensity conditioning exercise using heavy ropes.',                                   'https://example.com/videos/battle-ropes',    7, 1, 15, 2, CURRENT_TIMESTAMP(6)),
-(13, 'Incline Dumbbell Press', 'Targets the upper chest on a 30–45-degree incline bench.',                                 'https://example.com/videos/incline-press',   1, 1, 35, 2, CURRENT_TIMESTAMP(6)),
-(14, 'Hanging Leg Raise',      'Core exercise: hang from a bar and raise legs to 90 degrees.',                             'https://example.com/videos/leg-raise',       6, 1, 20, 2, CURRENT_TIMESTAMP(6)),
-(15, 'Yoga Sun Salutation',    'Flowing 12-pose sequence to warm up and mobilize the entire body.',                        'https://example.com/videos/sun-salutation',  7, 0, 20, 1, CURRENT_TIMESTAMP(6));
+(1,  'Warmup Exercise 1',    'Gentle marching in place to warm up the body.',                                'https://res.cloudinary.com/bucd22r4/video/upload/v1783519878/8017173331047_zjmdja.mp4',     7, 0, 30, 2, CURRENT_TIMESTAMP(6)),
+(2,  'Warmup Exercise 2',                'Raise arms overhead while alternating side steps in rhythm.',                                    'https://res.cloudinary.com/bucd22r4/video/upload/v1783520882/8017173395908_lzpx23.mp4',         7, 0, 30, 2, CURRENT_TIMESTAMP(6)),
+(3,  'Warmup Exercise 3',     'Lower hips while stepping one leg backward, alternating sides.',                                'https://res.cloudinary.com/bucd22r4/video/upload/v1783521212/8017173637193_ybxuoq.mp4',      3, 0, 30, 2, CURRENT_TIMESTAMP(6)),
+(4,  'Warmup Exercise 4',         'Simple low intensity exercise to prepare for a workout.',                        'https://res.cloudinary.com/bucd22r4/video/upload/v1783523875/8017173747145_aqfvrr.mp4',             7, 0, 30, 2, CURRENT_TIMESTAMP(6)),
+(5,  'Warmup Exercise 5',    'Easy movement designed to loosen up tight muscles safely.',                                      'https://res.cloudinary.com/bucd22r4/video/upload/v1783524064/8017174522387_i6last.mp4',      7, 0, 30, 2, CURRENT_TIMESTAMP(6)),
+(6,  'Warmup Exercise 6',                  'Low-impact movement to elevate core temperature and heart rate.',                                     'https://res.cloudinary.com/bucd22r4/video/upload/v1783524815/8017174582040_veciou.mp4',           7, 0, 30, 2, CURRENT_TIMESTAMP(6)),
+(7,  'Warmup Exercise 7',               'Basic exercise to activate target muscles before your workout.',                                                  'https://res.cloudinary.com/bucd22r4/video/upload/v1783524892/8017174806631_ygekab.mp4',        7, 0, 30, 2, CURRENT_TIMESTAMP(6)),
+(8,  'Mountain Climbers',  'Drive knees toward the chest alternating from a plank.',                      'https://res.cloudinary.com/bucd22r4/video/upload/v1783527937/8018825646358_nelbm3.mp4',  6, 1, 45, 2, CURRENT_TIMESTAMP(6)),
+(9,  'Plank Crunch',        'Bring opposite knee and elbow inward while holding plank.',                              'https://res.cloudinary.com/bucd22r4/video/upload/v1783527957/8018825658035_hlqygj.mp4',          6, 2, 45, 2, CURRENT_TIMESTAMP(6)),
+(10, 'Plank Hops',  'Hop both feet forward and backward from a plank.',                                        'https://res.cloudinary.com/bucd22r4/video/upload/v1783527962/8018825676592_lqzlgr.mp4', 6, 1, 45, 2, CURRENT_TIMESTAMP(6));
 
 
 -- ==========================================
@@ -106,14 +124,14 @@ INSERT IGNORE INTO body_metrics (user_id, height, weight, body_fat_percentage, m
 -- ==========================================
 -- SCHEDULES  (pt_id=2, member_id=3)
 -- ==========================================
-INSERT IGNORE INTO schedules (pt_id, member_id, start_time, end_time, status, meeting_url, note) VALUES
-(2, 3, '2025-02-10 08:00:00', '2025-02-10 09:00:00', 'COMPLETED', NULL,                               'Initial assessment and movement screening.'),
-(2, 3, '2025-02-17 08:00:00', '2025-02-17 09:00:00', 'COMPLETED', NULL,                               'Upper body push — bench press and OHP technique.'),
-(2, 3, '2025-02-24 08:00:00', '2025-02-24 09:00:00', 'COMPLETED', NULL,                               'Lower body — squat form correction.'),
-(2, 3, '2025-03-03 08:00:00', '2025-03-03 09:00:00', 'COMPLETED', 'https://meet.google.com/abc-def-ghi','Online session — deadlift coaching via video call.'),
-(2, 3, '2025-06-23 08:00:00', '2025-06-23 09:00:00', 'CONFIRMED', NULL,                               'Pull day — back and biceps.'),
-(2, 3, '2025-06-30 08:00:00', '2025-06-30 09:00:00', 'PENDING',   NULL,                               'Cardio and core circuit.'),
-(2, 3, '2025-04-07 08:00:00', '2025-04-07 09:00:00', 'CANCELLED', NULL,                               NULL);
+INSERT IGNORE INTO schedules (pt_id, member_id, start_time, end_time, status) VALUES
+(2, 3, '2025-02-10 08:00:00', '2025-02-10 09:00:00', 2),   -- COMPLETED: Initial assessment
+(2, 3, '2025-02-17 08:00:00', '2025-02-17 09:00:00', 2),   -- COMPLETED: Upper body push
+(2, 3, '2025-02-24 08:00:00', '2025-02-24 09:00:00', 2),   -- COMPLETED: Lower body squat
+(2, 3, '2025-03-03 08:00:00', '2025-03-03 09:00:00', 2),   -- COMPLETED: Deadlift online session
+(2, 3, '2025-06-23 08:00:00', '2025-06-23 09:00:00', 1),   -- CONFIRMED: Pull day
+(2, 3, '2025-06-30 08:00:00', '2025-06-30 09:00:00', 0),   -- PENDING:   Cardio and core
+(2, 3, '2025-04-07 08:00:00', '2025-04-07 09:00:00', 3);   -- CANCELLED
 
 
 -- ==========================================
@@ -154,19 +172,19 @@ INSERT IGNORE INTO foods (id, name, serving_size, unit, calories, protein, carbs
 -- ==========================================
 -- AI_RECOMMENDATIONS  (user_id 3 = member)
 -- ==========================================
-INSERT IGNORE INTO ai_recommendations (id, user_id, type, user_request, ai_response, model_name, created_at) VALUES
+INSERT IGNORE INTO ai_recommendations (id, user_id, type, user_request, ai_response, created_at) VALUES
 (1, 3, 'WORKOUT_PLAN',
  'I want to build muscle and lose fat. I can train 4 days a week.',
  '{"plan_title":"4-Day Body Recomposition","weeks":8,"days":[{"day":"Monday","focus":"Upper Push","exercises":["Bench Press","Overhead Press","Incline Dumbbell Press"]},{"day":"Tuesday","focus":"Lower Body","exercises":["Barbell Squat","Romanian Deadlift","Dumbbell Lunges"]},{"day":"Thursday","focus":"Upper Pull","exercises":["Pull-Up","Bicep Curl","Cable Tricep Pushdown"]},{"day":"Friday","focus":"Cardio & Core","exercises":["HIIT Treadmill Sprint","Battle Ropes","Plank"]}]}',
- 'deepseek-chat', '2025-01-06 10:00:00'),
+ '2025-01-06 10:00:00'),
 (2, 3, 'NUTRITION_DIET',
  'I want a high-protein meal plan to support fat loss. Around 1900 kcal per day.',
  '{"diet_title":"High-Protein Fat Loss Plan","daily_calories":1900,"protein_target_g":175,"meals":[{"name":"Breakfast","foods":[{"food_name":"Oatmeal","amount":"100g"},{"food_name":"Whole Eggs","amount":"3 pieces"},{"food_name":"Banana","amount":"1 piece"}],"calories":500},{"name":"Lunch","foods":[{"food_name":"Grilled Chicken Breast","amount":"200g"},{"food_name":"Brown Rice","amount":"150g"},{"food_name":"Steamed Broccoli","amount":"100g"}],"calories":580},{"name":"Post-Workout Snack","foods":[{"food_name":"Whey Protein","amount":"1 scoop"},{"food_name":"Banana","amount":"1 piece"}],"calories":225},{"name":"Dinner","foods":[{"food_name":"Baked Salmon","amount":"150g"},{"food_name":"Sweet Potato","amount":"100g"},{"food_name":"Raw Spinach","amount":"100g"}],"calories":420},{"name":"Evening Snack","foods":[{"food_name":"Greek Yogurt","amount":"150g"},{"food_name":"Almonds","amount":"30g"}],"calories":175}]}',
- 'gemini-2.5-flash', '2026-03-11 09:00:00'),
+ '2026-03-11 09:00:00'),
 (3, 3, 'WORKOUT_PLAN',
  'I feel ready to level up. Can I get a 5-day intermediate hypertrophy program?',
  '{"plan_title":"5-Day Hypertrophy Split","weeks":10,"days":[{"day":"Monday","focus":"Chest & Triceps","exercises":["Barbell Bench Press","Incline Dumbbell Press","Cable Tricep Pushdown"]},{"day":"Tuesday","focus":"Back & Biceps","exercises":["Deadlift","Pull-Up","Dumbbell Bicep Curl"]},{"day":"Wednesday","focus":"Legs","exercises":["Barbell Back Squat","Romanian Deadlift","Dumbbell Lunges"]},{"day":"Thursday","focus":"Shoulders","exercises":["Overhead Press","Hanging Leg Raise"]},{"day":"Friday","focus":"Full Body HIIT","exercises":["HIIT Treadmill Sprint","Battle Ropes","Plank"]}]}',
- 'deepseek-chat', '2025-06-02 11:30:00');
+ '2025-06-02 11:30:00');
 
 
 -- ==========================================
@@ -183,35 +201,32 @@ INSERT IGNORE INTO workout_plans (id, user_id, ai_recommendation_id, title, goal
 -- ==========================================
 INSERT IGNORE INTO workout_plan_exercises (workout_plan_id, exercise_id, sets, reps, duration_seconds, rest_seconds, exercise_order) VALUES
 -- Plan 1: 4-Day Body Recomp
-(1, 1,  4, 8,   NULL, 120, 1),   -- Bench Press
-(1, 4,  3, 10,  NULL, 90,  2),   -- OHP
-(1, 13, 3, 12,  NULL, 90,  3),   -- Incline DB Press
-(1, 3,  4, 6,   NULL, 180, 4),   -- Squat
-(1, 11, 3, 10,  NULL, 90,  5),   -- RDL
-(1, 9,  3, 12,  NULL, 60,  6),   -- Lunges
-(1, 2,  4, 8,   NULL, 90,  7),   -- Pull-Up
-(1, 5,  3, 12,  NULL, 60,  8),   -- Bicep Curl
-(1, 10, 3, 15,  NULL, 60,  9),   -- Tricep Pushdown
-(1, 8,  4, NULL, 30,  30,  10),  -- HIIT Sprint
-(1, 12, 3, NULL, 45,  45,  11),  -- Battle Ropes
-(1, 6,  3, NULL, 60,  45,  12),  -- Plank
+(1, 1,  4, 8,   NULL, 120, 1),   -- Warmup Exercise 1
+(1, 2,  3, 10,  NULL, 90,  2),   -- Warmup Exercise 2
+(1, 3,  3, 12,  NULL, 90,  3),   -- Warmup Exercise 3
+(1, 4,  4, 6,   NULL, 180, 4),   -- Warmup Exercise 4
+(1, 5,  3, 10,  NULL, 90,  5),   -- Warmup Exercise 5
+(1, 6,  3, 12,  NULL, 60,  6),   -- Warmup Exercise 6
+(1, 7,  4, 8,   NULL, 90,  7),   -- Warmup Exercise 7
+(1, 8,  3, 12,  NULL, 60,  8),   -- Mountain Climbers
+(1, 9,  3, 15,  NULL, 60,  9),   -- Plank Crunch
+(1, 10, 4, NULL, 30,  30,  10),  -- Plank Hops
 -- Plan 2: 5-Day Hypertrophy
 (2, 1,  4, 10,  NULL, 90,  1),
-(2, 13, 3, 12,  NULL, 75,  2),
-(2, 10, 3, 15,  NULL, 60,  3),
-(2, 7,  4, 5,   NULL, 180, 4),
-(2, 2,  4, 8,   NULL, 90,  5),
-(2, 5,  3, 12,  NULL, 60,  6),
-(2, 3,  4, 8,   NULL, 180, 7),
-(2, 11, 3, 10,  NULL, 90,  8),
+(2, 2,  3, 12,  NULL, 75,  2),
+(2, 3,  3, 15,  NULL, 60,  3),
+(2, 4,  4, 5,   NULL, 180, 4),
+(2, 5,  4, 8,   NULL, 90,  5),
+(2, 6,  3, 12,  NULL, 60,  6),
+(2, 7,  4, 8,   NULL, 180, 7),
+(2, 8,  3, 10,  NULL, 90,  8),
 (2, 9,  3, 12,  NULL, 60,  9),
-(2, 4,  4, 8,   NULL, 120, 10),
-(2, 14, 3, 12,  NULL, 60,  11),
+(2, 10, 4, 8,   NULL, 120, 10),
 -- Plan 3: PT Custom
-(3, 3,  3, 8,   NULL, 180, 1),
-(3, 1,  3, 8,   NULL, 120, 2),
-(3, 7,  3, 5,   NULL, 180, 3),
-(3, 6,  3, NULL, 60,  45,  4);
+(3, 1,  3, 8,   NULL, 180, 1),
+(3, 2,  3, 8,   NULL, 120, 2),
+(3, 8,  3, 5,   NULL, 180, 3),
+(3, 9,  3, NULL, 60,  45,  4);
 
 
 -- ==========================================
@@ -234,31 +249,31 @@ INSERT IGNORE INTO workout_sessions (id, user_id, workout_plan_id, total_duratio
 INSERT IGNORE INTO workout_session_details (workout_session_id, exercise_id, sets_done, reps_done, duration_seconds, calories_burned) VALUES
 -- Session 1 (Plan 1 - Upper Push + Core)
 (1, 1,  4, 8,   NULL,  110.00),
-(1, 4,  3, 10,  NULL,   85.00),
-(1, 5,  3, 12,  NULL,   55.00),
-(1, 6,  3, NULL, 60,    20.00),
+(1, 2,  3, 10,  NULL,   85.00),
+(1, 3,  3, 12,  NULL,   55.00),
+(1, 10, 3, NULL, 60,    20.00),
 -- Session 2 (Plan 1 - Lower Body)
-(2, 3,  4, 6,   NULL,  200.00),
-(2, 11, 3, 10,  NULL,  120.00),
-(2, 9,  3, 12,  NULL,   75.00),
+(2, 4,  4, 6,   NULL,  200.00),
+(2, 5,  3, 10,  NULL,  120.00),
+(2, 6,  3, 12,  NULL,   75.00),
 -- Session 3 (PT Custom)
-(3, 3,  3, 8,   NULL,  160.00),
-(3, 1,  3, 8,   NULL,   95.00),
-(3, 7,  3, 5,   NULL,  125.00),
+(3, 1,  3, 8,   NULL,  160.00),
+(3, 2,  3, 8,   NULL,   95.00),
+(3, 8,  3, 5,   NULL,  125.00),
 -- Session 4 (PT Custom)
-(4, 3,  3, 8,   NULL,  155.00),
-(4, 1,  3, 9,   NULL,  100.00),
-(4, 6,  3, NULL, 60,    20.00),
+(4, 1,  3, 8,   NULL,  155.00),
+(4, 2,  3, 9,   NULL,  100.00),
+(4, 9,  3, NULL, 60,    20.00),
 -- Session 5 (Plan 1 - Pull + HIIT)
-(5, 2,  4, 8,   NULL,  100.00),
+(5, 7,  4, 8,   NULL,  100.00),
 (5, 8,  4, NULL, 30,   195.00),
-(5, 12, 3, NULL, 45,   175.00),
+(5, 9,  3, NULL, 45,   175.00),
 -- Session 7 (Plan 2 - Chest & Triceps)
 (7, 1,  4, 10,  NULL,  115.00),
-(7, 13, 3, 12,  NULL,   90.00),
-(7, 10, 3, 15,  NULL,   55.00),
+(7, 2,  3, 12,  NULL,   90.00),
+(7, 3,  3, 15,  NULL,   55.00),
 -- Session 8 (Plan 2 - in progress, partial)
-(8, 7,  2, 5,   NULL,  110.00);
+(8, 4,  2, 5,   NULL,  110.00);
 
 
 -- ==========================================
@@ -327,9 +342,9 @@ INSERT IGNORE INTO notifications (user_id, title, content, type, is_read, create
 -- PT_UPLOAD_REQUESTS  (pt_id=2, admin=1)
 -- ==========================================
 INSERT IGNORE INTO pt_upload_requests (pt_id, exercise_id, title, description, video_url, status, admin_id, review_note, submitted_at, reviewed_at) VALUES
-(2, 13, 'Incline Dumbbell Press Tutorial',
- 'Step-by-step guide to proper incline DB press form, covering setup, grip, and range of motion for upper chest development.',
- 'https://example.com/uploads/incline-db-press.mp4', 'PENDING', NULL, NULL, '2025-05-15 14:00:00', NULL),
+(2, 1, 'Warmup Exercise 1 Tutorial',
+ 'Step-by-step guide to proper warmup exercise 1 form, covering setup and range of motion.',
+ 'https://example.com/uploads/warmup-exercise-1.mp4', 'PENDING', NULL, NULL, '2025-05-15 14:00:00', NULL),
 
 (2, NULL, 'Cable Fly Chest Isolation Guide',
  'Demonstration of cable fly with emphasis on mind-muscle connection and proper arc path.',
