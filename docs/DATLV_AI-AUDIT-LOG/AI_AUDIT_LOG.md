@@ -740,3 +740,118 @@ Sinh viên/nhóm cam kết rằng:
 | Đại diện sinh viên/nhóm | Ngày xác nhận |
 |---|---|
 | Lê Văn Đạt | 01/07/2026 |
+
+---
+
+### Lần sử dụng AI số 10
+
+| Nội dung | Thông tin |
+|---|---|
+| Ngày sử dụng | 08/07/2026 |
+| Công cụ AI | Antigravity |
+| Mục đích sử dụng | Xóa quyền CRUD của PT trên giao diện và Tích hợp API cho User Dashboard |
+| Phần việc liên quan | Fullstack |
+| Mức độ sử dụng | Hỗ trợ nhiều |
+
+#### 4.1. Prompt đã sử dụng
+
+```text
+- ở phần role PT chỉ cho xem danh sách user, danh sách bào tập chứ không có crud như role admin đưuocj sửa lại cho tôi /feature
+- code tiếp phần dashboard của user cho tôi. phải hoạt đồng được chuẩn /refactor hỏi tôi về chức năng của các tab thì cứ hỏi tôi nhé.
+```
+
+#### 4.2. Kết quả AI gợi ý
+
+```text
+- Ẩn các nút Add User, Edit, Delete và Create Exercise đối với tài khoản có role PT (roleId != 1).
+- Xây dựng DashboardSummaryDto, DashboardService, DashboardController để trả về dữ liệu Calories, Streak, và Macros từ Database.
+- Kết nối API `GET /api/dashboard/summary` vào giao diện Frontend Dashboard bằng `useSWR`.
+```
+
+#### 4.3. Phần sinh viên/nhóm đã sử dụng từ AI
+
+```text
+Sử dụng toàn bộ mã nguồn Backend (Controller, Service, DTO) và mã nguồn Frontend cho phần ẩn nút và kết nối dữ liệu.
+```
+
+#### 4.4. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
+
+```text
+Phản hồi cho AI về việc giữ nguyên các chức năng (UI) chưa phát triển và giải thích logic tính Current Streak và Calories.
+```
+
+#### 4.5. Minh chứng
+
+| Loại minh chứng | Nội dung |
+|---|---|
+| Link commit | 0b5a897 |
+| File liên quan | backend/src/FitnessTrainingSystem.Application/DTOs/Dashboard/DashboardSummaryDto.cs, backend/src/FitnessTrainingSystem.Application/Interfaces/IDashboardService.cs, backend/src/FitnessTrainingSystem.Infrastructure/DependencyInjection.cs, backend/src/FitnessTrainingSystem.Infrastructure/Services/DashboardService.cs, backend/src/FitnessTrainingSystem.WebApi/Controllers/DashboardController.cs, frontend/src/features/dashboard/components/DashboardWidgets.tsx, frontend/src/pages/admin/AdminUsers.tsx, frontend/src/pages/admin/AdminWorkouts.tsx, frontend/src/pages/member/Dashboard.tsx |
+| Screenshot | Đã kiểm tra UI thực tế |
+| Kết quả chạy/test | Build pass 100% FE & BE |
+| Link video demo | N/A |
+| Ghi chú khác | N/A |
+
+#### 4.6. Nhận xét cá nhân/nhóm
+
+```text
+Việc thiết kế Dashboard API tập trung trả về một DTO tổng hợp duy nhất giúp tối ưu hiệu suất, tránh việc Frontend phải gọi nhiều API nhỏ lẻ.
+```
+
+---
+
+### Lần sử dụng AI số 11
+
+| Nội dung | Thông tin |
+|---|---|
+| Ngày sử dụng | 09/07/2026 |
+| Công cụ AI | Antigravity |
+| Mục đích sử dụng | Phát triển logic tự tạo bài tập dựa trên thông tin người dùng, tối ưu UI chuyển bài, và fix Database Khóa Ngoại |
+| Phần việc liên quan | Fullstack (React FE + .NET Core BE + MySQL) |
+| Mức độ sử dụng | Hỗ trợ nhiều |
+
+#### 4.1. Prompt đã sử dụng
+
+```text
+- "đã có phần lịch sử tôi biết vì sao nó đang lấy theo ngày, thêm filter để lấy lịch sử bài tập theo tuần, theo tháng nữa /feature"
+- "logic tạo bài tập phải phù hợp và thực tế từ yêu cầu người dùng đã chọn trước đó... và mở bài tập lên chuển bài mà không cần đóng popup lại, thêm nút chuyển bài sau khi bấm complete"
+- "ở phần DB của tôi phần creator_id đang trống lại thiếu chỉnh lại DB cho đúng PT thêm bài cho tôi"
+```
+
+#### 4.2. Kết quả AI gợi ý
+
+```text
+- Viết kế hoạch tính toán logic cho bài tập tự sinh (Sets, Reps, Thời gian nghỉ dựa trên Level và Goal).
+- Sửa đổi UI của modal hiển thị bài tập để thêm nút `<` và `>` lướt bài tập.
+- Đổi nút 'Complete' thành 'Complete & Next' để hoàn thành và xem ngay bài kế.
+- Tạo Migration mới bằng EF Core để fix cấu trúc bảng `exercises` (Xóa bỏ `creator_id` thừa, đưa Foreign Key về đúng cột `created_by`).
+```
+
+#### 4.3. Phần sinh viên/nhóm đã sử dụng từ AI
+
+```text
+Toàn bộ logic tính toán trong `workoutExercises.ts`, UI cải tiến trong `WorkoutResults.tsx`, API filter thời gian tại Backend (`WorkoutService.cs`), và file EF Migration (`FixCreatorId.cs`).
+```
+
+#### 4.4. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
+
+```text
+Yêu cầu AI cập nhật thêm luồng lọc bài tập theo chính xác nhóm cơ (body_group / muscles) do người dùng chọn, và chỉ định cụ thể các nút cần có trong UI Popup.
+```
+
+#### 4.5. Minh chứng
+
+| Loại minh chứng | Nội dung |
+|---|---|
+| Link commit | ead4498 |
+| File liên quan | workoutExercises.ts, WorkoutResults.tsx, ApplicationDbContextModelSnapshot.cs, FixCreatorId.cs, WorkoutsController.cs |
+| Screenshot | Đã kiểm tra UI và MySQL Workbench Database |
+| Kết quả chạy/test | FE build thành công (`npm run build`), BE build thành công (`dotnet build`), Database Update thành công |
+| Link video demo | N/A |
+| Ghi chú khác | DB Migration được update trực tiếp bằng command line. |
+
+#### 4.6. Nhận xét cá nhân/nhóm
+
+```text
+Cấu trúc Database do EF Core sinh ra cần phải theo dõi cẩn thận vì có thể phát sinh cột phụ nếu cấu hình Fluent API và Attributes không thống nhất.
+Trải nghiệm UX/UI trên các luồng luyện tập cần được tối ưu hóa số lượng thao tác click cho người dùng.
+```

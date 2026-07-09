@@ -245,6 +245,7 @@ DD/MM/YYYY
 | 7 | Thiết kế & tích hợp Hệ thống thông báo Realtime SignalR | Đạt | `NotificationHub.cs`, `NotificationService.cs`, `NotificationContext.tsx`, `NotificationBell.tsx` | Commit 78d5b98 |
 | 8 | Cấu hình giờ Thức/Ngủ, nhắc uống nước tự động thông minh | Đạt | `Nutrition.tsx`, `WaterReminderBackgroundService.cs` | Commit 78d5b98 |
 | 9 | Sửa lỗi EF Core Mapping (InvalidCastException, shadow property) | Đạt | `Exercise.cs`, `ApplicationDbContext.cs` | Commit 40c8805 |
+| 11 | Hoàn thiện Logic AI Workout, UI Popup và Fix DB Exercises FK | Đạt | workoutExercises.ts, FixCreatorId.cs | Commit ead4498 |
 
 ## AI có hỗ trợ không?
 
@@ -455,3 +456,5 @@ Sinh viên/nhóm cam kết rằng nội dung changelog phản ánh đúng các t
 | Đại diện sinh viên/nhóm | Ngày xác nhận |
 |---|---|
 |  |  |
+
+| 10 | Tích hợp dữ liệu User Dashboard và Phân quyền PT CRUD | Đạt | Dashboard.tsx, DashboardService.cs | Commit 0b5a897 |
