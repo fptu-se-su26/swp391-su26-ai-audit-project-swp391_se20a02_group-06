@@ -1,12 +1,11 @@
-using System.Net.Http;
-using System.Net.Http.Json;
+using System.Text;
 using System.Text.Json;
 using FitnessTrainingSystem.Application.Common.Interfaces;
 using FitnessTrainingSystem.Application.DTOs.Nutrition;
 
 namespace FitnessTrainingSystem.Infrastructure.Services;
 
-public class PythonGeminiAiService : IGeminiAiService // 🟢 Kế thừa đúng Interface có sẵn của bạn
+public class PythonGeminiAiService : IGeminiAiService
 {
     private readonly HttpClient _httpClient;
 
@@ -15,28 +14,70 @@ public class PythonGeminiAiService : IGeminiAiService // 🟢 Kế thừa đúng
         _httpClient = httpClient;
     }
 
-    public async Task<DietPlanResponse> GenerateDietPlanAsync(string userInfo, string foodListJson)
+    public async Task<DietPlanResponse> GenerateDietPlanAsync(
+        string userInfo,
+        string foodListJson)
     {
-        // 1. Gói dữ liệu vào một object trùng khớp với Request Model bên Python FastAPI
         var payload = new
         {
             user_info = userInfo,
             food_list_json = foodListJson
         };
 
-        // 2. Bắn HTTP POST sang Python Microservice (Đang chạy port 8000)
-        var response = await _httpClient.PostAsJsonAsync("http://localhost:8000/api/ai/generate-diet-plan", payload);
+        var json = JsonSerializer.Serialize(payload);
+
+        var content = new StringContent(
+            json,
+            Encoding.UTF8,
+            "application/json");
+
+        var response = await _httpClient.PostAsync(
+            "http://localhost:8000/api/ai/generate-diet-plan",
+            content);
+
         response.EnsureSuccessStatusCode();
 
-        // 3. Đọc chuỗi JSON kết quả từ Python trả về
-        string rawJsonFromPython = await response.Content.ReadAsStringAsync();
+        var rawJson = await response.Content.ReadAsStringAsync();
 
-        // 4. Map chuỗi JSON đó trực tiếp thành Object DietPlanResponse của bạn
-        var dietPlanResponse = JsonSerializer.Deserialize<DietPlanResponse>(rawJsonFromPython, new JsonSerializerOptions
+        Console.WriteLine("========== PYTHON RESPONSE ==========");
+        Console.WriteLine(rawJson);
+        Console.WriteLine("====================================");
+
+        // FastAPI đôi khi trả về string JSON
+        if (rawJson.StartsWith("\"{"))
+        {
+            rawJson = JsonSerializer.Deserialize<string>(rawJson)!;
+        }
+
+        var options = new JsonSerializerOptions
         {
             PropertyNameCaseInsensitive = true
-        });
+        };
 
-        return dietPlanResponse!;
+        var plan = JsonSerializer.Deserialize<DietPlanResponse>(
+            rawJson,
+            options);
+
+        if (plan == null)
+            throw new Exception("Không đọc được JSON từ AI.");
+
+        Console.WriteLine("========== DESERIALIZE ==========");
+
+        Console.WriteLine(plan.DietTitle);
+
+        foreach (var meal in plan.Meals)
+        {
+            Console.WriteLine($"Meal: {meal.Name}");
+
+            foreach (var food in meal.Foods)
+            {
+                Console.WriteLine(
+                    $"FoodId={food.FoodId} | FoodName={food.FoodName} | Amount={food.Amount}");
+            }
+        }
+
+        Console.WriteLine("===============================");
+
+        return plan;
     }
 }

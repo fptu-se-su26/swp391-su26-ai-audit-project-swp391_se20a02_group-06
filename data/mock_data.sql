@@ -106,14 +106,14 @@ INSERT IGNORE INTO body_metrics (user_id, height, weight, body_fat_percentage, m
 -- ==========================================
 -- SCHEDULES  (pt_id=2, member_id=3)
 -- ==========================================
-INSERT IGNORE INTO schedules (pt_id, member_id, start_time, end_time, status, meeting_url, note) VALUES
-(2, 3, '2025-02-10 08:00:00', '2025-02-10 09:00:00', 'COMPLETED', NULL,                               'Initial assessment and movement screening.'),
-(2, 3, '2025-02-17 08:00:00', '2025-02-17 09:00:00', 'COMPLETED', NULL,                               'Upper body push — bench press and OHP technique.'),
-(2, 3, '2025-02-24 08:00:00', '2025-02-24 09:00:00', 'COMPLETED', NULL,                               'Lower body — squat form correction.'),
-(2, 3, '2025-03-03 08:00:00', '2025-03-03 09:00:00', 'COMPLETED', 'https://meet.google.com/abc-def-ghi','Online session — deadlift coaching via video call.'),
-(2, 3, '2025-06-23 08:00:00', '2025-06-23 09:00:00', 'CONFIRMED', NULL,                               'Pull day — back and biceps.'),
-(2, 3, '2025-06-30 08:00:00', '2025-06-30 09:00:00', 'PENDING',   NULL,                               'Cardio and core circuit.'),
-(2, 3, '2025-04-07 08:00:00', '2025-04-07 09:00:00', 'CANCELLED', NULL,                               NULL);
+INSERT IGNORE INTO schedules (pt_id, member_id, start_time, end_time, status, meeting_url) VALUES
+(2, 3, '2025-02-10 08:00:00', '2025-02-10 09:00:00', 'COMPLETED', NULL),
+(2, 3, '2025-02-17 08:00:00', '2025-02-17 09:00:00', 'COMPLETED', NULL),
+(2, 3, '2025-02-24 08:00:00', '2025-02-24 09:00:00', 'COMPLETED', NULL),
+(2, 3, '2025-03-03 08:00:00', '2025-03-03 09:00:00', 'COMPLETED', 'https://meet.google.com/abc-def-ghi'),
+(2, 3, '2025-06-23 08:00:00', '2025-06-23 09:00:00', 'CONFIRMED', NULL),
+(2, 3, '2025-06-30 08:00:00', '2025-06-30 09:00:00', 'PENDING', NULL),
+(2, 3, '2025-04-07 08:00:00', '2025-04-07 09:00:00', 'CANCELLED', NULL);
 
 
 -- ==========================================
@@ -154,19 +154,19 @@ INSERT IGNORE INTO foods (id, name, serving_size, unit, calories, protein, carbs
 -- ==========================================
 -- AI_RECOMMENDATIONS  (user_id 3 = member)
 -- ==========================================
-INSERT IGNORE INTO ai_recommendations (id, user_id, type, user_request, ai_response, model_name, created_at) VALUES
+INSERT IGNORE INTO ai_recommendations (id, user_id, type, user_request, ai_response, created_at) VALUES
 (1, 3, 'WORKOUT_PLAN',
  'I want to build muscle and lose fat. I can train 4 days a week.',
  '{"plan_title":"4-Day Body Recomposition","weeks":8,"days":[{"day":"Monday","focus":"Upper Push","exercises":["Bench Press","Overhead Press","Incline Dumbbell Press"]},{"day":"Tuesday","focus":"Lower Body","exercises":["Barbell Squat","Romanian Deadlift","Dumbbell Lunges"]},{"day":"Thursday","focus":"Upper Pull","exercises":["Pull-Up","Bicep Curl","Cable Tricep Pushdown"]},{"day":"Friday","focus":"Cardio & Core","exercises":["HIIT Treadmill Sprint","Battle Ropes","Plank"]}]}',
- 'deepseek-chat', '2025-01-06 10:00:00'),
+ '2025-01-06 10:00:00'),
 (2, 3, 'NUTRITION_DIET',
  'I want a high-protein meal plan to support fat loss. Around 1900 kcal per day.',
  '{"diet_title":"High-Protein Fat Loss Plan","daily_calories":1900,"protein_target_g":175,"meals":[{"name":"Breakfast","foods":[{"food_name":"Oatmeal","amount":"100g"},{"food_name":"Whole Eggs","amount":"3 pieces"},{"food_name":"Banana","amount":"1 piece"}],"calories":500},{"name":"Lunch","foods":[{"food_name":"Grilled Chicken Breast","amount":"200g"},{"food_name":"Brown Rice","amount":"150g"},{"food_name":"Steamed Broccoli","amount":"100g"}],"calories":580},{"name":"Post-Workout Snack","foods":[{"food_name":"Whey Protein","amount":"1 scoop"},{"food_name":"Banana","amount":"1 piece"}],"calories":225},{"name":"Dinner","foods":[{"food_name":"Baked Salmon","amount":"150g"},{"food_name":"Sweet Potato","amount":"100g"},{"food_name":"Raw Spinach","amount":"100g"}],"calories":420},{"name":"Evening Snack","foods":[{"food_name":"Greek Yogurt","amount":"150g"},{"food_name":"Almonds","amount":"30g"}],"calories":175}]}',
- 'gemini-2.5-flash', '2026-03-11 09:00:00'),
+ '2026-03-11 09:00:00'),
 (3, 3, 'WORKOUT_PLAN',
  'I feel ready to level up. Can I get a 5-day intermediate hypertrophy program?',
  '{"plan_title":"5-Day Hypertrophy Split","weeks":10,"days":[{"day":"Monday","focus":"Chest & Triceps","exercises":["Barbell Bench Press","Incline Dumbbell Press","Cable Tricep Pushdown"]},{"day":"Tuesday","focus":"Back & Biceps","exercises":["Deadlift","Pull-Up","Dumbbell Bicep Curl"]},{"day":"Wednesday","focus":"Legs","exercises":["Barbell Back Squat","Romanian Deadlift","Dumbbell Lunges"]},{"day":"Thursday","focus":"Shoulders","exercises":["Overhead Press","Hanging Leg Raise"]},{"day":"Friday","focus":"Full Body HIIT","exercises":["HIIT Treadmill Sprint","Battle Ropes","Plank"]}]}',
- 'deepseek-chat', '2025-06-02 11:30:00');
+ '2025-06-02 11:30:00');
 
 
 -- ==========================================

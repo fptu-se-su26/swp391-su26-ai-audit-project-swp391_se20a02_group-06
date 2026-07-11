@@ -21,6 +21,8 @@ public partial class PtUploadRequest
 
     public int? AdminId { get; set; }
 
+    public int? RequestedBy { get; set; }
+
     public string? ReviewNote { get; set; }
 
     public DateTime? SubmittedAt { get; set; }
@@ -28,6 +30,8 @@ public partial class PtUploadRequest
     public DateTime? ReviewedAt { get; set; }
 
     public virtual User? Admin { get; set; }
+
+    public virtual User? RequestedByUser { get; set; }
 
     public virtual Exercise? Exercise { get; set; }
 

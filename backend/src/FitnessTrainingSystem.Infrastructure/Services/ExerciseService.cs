@@ -25,9 +25,9 @@ public class ExerciseService : IExerciseService
                 Title = e.Title,
                 Description = e.Description,
                 VideoUrl = e.VideoUrl,
-                MuscleGroup = e.MuscleGroup,
+                MuscleGroup = e.MuscleGroup != null ? e.MuscleGroup.Name : null,
                 Difficulty = e.Difficulty,
-                Duration = e.Duration,
+                Duration = e.DurationMinutes,
                 CreatedBy = e.CreatedBy,
                 CreatorName = e.Creator != null ? e.Creator.Fullname : null
             })
@@ -48,9 +48,9 @@ public class ExerciseService : IExerciseService
             Title = exercise.Title,
             Description = exercise.Description,
             VideoUrl = exercise.VideoUrl,
-            MuscleGroup = exercise.MuscleGroup,
+            MuscleGroup = exercise.MuscleGroup != null ? exercise.MuscleGroup.Name : null,
             Difficulty = exercise.Difficulty,
-            Duration = exercise.Duration,
+            Duration = exercise.DurationMinutes,
             CreatedBy = exercise.CreatedBy,
             CreatorName = exercise.Creator?.Fullname
         };
@@ -63,9 +63,9 @@ public class ExerciseService : IExerciseService
             Title = dto.Title,
             Description = dto.Description,
             VideoUrl = dto.VideoUrl,
-            MuscleGroup = dto.MuscleGroup,
+            MuscleGroupId = dto.MuscleGroupId,
             Difficulty = dto.Difficulty,
-            Duration = dto.Duration,
+            DurationMinutes = dto.Duration,
             CreatedBy = createdByUserId
         };
 
@@ -83,9 +83,9 @@ public class ExerciseService : IExerciseService
         exercise.Title = dto.Title;
         exercise.Description = dto.Description;
         exercise.VideoUrl = dto.VideoUrl;
-        exercise.MuscleGroup = dto.MuscleGroup;
+        exercise.MuscleGroupId = dto.MuscleGroupId;
         exercise.Difficulty = dto.Difficulty;
-        exercise.Duration = dto.Duration;
+        exercise.DurationMinutes = dto.Duration;
 
         _context.Exercises.Update(exercise);
         await _context.SaveChangesAsync();

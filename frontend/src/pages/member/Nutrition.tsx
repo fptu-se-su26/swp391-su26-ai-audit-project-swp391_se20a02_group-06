@@ -45,9 +45,10 @@ const Nutrition: React.FC = () => {
     // Fetch foods from API
     const { data: foods, isLoading, error } = useSWR('/foods', fetcher)
 
-    const filteredFoods = foods?.filter((food: any) =>
-        food.name.toLowerCase().includes(searchQuery.toLowerCase())
-    ) || []
+    const filteredFoods = foods?.filter((food: any) => {
+        const foodName = typeof food?.name === 'string' ? food.name : ''
+        return foodName.toLowerCase().includes(searchQuery.toLowerCase())
+    }) || []
 
     return (
         <MemberLayout>

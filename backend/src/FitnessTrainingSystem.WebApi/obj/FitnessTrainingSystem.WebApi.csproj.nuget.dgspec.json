@@ -210,6 +210,10 @@
               "target": "Package",
               "version": "[4.2.0, )"
             },
+            "CloudinaryDotNet": {
+              "target": "Package",
+              "version": "[1.26.2, )"
+            },
             "EFCore.NamingConventions": {
               "target": "Package",
               "version": "[9.0.0, )"
@@ -227,6 +231,10 @@
               "version": "[9.0.0, )"
             },
             "Microsoft.EntityFrameworkCore.Relational": {
+              "target": "Package",
+              "version": "[9.0.0, )"
+            },
+            "Microsoft.Extensions.Hosting": {
               "target": "Package",
               "version": "[9.0.0, )"
             },
@@ -259,6 +267,9 @@
           "assetTargetFallback": true,
           "warn": true,
           "frameworkReferences": {
+            "Microsoft.AspNetCore.App": {
+              "privateAssets": "none"
+            },
             "Microsoft.NETCore.App": {
               "privateAssets": "all"
             }
