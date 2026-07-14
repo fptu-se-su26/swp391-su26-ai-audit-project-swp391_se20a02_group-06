@@ -2,6 +2,7 @@ using System.Text;
 using FitnessTrainingSystem.Infrastructure;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using Scalar.AspNetCore;
 
 // Load environment variables from .env file in the backend root directory
 var envPath = Path.Combine(Directory.GetCurrentDirectory(), "..", "..", ".env");
@@ -86,6 +87,10 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
+    app.MapScalarApiReference(options =>
+    {
+        options.WithTitle("Fitness API");
+    });
 }
 
 // app.UseHttpsRedirection(); // Disabled: HTTPS port not configured
