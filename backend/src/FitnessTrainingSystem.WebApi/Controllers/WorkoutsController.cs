@@ -75,12 +75,12 @@ public class WorkoutsController : ControllerBase
     }
 
     [HttpGet("history")]
-    public async Task<ActionResult<IEnumerable<WorkoutSessionDto>>> GetHistory()
+    public async Task<ActionResult<IEnumerable<WorkoutSessionDto>>> GetHistory([FromQuery] string filter = "all")
     {
         try
         {
             var userId = GetCurrentUserId();
-            var history = await _workoutService.GetUserWorkoutHistoryAsync(userId);
+            var history = await _workoutService.GetUserWorkoutHistoryAsync(userId, filter);
             return Ok(history);
         }
         catch (Exception ex)
