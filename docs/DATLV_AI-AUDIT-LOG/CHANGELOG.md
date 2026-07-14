@@ -241,6 +241,12 @@ DD/MM/YYYY
 | 3 | Sửa lỗi hiển thị ảnh Hero trang chủ bằng ảnh Local | Đạt | `Landing.tsx`, `assets/landing` | Commit 719f0be / 95b31d2 |
 | 4 | Xoá thư mục `docs-me` khỏi Git tracking | Đạt | Terminal | Commit 2760c79 |
 | 5 |  |  |  |  |
+| 6 | Thêm chức năng Nutrition, đồng bộ Mock DB | Đạt | `Nutrition.tsx`, `NutritionService.cs`, `mock_data.sql` | Commit c9c75ad |
+| 7 | Thiết kế & tích hợp Hệ thống thông báo Realtime SignalR | Đạt | `NotificationHub.cs`, `NotificationService.cs`, `NotificationContext.tsx`, `NotificationBell.tsx` | Commit 78d5b98 |
+| 8 | Cấu hình giờ Thức/Ngủ, nhắc uống nước tự động thông minh | Đạt | `Nutrition.tsx`, `WaterReminderBackgroundService.cs` | Commit 78d5b98 |
+| 9 | Sửa lỗi EF Core Mapping (InvalidCastException, shadow property) | Đạt | `Exercise.cs`, `ApplicationDbContext.cs` | Commit 40c8805 |
+| 11 | Hoàn thiện Logic AI Workout, UI Popup và Fix DB Exercises FK | Đạt | workoutExercises.ts, FixCreatorId.cs | Commit ead4498 |
+| 12 | Thêm Scalar API Reference thay thế Swagger UI cho .NET 9 | Đạt | Program.cs, WebApi.csproj | Commit 7de96b2 |
 
 ## AI có hỗ trợ không?
 
@@ -253,6 +259,7 @@ Nếu có, mô tả AI đã hỗ trợ phần nào:
 - AI (Antigravity/Gemini) hỗ trợ viết code tích hợp thư viện `@react-oauth/google` vào file `main.tsx` và gọi hàm `useGoogleLogin` trong `Login.tsx`.
 - AI hỗ trợ viết cấu trúc file `authStore.ts` sử dụng Zustand để lưu trữ state đăng nhập.
 - AI phát hiện và hướng dẫn sửa lỗi Terminal (do chạy lệnh sai thư mục gốc), hỗ trợ thao tác Git (pull nhánh main, rm tracking file).
+- AI (Antigravity) phát hiện và sửa các cấu hình EF Core bị sai lệch so với Database, nguyên nhân gây ra lỗi 500 khi fetch danh sách Bài tập và Lịch sử tập luyện.
 ```
 
 ## Commit/Screenshot minh chứng
@@ -450,3 +457,5 @@ Sinh viên/nhóm cam kết rằng nội dung changelog phản ánh đúng các t
 | Đại diện sinh viên/nhóm | Ngày xác nhận |
 |---|---|
 |  |  |
+
+| 10 | Tích hợp dữ liệu User Dashboard và Phân quyền PT CRUD | Đạt | Dashboard.tsx, DashboardService.cs | Commit 0b5a897 |

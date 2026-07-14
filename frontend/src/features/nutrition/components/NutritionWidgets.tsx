@@ -207,7 +207,11 @@ export const MealSection: React.FC<{
     </Box>
 )
 
-export const HydrationTracker: React.FC<{ current: number; total: number }> = ({ current, total }) => (
+export const HydrationTracker: React.FC<{ 
+    current: number; 
+    total: number;
+    onLogWater?: () => void;
+}> = ({ current, total, onLogWater }) => (
     <Box
         bg="#141720"
         border="1px solid"
@@ -224,7 +228,7 @@ export const HydrationTracker: React.FC<{ current: number; total: number }> = ({
             </Text>
         </Flex>
         <Flex gap="2" flexWrap="wrap">
-            {Array.from({ length: total }).map((_, i) => (
+            {Array.from({ length: Math.max(total, current) }).map((_, i) => (
                 <Box
                     key={i}
                     w="28px"
@@ -237,12 +241,37 @@ export const HydrationTracker: React.FC<{ current: number; total: number }> = ({
                     alignItems="center"
                     justifyContent="center"
                     transition="all 0.2s"
-                    cursor="pointer"
-                    _hover={{ borderColor: 'rgba(59,130,246,0.7)' }}
+                    cursor={i === current && onLogWater ? "pointer" : "default"}
+                    _hover={i === current && onLogWater ? { borderColor: 'rgba(59,130,246,0.7)', transform: 'translateY(-2px)' } : {}}
+                    onClick={() => {
+                        if (i === current && onLogWater) {
+                            onLogWater()
+                        }
+                    }}
                 >
                     <Icon as={FiDroplet} color={i < current ? '#3b82f6' : '#3e4050'} boxSize="12px" />
                 </Box>
             ))}
+            {/* Thêm nút + nếu user muốn uống thêm sau khi đạt target */}
+            {onLogWater && current >= total && (
+                 <Box
+                 w="28px"
+                 h="34px"
+                 borderRadius="8px"
+                 bg="#1e2028"
+                 border="1px dashed"
+                 borderColor="#2e3040"
+                 display="flex"
+                 alignItems="center"
+                 justifyContent="center"
+                 cursor="pointer"
+                 transition="all 0.2s"
+                 _hover={{ borderColor: 'rgba(59,130,246,0.7)', color: '#3b82f6' }}
+                 onClick={onLogWater}
+             >
+                 <Icon as={FiPlus} color="#3e4050" boxSize="12px" />
+             </Box>
+            )}
         </Flex>
     </Box>
 )

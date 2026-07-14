@@ -13,9 +13,13 @@ public class User : BaseAuditableEntity
     public string? Gender { get; set; }
     public DateTime? DateOfBirth { get; set; }
     public string? Status { get; set; } = "ACTIVE";
+    public string? FitnessGoal { get; set; } = "MAINTAIN"; // MAINTAIN, LOSE_WEIGHT, GAIN_MUSCLE
     public DateTime? UpdatedAt { get; set; }
     public DateTime? PasswordChangedAt { get; set; }
     public int? RoleId { get; set; }
+
+    public string? WaterReminderStartTime { get; set; }
+    public string? WaterReminderEndTime { get; set; }
 
     // Navigation properties
     public Role? Role { get; set; }
@@ -29,4 +33,5 @@ public class User : BaseAuditableEntity
     public ICollection<WorkoutSession> WorkoutSessions { get; set; } = new List<WorkoutSession>();
     public ICollection<AiRecommendation> AiRecommendations { get; set; } = new List<AiRecommendation>();
     public ICollection<MealSchedule> MealSchedules { get; set; } = new List<MealSchedule>();
+    public ICollection<DailyNutritionLog> DailyNutritionLogs { get; set; } = new List<DailyNutritionLog>();
 }

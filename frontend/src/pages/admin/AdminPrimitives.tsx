@@ -15,13 +15,13 @@ import {
 } from '@chakra-ui/react'
 import type { IconType } from 'react-icons'
 import {
-    FiBell,
     FiMoreVertical,
     FiPlus,
     FiSearch,
     FiSettings,
     FiTrendingUp,
 } from 'react-icons/fi'
+import NotificationBell from '../../components/shared/Header/NotificationBell'
 
 export const adminColors = {
     bg: '#0A0A0A',
@@ -183,7 +183,7 @@ export const TopbarActions: React.FC = () => {
 
     return (
         <HStack spacing="8px">
-            <AdminIconButton icon={FiBell} label="Notifications" />
+            <NotificationBell />
             <AdminIconButton icon={FiSettings} label="Settings" />
             <Menu>
                 <MenuButton as={Box} cursor="pointer" borderRadius="full">

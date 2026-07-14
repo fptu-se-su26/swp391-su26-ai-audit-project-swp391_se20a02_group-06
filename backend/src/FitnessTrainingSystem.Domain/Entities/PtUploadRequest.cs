@@ -1,5 +1,6 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
+using FitnessTrainingSystem.Domain.Enums;
 
 namespace FitnessTrainingSystem.Domain.Entities;
 
@@ -11,11 +12,11 @@ public partial class PtUploadRequest
 
     public int? ExerciseId { get; set; }
 
-    public string Title { get; set; } = null!;
+    public string? Title { get; set; }
 
     public string? Description { get; set; }
 
-    public string VideoUrl { get; set; } = null!;
+    public string? VideoUrl { get; set; }
 
     public string? Status { get; set; }
 
@@ -27,9 +28,17 @@ public partial class PtUploadRequest
 
     public DateTime? ReviewedAt { get; set; }
 
+    // Admin request fields
+    public int? RequestedBy { get; set; }
+    public string? MuscleGroup { get; set; }
+    public ExerciseDifficulty? Difficulty { get; set; }
+    public string? Instructions { get; set; }
+    public string? Priority { get; set; } // LOW, MEDIUM, HIGH
+    public DateTime? Deadline { get; set; }
+    public int? Duration { get; set; }
+
     public virtual User? Admin { get; set; }
-
+    public virtual User? RequestedByUser { get; set; }
     public virtual Exercise? Exercise { get; set; }
-
     public virtual User Pt { get; set; } = null!;
 }

@@ -1,4 +1,5 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import {
     AspectRatio,
     Badge,
@@ -15,14 +16,15 @@ import {
     ModalContent,
     ModalHeader,
     ModalBody,
-    ModalCloseButton
+    ModalCloseButton,
+    IconButton
 } from '@chakra-ui/react'
+import { FiChevronLeft, FiChevronRight } from 'react-icons/fi'
 import AppButton from '../../../components/shared/Button/AppButton'
 import MemberLayout from '../../../components/shared/Layout/MemberLayout.tsx'
 import type { ExerciseCardData } from '../types/workout'
 import { useWorkoutStore } from '../../../store/useWorkoutStore.ts'
-
-
+import { startWorkoutSession, completeWorkoutSession } from '../../../api/workouts.ts'
 
 const MiniStat: React.FC<{ value: string; label: string }> = ({
     value,
@@ -146,8 +148,49 @@ const ExerciseCard: React.FC<ExerciseCardProps> = ({
 }
 
 const WorkoutResults: React.FC = () => {
-    const { formData: data, exercises, resetWorkout, markExerciseDone, skipExercise } = useWorkoutStore()
+    const { formData: data, exercises, resetWorkout, markExerciseDone, skipExercise, activePlanId, activeSessionId, setActiveSessionId } = useWorkoutStore()
     const [selectedExercise, setSelectedExercise] = useState<(ExerciseCardData & { arrayIndex: number }) | null>(null)
+    const navigate = useNavigate()
+
+    useEffect(() => {
+        // Automatically start the session when arriving on this page
+        if (!activeSessionId && activePlanId) {
+            startWorkoutSession({ workoutPlanId: activePlanId })
+                .then(session => setActiveSessionId(session.id))
+                .catch(console.error)
+        }
+    }, [activeSessionId, activePlanId, setActiveSessionId])
+
+    const handleCompleteWorkout = async () => {
+        if (!activeSessionId) {
+            resetWorkout()
+            navigate('/nutrition')
+            return
+        }
+
+        const doneExercises = exercises.filter(e => e.isDone)
+        const totalDuration = data?.duration || 30 // Fallback
+        const totalCalories = data?.targetCalories || (doneExercises.length * 30) // Estimate
+        
+        try {
+            await completeWorkoutSession(activeSessionId, {
+                totalDurationMinutes: totalDuration,
+                totalCaloriesBurned: totalCalories,
+                details: doneExercises.map(ex => ({
+                    exerciseId: ex.id,
+                    setsDone: parseInt(ex.sets.split('x')[0]) || 3,
+                    repsDone: parseInt(ex.sets.split('x')[1]) || 12,
+                    durationSeconds: 0,
+                    caloriesBurned: 30 // Estimate per exercise
+                }))
+            })
+        } catch (error) {
+            console.error("Failed to complete session:", error)
+        } finally {
+            resetWorkout()
+            navigate('/nutrition')
+        }
+    }
 
     if (!data) return null
 
@@ -252,10 +295,15 @@ const WorkoutResults: React.FC = () => {
                             />
                         </Box>
                     </Box>
-                    <Box onClick={resetWorkout}>
+                    <Box 
+                        onClick={completedCount === exercises.length ? handleCompleteWorkout : undefined}
+                        opacity={completedCount === exercises.length ? 1 : 0.5}
+                        cursor={completedCount === exercises.length ? 'pointer' : 'not-allowed'}
+                    >
                         <AppButton
-                            label="Complete Workout"
+                            label={completedCount === exercises.length ? "Complete Workout" : "Finish All First"}
                             variant="solid" h="40px" px="6" fontSize="13px"
+                            isDisabled={completedCount !== exercises.length}
                         />
                     </Box>
                 </Box>
@@ -265,19 +313,58 @@ const WorkoutResults: React.FC = () => {
             <Modal isOpen={!!selectedExercise} onClose={() => setSelectedExercise(null)} isCentered size="3xl">
                 <ModalOverlay backdropFilter="blur(4px)" bg="blackAlpha.800" />
                 <ModalContent bg="#111318" border="1px solid" borderColor="#1e2028" borderRadius="24px" overflow="hidden">
-                    <ModalHeader color="white" pt="6" pb="4">{selectedExercise?.name}</ModalHeader>
+                    <ModalHeader color="white" pt="6" pb="4" display="flex" alignItems="center" gap="2">
+                        {selectedExercise && selectedExercise.arrayIndex > 0 && (
+                            <IconButton 
+                                aria-label="Previous Exercise" 
+                                icon={<FiChevronLeft />} 
+                                size="sm" 
+                                variant="ghost" 
+                                color="#8A8A93" 
+                                _hover={{ color: 'white', bg: '#1e2028' }}
+                                onClick={() => {
+                                    const prevIdx = selectedExercise.arrayIndex - 1
+                                    setSelectedExercise({ ...exercises[prevIdx], arrayIndex: prevIdx })
+                                }}
+                            />
+                        )}
+                        <Text flex="1" noOfLines={1}>{selectedExercise?.name}</Text>
+                        {selectedExercise && selectedExercise.arrayIndex < exercises.length - 1 && (
+                            <IconButton 
+                                aria-label="Next Exercise" 
+                                icon={<FiChevronRight />} 
+                                size="sm" 
+                                variant="ghost" 
+                                color="#8A8A93" 
+                                mr="8"
+                                _hover={{ color: 'white', bg: '#1e2028' }}
+                                onClick={() => {
+                                    const nextIdx = selectedExercise.arrayIndex + 1
+                                    setSelectedExercise({ ...exercises[nextIdx], arrayIndex: nextIdx })
+                                }}
+                            />
+                        )}
+                    </ModalHeader>
                     <ModalCloseButton color="white" top="4" right="4" />
                     <ModalBody pb="6">
                         {/* Video Player */}
                         <Box mb="6" borderRadius="16px" overflow="hidden" position="relative" bg="#0A0C10" border="1px solid" borderColor="#1e2028">
                             <AspectRatio ratio={16 / 9} w="100%">
                                 {selectedExercise?.videoUrl ? (
-                                    <iframe
-                                        title={selectedExercise.name}
-                                        src={selectedExercise.videoUrl}
-                                        allowFullScreen
-                                        style={{ border: 'none' }}
-                                    />
+                                    selectedExercise.videoUrl.includes('youtube.com') || selectedExercise.videoUrl.includes('youtu.be') ? (
+                                        <iframe
+                                            title={selectedExercise.name}
+                                            src={selectedExercise.videoUrl}
+                                            allowFullScreen
+                                            style={{ border: 'none', width: '100%', height: '100%' }}
+                                        />
+                                    ) : (
+                                        <video
+                                            src={selectedExercise.videoUrl}
+                                            controls
+                                            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                                        />
+                                    )
                                 ) : (
                                     <Box display="flex" alignItems="center" justifyContent="center">
                                         <Text color="#8A8A93">No video available</Text>
@@ -307,12 +394,21 @@ const WorkoutResults: React.FC = () => {
                         </Text>
                         
                         <AppButton 
-                            label="Complete this exercise" 
+                            label={selectedExercise && selectedExercise.arrayIndex === exercises.length - 1 ? "Complete & Finish" : "Complete & Next"} 
                             variant="solid" w="full" h="48px" fontSize="15px"
                             onClick={() => {
                                 if (selectedExercise) {
                                     markExerciseDone(selectedExercise.arrayIndex)
-                                    setSelectedExercise(null)
+                                    // Find next exercise that is not done or skipped
+                                    let nextIndex = selectedExercise.arrayIndex + 1;
+                                    while (nextIndex < exercises.length && (exercises[nextIndex].isDone || exercises[nextIndex].isSkipped)) {
+                                        nextIndex++;
+                                    }
+                                    if (nextIndex < exercises.length) {
+                                        setSelectedExercise({ ...exercises[nextIndex], arrayIndex: nextIndex })
+                                    } else {
+                                        setSelectedExercise(null)
+                                    }
                                 }
                             }}
                         />

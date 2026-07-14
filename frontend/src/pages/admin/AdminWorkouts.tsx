@@ -27,12 +27,15 @@ import {
     Select,
     useToast,
     IconButton,
+    VStack,
 } from '@chakra-ui/react'
 import { FiTrash2 } from 'react-icons/fi'
 import useSWR from 'swr'
 import apiClient from '../../lib/axios'
 import AdminLayout from '../../components/shared/Layout/AdminLayout.tsx'
 import AppButton from '../../components/shared/Button/AppButton'
+import { uploadVideo } from '../../api/upload'
+import { useAuthStore } from '../../store/useAuthStore'
 
 interface ExerciseDto {
     id: number
@@ -58,7 +61,9 @@ const AdminWorkouts: React.FC = () => {
     const { isOpen, onOpen, onClose } = useDisclosure()
     const toast = useToast()
     const { data: exercises, error, isLoading, mutate } = useSWR<ExerciseDto[]>('/exercises', fetcher)
+    const roleId = useAuthStore(state => state.roleId)
     const [isSubmitting, setIsSubmitting] = useState(false)
+    const [isUploadingVideo, setIsUploadingVideo] = useState(false)
     const [formData, setFormData] = useState({
         title: '',
         muscleGroup: '',
@@ -71,6 +76,26 @@ const AdminWorkouts: React.FC = () => {
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = e.target
         setFormData(prev => ({ ...prev, [name]: value }))
+    }
+
+    const handleVideoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0]
+        if (!file) return
+
+        setIsUploadingVideo(true)
+        try {
+            const { url } = await uploadVideo(file)
+            setFormData(prev => ({ ...prev, videoUrl: url }))
+            toast({ title: 'Video uploaded', status: 'success', duration: 3000, isClosable: true })
+        } catch (error: any) {
+            toast({
+                title: 'Failed to upload video',
+                description: error.response?.data?.message || 'Something went wrong.',
+                status: 'error', duration: 3000, isClosable: true,
+            })
+        } finally {
+            setIsUploadingVideo(false)
+        }
     }
 
     const handleSubmit = async () => {
@@ -115,6 +140,22 @@ const AdminWorkouts: React.FC = () => {
         }
     }
 
+    const handlePreviewVideo = (url?: string) => {
+        if (!url) return
+        const trimmed = url.trim()
+        if (/^(https?:\/\/)/i.test(trimmed)) {
+            window.open(trimmed, '_blank')
+        } else {
+            toast({
+                title: 'Invalid Video Link',
+                description: `The video URL '${url}' is not a valid absolute web link (must start with http:// or https://).`,
+                status: 'error',
+                duration: 4000,
+                isClosable: true
+            })
+        }
+    }
+
     return (
         <AdminLayout>
             <Box p="7" maxW="1200px">
@@ -122,7 +163,9 @@ const AdminWorkouts: React.FC = () => {
                     <Heading fontSize="24px" fontWeight="800" color="white">
                         Exercise Management
                     </Heading>
-                    <AppButton label="Create Exercise" size="sm" onClick={onOpen} />
+                    {roleId === 1 && (
+                        <AppButton label="Create Exercise" size="sm" onClick={onOpen} />
+                    )}
                 </Flex>
 
                 <Box bg="#141720" border="1px solid" borderColor="#1e2028" borderRadius="16px" overflow="hidden">
@@ -142,7 +185,9 @@ const AdminWorkouts: React.FC = () => {
                                     <Th color="#8A8A93" borderColor="#1e2028">Difficulty</Th>
                                     <Th color="#8A8A93" borderColor="#1e2028" isNumeric>Duration</Th>
                                     <Th color="#8A8A93" borderColor="#1e2028">Video</Th>
-                                    <Th color="#8A8A93" borderColor="#1e2028">Actions</Th>
+                                    {roleId === 1 && (
+                                        <Th color="#8A8A93" borderColor="#1e2028">Actions</Th>
+                                    )}
                                 </Tr>
                             </Thead>
                             <Tbody>
@@ -167,7 +212,7 @@ const AdminWorkouts: React.FC = () => {
                                                     size="xs"
                                                     colorScheme="blue"
                                                     variant="outline"
-                                                    onClick={() => window.open(ex.videoUrl, '_blank')}
+                                                    onClick={() => handlePreviewVideo(ex.videoUrl)}
                                                 >
                                                     Preview
                                                 </Button>
@@ -175,16 +220,18 @@ const AdminWorkouts: React.FC = () => {
                                                 <Text fontSize="xs" color="#8A8A93">No Video</Text>
                                             )}
                                         </Td>
-                                        <Td borderColor="#1e2028">
-                                            <IconButton
-                                                aria-label="Delete exercise"
-                                                icon={<FiTrash2 />}
-                                                size="xs"
-                                                colorScheme="red"
-                                                variant="ghost"
-                                                onClick={() => handleDelete(ex.id)}
-                                            />
-                                        </Td>
+                                        {roleId === 1 && (
+                                            <Td borderColor="#1e2028">
+                                                <IconButton
+                                                    aria-label="Delete exercise"
+                                                    icon={<FiTrash2 />}
+                                                    size="xs"
+                                                    colorScheme="red"
+                                                    variant="ghost"
+                                                    onClick={() => handleDelete(ex.id)}
+                                                />
+                                            </Td>
+                                        )}
                                     </Tr>
                                 ))}
                             </Tbody>
@@ -198,100 +245,140 @@ const AdminWorkouts: React.FC = () => {
                 <ModalContent bg="#141720" color="white" borderColor="#1e2028" borderWidth="1px">
                     <ModalHeader>Create New Exercise</ModalHeader>
                     <ModalCloseButton />
-                    <ModalBody>
-                        <FormControl mb={4}>
-                            <FormLabel color="#8A8A93">Title *</FormLabel>
-                            <Input
-                                name="title"
-                                value={formData.title}
-                                onChange={handleInputChange}
-                                placeholder="e.g. Barbell Squat"
-                                bg="#0A0C10"
-                                border="1px solid #1e2028"
-                                _hover={{ borderColor: "#E03030" }}
-                                _focus={{ borderColor: "#E03030", boxShadow: "none" }}
-                            />
-                        </FormControl>
-                        <FormControl mb={4}>
-                            <FormLabel color="#8A8A93">Muscle Group</FormLabel>
-                            <Input
-                                name="muscleGroup"
-                                value={formData.muscleGroup}
-                                onChange={handleInputChange}
-                                placeholder="e.g. Legs, Chest"
-                                bg="#0A0C10"
-                                border="1px solid #1e2028"
-                                _hover={{ borderColor: "#E03030" }}
-                                _focus={{ borderColor: "#E03030", boxShadow: "none" }}
-                            />
-                        </FormControl>
-                        <FormControl mb={4}>
-                            <FormLabel color="#8A8A93">Difficulty *</FormLabel>
-                            <Select
-                                name="difficulty"
-                                value={formData.difficulty}
-                                onChange={handleInputChange}
-                                bg="#0A0C10"
-                                border="1px solid #1e2028"
-                                _hover={{ borderColor: "#E03030" }}
-                                _focus={{ borderColor: "#E03030", boxShadow: "none" }}
-                            >
-                                <option value="" style={{ color: "black" }}>Select difficulty</option>
-                                <option value="0" style={{ color: "black" }}>Beginner</option>
-                                <option value="1" style={{ color: "black" }}>Intermediate</option>
-                                <option value="2" style={{ color: "black" }}>Advanced</option>
-                            </Select>
-                        </FormControl>
-                        <FormControl mb={4}>
-                            <FormLabel color="#8A8A93">Description</FormLabel>
-                            <Input
-                                name="description"
-                                value={formData.description}
-                                onChange={handleInputChange}
-                                placeholder="Optional description"
-                                bg="#0A0C10"
-                                border="1px solid #1e2028"
-                                _hover={{ borderColor: "#E03030" }}
-                                _focus={{ borderColor: "#E03030", boxShadow: "none" }}
-                            />
-                        </FormControl>
-                        <FormControl mb={4}>
-                            <FormLabel color="#8A8A93">Video URL</FormLabel>
-                            <Input
-                                name="videoUrl"
-                                value={formData.videoUrl}
-                                onChange={handleInputChange}
-                                placeholder="e.g. https://youtube.com/..."
-                                bg="#0A0C10"
-                                border="1px solid #1e2028"
-                                _hover={{ borderColor: "#E03030" }}
-                                _focus={{ borderColor: "#E03030", boxShadow: "none" }}
-                            />
-                        </FormControl>
-                        <FormControl mb={4}>
-                            <FormLabel color="#8A8A93">Duration (minutes)</FormLabel>
-                            <Input
-                                name="duration"
-                                type="number"
-                                value={formData.duration}
-                                onChange={handleInputChange}
-                                placeholder="e.g. 15"
-                                bg="#0A0C10"
-                                border="1px solid #1e2028"
-                                _hover={{ borderColor: "#E03030" }}
-                                _focus={{ borderColor: "#E03030", boxShadow: "none" }}
-                            />
-                        </FormControl>
-                    </ModalBody>
-
-                    <ModalFooter>
-                        <Button variant="ghost" mr={3} onClick={onClose} color="#8A8A93" _hover={{ bg: "rgba(255,255,255,0.05)" }}>
-                            Cancel
-                        </Button>
-                        <Button bg="#E03030" color="white" _hover={{ bg: "#C92424" }} onClick={handleSubmit} isLoading={isSubmitting}>
-                            Create
-                        </Button>
-                    </ModalFooter>
+                    <form onSubmit={(e) => { e.preventDefault(); handleSubmit(); }}>
+                        <ModalBody>
+                            <VStack spacing={5} align="stretch">
+                                <FormControl isRequired>
+                                    <FormLabel color="#8A8A93">Title</FormLabel>
+                                    <Input
+                                        name="title"
+                                        value={formData.title}
+                                        onChange={handleInputChange}
+                                        placeholder="e.g. Barbell Squat"
+                                        bg="#0A0C10"
+                                        border="1px solid #1e2028"
+                                        h="44px"
+                                        borderRadius="md"
+                                        _hover={{ borderColor: "#E03030" }}
+                                        _focus={{ borderColor: "#E03030", boxShadow: "none" }}
+                                    />
+                                </FormControl>
+                                <FormControl>
+                                    <FormLabel color="#8A8A93">Muscle Group</FormLabel>
+                                    <Input
+                                        name="muscleGroup"
+                                        value={formData.muscleGroup}
+                                        onChange={handleInputChange}
+                                        placeholder="e.g. Legs, Chest"
+                                        bg="#0A0C10"
+                                        border="1px solid #1e2028"
+                                        h="44px"
+                                        borderRadius="md"
+                                        _hover={{ borderColor: "#E03030" }}
+                                        _focus={{ borderColor: "#E03030", boxShadow: "none" }}
+                                    />
+                                </FormControl>
+                                <FormControl isRequired>
+                                    <FormLabel color="#8A8A93">Difficulty</FormLabel>
+                                    <Select
+                                        name="difficulty"
+                                        value={formData.difficulty}
+                                        onChange={handleInputChange}
+                                        bg="#0A0C10"
+                                        border="1px solid #1e2028"
+                                        h="44px"
+                                        borderRadius="md"
+                                        _hover={{ borderColor: "#E03030" }}
+                                        _focus={{ borderColor: "#E03030", boxShadow: "none" }}
+                                    >
+                                        <option value="" style={{ color: "black" }}>Select difficulty</option>
+                                        <option value="0" style={{ color: "black" }}>Beginner</option>
+                                        <option value="1" style={{ color: "black" }}>Intermediate</option>
+                                        <option value="2" style={{ color: "black" }}>Advanced</option>
+                                    </Select>
+                                </FormControl>
+                                <FormControl>
+                                    <FormLabel color="#8A8A93">Description</FormLabel>
+                                    <Input
+                                        name="description"
+                                        value={formData.description}
+                                        onChange={handleInputChange}
+                                        placeholder="Optional description"
+                                        bg="#0A0C10"
+                                        border="1px solid #1e2028"
+                                        h="44px"
+                                        borderRadius="md"
+                                        _hover={{ borderColor: "#E03030" }}
+                                        _focus={{ borderColor: "#E03030", boxShadow: "none" }}
+                                    />
+                                </FormControl>
+                                <FormControl>
+                                    <FormLabel color="#8A8A93">Video URL</FormLabel>
+                                    <Flex gap={3} align="center">
+                                        <Input
+                                            name="videoUrl"
+                                            type="url"
+                                            value={formData.videoUrl}
+                                            onChange={handleInputChange}
+                                            placeholder="e.g. https://youtube.com/..."
+                                            bg="#0A0C10"
+                                            border="1px solid #1e2028"
+                                            h="44px"
+                                            borderRadius="md"
+                                            _hover={{ borderColor: "#E03030" }}
+                                            _focus={{ borderColor: "#E03030", boxShadow: "none" }}
+                                        />
+                                        <Button
+                                            as="label"
+                                            htmlFor="video-upload"
+                                            bg="#333"
+                                            color="white"
+                                            h="44px"
+                                            borderRadius="md"
+                                            _hover={{ bg: "#444" }}
+                                            isLoading={isUploadingVideo}
+                                            cursor="pointer"
+                                            px={6}
+                                        >
+                                            Upload
+                                        </Button>
+                                        <Input
+                                            id="video-upload"
+                                            type="file"
+                                            accept="video/mp4,video/mpeg,video/quicktime,video/x-msvideo,video/webm"
+                                            display="none"
+                                            onChange={handleVideoUpload}
+                                        />
+                                    </Flex>
+                                </FormControl>
+                                <FormControl>
+                                    <FormLabel color="#8A8A93">Duration (minutes)</FormLabel>
+                                    <Input
+                                        name="duration"
+                                        type="number"
+                                        value={formData.duration}
+                                        onChange={handleInputChange}
+                                        placeholder="e.g. 15"
+                                        bg="#0A0C10"
+                                        border="1px solid #1e2028"
+                                        h="44px"
+                                        borderRadius="md"
+                                        min={1}
+                                        _hover={{ borderColor: "#E03030" }}
+                                        _focus={{ borderColor: "#E03030", boxShadow: "none" }}
+                                    />
+                                </FormControl>
+                            </VStack>
+                        </ModalBody>
+                        <ModalFooter mt={2}>
+                            <Button variant="ghost" color="#8A8A93" mr={3} onClick={onClose} h="44px">
+                                Cancel
+                            </Button>
+                            <Button type="submit" bg="#E03030" color="white" _hover={{ bg: "#C92828" }} isLoading={isSubmitting} h="44px" px={6}>
+                                Create
+                            </Button>
+                        </ModalFooter>
+                    </form>
                 </ModalContent>
             </Modal>
         </AdminLayout>

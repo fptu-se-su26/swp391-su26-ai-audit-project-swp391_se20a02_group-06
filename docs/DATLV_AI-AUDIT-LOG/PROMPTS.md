@@ -291,6 +291,210 @@ Viết tại đây...
 
 ---
 
+### Prompt số 4
+
+| Nội dung | Thông tin |
+|---|---|
+| Ngày sử dụng | 05/07/2026 |
+| Công cụ AI | Antigravity |
+| Mục đích | Viết tài liệu giải thích logic nghiệp vụ Nutrition và đồng bộ Database team |
+| Phần việc liên quan | Requirement / Database / Report |
+| Mức độ sử dụng | Hỏi sinh tài liệu / Hỏi setup |
+
+#### 5.1. Prompt nguyên văn
+
+```text
+- "cho tôi 1 docs giải thích chi tiết về việc tính những thông số trên để tôi chia sẽ cho team tôi hiểu và và nghiệp vụ cho đúng"
+- "tạo 1 file để team tôi chạy DB cho đồng bộ đi nào"
+- "/commit"
+```
+
+#### 5.2. Bối cảnh khi viết prompt
+
+```text
+Team cần một tài liệu mô tả chính xác công thức Y khoa (Mifflin-St Jeor, tính TDEE, chia tỉ lệ Macros) mà AI đã dùng để code Backend, nhằm đảm bảo mọi thành viên hiểu đúng nghiệp vụ của trang Nutrition. Ngoài ra, do Database có sự sai lệch với file mock_data cũ nên cần đồng bộ lại toàn bộ dữ liệu mẫu (mock_data.sql) cho cả team. Cuối cùng, thực hiện commit để lưu lại kết quả công việc bằng quy trình tự động.
+```
+
+#### 5.3. Kết quả AI trả về
+
+```text
+- AI tự động viết file tài liệu chuẩn Markdown NUTRITION_BUSINESS_LOGIC.md trình bày rõ ràng các công thức tính BMR, TDEE, Calories Target và Macros, đi kèm giải thích ý nghĩa từng field trong Database.
+- Xác nhận file data/mock_data.sql đã chứa toàn bộ dữ liệu cần thiết để đồng bộ.
+- Chạy toàn bộ quy trình /commit: build project, tạo commit tự động, và append các audit log (vào AI_AUDIT_LOG.md, CHANGELOG.md, PROMPTS.md).
+```
+
+#### 5.4. Kết quả đã áp dụng vào bài
+
+```text
+- Giữ nguyên tài liệu mô tả nghiệp vụ NUTRITION_BUSINESS_LOGIC.md để sử dụng.
+- Dùng cấu trúc `mock_data.sql` đã được fix lỗi để import Database cho toàn team.
+- Hoàn tất commit và cập nhật Audit Log thành công.
+```
+
+#### 5.5. Phần sinh viên/nhóm đã chỉnh sửa hoặc cải tiến
+
+```text
+N/A - Kết quả tự động của AI đáp ứng hoàn toàn nhu cầu báo cáo và đồng bộ của team.
+```
+
+#### 5.6. Đánh giá chất lượng prompt
+
+- [x] Prompt rõ ràng
+- [x] Prompt có đủ bối cảnh
+- [ ] Prompt còn thiếu thông tin
+- [x] Prompt tạo ra kết quả tốt
+- [ ] Prompt tạo ra kết quả chưa phù hợp
+- [ ] Cần hỏi lại AI nhiều lần
+- [ ] Cần tự kiểm tra và chỉnh sửa nhiều
+- [ ] Kết quả AI có lỗi hoặc chưa chính xác
+
+#### 5.7. Minh chứng liên quan
+
+| Loại minh chứng | Nội dung |
+|---|---|
+| Link commit | c9c75ad |
+| File liên quan | NUTRITION_BUSINESS_LOGIC.md, data/mock_data.sql |
+| Screenshot | Đã check tài liệu chi tiết |
+| Kết quả chạy/test | Đã chạy lệnh import MySQL thành công |
+| Link tài liệu/báo cáo | docs/NUTRITION_BUSINESS_LOGIC.md |
+| Ghi chú khác | N/A |
+
+#### 5.8. Ghi chú thêm
+
+```text
+Lệnh `/commit` của custom workflow rất hữu ích để đảm bảo chuẩn hoá báo cáo AI cho toàn dự án mà không tốn công copy-paste thủ công.
+```
+
+---
+
+### Prompt số 5
+
+| Nội dung | Thông tin |
+|---|---|
+| Ngày sử dụng | 05/07/2026 |
+| Công cụ AI | Antigravity |
+| Mục đích | Sửa lỗi phân quyền chéo vai trò, múi giờ và cấu hình thời gian thức nhắc nước tự động thông minh |
+| Phần việc liên quan | Coding / Debug / Database |
+| Mức độ sử dụng | Hỏi sinh code / Hỏi debug / Hỏi tối ưu |
+
+#### 5.1. Prompt nguyên văn
+
+```text
+- "đang ở admin bấm test water reminder thì vẫn nhận đưuocj thông báo và bấm vào thì lại nhảy sang user, fix lại lỗi, hiển thị thông báo đúng role, chặt chẽ, không ở role này mà hiển thị thoong báo role kia."
+- "láy thời gian đúng real -time cho tôi"
+- "ở phần user thông báo nhắc nhở uống nước phải là tự động. chia đúng thời gian chuẩn trừ thời gian ngủ buổi tối đến sáng là không thông báo uóng nước. uống phải tính từ lúc thức dậy đến trước lúc đi ngủ. thêm UI thời gian bắt đầu và kết thúc nhắc nhở uống nước. là trong thời gian đó thì phải tính toán nhắc nhở thời gian uống nước sao cho đúng với thẻ trạng mà đã tính số lượng nước. cho tôi plan của bạn về việc này đẻ tôi củng cố cho đúng logic của tôi"
+```
+
+#### 5.2. Bối cảnh khi viết prompt
+
+```text
+Phát hiện lỗi phân quyền chéo khi Admin có thể nhận được thông báo nước của Member khi chạy test, và khi click thì bị điều hướng sai trang. Ngoài ra, thông báo bị hiển thị sai múi giờ do UTC, và người dùng Member cần tự cấu hình giờ thức/ngủ để hệ thống tính toán tần suất nhắc nước hợp lý theo thể trạng.
+```
+
+#### 5.3. Kết quả AI trả về
+
+```text
+- Chèn [Authorize(Roles = "Member,MEMBER")] ở backend controller và lọc hiển thị nút test nước ở client.
+- Sửa đổi hàm formatTime chèn thêm suffix 'Z' để chuyển múi giờ chính xác.
+- Triển khai cột DB mới, viết API, thêm popup modal tự động và sidebar panel thiết lập giờ thức/ngủ, đồng thời cập nhật service quét background 30 phút/lần tính tần suất nhắc nước động.
+```
+
+#### 5.4. Kết quả đã áp dụng vào bài
+
+```text
+- Đã áp dụng toàn bộ code phân quyền và sửa múi giờ.
+- Triển khai thành công tính năng đặt giờ thức/ngủ nhắc nước.
+```
+
+#### 5.5. Phần sinh viên/nhóm đã chỉnh sửa hoặc cải tiến
+
+```text
+Tự tạo migration EF Core, update DB vật lý và dọn dẹp các import unused.
+```
+
+#### 5.6. Đánh giá chất lượng prompt
+
+- [x] Prompt rõ ràng
+- [x] Prompt có đủ bối cảnh
+- [x] Prompt tạo ra kết quả tốt
+
+#### 5.7. Minh chứng liên quan
+
+| Loại minh chứng | Nội dung |
+|---|---|
+| Link commit | 78d5b981ae67b60af43751fda748eb369a60a549 |
+| File liên quan | User.cs, NutritionService.cs, NotificationsController.cs, WaterReminderBackgroundService.cs, Nutrition.tsx, NotificationBell.tsx, NotificationTestWidget.tsx |
+| Screenshot | N/A |
+| Kết quả chạy/test | Build FE/BE thành công, database migration chạy chuẩn |
+| Link tài liệu/báo cáo | docs/DATLV_AI-AUDIT-LOG/AI_AUDIT_LOG.md |
+| Ghi chú khác | N/A |
+
+---
+
+### Prompt số 6
+
+| Nội dung | Thông tin |
+|---|---|
+| Ngày sử dụng | 08/07/2026 |
+| Công cụ AI | Antigravity |
+| Mục đích | Tìm và sửa lỗi không hiển thị danh sách Bài tập và Lịch sử tập luyện |
+| Phần việc liên quan | Backend / Database |
+| Mức độ sử dụng | Hỏi debug |
+
+#### 5.1. Prompt nguyên văn
+
+```text
+- tại sao lịch sử bài tập của tôi không hiển thị nữa. ở role user.
+- nó chưa hiển thị được bài tập nữa vì thế nên không có lịch sử bài tập là đúng rồi
+- đây nó lỗi đâu có bài tập đâu (Kèm screenshot)
+```
+
+#### 5.2. Bối cảnh khi viết prompt
+
+```text
+Sau khi gộp nhánh, backend phát sinh lỗi runtime khi fetch bài tập (Exercise) dẫn tới trang Workouts trống và Lịch sử tập luyện trống, cần AI đọc log tìm lỗi.
+```
+
+#### 5.3. Kết quả AI trả về
+
+```text
+AI phân tích các file log `task-XXX.log`, nhận ra các lỗi:
+1. Thiếu thuộc tính `DurationMinutes` -> ánh xạ lại.
+2. Lỗi shadow property `user_id` -> sửa `WithMany`.
+3. Lỗi `InvalidCastException` cho enum `Difficulty` -> gỡ bỏ `HasConversion<string>()`.
+```
+
+#### 5.4. Kết quả đã áp dụng vào bài
+
+```text
+Áp dụng tất cả các fix mapping của AI vào Entity Framework Core.
+```
+
+#### 5.5. Phần sinh viên/nhóm đã chỉnh sửa hoặc cải tiến
+
+```text
+Chụp ảnh minh chứng phần hiển thị bị hỏng để cung cấp context cho AI định vị lỗi nhanh hơn.
+```
+
+#### 5.6. Đánh giá chất lượng prompt
+
+- [x] Prompt rõ ràng
+- [x] Prompt có đủ bối cảnh
+- [x] Prompt tạo ra kết quả tốt
+
+#### 5.7. Minh chứng liên quan
+
+| Loại minh chứng | Nội dung |
+|---|---|
+| Link commit | 40c88051b1ad8cb8fd3127f510e1e39a827f4980 |
+| File liên quan | Exercise.cs, ApplicationDbContext.cs |
+| Screenshot | Đã cung cấp lỗi UI "0 Exercises" |
+| Kết quả chạy/test | Build pass, Backend lấy danh sách bài tập thành công |
+| Link tài liệu/báo cáo | N/A |
+| Ghi chú khác | N/A |
+
+---
+
 ## 6. Prompt quan trọng nhất
 
 Chọn một prompt có ảnh hưởng lớn nhất đến bài tập/project.
@@ -460,3 +664,191 @@ Sinh viên/nhóm cam kết rằng:
 | Đại diện sinh viên/nhóm | Ngày xác nhận |
 |---|---|
 |  |  |
+
+---
+
+### Prompt số 10
+
+| Nội dung | Thông tin |
+|---|---|
+| Ngày sử dụng | 08/07/2026 |
+| Công cụ AI | Antigravity |
+| Mục đích | Ẩn chức năng CRUD của PT và kết nối Backend API cho User Dashboard |
+| Phần việc liên quan | Coding |
+| Mức độ sử dụng | Hỏi sinh code |
+
+#### 5.1. Prompt nguyên văn
+
+```text
+- ở phần role PT chỉ cho xem danh sách user, danh sách bào tập chứ không có crud như role admin đưuocj sửa lại cho tôi /feature
+- code tiếp phần dashboard của user cho tôi. phải hoạt đồng được chuẩn /refactor hỏi tôi về chức năng của các tab thì cứ hỏi tôi nhé.
+```
+
+#### 5.2. Bối cảnh khi viết prompt
+
+```text
+Cần phân quyền chi tiết cho role PT (chỉ được xem) và làm cho User Dashboard hoạt động với dữ liệu thực thay vì số liệu tĩnh.
+```
+
+#### 5.3. Kết quả AI trả về
+
+```text
+AI đã sửa các component AdminUsers và AdminWorkouts để ẩn nút. AI lập kế hoạch tạo DashboardSummaryDto, viết DashboardService để gom dữ liệu Streak, Calories, Macros, sau đó sửa Dashboard.tsx dùng useSWR.
+```
+
+#### 5.4. Kết quả đã áp dụng vào bài
+
+```text
+Giữ lại toàn bộ code phân quyền và Dashboard API.
+```
+
+#### 5.5. Phần sinh viên/nhóm đã chỉnh sửa hoặc cải tiến
+
+```text
+Xác nhận với AI về việc không hiển thị dữ liệu của các chức năng chưa làm (Weekly Goal, Volume) và giữ nguyên giao diện mẫu.
+```
+
+#### 5.6. Đánh giá chất lượng prompt
+
+- [x] Prompt rõ ràng
+- [x] Prompt có đủ bối cảnh
+- [x] Prompt tạo ra kết quả tốt
+
+#### 5.7. Minh chứng liên quan
+
+| Loại minh chứng | Nội dung |
+|---|---|
+| Link commit | 0b5a897 |
+| File liên quan | DashboardService.cs, Dashboard.tsx, DashboardWidgets.tsx, AdminUsers.tsx, AdminWorkouts.tsx |
+| Screenshot | N/A |
+| Kết quả chạy/test | Build pass 100% |
+| Link tài liệu/báo cáo | N/A |
+| Ghi chú khác | N/A |
+
+---
+
+### Prompt số 9
+
+| Nội dung | Thông tin |
+|---|---|
+| Ngày sử dụng | 09/07/2026 |
+| Công cụ AI | Antigravity |
+| Mục đích | Phát triển logic tạo bài tập, cải thiện UI Popup và fix lỗi cấu trúc DB khóa ngoại |
+| Phần việc liên quan | Coding / Debug / Design |
+| Mức độ sử dụng | Hỏi sinh code, Hỏi debug DB |
+
+#### 5.1. Prompt nguyên văn
+
+```text
+1. "đã có phần lịch sử tôi biết vì sao nó đang lấy theo ngày, thêm filter để lấy lịch sử bài tập theo tuần, theo tháng nữa /feature"
+2. "hiện tại số set và số rep đang là cố định là sai rồi. logic tạo bài tập phải phù hợp và thực tế từ yêu cầu... mở bài tập lên chuển bài mà không cần đóng popup lại"
+3. "ở phần DB của tôi phần creator_id đang trống lại thiếu chỉnh lại DB cho đúng PT thêm bài cho tôi."
+```
+
+#### 5.2. Bối cảnh khi viết prompt
+
+```text
+Chức năng tự tạo bài tập bằng AI đang bị hardcode số bài và số hiệp, gây trải nghiệm không sát thực tế. 
+UI modal bài tập đang khá bất tiện khi phải tắt mở liên tục.
+Trang quản lý bài tập của PT gặp vấn đề khi lưu thông tin người tạo (Creator ID), do DB bị dư 1 cột `creator_id` thay vì dùng `created_by`.
+```
+
+#### 5.3. Kết quả AI trả về
+
+```text
+- Code Frontend: Logic tính toán cường độ bài tập dựa vào Goal, Level, và tổng thời gian (Duration). Modal với mũi tên điều hướng và nút Complete & Next.
+- Code Backend: Filter TimeRange cho Workout History. EF Core Migration drop cột thừa và update Khóa ngoại cho bài tập.
+```
+
+#### 5.4. Kết quả đã áp dụng vào bài
+
+```text
+Toàn bộ phần code logic và EF Core Migration được duyệt và áp dụng 100%.
+```
+
+#### 5.5. Phần sinh viên/nhóm đã chỉnh sửa hoặc cải tiến
+
+```text
+Cung cấp feedback bổ sung để tính thêm nhóm cơ (Muscles) thay vì chỉ random bài tập.
+```
+
+#### 5.6. Đánh giá chất lượng prompt
+
+- [x] Prompt rõ ràng
+- [x] Prompt có đủ bối cảnh
+- [x] Prompt tạo ra kết quả tốt
+
+#### 5.7. Minh chứng liên quan
+
+| Loại minh chứng | Nội dung |
+|---|---|
+| Link commit | ead4498 |
+| File liên quan | workoutExercises.ts, WorkoutResults.tsx, FixCreatorId.cs |
+| Screenshot | N/A |
+| Kết quả chạy/test | Build Success (FE/BE) & DB Migration Applied |
+| Link tài liệu/báo cáo | N/A |
+| Ghi chú khác | N/A |
+
+---
+
+### Prompt số 10
+
+| Nội dung | Thông tin |
+|---|---|
+| Ngày sử dụng | 14/07/2026 |
+| Công cụ AI | Antigravity |
+| Mục đích | Thêm giao diện API docs (Swagger/Scalar) cho Backend .NET 9 |
+| Phần việc liên quan | Coding / Debug |
+| Mức độ sử dụng | Hỏi sinh code, Hỏi debug |
+
+#### 5.1. Prompt nguyên văn
+
+```text
+1. "BE có swagger đâu" — yêu cầu bổ sung giao diện test API
+2. "có đâu tôi thấy gì đâu" — Swagger UI cài rồi nhưng vẫn 404
+3. "vẫn không được" — tiếp tục yêu cầu tìm giải pháp
+```
+
+#### 5.2. Bối cảnh khi viết prompt
+
+```text
+Backend .NET 9 dùng MapOpenApi() mới, không có sẵn Swagger UI. 
+Cần giao diện trực quan để test API thay vì dùng curl/Postman.
+```
+
+#### 5.3. Kết quả AI trả về
+
+```text
+- Ban đầu cài Swashbuckle.AspNetCore nhưng không hoạt động trên .NET 9 OpenAPI mới.
+- Chuyển sang Scalar.AspNetCore — tương thích native với MapOpenApi().
+- Cấu hình MapScalarApiReference() trong Program.cs.
+```
+
+#### 5.4. Kết quả đã áp dụng vào bài
+
+```text
+Toàn bộ cấu hình Scalar được áp dụng: using directive, NuGet package, và middleware config.
+```
+
+#### 5.5. Phần sinh viên/nhóm đã chỉnh sửa hoặc cải tiến
+
+```text
+Sinh viên tự test trên trình duyệt và phản hồi khi Swagger UI không hoạt động, buộc AI phải tìm giải pháp thay thế phù hợp hơn.
+```
+
+#### 5.6. Đánh giá chất lượng prompt
+
+- [x] Prompt rõ ràng
+- [x] Prompt có đủ bối cảnh
+- [x] Prompt tạo ra kết quả tốt
+
+#### 5.7. Minh chứng liên quan
+
+| Loại minh chứng | Nội dung |
+|---|---|
+| Link commit | 7de96b23db92899152bce1def1f7b3343b925e5d |
+| File liên quan | Program.cs, FitnessTrainingSystem.WebApi.csproj |
+| Screenshot | N/A |
+| Kết quả chạy/test | Build succeeded — 0 Warning(s), 0 Error(s) |
+| Link tài liệu/báo cáo | N/A |
+| Ghi chú khác | N/A |
