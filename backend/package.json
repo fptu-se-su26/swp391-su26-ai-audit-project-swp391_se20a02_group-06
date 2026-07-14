@@ -1,0 +1,16 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "This is the backend for the FitnessTrainingSystem project, built with C# .NET 9.0 using **Clean Architecture** (Onion Architecture). The design ensures that the core business logic remains independent of external databases, UI frameworks, or third-party services.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "bcryptjs": "^3.0.3"
+  }
+}
