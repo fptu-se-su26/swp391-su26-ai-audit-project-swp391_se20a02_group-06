@@ -610,6 +610,66 @@ Cung cấp screenshot giao diện lỗi cho AI để khoanh vùng và xác nhậ
 - Việc đọc backend server log là rất quan trọng để phát hiện ra nguyên nhân gốc rễ thay vì chỉ nhìn vào UI bị lỗi.
 ```
 
+---
+
+### Lần sử dụng AI số 12
+
+| Nội dung | Thông tin |
+|---|---|
+| Ngày sử dụng | 14/07/2026 |
+| Công cụ AI | Antigravity |
+| Mục đích sử dụng | Thêm Scalar API Reference thay thế Swagger UI cho .NET 9 |
+| Phần việc liên quan | Backend |
+| Mức độ sử dụng | Hỗ trợ nhiều |
+
+#### 4.1. Prompt đã sử dụng
+
+```text
+- "BE có swagger đâu" — yêu cầu thêm giao diện API docs cho backend
+- "có đâu tôi thấy gì đâu" — phản hồi Swagger UI vẫn không hoạt động
+- "vẫn không được" — tiếp tục yêu cầu fix
+```
+
+#### 4.2. Kết quả AI gợi ý
+
+```text
+- Ban đầu thử cài Swashbuckle.AspNetCore (Swagger UI truyền thống) nhưng không tương thích tốt với .NET 9 OpenAPI mới.
+- Chuyển sang dùng Scalar.AspNetCore — thư viện API docs hiện đại, tương thích native với .NET 9 MapOpenApi().
+- Cấu hình MapScalarApiReference() trong Program.cs để tạo giao diện API docs tại /scalar/v1.
+```
+
+#### 4.3. Phần sinh viên/nhóm đã sử dụng từ AI
+
+```text
+- Cấu hình Scalar.AspNetCore trong Program.cs (using directive + MapScalarApiReference)
+- Thêm package reference vào .csproj
+```
+
+#### 4.4. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
+
+```text
+- Sinh viên kiểm tra và phản hồi rằng Swagger UI không hoạt động, yêu cầu tìm giải pháp thay thế.
+- Tự test trên trình duyệt để xác nhận kết quả.
+```
+
+#### 4.5. Minh chứng
+
+| Loại minh chứng | Nội dung |
+|---|---|
+| Link commit | 7de96b23db92899152bce1def1f7b3343b925e5d |
+| File liên quan | Program.cs, FitnessTrainingSystem.WebApi.csproj |
+| Screenshot | N/A |
+| Kết quả chạy/test | Build succeeded — 0 Warning(s), 0 Error(s) |
+| Link video demo | N/A |
+| Ghi chú khác | Scalar API docs truy cập tại http://localhost:5007/scalar/v1 |
+
+#### 4.6. Nhận xét cá nhân/nhóm
+
+```text
+- .NET 9 đã thay đổi cách tích hợp API docs — Swashbuckle không còn là default, cần dùng Scalar hoặc các thư viện tương thích OpenAPI mới.
+- Scalar có giao diện hiện đại hơn Swagger UI và tích hợp tốt hơn với MapOpenApi() của .NET 9.
+```
+
 ## 5. Bảng tổng hợp mức độ sử dụng AI
 
 Đánh dấu mức độ AI hỗ trợ ở từng hạng mục.

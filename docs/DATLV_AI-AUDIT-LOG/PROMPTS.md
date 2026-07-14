@@ -788,3 +788,67 @@ Cung cấp feedback bổ sung để tính thêm nhóm cơ (Muscles) thay vì ch�
 | Kết quả chạy/test | Build Success (FE/BE) & DB Migration Applied |
 | Link tài liệu/báo cáo | N/A |
 | Ghi chú khác | N/A |
+
+---
+
+### Prompt số 10
+
+| Nội dung | Thông tin |
+|---|---|
+| Ngày sử dụng | 14/07/2026 |
+| Công cụ AI | Antigravity |
+| Mục đích | Thêm giao diện API docs (Swagger/Scalar) cho Backend .NET 9 |
+| Phần việc liên quan | Coding / Debug |
+| Mức độ sử dụng | Hỏi sinh code, Hỏi debug |
+
+#### 5.1. Prompt nguyên văn
+
+```text
+1. "BE có swagger đâu" — yêu cầu bổ sung giao diện test API
+2. "có đâu tôi thấy gì đâu" — Swagger UI cài rồi nhưng vẫn 404
+3. "vẫn không được" — tiếp tục yêu cầu tìm giải pháp
+```
+
+#### 5.2. Bối cảnh khi viết prompt
+
+```text
+Backend .NET 9 dùng MapOpenApi() mới, không có sẵn Swagger UI. 
+Cần giao diện trực quan để test API thay vì dùng curl/Postman.
+```
+
+#### 5.3. Kết quả AI trả về
+
+```text
+- Ban đầu cài Swashbuckle.AspNetCore nhưng không hoạt động trên .NET 9 OpenAPI mới.
+- Chuyển sang Scalar.AspNetCore — tương thích native với MapOpenApi().
+- Cấu hình MapScalarApiReference() trong Program.cs.
+```
+
+#### 5.4. Kết quả đã áp dụng vào bài
+
+```text
+Toàn bộ cấu hình Scalar được áp dụng: using directive, NuGet package, và middleware config.
+```
+
+#### 5.5. Phần sinh viên/nhóm đã chỉnh sửa hoặc cải tiến
+
+```text
+Sinh viên tự test trên trình duyệt và phản hồi khi Swagger UI không hoạt động, buộc AI phải tìm giải pháp thay thế phù hợp hơn.
+```
+
+#### 5.6. Đánh giá chất lượng prompt
+
+- [x] Prompt rõ ràng
+- [x] Prompt có đủ bối cảnh
+- [x] Prompt tạo ra kết quả tốt
+
+#### 5.7. Minh chứng liên quan
+
+| Loại minh chứng | Nội dung |
+|---|---|
+| Link commit | 7de96b23db92899152bce1def1f7b3343b925e5d |
+| File liên quan | Program.cs, FitnessTrainingSystem.WebApi.csproj |
+| Screenshot | N/A |
+| Kết quả chạy/test | Build succeeded — 0 Warning(s), 0 Error(s) |
+| Link tài liệu/báo cáo | N/A |
+| Ghi chú khác | N/A |
