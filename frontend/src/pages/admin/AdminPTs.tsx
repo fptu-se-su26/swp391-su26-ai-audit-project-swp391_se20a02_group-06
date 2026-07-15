@@ -12,7 +12,7 @@ import {
     Td,
     Badge,
     Spinner,
-    Button,
+    Switch,
     useToast
 } from '@chakra-ui/react'
 import useSWR from 'swr'
@@ -35,12 +35,15 @@ const AdminPTs: React.FC = () => {
     const { data: pts, error, isLoading, mutate } = useSWR<PtDto[]>('/pt', fetcher)
     const toast = useToast()
 
-    const handleActivate = async (id: number) => {
+    const handleToggleStatus = async (id: number, currentStatus: string) => {
+        const isActive = currentStatus === 'ACTIVE'
+        const action = isActive ? 'deactivate' : 'activate'
+        const actionLabel = isActive ? 'deactivated' : 'activated'
         try {
-            await apiClient.put(`/pt/${id}/activate`)
+            await apiClient.put(`/pt/${id}/${action}`)
             toast({
                 title: 'Success',
-                description: 'PT activated successfully.',
+                description: `PT ${actionLabel} successfully.`,
                 status: 'success',
                 duration: 3000,
                 isClosable: true,
@@ -49,29 +52,7 @@ const AdminPTs: React.FC = () => {
         } catch (error) {
             toast({
                 title: 'Error',
-                description: 'Failed to activate PT.',
-                status: 'error',
-                duration: 3000,
-                isClosable: true,
-            })
-        }
-    }
-
-    const handleDeactivate = async (id: number) => {
-        try {
-            await apiClient.put(`/pt/${id}/deactivate`)
-            toast({
-                title: 'Success',
-                description: 'PT deactivated successfully.',
-                status: 'success',
-                duration: 3000,
-                isClosable: true,
-            })
-            mutate()
-        } catch (error) {
-            toast({
-                title: 'Error',
-                description: 'Failed to deactivate PT.',
+                description: `Failed to ${actionLabel} PT.`,
                 status: 'error',
                 duration: 3000,
                 isClosable: true,
@@ -121,23 +102,20 @@ const AdminPTs: React.FC = () => {
                                         </Td>
                                         <Td borderColor="#1e2028">
                                             <Badge
-                                                bg={pt.status === 'Active' ? 'green.900' : pt.status === 'Fully Booked' ? '#E03030' : '#2e3040'}
-                                                color={pt.status === 'Active' ? 'green.300' : pt.status === 'Fully Booked' ? 'white' : '#e2e1eb'}
+                                                bg={pt.status === 'ACTIVE' ? 'green.900' : '#2e3040'}
+                                                color={pt.status === 'ACTIVE' ? 'green.300' : '#e2e1eb'}
                                                 px="2" py="0.5" borderRadius="md"
                                             >
-                                                {pt.status || '-'}
+                                                {pt.status === 'ACTIVE' ? 'Active' : 'Inactive'}
                                             </Badge>
                                         </Td>
                                         <Td borderColor="#1e2028">
-                                            {pt.status !== 'Active' ? (
-                                                <Button size="xs" colorScheme="green" mr="2" onClick={() => handleActivate(pt.id)}>
-                                                    Activate
-                                                </Button>
-                                            ) : (
-                                                <Button size="xs" colorScheme="red" onClick={() => handleDeactivate(pt.id)}>
-                                                    Deactivate
-                                                </Button>
-                                            )}
+                                            <Switch
+                                                isChecked={pt.status === 'ACTIVE'}
+                                                onChange={() => handleToggleStatus(pt.id, pt.status)}
+                                                colorScheme="green"
+                                                size="md"
+                                            />
                                         </Td>
                                     </Tr>
                                 ))}

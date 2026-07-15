@@ -319,6 +319,7 @@ INSERT IGNORE INTO meal_schedule_items (meal_schedule_id, food_id, amount, is_ea
 (6, 5,  '2 slices', 0),   -- Whole Wheat Bread 
 (6, 19, '1 tbsp',   0),   -- Peanut Butter 
 (6, 16, '250ml',    0);   -- Whole Milk 
+
 -- ==========================================
 -- NOTIFICATIONS
 -- ==========================================
