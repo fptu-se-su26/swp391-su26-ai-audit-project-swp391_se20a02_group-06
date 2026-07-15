@@ -256,10 +256,6 @@ namespace FitnessTrainingSystem.Infrastructure.Migrations
                         .HasColumnType("int")
                         .HasColumnName("created_by");
 
-                    b.Property<int?>("CreatorId")
-                        .HasColumnType("int")
-                        .HasColumnName("creator_id");
-
                     b.Property<string>("Description")
                         .HasColumnType("longtext")
                         .HasColumnName("description");
@@ -268,13 +264,9 @@ namespace FitnessTrainingSystem.Infrastructure.Migrations
                         .HasColumnType("int")
                         .HasColumnName("difficulty");
 
-                    b.Property<int?>("Duration")
+                    b.Property<int?>("DurationMinutes")
                         .HasColumnType("int")
                         .HasColumnName("duration");
-
-                    b.Property<string>("MuscleGroup")
-                        .HasColumnType("longtext")
-                        .HasColumnName("muscle_group");
 
                     b.Property<int?>("MuscleGroupId")
                         .HasColumnType("int")
@@ -292,8 +284,8 @@ namespace FitnessTrainingSystem.Infrastructure.Migrations
                     b.HasKey("Id")
                         .HasName("pk_exercises");
 
-                    b.HasIndex("CreatorId")
-                        .HasDatabaseName("ix_exercises_creator_id");
+                    b.HasIndex("CreatedBy")
+                        .HasDatabaseName("ix_exercises_created_by");
 
                     b.HasIndex("MuscleGroupId")
                         .HasDatabaseName("ix_exercises_muscle_group_id");
@@ -1200,15 +1192,17 @@ namespace FitnessTrainingSystem.Infrastructure.Migrations
                 {
                     b.HasOne("FitnessTrainingSystem.Domain.Entities.User", "Creator")
                         .WithMany("CreatedExercises")
-                        .HasForeignKey("CreatorId")
-                        .HasConstraintName("fk_exercises_users_creator_id");
+                        .HasForeignKey("CreatedBy")
+                        .HasConstraintName("fk_exercises_users_created_by");
 
-                    b.HasOne("FitnessTrainingSystem.Domain.Entities.MuscleGroup", null)
+                    b.HasOne("FitnessTrainingSystem.Domain.Entities.MuscleGroup", "MuscleGroup")
                         .WithMany("Exercises")
                         .HasForeignKey("MuscleGroupId")
                         .HasConstraintName("fk_exercises_muscle_groups_muscle_group_id");
 
                     b.Navigation("Creator");
+
+                    b.Navigation("MuscleGroup");
                 });
 
             modelBuilder.Entity("FitnessTrainingSystem.Domain.Entities.MealSchedule", b =>

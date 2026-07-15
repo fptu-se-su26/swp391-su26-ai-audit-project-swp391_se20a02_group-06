@@ -6,4 +6,9 @@ public interface ICloudinaryService
     /// Uploads a video stream to Cloudinary and returns the secure hosted URL.
     /// </summary>
     Task<string> UploadVideoAsync(Stream fileStream, string fileName);
+
+    /// <summary>
+    /// Uploads an image stream to Cloudinary and returns the secure hosted URL.
+    /// </summary>
+    Task<string> UploadImageAsync(Stream fileStream, string fileName);
 }

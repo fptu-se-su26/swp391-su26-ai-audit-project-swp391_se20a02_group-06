@@ -14,4 +14,9 @@ public interface INutritionService
     /// Log water intake for a user on a specific date.
     /// </summary>
     Task<DailyNutritionSummaryDto> LogWaterAsync(int userId, DateTime date, LogWaterDto dto);
+
+    /// <summary>
+    /// Update water reminder start and end times for a user.
+    /// </summary>
+    Task<bool> UpdateReminderSettingsAsync(int userId, UpdateReminderSettingsDto dto);
 }

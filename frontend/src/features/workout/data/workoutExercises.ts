@@ -1,53 +1,89 @@
+import apiClient from '../../../lib/axios'
 import type { ExerciseCardData, WorkoutFormData } from '../types/workout'
 
 export const generateExercises = async (data: WorkoutFormData): Promise<ExerciseCardData[]> => {
-    const bank: Record<string, Omit<ExerciseCardData, 'id'>[]> = {
-        lose_weight: [
-            { index: 1, name: 'Jump Squat', tags: ['Chân', 'Cardio'], sets: '4 x 15', setsLabel: 'Sets / Reps', isDone: true },
-            { index: 2, name: 'Burpees', tags: ['Toàn thân'], sets: '3 x 12', setsLabel: 'Sets / Reps', isActive: true },
-            { index: 3, name: 'Mountain Climbers', tags: ['Bụng', 'Cardio'], sets: '3 x 30s', setsLabel: 'Sets / Time' },
-            { index: 4, name: 'High Knees Sprint', tags: ['Cardio'], sets: '3 x 45s', setsLabel: 'Sets / Time' },
-        ],
-        build_muscle: [
-            { index: 1, name: 'Barbell Back Squat', tags: ['Chân', 'Compound'], sets: '4 x 8', setsLabel: 'Sets / Reps', isDone: true },
-            { index: 2, name: 'Romanian Deadlift', tags: ['Hamstrings'], sets: '4 x 10', setsLabel: 'Sets / Reps', isActive: true },
-            { index: 3, name: 'Bulgarian Split Squat', tags: ['Quads', 'Mông'], sets: '3 x 12', setsLabel: 'Per Leg' },
-            { index: 4, name: 'Advanced Leg Press', tags: ['Quads', 'Glutes'], sets: '–', setsLabel: 'Locked', isLocked: true },
-        ],
-        stay_active: [
-            { index: 1, name: 'Bodyweight Squat', tags: ['Chân'], sets: '3 x 20', setsLabel: 'Sets / Reps', isDone: true },
-            { index: 2, name: 'Push-up', tags: ['Ngực', 'Tay'], sets: '3 x 15', setsLabel: 'Sets / Reps', isActive: true },
-            { index: 3, name: 'Plank Hold', tags: ['Bụng'], sets: '3 x 45s', setsLabel: 'Sets / Time' },
-            { index: 4, name: 'Glute Bridge', tags: ['Mông'], sets: '3 x 20', setsLabel: 'Sets / Reps' },
-        ],
-        endurance: [
-            { index: 1, name: 'Jump Rope', tags: ['Cardio'], sets: '5 x 1min', setsLabel: 'Sets / Time', isDone: true },
-            { index: 2, name: 'Box Step Up', tags: ['Chân', 'Cardio'], sets: '4 x 20', setsLabel: 'Sets / Reps', isActive: true },
-            { index: 3, name: 'Bicycle Crunch', tags: ['Bụng'], sets: '3 x 30', setsLabel: 'Sets / Reps' },
-            { index: 4, name: 'Bear Crawl', tags: ['Toàn thân'], sets: '3 x 20m', setsLabel: 'Sets / Dist.' },
-        ],
-        health: [
-            { index: 1, name: 'Walking Lunge', tags: ['Chân'], sets: '3 x 12', setsLabel: 'Per Leg', isDone: true },
-            { index: 2, name: 'Dumbbell Row', tags: ['Lưng', 'Tay'], sets: '3 x 12', setsLabel: 'Sets / Reps', isActive: true },
-            { index: 3, name: 'Superman Hold', tags: ['Lưng dưới'], sets: '3 x 15', setsLabel: 'Sets / Reps' },
-            { index: 4, name: 'Side Plank', tags: ['Core'], sets: '2 x 30s', setsLabel: 'Per Side' },
-        ],
-        performance: [
-            { index: 1, name: 'Power Clean', tags: ['Toàn thân', 'Olympic'], sets: '4 x 5', setsLabel: 'Sets / Reps', isDone: true },
-            { index: 2, name: 'Box Jump', tags: ['Chân', 'Explosive'], sets: '4 x 8', setsLabel: 'Sets / Reps', isActive: true },
-            { index: 3, name: 'Sled Push', tags: ['Toàn thân'], sets: '3 x 20m', setsLabel: 'Sets / Dist.' },
-            { index: 4, name: 'Velocity Band Sprint', tags: ['Premium'], sets: '–', setsLabel: 'Locked', isLocked: true },
-        ],
-    }
+    try {
+        const response = await apiClient.get('/exercises')
+        let allExercises: any[] = response.data
 
-    const base = bank[data.goal] ?? bank['build_muscle']
-    const baseWithIds = base.map((ex, idx) => ({ ...ex, id: idx + 1 })) as ExerciseCardData[]
+        // Filter by selected muscles if available
+        if (data.muscles && data.muscles.length > 0) {
+            allExercises = allExercises.filter(ex => 
+                data.muscles.some(muscle => ex.muscleGroup?.toLowerCase().includes(muscle.toLowerCase()))
+            )
+        }
+        
+        // If filtering leaves us with too few, fallback to all exercises (for safety in demo)
+        if (allExercises.length < 3) {
+            allExercises = response.data
+        }
 
-    if (data.level === 'Beginner') {
-        return baseWithIds.slice(0, 3).map((ex) => ({ ...ex, sets: ex.sets.replace('4', '3').replace('5', '3') }))
+        const shuffled = allExercises.sort(() => 0.5 - Math.random())
+
+        // Calculate Sets and Rest based on Level
+        let sets = 3;
+        let restTime = 60; // seconds
+        if (data.level === 'Intermediate') {
+            sets = 4;
+            restTime = 45;
+        } else if (data.level === 'Advanced') {
+            sets = 5;
+            restTime = 30;
+        }
+
+        // Calculate Reps and Time per rep based on Goal
+        let reps = 12;
+        let timePerRep = 3; // seconds
+        if (data.goal === 'lose_weight' || data.goal === 'cardio') {
+            reps = 16;
+            timePerRep = 2; // faster
+        } else if (data.goal === 'build_muscle') {
+            reps = 8;
+            timePerRep = 4; // slower, controlled
+        }
+
+        // Time calculation
+        const timePerSet = (reps * timePerRep) + restTime; // seconds
+        const timePerExercise = timePerSet * sets; // seconds
+        const targetDurationSeconds = (data.duration || 30) * 60;
+        
+        // Calculate number of exercises
+        let numExercises = Math.round(targetDurationSeconds / timePerExercise);
+        numExercises = Math.max(3, Math.min(numExercises, 12)); // bounds: 3 to 12 exercises
+
+        const selected = shuffled.slice(0, numExercises)
+
+        return selected.map((ex, idx) => {
+            const isCardio = ex.muscleGroup?.toLowerCase().includes('cardio') || ex.title?.toLowerCase().includes('jump')
+            
+            let exSetsStr = `${sets} x ${reps}`
+            let exSetsLabel = 'Sets / Reps'
+            if (isCardio) {
+                const cardioSeconds = reps * timePerRep;
+                exSetsStr = `${sets} x ${cardioSeconds}s`
+                exSetsLabel = 'Sets / Time'
+            }
+
+            const description = ex.description || 'Perform the movement with control. Make sure to engage your core and maintain steady breathing. Inhale as you lower and exhale as you exert force to push up.'
+            const fullDescription = `${description}\n\nRest ${restTime} seconds between sets.`
+
+            return {
+                id: ex.id,
+                index: idx + 1,
+                name: ex.title || 'Unknown Exercise',
+                tags: ex.muscleGroup ? [ex.muscleGroup] : ['Full Body'],
+                sets: exSetsStr,
+                setsLabel: exSetsLabel,
+                description: fullDescription,
+                videoUrl: ex.videoUrl || 'https://www.youtube.com/embed/IODxDxX7oi4',
+                imageUrl: ex.thumbnailUrl || (ex.videoUrl?.includes('youtube.com') ? `https://img.youtube.com/vi/${ex.videoUrl.split('embed/')[1]?.split('?')[0]}/0.jpg` : (ex.videoUrl?.includes('cloudinary.com') ? ex.videoUrl.replace(/\.[^/.]+$/, ".jpg") : '')),
+                isActive: idx === 0,
+                isDone: false,
+                isLocked: false
+            }
+        })
+    } catch (error) {
+        console.error("Failed to fetch exercises:", error)
+        return []
     }
-    if (data.level === 'Advanced') {
-        return baseWithIds.map((ex) => ({ ...ex, isLocked: false, sets: ex.isLocked ? '5 x 10' : ex.sets }))
-    }
-    return baseWithIds
 }

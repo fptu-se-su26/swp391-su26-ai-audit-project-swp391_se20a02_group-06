@@ -48,9 +48,14 @@ const AdminSidebar: React.FC = () => {
                 <NavItem href="/admin/users" label={isPT ? 'My Clients' : 'Users'} />
                 <NavItem href="/admin/workouts" label="Workouts" />
                 {isPT ? (
-                    <NavItem href="/admin/pt-requests" label="Exercise Requests" />
+                    <>
+                        <NavItem href="/pt/profile" label="Profile" />
+                        <NavItem href="/admin/pt-requests" label="Exercise Requests" />
+                    </>
                 ) : (
-                    <NavItem href="/admin/exercise-requests" label="Exercise Requests" />
+                    <>
+                        <NavItem href="/admin/exercise-requests" label="Exercise Requests" />
+                    </>
                 )}
                 {!isPT && (
                     <>

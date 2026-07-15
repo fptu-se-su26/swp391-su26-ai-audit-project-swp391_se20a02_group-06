@@ -38,7 +38,7 @@ public class PtService : IPtService
         var user = await _context.Users.FindAsync(id);
         if (user == null) return false;
 
-        user.Status = "Active";
+        user.Status = "ACTIVE";
         await _context.SaveChangesAsync();
         return true;
     }

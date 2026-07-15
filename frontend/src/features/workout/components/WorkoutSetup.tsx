@@ -1,5 +1,4 @@
-import * as React from 'react'
-import { useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import {
     Box,
     Flex,
@@ -19,7 +18,7 @@ import {
     SectionLabel,
     StepDots,
 } from './WorkoutSetupControls'
-import { muscleZones as defaultMuscleZones } from '../data/muscleZones'
+import { muscleShapes } from '../data/muscleShapes'
 import { getMuscleGroups } from '../../../api/muscleGroups'
 
 interface WorkoutSetupProps {
@@ -46,7 +45,7 @@ const WorkoutSetup: React.FC<WorkoutSetupProps> = ({ onComplete }) => {
         targetCalories: 300,
     })
 
-    const [muscleZones, setMuscleZones] = useState<{ id: string; label: string; d: string }[]>(defaultMuscleZones)
+    const [muscleZones, setMuscleZones] = useState<{ id: string; label: string; d: string }[]>(muscleShapes)
 
     useEffect(() => {
         const fetchMuscles = async () => {
@@ -55,7 +54,7 @@ const WorkoutSetup: React.FC<WorkoutSetupProps> = ({ onComplete }) => {
                 // Map API data to SVG shapes
                 const mappedZones = apiMuscles.map(apiM => {
                     // Try to find a shape matching the name
-                    const shape = defaultMuscleZones.find((s: { id: string; label: string; d: string }) => s.label.toLowerCase() === apiM.name.toLowerCase() || s.id === apiM.name.toLowerCase())
+                    const shape = muscleShapes.find(s => s.label.toLowerCase() === apiM.name.toLowerCase() || s.id === apiM.name.toLowerCase())
                     return {
                         id: apiM.id.toString(), // use DB id or keep name
                         label: apiM.name,

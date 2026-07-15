@@ -54,7 +54,7 @@ const Nutrition: React.FC = () => {
     const [selectedDate, setSelectedDate] = useState<Date>(new Date())
     const [searchQuery, setSearchQuery] = useState('')
 
-    // Water reminder preference state
+    // Waking hours reminder settings state
     const [showPreferenceModal, setShowPreferenceModal] = useState(false)
     const [startTime, setStartTime] = useState('07:00')
     const [endTime, setEndTime] = useState('22:00')
@@ -85,7 +85,7 @@ const Nutrition: React.FC = () => {
         try {
             await updateReminderSettings(startTime, endTime)
             toast({
-                title: 'Reminder settings updated! 💧',
+                title: 'Reminder settings updated! 🥛',
                 description: `Chúng tôi sẽ nhắc bạn uống nước từ ${startTime} đến ${endTime}.`,
                 status: 'success',
                 duration: 3000,
@@ -110,11 +110,17 @@ const Nutrition: React.FC = () => {
         try {
             const [startH, startM] = start.split(':').map(Number)
             const [endH, endM] = end.split(':').map(Number)
+            
             let startMins = startH * 60 + startM
             let endMins = endH * 60 + endM
-            if (endMins < startMins) endMins += 24 * 60
+            
+            if (endMins < startMins) {
+                endMins += 24 * 60
+            }
+            
             const wakingMins = endMins - startMins
-            if (wakingMins <= 0 || target <= 0) return ''
+            if (wakingMins <= 0 || target <= 0) return ""
+
             const intervalMins = Math.round(wakingMins / target)
             if (intervalMins < 60) {
                 return `Hệ thống nhắc nhở mỗi ${intervalMins} phút.`
@@ -124,7 +130,7 @@ const Nutrition: React.FC = () => {
                 return `Hệ thống nhắc nhở mỗi ${hrs}h${mins > 0 ? ` ${mins}m` : ''} một lần.`
             }
         } catch (e) {
-            return ''
+            return ""
         }
     }
 
@@ -364,6 +370,58 @@ const Nutrition: React.FC = () => {
                             total={summary?.waterTargetGlasses || 8} 
                             onLogWater={handleLogWater}
                         />
+
+                        {/* Water Reminder Schedule Panel */}
+                        {summary && (
+                            <Box
+                                bg="#141720"
+                                border="1px solid"
+                                borderColor="#1e2028"
+                                borderRadius="14px"
+                                p="5"
+                                boxShadow="0 4px 20px rgba(0, 0, 0, 0.2)"
+                            >
+                                <Flex align="center" justify="space-between" mb="3">
+                                    <Text fontSize="13px" fontWeight="700" color="white">
+                                        Water Reminder Schedule
+                                    </Text>
+                                    <Badge bg="rgba(0, 168, 150, 0.1)" color="teal.300">Active</Badge>
+                                </Flex>
+                                {summary.waterReminderStartTime && summary.waterReminderEndTime ? (
+                                    <Stack spacing="3">
+                                        <HStack justify="space-between">
+                                            <Text fontSize="12px" color="#8A8A93">Waking Hours</Text>
+                                            <Text fontSize="12px" color="white" fontWeight="600">
+                                                {summary.waterReminderStartTime} - {summary.waterReminderEndTime}
+                                            </Text>
+                                        </HStack>
+                                        <Text fontSize="11px" color="teal.300" fontStyle="italic">
+                                            {calculateIntervalText(summary.waterReminderStartTime, summary.waterReminderEndTime, summary.waterTargetGlasses)}
+                                        </Text>
+                                        <Button
+                                            size="xs"
+                                            colorScheme="teal"
+                                            variant="outline"
+                                            w="full"
+                                            borderRadius="8px"
+                                            onClick={() => setShowPreferenceModal(true)}
+                                        >
+                                            Change Settings
+                                        </Button>
+                                    </Stack>
+                                ) : (
+                                    <Button
+                                        size="sm"
+                                        colorScheme="teal"
+                                        w="full"
+                                        borderRadius="8px"
+                                        onClick={() => setShowPreferenceModal(true)}
+                                    >
+                                        Configure Reminders
+                                    </Button>
+                                )}
+                            </Box>
+                        )}
 
                         {/* AI Recommendation */}
                         <AIDinnerCard />

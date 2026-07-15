@@ -29,9 +29,28 @@ import {
     StreakDots,
     WeeklyVolumeChart,
 } from '../../features/dashboard/components/DashboardWidgets.tsx'
+import useSWR from 'swr'
+import apiClient from '../../lib/axios'
+
+interface DashboardSummaryDto {
+    currentStreak: number;
+    activeDaysThisWeek: number[];
+    activeCaloriesToday: number;
+    activeCaloriesHistory: number[];
+    proteinConsumed: number;
+    proteinTarget: number;
+    carbsConsumed: number;
+    carbsTarget: number;
+    fatsConsumed: number;
+    fatsTarget: number;
+}
+
+const fetcher = (url: string) => apiClient.get(url).then(res => res.data)
 
 /* ── Dashboard Page ─────────────────────────── */
 const Dashboard: React.FC = () => {
+    const { data: summary } = useSWR<DashboardSummaryDto>('/dashboard/summary', fetcher)
+
     return (
         <MemberLayout>
             <Box p="7" maxW="1200px">
@@ -48,12 +67,12 @@ const Dashboard: React.FC = () => {
                         label="Active Calories"
                         value={
                             <Box>
-                                <Text as="span" fontSize="28px" fontWeight="800" color="white">1,240</Text>
+                                <Text as="span" fontSize="28px" fontWeight="800" color="white">{summary?.activeCaloriesToday ?? 0}</Text>
                                 <Text as="span" fontSize="13px" color="#8A8A93" ml="1">kcal</Text>
                             </Box>
                         }
                         icon={FiZap}
-                        sub={<MiniBarChart />}
+                        sub={<MiniBarChart bars={summary?.activeCaloriesHistory ?? [0,0,0,0,0,0,0]} />}
                     />
 
                     {/* Current Streak */}
@@ -61,12 +80,12 @@ const Dashboard: React.FC = () => {
                         label="Current Streak"
                         value={
                             <Box>
-                                <Text as="span" fontSize="28px" fontWeight="800" color="white">12</Text>
+                                <Text as="span" fontSize="28px" fontWeight="800" color="white">{summary?.currentStreak ?? 0}</Text>
                                 <Text as="span" fontSize="13px" color="#8A8A93" ml="1">Days</Text>
                             </Box>
                         }
                         icon={FiZap}
-                        sub={<StreakDots />}
+                        sub={<StreakDots activeDays={summary?.activeDaysThisWeek ?? []} />}
                     />
 
                     {/* Weekly Goal */}
@@ -300,9 +319,9 @@ const Dashboard: React.FC = () => {
                             </Text>
                         </Flex>
                         <Stack spacing="4">
-                            <MacroBar label="Protein" current={160} total={180} unit="g" color="#E03030" />
-                            <MacroBar label="Carbs" current={210} total={300} unit="g" color="#3b82f6" />
-                            <MacroBar label="Fats" current={45} total={65} unit="g" color="#f59e0b" />
+                            <MacroBar label="Protein" current={summary?.proteinConsumed ?? 0} total={summary?.proteinTarget || 180} unit="g" color="#E03030" />
+                            <MacroBar label="Carbs" current={summary?.carbsConsumed ?? 0} total={summary?.carbsTarget || 300} unit="g" color="#3b82f6" />
+                            <MacroBar label="Fats" current={summary?.fatsConsumed ?? 0} total={summary?.fatsTarget || 65} unit="g" color="#f59e0b" />
                         </Stack>
                     </Box>
 

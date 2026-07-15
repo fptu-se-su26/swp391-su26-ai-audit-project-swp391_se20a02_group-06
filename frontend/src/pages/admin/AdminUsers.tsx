@@ -17,6 +17,7 @@ import useSWR from 'swr'
 import apiClient from '../../lib/axios'
 import AdminLayout from '../../components/shared/Layout/AdminLayout.tsx'
 import AppButton from '../../components/shared/Button/AppButton'
+import { useAuthStore } from '../../store/useAuthStore'
 
 interface UserDto {
     id: number;
@@ -31,6 +32,7 @@ const fetcher = (url: string) => apiClient.get(url).then(res => res.data)
 
 const AdminUsers: React.FC = () => {
     const { data: users, error, isLoading } = useSWR<UserDto[]>('/user', fetcher)
+    const roleId = useAuthStore(state => state.roleId)
 
     return (
         <AdminLayout>
@@ -39,7 +41,9 @@ const AdminUsers: React.FC = () => {
                     <Heading fontSize="24px" fontWeight="800" color="white">
                         User Management
                     </Heading>
-                    <AppButton label="Add User" size="sm" />
+                    {roleId === 1 && (
+                        <AppButton label="Add User" size="sm" />
+                    )}
                 </Flex>
 
                 <Box bg="#141720" border="1px solid" borderColor="#1e2028" borderRadius="16px" overflow="hidden">

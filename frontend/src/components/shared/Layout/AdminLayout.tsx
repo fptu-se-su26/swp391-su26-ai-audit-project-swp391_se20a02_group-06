@@ -1,6 +1,8 @@
 import React from 'react'
 import { Box, Flex, Text } from '@chakra-ui/react'
+import { useAuthStore } from '../../../store/useAuthStore'
 import AdminSidebar from '../Sidebar/AdminSidebar'
+import PTSidebar from '../Sidebar/PTSidebar'
 import {
     adminColors,
     SearchField,
@@ -18,12 +20,15 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({
     title = 'Elite Dashboard',
     searchPlaceholder = 'Search...',
 }) => {
+    const roleId = useAuthStore((state) => state.roleId)
+    const isPT = roleId === 2
+
     return (
         <Flex minH="100vh" bg={adminColors.bg} color={adminColors.text}>
-            <AdminSidebar />
+            {isPT ? <PTSidebar /> : <AdminSidebar />}
             <Box
                 flex="1"
-                ml={{ base: 0, lg: '220px' }}
+                ml={isPT ? '190px' : { base: 0, lg: '220px' }}
                 minH="100vh"
                 bg={adminColors.bg}
             >
@@ -32,7 +37,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({
                     position="fixed"
                     top="0"
                     right="0"
-                    left={{ base: 0, lg: '220px' }}
+                    left={isPT ? '190px' : { base: 0, lg: '220px' }}
                     h="64px"
                     align="center"
                     justify="space-between"

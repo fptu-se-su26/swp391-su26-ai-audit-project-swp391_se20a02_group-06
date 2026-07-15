@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Box, Heading, Text, Icon, Flex, Badge, Stack, Spinner, HStack } from '@chakra-ui/react'
+import { Box, Heading, Text, Icon, Flex, Badge, Stack, Spinner, HStack, ButtonGroup, Button } from '@chakra-ui/react'
 import { FiClock, FiZap, FiCheckCircle } from 'react-icons/fi'
 import MemberLayout from '../../components/shared/Layout/MemberLayout.tsx'
 import { getWorkoutHistory, type WorkoutSessionDto } from '../../api/workouts.ts'
@@ -7,25 +7,68 @@ import { getWorkoutHistory, type WorkoutSessionDto } from '../../api/workouts.ts
 const Progress: React.FC = () => {
     const [history, setHistory] = useState<WorkoutSessionDto[]>([])
     const [loading, setLoading] = useState(true)
+    const [filter, setFilter] = useState('all')
 
     useEffect(() => {
-        getWorkoutHistory()
+        setLoading(true)
+        getWorkoutHistory(filter)
             .then(data => setHistory(data))
             .catch(err => console.error("Failed to load history", err))
             .finally(() => setLoading(false))
-    }, [])
+    }, [filter])
 
     return (
         <MemberLayout>
             <Box p="7" maxW="1000px" mx="auto">
-                <Flex align="center" gap="3" mb="6">
-                    <Box w="40px" h="40px" borderRadius="12px" bg="rgba(224,48,48,0.12)" display="flex" alignItems="center" justifyContent="center">
-                        <Icon as={FiClock} color="#E03030" boxSize="20px" />
-                    </Box>
-                    <Box>
-                        <Heading fontSize="24px" fontWeight="800" color="white">Workout History</Heading>
-                        <Text fontSize="13px" color="#8A8A93">Review your past training sessions and progress</Text>
-                    </Box>
+                <Flex align="center" justify="space-between" mb="6" wrap="wrap" gap="4">
+                    <Flex align="center" gap="3">
+                        <Box w="40px" h="40px" borderRadius="12px" bg="rgba(224,48,48,0.12)" display="flex" alignItems="center" justifyContent="center">
+                            <Icon as={FiClock} color="#E03030" boxSize="20px" />
+                        </Box>
+                        <Box>
+                            <Heading fontSize="24px" fontWeight="800" color="white">Workout History</Heading>
+                            <Text fontSize="13px" color="#8A8A93">Review your past training sessions and progress</Text>
+                        </Box>
+                    </Flex>
+                    
+                    <ButtonGroup size="sm" isAttached variant="outline">
+                        <Button 
+                            bg={filter === 'day' ? '#E03030' : 'transparent'} 
+                            color={filter === 'day' ? 'white' : '#8A8A93'}
+                            borderColor="#1e2028"
+                            _hover={{ bg: filter === 'day' ? '#c52727' : '#1e2028' }}
+                            onClick={() => setFilter('day')}
+                        >
+                            Today
+                        </Button>
+                        <Button 
+                            bg={filter === 'week' ? '#E03030' : 'transparent'} 
+                            color={filter === 'week' ? 'white' : '#8A8A93'}
+                            borderColor="#1e2028"
+                            _hover={{ bg: filter === 'week' ? '#c52727' : '#1e2028' }}
+                            onClick={() => setFilter('week')}
+                        >
+                            This Week
+                        </Button>
+                        <Button 
+                            bg={filter === 'month' ? '#E03030' : 'transparent'} 
+                            color={filter === 'month' ? 'white' : '#8A8A93'}
+                            borderColor="#1e2028"
+                            _hover={{ bg: filter === 'month' ? '#c52727' : '#1e2028' }}
+                            onClick={() => setFilter('month')}
+                        >
+                            This Month
+                        </Button>
+                        <Button 
+                            bg={filter === 'all' ? '#E03030' : 'transparent'} 
+                            color={filter === 'all' ? 'white' : '#8A8A93'}
+                            borderColor="#1e2028"
+                            _hover={{ bg: filter === 'all' ? '#c52727' : '#1e2028' }}
+                            onClick={() => setFilter('all')}
+                        >
+                            All Time
+                        </Button>
+                    </ButtonGroup>
                 </Flex>
 
                 {loading ? (

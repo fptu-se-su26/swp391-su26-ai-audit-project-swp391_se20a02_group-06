@@ -28,7 +28,7 @@ public class ExerciseService : IExerciseService
                 VideoUrl = e.VideoUrl,
                 MuscleGroup = e.MuscleGroup != null ? e.MuscleGroup.Name : null,
                 Difficulty = e.Difficulty,
-                Duration = e.Duration,
+                Duration = e.DurationMinutes,
                 CreatedBy = e.CreatedBy,
                 CreatorName = e.Creator != null ? e.Creator.Fullname : null
             })
@@ -52,7 +52,7 @@ public class ExerciseService : IExerciseService
             VideoUrl = exercise.VideoUrl,
             MuscleGroup = exercise.MuscleGroup?.Name,
             Difficulty = exercise.Difficulty,
-            Duration = exercise.Duration,
+            Duration = exercise.DurationMinutes,
             CreatedBy = exercise.CreatedBy,
             CreatorName = exercise.Creator?.Fullname
         };
@@ -74,7 +74,7 @@ public class ExerciseService : IExerciseService
             VideoUrl = dto.VideoUrl,
             MuscleGroupId = muscleGroupId,
             Difficulty = dto.Difficulty,
-            Duration = dto.Duration,
+            DurationMinutes = dto.Duration,
             CreatedBy = createdByUserId
         };
 
@@ -101,7 +101,7 @@ public class ExerciseService : IExerciseService
         exercise.VideoUrl = dto.VideoUrl;
         exercise.MuscleGroupId = muscleGroupId;
         exercise.Difficulty = dto.Difficulty;
-        exercise.Duration = dto.Duration;
+        exercise.DurationMinutes = dto.Duration;
 
         _context.Exercises.Update(exercise);
         await _context.SaveChangesAsync();

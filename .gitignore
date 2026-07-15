@@ -29,3 +29,7 @@ obj/
 
 # Agents
 .agents/workflows/
+
+# Superpowers Plugin (Local Only)
+.agents/skills/superpowers/
+docs/superpowers_guide.md
