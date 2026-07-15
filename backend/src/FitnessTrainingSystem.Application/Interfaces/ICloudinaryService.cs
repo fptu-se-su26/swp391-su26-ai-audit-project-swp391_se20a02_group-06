@@ -11,4 +11,9 @@ public interface ICloudinaryService
     /// Uploads an image stream to Cloudinary and returns the secure hosted URL.
     /// </summary>
     Task<string> UploadImageAsync(Stream fileStream, string fileName);
+
+    /// <summary>
+    /// Uploads a GIF to Cloudinary (as image resource, no cropping) and returns the secure hosted URL.
+    /// </summary>
+    Task<string> UploadGifAsync(Stream fileStream, string fileName);
 }

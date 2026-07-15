@@ -26,14 +26,18 @@ public class UploadController : ControllerBase
         if (file == null || file.Length == 0)
             return BadRequest(new { message = "Please provide a video file." });
 
-        var allowedContentTypes = new[] { "video/mp4", "video/mpeg", "video/quicktime", "video/x-msvideo", "video/webm" };
+        var allowedContentTypes = new[] { "video/mp4", "video/mpeg", "video/quicktime", "video/x-msvideo", "video/webm", "image/gif" };
         if (!allowedContentTypes.Contains(file.ContentType.ToLower()))
-            return BadRequest(new { message = "Only video files are allowed (mp4, mpeg, mov, avi, webm)." });
+            return BadRequest(new { message = "Only video files (mp4, mpeg, mov, avi, webm) or GIF images are allowed." });
 
         try
         {
             using var stream = file.OpenReadStream();
-            var url = await _cloudinaryService.UploadVideoAsync(stream, file.FileName);
+            string url;
+            if (file.ContentType.ToLower() == "image/gif")
+                url = await _cloudinaryService.UploadGifAsync(stream, file.FileName);
+            else
+                url = await _cloudinaryService.UploadVideoAsync(stream, file.FileName);
             return Ok(new { url });
         }
         catch (Exception ex)

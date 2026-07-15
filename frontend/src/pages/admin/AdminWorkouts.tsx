@@ -345,7 +345,7 @@ const AdminWorkouts: React.FC = () => {
                                         <Input
                                             id="video-upload"
                                             type="file"
-                                            accept="video/mp4,video/mpeg,video/quicktime,video/x-msvideo,video/webm"
+                                            accept="video/mp4,video/mpeg,video/quicktime,video/x-msvideo,video/webm,image/gif"
                                             display="none"
                                             onChange={handleVideoUpload}
                                         />
