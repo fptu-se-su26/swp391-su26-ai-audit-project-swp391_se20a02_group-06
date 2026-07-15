@@ -33,6 +33,7 @@ import AdminPayments from "../pages/admin/AdminPayments";
 import AdminPackages from "../pages/admin/AdminPackages";
 import AdminExerciseRequests from "../pages/admin/AdminExerciseRequests";
 import PtExerciseRequests from "../pages/pt/PtExerciseRequests";
+import PTProfilePage from "../pages/pt/PTProfilePage";
 
 const RouterContainer = () => {
     const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
@@ -103,6 +104,14 @@ const RouterContainer = () => {
                     <AdminRoute>
                         <PtExerciseRequests />
                     </AdminRoute>
+                }
+            />
+            <Route
+                path="/pt/profile"
+                element={
+                    <PrivateRoute requiredRoles={['PT', 'PersonalTrainer']}>
+                        <PTProfilePage />
+                    </PrivateRoute>
                 }
             />
             <Route

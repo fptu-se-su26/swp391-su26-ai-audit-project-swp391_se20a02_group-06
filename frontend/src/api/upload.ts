@@ -15,3 +15,12 @@ export const uploadVideo = async (file: File): Promise<UploadVideoResponseDto> =
     })
     return response.data
 }
+
+export const uploadImage = async (formData: FormData): Promise<{ url: string }> => {
+    const response = await apiClient.post('/upload/image', formData, {
+        headers: {
+            'Content-Type': 'multipart/form-data'
+        }
+    })
+    return response.data
+}
