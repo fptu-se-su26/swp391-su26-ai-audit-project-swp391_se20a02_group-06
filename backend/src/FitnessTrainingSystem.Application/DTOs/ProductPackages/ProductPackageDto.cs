@@ -12,4 +12,6 @@ public class ProductPackageDto
     public string? Description { get; set; }
     public bool IsActive { get; set; }
     public bool IsPopular { get; set; }
+    public int Tier { get; set; }
+    public bool IsPurchased { get; set; }
 }
