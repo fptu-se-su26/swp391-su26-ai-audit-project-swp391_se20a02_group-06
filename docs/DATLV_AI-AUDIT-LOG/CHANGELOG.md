@@ -244,6 +244,7 @@ DD/MM/YYYY
 | 6 | Thêm chức năng Nutrition, đồng bộ Mock DB | Đạt | `Nutrition.tsx`, `NutritionService.cs`, `mock_data.sql` | Commit c9c75ad |
 | 7 | Thiết kế & tích hợp Hệ thống thông báo Realtime SignalR | Đạt | `NotificationHub.cs`, `NotificationService.cs`, `NotificationContext.tsx`, `NotificationBell.tsx` | Commit 78d5b98 |
 | 8 | Cấu hình giờ Thức/Ngủ, nhắc uống nước tự động thông minh | Đạt | `Nutrition.tsx`, `WaterReminderBackgroundService.cs` | Commit 78d5b98 |
+| 8 | Cấu hình giờ Thức/Ngủ, nhắc uống nước tự động thông minh | Đạt | `Nutrition.tsx`, `WaterReminderBackgroundService.cs` | Commit 78d5b98 |
 | 9 | Sửa lỗi EF Core Mapping (InvalidCastException, shadow property) | Đạt | `Exercise.cs`, `ApplicationDbContext.cs` | Commit 40c8805 |
 | 11 | Hoàn thiện Logic AI Workout, UI Popup và Fix DB Exercises FK | Đạt | workoutExercises.ts, FixCreatorId.cs | Commit ead4498 |
 | 12 | Thêm Scalar API Reference thay thế Swagger UI cho .NET 9 | Đạt | Program.cs, WebApi.csproj | Commit 7de96b2 |

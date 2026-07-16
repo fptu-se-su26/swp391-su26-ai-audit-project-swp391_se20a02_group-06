@@ -57,7 +57,6 @@ public class NutritionController : ControllerBase
             return BadRequest(new { message = ex.Message });
         }
     }
-
     [HttpPut("reminder-settings")]
     public async Task<IActionResult> UpdateReminderSettings([FromBody] UpdateReminderSettingsDto dto)
     {

@@ -237,7 +237,7 @@ const AdminPayments: React.FC = () => {
                                     selectsRange={true}
                                     startDate={startDate}
                                     endDate={endDate}
-                                    onChange={(update) => {
+                                    onChange={(update: [Date | null, Date | null]) => {
                                         setDateRange(update);
                                         setActiveQuickFilter('Custom');
                                     }}

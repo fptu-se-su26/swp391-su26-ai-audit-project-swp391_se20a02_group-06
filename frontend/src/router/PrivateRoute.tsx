@@ -9,14 +9,18 @@ interface PrivateRouteProps {
 
 const PrivateRoute: React.FC<PrivateRouteProps> = ({ children, requiredRoles }) => {
     const isAuthenticated = useAuthStore((state) => state.isAuthenticated)
-    const user = useAuthStore((state) => state.user)
+    const roleId = useAuthStore((state) => state.roleId)
 
     if (!isAuthenticated) {
         return <Navigate to="/login" replace />
     }
 
-    if (requiredRoles && user?.roleName) {
-        const userRole = user.roleName.toUpperCase()
+    if (requiredRoles && roleId) {
+        let userRole = '';
+        if (roleId === 1) userRole = 'ADMIN';
+        else if (roleId === 2) userRole = 'PT';
+        else if (roleId === 3) userRole = 'MEMBER';
+
         const hasRole = requiredRoles.some(r => r.toUpperCase() === userRole)
         if (!hasRole) {
             return <Navigate to="/" replace />

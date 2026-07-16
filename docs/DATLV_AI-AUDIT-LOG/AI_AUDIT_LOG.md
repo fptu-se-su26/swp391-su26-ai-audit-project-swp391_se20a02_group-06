@@ -551,6 +551,309 @@ Cải thiện khả năng phân quyền hệ thống chặt chẽ hơn. Hiểu t
 
 ---
 
+### Lần sử dụng AI số 4
+
+| Nội dung | Thông tin |
+|---|---|
+| Ngày sử dụng | 02/07/2026 |
+| Công cụ AI | Antigravity |
+| Mục đích sử dụng | Đồng bộ hoá giao diện (UI Consistency), tái cấu trúc (Refactor) Header Component, và dọn dẹp code. |
+| Phần việc liên quan | Frontend |
+| Mức độ sử dụng | Sinh chính nội dung |
+
+#### 4.1. Prompt đã sử dụng
+
+```text
+"sửa lại chiều cao của các oo nhập liệu cho đúng với dự án nó đang bị nhỏ... ở đâu có notification, setting, avatar thì lấy giống ở dashboard cho tôi... avatar ở dashboard chưa đúng... xoá search, notification, và avatar, 3 cái trên đó luôn"
+```
+
+#### 4.2. Kết quả AI gợi ý
+
+```text
+AI đề xuất kế hoạch (Implementation Plan):
+1. Chuẩn hoá toàn bộ chiều cao các thẻ Input (Quên mật khẩu, Đổi mật khẩu) về 42px.
+2. Tạo shared component `HeaderActions.tsx` gọi trực tiếp `getProfile` API để hiển thị đúng Avatar Google và tái sử dụng cho Dashboard, PT Booking.
+3. Xoá trắng HStack thừa thãi ở trang Profile theo yêu cầu.
+4. Tự động chạy TypeScript check (`tsc`) và xoá các import dư thừa (unused variables) để tránh lỗi build.
+```
+
+#### 4.3. Phần sinh viên/nhóm đã sử dụng từ AI
+
+```text
+Chấp thuận toàn bộ code do AI sửa đổi (Refactor) bao gồm component `HeaderActions.tsx` và các sửa đổi UI trên `Dashboard.tsx`, `PTBooking.tsx`, `Profile.tsx`, `ChangePasswordModal.tsx`, `ForgotPassword.tsx`.
+```
+
+#### 4.4. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
+
+```text
+Bổ sung yêu cầu chi tiết ("xoá search, notification, và avatar, 3 cái trên đó luôn") khi AI hỏi lại trong file Plan để tránh việc AI xoá nhầm các component khác của trang Profile. Trực tiếp chạy lệnh git để commit và lưu trữ lại phiên bản hoàn chỉnh.
+```
+
+#### 4.5. Minh chứng
+
+| Loại minh chứng | Nội dung |
+|---|---|
+| Link commit | (Commit sau khi hoàn tất Lần 4) |
+| File liên quan | `HeaderActions.tsx`, `Dashboard.tsx`, `Profile.tsx`, `PTBooking.tsx`, `ForgotPassword.tsx` |
+| Screenshot | Giao diện Header đồng nhất, Avatar hiển thị chuẩn xác ở mọi trang |
+| Kết quả chạy/test | Build thành công, `npm run build` không báo lỗi unused variables |
+| Link video demo | N/A |
+| Ghi chú khác | N/A |
+
+#### 4.6. Nhận xét cá nhân/nhóm
+
+```text
+Học được tư duy Component hóa (Componentization) trong React. Thay vì copy-paste cùng một khối UI (chuông, settings, avatar) ở nhiều trang, việc gom lại thành một Shared Component giúp dễ bảo trì và đồng bộ. 
+```
+
+---
+
+### Lần sử dụng AI số 5
+
+| Nội dung | Thông tin |
+|---|---|
+| Ngày sử dụng | 04/07/2026 |
+| Công cụ AI | Antigravity |
+| Mục đích sử dụng | Tích hợp Database thực tế cho luồng Tập Luyện (Workout Flow), lưu trữ Session, History và sửa lỗi Routing. |
+| Phần việc liên quan | Fullstack (Frontend & Backend) |
+| Mức độ sử dụng | Sinh chính nội dung |
+
+#### 4.1. Prompt đã sử dụng
+
+```text
+"tôi có bảng này dùng thật vào dự án luôn cho tôi hiện tại tạo bài tập ra nó chưa có dữ liệu, xử lý và gắn vào luồn hiện tại. và làm chức năng lưu lích sử bài tập của người dụng lại cho tôi... Complete Workout xong nó nhảy ra trang chủ luôn... thanh tiếng trình phải đầy có nghĩa phải tập đủ hoặc đáng dấu đã tập xong thì mới bấm nút complete workout được. và bấm xong thì nhảy đến tab nutrition."
+```
+
+#### 4.2. Kết quả AI gợi ý
+
+```text
+AI đề xuất và thực hiện Implementation Plan chi tiết:
+1. Backend: Dựng `WorkoutService.cs`, `WorkoutsController.cs` và các DTOs để INSERT trực tiếp `WorkoutPlan` và `WorkoutSession` xuống bảng MySQL thông qua Entity Framework.
+2. Frontend: Viết `api/workouts.ts` gọi backend. Cập nhật `useWorkoutStore.ts` lưu `activePlanId`, `activeSessionId`.
+3. Cập nhật `WorkoutResults.tsx`: Thêm logic kiểm tra điều kiện `completedCount === exercises.length` để khoá/mở nút "Complete Workout".
+4. Fix lỗi nhảy trang chủ: Sửa sai lệch Route từ `/member/nutrition` sang `/nutrition` để không dính Default Catch-all Route `*`.
+5. Cập nhật `Progress.tsx`: Call API fetch dữ liệu History thật từ DB lên thay vì dùng UI tĩnh.
+```
+
+#### 4.3. Phần sinh viên/nhóm đã sử dụng từ AI
+
+```text
+Sử dụng toàn bộ logic tương tác Entity Framework của Backend do AI thiết kế và các luồng gọi axios (API calls) trên Frontend. Chấp thuận phương pháp phân luồng logic session: Create Plan -> Start Session -> Complete Session.
+```
+
+#### 4.4. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
+
+```text
+Sinh viên theo dõi tab Console, phân tích các bug 404 và báo lại cho AI để AI nhận diện được đó là log rác cũ hoặc lỗi do Backend chưa restart. Yêu cầu AI chuyển hướng từ Progress sang Nutrition theo đúng flow UX mới của dự án.
+```
+
+#### 4.5. Minh chứng
+
+| Loại minh chứng | Nội dung |
+|---|---|
+| Link commit | (Commit thay đổi Database Workout) |
+| File liên quan | `WorkoutService.cs`, `WorkoutsController.cs`, `WorkoutResults.tsx`, `Progress.tsx`, `router-container.tsx` |
+| Screenshot | Đã kiểm tra UI: Nút Complete Workout bị mờ, dữ liệu lịch sử hiện đúng ngày và danh sách bài tập. |
+| Kết quả chạy/test | Thành công, dữ liệu WorkoutSessionDetails ghi nhận chính xác xuống MySQL Workbench. |
+| Link video demo | N/A |
+| Ghi chú khác | Flow AI tạo bài tập đã gắn chặt chẽ vào DB |
+
+#### 4.6. Nhận xét cá nhân/nhóm
+
+```text
+Học được cách debug lỗi Routing trong React Router v6 (nhầm path dẫn đến rơi vào Route Catch-all và bị đẩy về trang chủ). Hiểu rõ quy trình map dữ liệu phức tạp từ 1 chiều (Plan -> PlanExercises) sang 1 chiều song song (Session -> SessionDetails) bằng Entity Framework.
+```
+
+---
+
+---
+
+### Lần sử dụng AI số 6
+
+| Nội dung | Thông tin |
+|---|---|
+| Ngày sử dụng | 05/07/2026 |
+| Công cụ AI | Antigravity |
+| Mục đích sử dụng | Xây dựng chức năng Nutrition: Tính toán mục tiêu Calories/Macros hàng ngày (BMR, TDEE), lưu log hydration và setup DB mock data |
+| Phần việc liên quan | Fullstack (React UI + .NET Core API + MySQL) |
+| Mức độ sử dụng | Sinh chính nội dung |
+
+#### 4.1. Prompt đã sử dụng
+
+```text
+- "tôi muốn bạn làm 2 phần cho tôi là phần calories, và hydation, dailysummary, phân tích ra cần nạp bao nhiêu protein, cab, fat, uống bao nhiêu nước, dựa trên thể trạng profile."
+- "cho tôi plan để duyệt nữa nhé /feature"
+- "chạy DB cho đồng bộ đi nào /commit"
+```
+
+#### 4.2. Kết quả AI gợi ý
+
+```text
+- Thiết kế Database bảng DailyNutritionLog lưu targets & consumed macros.
+- Viết API GET /api/nutrition/daily và POST /api/nutrition/water.
+- Tự động tính toán BMR (Mifflin-St Jeor), TDEE, lượng nước mục tiêu theo thông số BodyMetrics.
+- Tích hợp giao diện Frontend Nutrition với React + ChakraUI, fetch data bằng SWR.
+- Tạo file dữ liệu mẫu `mock_data.sql` và fix các bug 404, lỗi liên quan đến React StrictMode.
+```
+
+#### 4.3. Phần sinh viên/nhóm đã sử dụng từ AI
+
+```text
+- Tái sử dụng 100% cấu trúc Backend (Controller, Service, Entity).
+- Giữ nguyên các công thức tính toán y khoa (BMR, TDEE, Macros) từ gợi ý của AI.
+- Sử dụng UI components và SWR fetching do AI sinh ra.
+```
+
+#### 4.4. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
+
+```text
+- Cung cấp DB file mock_data.sql mẫu của project để AI đồng bộ thay vì tự generate data random.
+- Yêu cầu sửa lỗi logic khi bấm tăng giảm ngày trên UI (bị nhảy 2 ngày do React StrictMode).
+- Yêu cầu AI fix lỗi lệch cấu trúc schema khi insert `exercises` mock data.
+```
+
+#### 4.5. Minh chứng
+
+| Loại minh chứng | Nội dung |
+|---|---|
+| Link commit | c9c75ad |
+| File liên quan | DailyNutritionLog.cs, NutritionService.cs, NutritionController.cs, Nutrition.tsx, mock_data.sql |
+| Screenshot | Đã check UI các vòng tròn phần trăm hiển thị data chuẩn |
+| Kết quả chạy/test | Build FE/BE pass |
+| Link video demo | N/A |
+| Ghi chú khác | N/A |
+
+#### 4.6. Nhận xét cá nhân/nhóm
+
+```text
+Học được cách áp dụng công thức BMR/TDEE vào code logic Backend. Thấy được sức mạnh của việc đồng bộ DB mock. Rút kinh nghiệm việc React StrictMode gây double render làm sai logic cộng trừ Date.
+```
+
+---
+
+### Lần sử dụng AI số 7
+
+| Nội dung | Thông tin |
+|---|---|
+| Ngày sử dụng | 05/07/2026 |
+| Công cụ AI | Antigravity |
+| Mục đích sử dụng | Thiết kế và tích hợp Hệ thống thông báo Realtime đa chiều dùng SignalR (Backend) và React Context (Frontend). |
+| Phần việc liên quan | Fullstack (SignalR, BackgroundServices, Controllers, React Context, Dropdown UI) |
+| Mức độ sử dụng | Sinh chính nội dung |
+
+#### 4.1. Prompt đã sử dụng
+
+```text
+Thiết kế chức năng thông báo realtime:
+1. PT nhận thông báo khi Admin yêu cầu request tạo bài tập mới, cảnh báo deadline sắp hết và thông báo duyệt/từ chối.
+2. Admin nhận thông báo khi PT nộp/upload bài tập.
+3. User (Member) nhận thông báo nhắc nhở uống nước định kỳ (tương tác trực tiếp trên thông báo để log nước + chuyển trang Nutrition).
+Thông báo phải realtime, hiển thị trên toàn bộ các trang.
+```
+
+#### 4.2. Kết quả AI gợi ý
+
+```text
+AI đề xuất và sinh toàn bộ mã nguồn cho:
+- NotificationHub, INotificationService & NotificationService ở Backend.
+- Hai Hosted Service chạy ngầm: ExerciseDeadlineReminderService (quét deadline PT) và WaterReminderBackgroundService (quét nhắc nhở uống nước cho Member).
+- API Controller và thiết lập CORS credentials, JWT query string extractor.
+- React Context NotificationContext để tự kết nối SignalR, lưu trữ danh sách thông báo và số lượng chưa đọc.
+- Component dùng chung NotificationBell thay thế chuông tĩnh ở cả giao diện Admin và Member/PT.
+- Nút Test Water Reminder nổi góc màn hình để trigger kiểm thử nhanh.
+```
+
+#### 4.3. Phần sinh viên/nhóm đã sử dụng từ AI
+
+```text
+Sử dụng toàn bộ cấu trúc Service, Hub, Background Services, React Context, và UI dropdown của NotificationBell.
+```
+
+#### 4.4. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
+
+```text
+- Chuyển lệnh cài đặt từ npm sang pnpm vì dự án sử dụng pnpm-lock.yaml.
+- Thêm FrameworkReference cho Microsoft.AspNetCore.App vào file .csproj của Infrastructure để nhận diện các lớp SignalR và BackgroundService.
+- Sửa lỗi build TypeScript do unused import FiBell trong AdminPrimitives.tsx.
+```
+
+#### 4.5. Minh chứng
+
+| Loại minh chứng | Nội dung |
+|---|---|
+| Link commit | N/A |
+| File liên quan | NotificationHub.cs, NotificationService.cs, ExerciseDeadlineReminderService.cs, WaterReminderBackgroundService.cs, NotificationsController.cs, NotificationBell.tsx, NotificationContext.tsx, App.tsx, HeaderActions.tsx, AdminPrimitives.tsx, Program.cs, DependencyInjection.cs, FitnessTrainingSystem.Infrastructure.csproj |
+| Screenshot | Chuông thông báo hiển thị số lượng chưa đọc, bấm "I drank a glass" tự động log nước và chuyển trang |
+| Kết quả chạy/test | Build FE/BE thành công, SignalR connect và push realtime chuẩn xác |
+| Link video demo | N/A |
+| Ghi chú khác | N/A |
+
+#### 4.6. Nhận xét cá nhân/nhóm
+
+```text
+Nắm được cách thức triển khai realtime với SignalR trong dự án thực tế. Biết cách tích hợp tương tác trực tiếp lên thông báo (uống nước) và tối ưu hóa trải nghiệm người dùng trên tất cả các trang. Học hỏi thêm cách xử lý background task chạy ngầm hiệu quả trong .NET Core.
+```
+
+---
+
+### Lần sử dụng AI số 8
+
+| Nội dung | Thông tin |
+|---|---|
+| Ngày sử dụng | 05/07/2026 |
+| Công cụ AI | Antigravity |
+| Mục đích sử dụng | Sửa lỗi phân quyền chéo vai trò, lệch múi giờ hiển thị thông báo và triển khai cấu hình giờ Thức/Ngủ cho người dùng với cơ chế tính tần suất nhắc nước động. |
+| Phần việc liên quan | Fullstack (Database, Backend, BackgroundServices, Frontend UI & API) |
+| Mức độ sử dụng | Sinh chính nội dung |
+
+#### 4.1. Prompt đã sử dụng
+
+```text
+- "đang ở admin bấm test water reminder thì vẫn nhận đưuocj thông báo và bấm vào thì lại nhảy sang user, fix lại lỗi, hiển thị thông báo đúng role, chặt chẽ, không ở role này mà hiển thị thoong báo role kia."
+- "láy thời gian đúng real -time cho tôi"
+- "ở phần user thông báo nhắc nhở uống nước phải là tự động. chia đúng thời gian chuẩn trừ thời gian ngủ buổi tối đến sáng là không thông báo uóng nước. uống phải tính từ lúc thức dậy đến trước lúc đi ngủ. thêm UI thời gian bắt đầu và kết thúc nhắc nhở uống nước. là trong thời gian đó thì phải tính toán nhắc nhở thời gian uống nước sao cho đúng với thẻ trạng mà đã tính số lượng nước. cho tôi plan của bạn về việc này đẻ tôi củng cố cho đúng logic của tôi"
+```
+
+#### 4.2. Kết quả AI gợi ý
+
+```text
+AI đề xuất và triển khai:
+- Sửa đổi phân quyền chéo: Ẩn nút test nước với Admin/PT, áp dụng [Authorize(Roles = "Member,MEMBER")] ở backend controller, và thêm role check trước khi chuyển trang ở client.
+- Múi giờ: Tự động chèn hậu tố 'Z' vào chuỗi thời gian UTC trần từ DB để trình duyệt parse đúng giờ địa phương Việt Nam (GMT+7).
+- Cấu hình giờ Thức/Ngủ: Thêm các cột WaterReminderStartTime/EndTime vào User entity, tạo EF migration, viết API lưu cài đặt, tự động bật popup modal khi user chưa cấu hình, hiển thị panel cấu hình và tính toán tần suất nhắc nước động trong WaterReminderBackgroundService.
+```
+
+#### 4.3. Phần sinh viên/nhóm đã sử dụng từ AI
+
+```text
+Sử dụng toàn bộ logic phân quyền, format múi giờ, modal popup, sidebar panel và thuật toán lập lịch nhắc nước động.
+```
+
+#### 4.4. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
+
+```text
+Chạy lệnh dotnet ef migrations & database update để cập nhật DB vật lý, build kiểm tra TypeScript compile lỗi unused import.
+```
+
+#### 4.5. Minh chứng
+
+| Loại minh chứng | Nội dung |
+|---|---|
+| Link commit | 78d5b981ae67b60af43751fda748eb369a60a549 |
+| File liên quan | User.cs, NutritionService.cs, NutritionController.cs, WaterReminderBackgroundService.cs, Nutrition.tsx, NotificationBell.tsx, NotificationTestWidget.tsx, UpdateReminderSettingsDto.cs, NutritionDtos.cs, INutritionService.cs |
+| Screenshot | Giao diện panel cấu hình giờ nhắc nước, Modal popup tự động hiện ra |
+| Kết quả chạy/test | Build pass thành công, database migration chạy chuẩn |
+| Link video demo | N/A |
+| Ghi chú khác | N/A |
+
+#### 4.6. Nhận xét cá nhân/nhóm
+
+```text
+Cải thiện khả năng phân quyền hệ thống chặt chẽ hơn. Hiểu thêm về xử lý timezone và kỹ thuật lập lịch background động dựa trên tương tác thực tế của người dùng.
+```
+
+---
+
 ---
 
 ### Lần sử dụng AI số 9

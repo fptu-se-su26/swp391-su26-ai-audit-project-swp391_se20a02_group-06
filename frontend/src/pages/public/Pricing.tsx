@@ -45,15 +45,22 @@ const Pricing: React.FC = () => {
 
     setPurchasingPlan(pkgId)
     try {
-      await orderService.purchasePackage(pkgId)
-      toast({
-        title: 'Purchase Successful',
-        description: `You have successfully purchased the ${planName} package.`,
-        status: 'success',
-        duration: 5000,
-        isClosable: true,
-        position: 'top-right',
-      })
+      const result = await orderService.purchasePackage(pkgId)
+      
+      if (result && result.checkoutUrl) {
+        // Redirect to PayOS checkout page
+        window.location.href = result.checkoutUrl
+      } else {
+        // Fallback for packages that might not need payment
+        toast({
+          title: 'Purchase Successful',
+          description: `You have successfully purchased the ${planName} package.`,
+          status: 'success',
+          duration: 5000,
+          isClosable: true,
+          position: 'top-right',
+        })
+      }
     } catch (error: any) {
       toast({
         title: 'Purchase Failed',

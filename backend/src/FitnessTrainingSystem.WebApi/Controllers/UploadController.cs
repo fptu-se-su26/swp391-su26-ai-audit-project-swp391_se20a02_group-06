@@ -17,6 +17,7 @@ public class UploadController : ControllerBase
 
     /// <summary>
     /// Uploads a video file to Cloudinary and returns the hosted URL.
+    /// The returned URL can be used in the VideoUrl field when creating or updating an exercise.
     /// </summary>
     [HttpPost("video")]
     [Authorize(Roles = "Admin,ADMIN,PT,PersonalTrainer")]
@@ -45,7 +46,6 @@ public class UploadController : ControllerBase
             return StatusCode(500, new { message = "Video upload failed.", detail = ex.Message });
         }
     }
-
     /// <summary>
     /// Uploads an image file to Cloudinary and returns the hosted URL.
     /// </summary>

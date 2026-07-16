@@ -62,6 +62,15 @@ public partial class ApplicationDbContext : DbContext
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
     }
+
+    protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
+    {
+        configurationBuilder.Properties<FitnessTrainingSystem.Domain.Enums.RecommendationType>().HaveConversion<string>();
+        configurationBuilder.Properties<FitnessTrainingSystem.Domain.Enums.ExerciseDifficulty>().HaveConversion<string>();
+        configurationBuilder.Properties<FitnessTrainingSystem.Domain.Enums.PackageType>().HaveConversion<string>();
+        configurationBuilder.Properties<FitnessTrainingSystem.Domain.Enums.ScheduleStatus>().HaveConversion<string>();
+    }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder
@@ -97,7 +106,6 @@ public partial class ApplicationDbContext : DbContext
             entity.HasIndex(e => e.Purpose).HasDatabaseName("IX_EmailOTP_Purpose");
             entity.HasIndex(e => e.ExpiredAt).HasDatabaseName("IX_EmailOTP_ExpiredAt");
         });
-
         modelBuilder.Entity<DailyNutritionLog>(entity =>
         {
             entity.HasIndex(e => new { e.UserId, e.LogDate })

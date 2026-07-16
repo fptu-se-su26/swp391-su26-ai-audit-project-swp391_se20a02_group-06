@@ -18,13 +18,6 @@ import {
     Textarea,
     FormControl,
     FormLabel,
-    Modal,
-    ModalOverlay,
-    ModalContent,
-    ModalHeader,
-    ModalCloseButton,
-    ModalBody,
-    ModalFooter,
 } from '@chakra-ui/react'
 import { FiEdit2, FiCheck, FiLogOut, FiUpload } from 'react-icons/fi'
 import { useNavigate } from 'react-router-dom'
@@ -36,20 +29,7 @@ import BodyMetricsModal from '../member/components/BodyMetricsModal'
 import ChangePasswordModal from '../member/components/ChangePasswordModal'
 import { uploadImage } from '../../api/upload'
 
-const formatTimeAgo = (dateString: string | null) => {
-    if (!dateString) return 'Never changed';
-    const date = new Date(dateString);
-    const now = new Date();
-    const diffTime = Math.abs(now.getTime() - date.getTime());
-    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
 
-    if (diffDays === 0) return 'Changed today';
-    if (diffDays < 30) return `Last changed ${diffDays} days ago`;
-    const diffMonths = Math.floor(diffDays / 30);
-    if (diffMonths < 12) return `Last changed ${diffMonths} months ago`;
-    const diffYears = Math.floor(diffDays / 365);
-    return `Last changed ${diffYears} years ago`;
-}
 
 const PTProfilePage: React.FC = () => {
     const [profile, setProfile] = useState<PTProfile | null>(null)
@@ -63,7 +43,6 @@ const PTProfilePage: React.FC = () => {
     const toast = useToast()
     const navigate = useNavigate()
     const logout = useAuthStore(state => state.logout)
-    const user = useAuthStore(state => state.user)
 
     // Editable fields
     const [editFullName, setEditFullName] = useState('')
@@ -116,7 +95,7 @@ const PTProfilePage: React.FC = () => {
             const formData = new FormData()
             formData.append('file', file)
             const result = await uploadImage(formData)
-            const url = result.url || result.secure_url
+            const url = result.url;
             setEditAvatarUrl(url)
             toast({ title: 'Avatar uploaded', status: 'success', duration: 2000 })
         } catch (error) {
@@ -131,7 +110,7 @@ const PTProfilePage: React.FC = () => {
                 fullName: editFullName,
                 bio: editBio,
                 experienceYears: editExperienceYears ? parseInt(editExperienceYears) : undefined,
-                avatarUrl: editAvatarUrl,
+                avatarUrl: editAvatarUrl || undefined,
             }
 
             await updatePTProfile(payload)
