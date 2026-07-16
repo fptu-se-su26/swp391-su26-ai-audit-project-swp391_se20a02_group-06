@@ -6,6 +6,7 @@ using FitnessTrainingSystem.Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using PayOS;
 
 namespace FitnessTrainingSystem.Infrastructure;
 
@@ -62,6 +63,15 @@ public static class DependencyInjection
 
         // 🚀 ĐĂNG KÝ HỆ THỐNG TRUY CẬP AI DƯỚI ĐÂY
         services.AddHttpClient<IGeminiAiService, GeminiAiService>();
+
+        // PayOS
+        services.AddSingleton(new PayOSClient(new PayOSOptions
+        {
+            ClientId = configuration["PayOS:ClientId"] ?? "",
+            ApiKey = configuration["PayOS:ApiKey"] ?? "",
+            ChecksumKey = configuration["PayOS:ChecksumKey"] ?? ""
+        }));
+        services.AddScoped<IPayOSService, PayOSService>();
 
         return services;
     }

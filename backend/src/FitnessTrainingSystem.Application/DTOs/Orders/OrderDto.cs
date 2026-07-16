@@ -10,5 +10,6 @@ public class OrderDto
     public decimal PricePaid { get; set; }
     public PaymentStatus PaymentStatus { get; set; }
     public DateTime PurchasedAt { get; set; }
-    public DateTime? ExpiredAt { get; set; }
+    public string? CheckoutUrl { get; set; }
+    public string? QrCode { get; set; }
 }
