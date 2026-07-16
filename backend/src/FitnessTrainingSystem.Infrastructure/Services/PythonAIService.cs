@@ -5,11 +5,11 @@ using FitnessTrainingSystem.Application.DTOs.Nutrition;
 
 namespace FitnessTrainingSystem.Infrastructure.Services;
 
-public class PythonGeminiAiService : IGeminiAiService
+public class PythonAiService : IGeminiAiService
 {
     private readonly HttpClient _httpClient;
 
-    public PythonGeminiAiService(HttpClient httpClient)
+    public PythonAiService(HttpClient httpClient)
     {
         _httpClient = httpClient;
     }
@@ -55,7 +55,7 @@ public class PythonGeminiAiService : IGeminiAiService
         };
 
         var plan = JsonSerializer.Deserialize<DietPlanResponse>(
-            rawJson,
+            rawJson,    
             options);
 
         if (plan == null)
@@ -80,4 +80,56 @@ public class PythonGeminiAiService : IGeminiAiService
 
         return plan;
     }
+    public async Task<string> ChatAsync(
+    string conversation,
+    string userInfo)
+{
+    var payload = new
+    {
+        conversation,
+        user_info = userInfo
+    };
+
+    var json = JsonSerializer.Serialize(payload);
+
+    var content = new StringContent(
+        json,
+        Encoding.UTF8,
+        "application/json");
+
+    var response = await _httpClient.PostAsync(
+        "http://localhost:8000/api/ai/chat",
+        content);
+
+    response.EnsureSuccessStatusCode();
+
+    var rawJson = await response
+                    .Content
+                    .ReadAsStringAsync();
+
+        Console.WriteLine();
+        Console.WriteLine("===== CHAT API =====");
+        Console.WriteLine(rawJson);
+        Console.WriteLine("====================");
+        Console.WriteLine();
+
+var document =
+        JsonDocument.Parse(
+            rawJson);
+
+
+if (!document.RootElement
+        .TryGetProperty(
+            "reply",
+            out var replyElement))
+{
+    throw new Exception(
+        "Python Chat API không trả về reply.");
+}
+
+
+return replyElement
+            .GetString()
+            ?? string.Empty;
+}
 }

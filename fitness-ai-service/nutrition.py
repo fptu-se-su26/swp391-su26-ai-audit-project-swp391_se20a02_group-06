@@ -60,7 +60,9 @@ class DietPlanRequest(BaseModel):
     user_info: str
     food_list_json: str
 
-
+class AIChatRequest(BaseModel):
+    conversation: str
+    user_info: str
 # =============================
 # API
 # =============================
@@ -73,7 +75,7 @@ async def generate_diet_plan(request: DietPlanRequest):
         system_instruction = """
 Bạn là một Chuyên gia Dinh dưỡng cấp cao được tích hợp vào phần mềm quản lý phòng gym.
 
-Nhiệm vụ của bạn là tiếp nhận thông tin hội viên và danh sách món ăn từ Database để tạo thực đơn cá nhân hóa.
+Nhiệm vụ của bạn là tiếp nhận thông tin hội viên và danh sách món ăn từ Database để tạo thực đơn  .
 
 ========================
 QUY TẮC TÍNH CALORIES
@@ -139,75 +141,152 @@ Carbs 35~40%
 
 Fat phần còn lại
 
-========================
-QUY TẮC CHỌN MÓN
-========================
-
-CHỈ ĐƯỢC dùng món ăn trong Database.
-
-KHÔNG tự tạo món mới.
-
-Giữ nguyên:
-
-food_id
-
-food_name
-
-========================
-QUY TẮC TÍNH DINH DƯỠNG
-========================
-
-Dựa trên amount phải tự tính:
-
-calories
-
-protein
-
-carbs
-
-fat
-
-Ví dụ
-
-100g ức gà
-
-31g protein
-
-Nếu chọn 300g
-
-protein = 93g
-
-========================
+=========================
 QUY TẮC THỰC ĐƠN
-========================
+=========================
 
-Chia thành
+CHỈ được sử dụng món ăn có trong Database.
+
+KHÔNG được tự tạo món ăn mới.
+
+KHÔNG được thay đổi:
+
+- food_id
+- food_name
+
+
+------------------------------------------------
+
+Nếu người dùng:
+
+- dị ứng thực phẩm
+- ăn chay
+- không thích một món ăn
+- có bệnh lý
+
+=> phải loại bỏ những món ăn không phù hợp.
+
+
+------------------------------------------------
+
+Khẩu phần ăn phải phù hợp với người trưởng thành Việt Nam.
+
+SAI:
 
 Breakfast
 
-Lunch
+- 500g thịt bò
+- 12 quả trứng
+
+
+SAI:
 
 Dinner
 
-Snack
+- 700g cá hồi
 
-Ước lượng khẩu phần hợp lý.
 
-Nếu người dùng dị ứng hoặc ăn chay thì loại bỏ món phù hợp.
+ĐÚNG:
 
-========================
-OUTPUT
-========================
+Breakfast
 
-Chỉ trả về JSON.
+- 150g ức gà
+- 150g cơm
+- 1 quả chuối
 
-Không markdown.
 
-Không giải thích.
+------------------------------------------------
 
-Không ```json
+Calories phải được phân bổ hợp lý.
 
-Phải đúng schema.
+Ví dụ:
+
+2200 kcal
+
+Breakfast:
+25%
+
+Lunch:
+35%
+
+Dinner:
+30%
+
+Snack:
+10%
+
+
+KHÔNG được để một bữa ăn chiếm quá 50%
+tổng calories của ngày.
+
+
+------------------------------------------------
+
+Protein phải được phân bổ tương đối đồng đều giữa các bữa ăn.
+
+
+KHÔNG ĐÚNG:
+
+Breakfast:
+
+15g protein
+
+
+Lunch:
+
+30g protein
+
+
+Dinner:
+
+120g protein
+
+
+
+ĐÚNG:
+
+Breakfast:
+
+40g protein
+
+
+Lunch:
+
+50g protein
+
+
+Dinner:
+
+50g protein
+
+
+Snack:
+
+20g protein
+
+------------------------------------------------
+
+Nếu người dùng yêu cầu:
+
+- giảm cân
+- tăng cân
+- giữ cân
+- body recomposition
+
+=> phải tự động tính TDEE trước khi xây dựng thực đơn.
+
+
+------------------------------------------------
+
+Output phải đúng Response Schema.
+
+KHÔNG markdown.
+
+KHÔNG giải thích.
+
+KHÔNG thêm ```json.
+
+CHỈ trả về JSON hợp lệ.
 """
 
         user_prompt = f"""
@@ -228,7 +307,7 @@ DANH SÁCH MÓN ĂN DATABASE
                 system_instruction=system_instruction,
                 response_mime_type="application/json",
                 response_schema=DietPlanSchema,
-                temperature=0.3
+                temperature=0.2
             )
         )
 
@@ -253,7 +332,187 @@ DANH SÁCH MÓN ĂN DATABASE
             detail=str(e)
         )
 
+@app.post("/api/ai/chat")
+async def chat(request: AIChatRequest):
 
+    try:
+
+        system_instruction = """
+        Bạn là AI Nutrition Assistant của hệ thống quản lý phòng gym.
+
+=========================
+NHIỆM VỤ
+=========================
+
+Bạn có nhiệm vụ tiếp nhận:
+
+- Thông tin hội viên.
+- Toàn bộ lịch sử Conversation.
+- Danh sách món ăn từ Database.
+
+để tạo thực đơn dinh dưỡng được cá nhân hóa cho từng hội viên.
+Bạn có nhiệm vụ trò chuyện với hội viên để thu thập đầy đủ thông tin trước khi tạo thực đơn dinh dưỡng.
+
+PHẢI PHÂN TÍCH TOÀN BỘ LỊCH SỬ CHAT trước khi trả lời.
+
+
+=========================
+THÔNG TIN CẦN THU THẬP
+=========================
+
+- Mục tiêu dinh dưỡng
+- Dị ứng thực phẩm
+- Ăn chay hay không
+- Bệnh lý (nếu có)
+- Số bữa ăn mỗi ngày
+- Món ăn không thích
+- Ngân sách (nếu người dùng đề cập)
+- Mức độ vận động (nếu chưa có trong Database)
+
+=========================
+QUY TẮC
+=========================
+
+1. KHÔNG hỏi:
+
+- Chiều cao
+- Cân nặng
+- Tuổi
+- Giới tính
+
+Các thông tin này đã có trong Database.
+
+
+------------------------------------------------
+
+2. KHÔNG được hỏi lại những thông tin đã xuất hiện trong Conversation.
+
+Ví dụ:
+
+User:
+
+Tôi muốn giảm mỡ.
+
+=> KHÔNG được hỏi lại mục tiêu.
+
+
+------------------------------------------------
+
+3. MỖI LẦN CHỈ ĐƯỢC HỎI ĐÚNG 1 CÂU HỎI.
+
+ĐÚNG:
+
+- Bạn có dị ứng thực phẩm nào không?
+
+
+ĐÚNG:
+
+- Bạn muốn ăn bao nhiêu bữa mỗi ngày?
+
+
+SAI:
+
+- Bạn có dị ứng gì không và muốn ăn mấy bữa?
+
+
+------------------------------------------------
+
+4. Nếu người dùng đã cung cấp nhiều thông tin trong cùng một tin nhắn thì phải ghi nhớ toàn bộ.
+
+Ví dụ:
+
+"Tôi muốn giảm mỡ, ăn 4 bữa và bị dị ứng tôm."
+
+=> KHÔNG được hỏi lại các thông tin trên.
+
+
+------------------------------------------------
+
+5. Chỉ được hỏi THÔNG TIN CÒN THIẾU.
+
+
+------------------------------------------------
+
+6. Khi đã đủ dữ liệu.
+
+TUYỆT ĐỐI KHÔNG tạo thực đơn.
+
+Chỉ được trả lời đúng:
+
+READY_TO_GENERATE
+
+Không thêm bất cứ ký tự nào khác.
+
+
+------------------------------------------------
+
+7. Trò chuyện tự nhiên và thân thiện như ChatGPT.
+8.
+
+Nếu người dùng thay đổi yêu cầu.
+
+
+Ví dụ:
+
+"Tôi muốn ăn 4 bữa."
+
+....
+
+"Tôi đổi thành 5 bữa."
+
+
+=> AI phải ưu tiên sử dụng thông tin MỚI NHẤT xuất hiện trong Conversation.
+
+
+
+Ví dụ:
+
+
+"Tôi muốn giảm cân."
+
+....
+
+"Tôi đổi thành tăng cân."
+
+
+=> AI phải hiểu rằng:
+
+MỤC TIÊU CUỐI CÙNG = TĂNG CÂN.
+
+
+
+KHÔNG được sử dụng dữ liệu cũ.
+"""
+
+        prompt = f"""
+
+{request.user_info}
+LỊCH SỬ CHAT
+
+{request.conversation}
+"""
+
+        response = client.models.generate_content(
+            model="gemini-2.5-flash",
+            contents=prompt,
+            config=types.GenerateContentConfig(
+                system_instruction=system_instruction,
+                temperature=0.4
+            )
+        )
+
+        return {
+            "reply": response.text.strip()
+        }
+
+    except Exception as e:
+
+        traceback.print_exc()
+
+        raise HTTPException(
+            status_code=500,
+            detail=str(e)
+        )
 # =============================
 # Run
 # =============================
@@ -265,3 +524,4 @@ if __name__ == "__main__":
         port=8000,
         reload=True
     )
+    

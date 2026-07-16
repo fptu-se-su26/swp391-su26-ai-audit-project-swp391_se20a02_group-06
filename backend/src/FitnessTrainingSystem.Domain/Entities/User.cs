@@ -20,7 +20,7 @@ public class User : BaseAuditableEntity
     // Navigation properties
     public Role? Role { get; set; }
     public PtProfile? PtProfile { get; set; }
-    
+ 
     public ICollection<BodyMetric> BodyMetrics { get; set; } = new List<BodyMetric>();
     public ICollection<Order> Orders { get; set; } = new List<Order>();
     public ICollection<Schedule> PtSchedules { get; set; } = new List<Schedule>();
@@ -29,4 +29,10 @@ public class User : BaseAuditableEntity
     public ICollection<WorkoutSession> WorkoutSessions { get; set; } = new List<WorkoutSession>();
     public ICollection<AiRecommendation> AiRecommendations { get; set; } = new List<AiRecommendation>();
     public ICollection<MealSchedule> MealSchedules { get; set; } = new List<MealSchedule>();
+
+    public ICollection<AIChatSession>AIChatSessions
+                = new List<AIChatSession>();
+    public ICollection<AIDietHistory>AIDietHistories
+                = new List<AIDietHistory>();
+
 }

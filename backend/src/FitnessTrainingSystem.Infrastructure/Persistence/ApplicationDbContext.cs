@@ -37,6 +37,11 @@ public partial class ApplicationDbContext : DbContext
     public virtual DbSet<WorkoutPlanExercise> WorkoutPlanExercises { get; set; }
     public virtual DbSet<WorkoutSession> WorkoutSessions { get; set; }
     public virtual DbSet<WorkoutSessionDetail> WorkoutSessionDetails { get; set; }
+  public virtual DbSet<AIChatSession> AIChatSessions { get; set; }
+
+public virtual DbSet<AIChatMessage> AIChatMessages { get; set; }
+
+public virtual DbSet<AIDietHistory> AIDietHistories { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
@@ -107,5 +112,27 @@ public partial class ApplicationDbContext : DbContext
             .HasOne(e => e.MuscleGroup)
             .WithMany(m => m.Exercises)
             .HasForeignKey(e => e.MuscleGroupId);
-    }
+
+        modelBuilder.Entity<AIChatSession>()
+            .HasOne(x => x.User)
+            .WithMany(x => x.AIChatSessions)
+            .HasForeignKey(x => x.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+
+
+    modelBuilder.Entity<AIChatSession>()
+            .HasMany(x => x.Messages)
+            .WithOne(x => x.Session)
+            .HasForeignKey(x => x.SessionId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+
+
+    modelBuilder.Entity<AIDietHistory>()
+            .HasOne(x => x.User)
+            .WithMany(x => x.AIDietHistories)
+            .HasForeignKey(x => x.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
+}
 }

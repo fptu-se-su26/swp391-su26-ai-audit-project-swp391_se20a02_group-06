@@ -1,15 +1,3 @@
-/Users/mac/Subject/SWP-projectFitness/swp391-su26-ai-audit-project-swp391_se20a02_group-06/backend/src/FitnessTrainingSystem.Domain/obj/Debug/net9.0/FitnessTrainingSystem.Domain.GeneratedMSBuildEditorConfig.editorconfig
-/Users/mac/Subject/SWP-projectFitness/swp391-su26-ai-audit-project-swp391_se20a02_group-06/backend/src/FitnessTrainingSystem.Domain/obj/Debug/net9.0/FitnessTrainingSystem.Domain.AssemblyInfoInputs.cache
-/Users/mac/Subject/SWP-projectFitness/swp391-su26-ai-audit-project-swp391_se20a02_group-06/backend/src/FitnessTrainingSystem.Domain/obj/Debug/net9.0/FitnessTrainingSystem.Domain.AssemblyInfo.cs
-/Users/mac/Subject/SWP-projectFitness/swp391-su26-ai-audit-project-swp391_se20a02_group-06/backend/src/FitnessTrainingSystem.Domain/obj/Debug/net9.0/FitnessTrainingSystem.Domain.csproj.CoreCompileInputs.cache
-/Users/mac/Subject/SWP-projectFitness/swp391-su26-ai-audit-project-swp391_se20a02_group-06/backend/src/FitnessTrainingSystem.Domain/obj/Debug/net9.0/FitnessTrainingSystem.Domain.sourcelink.json
-/Users/mac/Subject/SWP-projectFitness/swp391-su26-ai-audit-project-swp391_se20a02_group-06/backend/src/FitnessTrainingSystem.Domain/bin/Debug/net9.0/FitnessTrainingSystem.Domain.deps.json
-/Users/mac/Subject/SWP-projectFitness/swp391-su26-ai-audit-project-swp391_se20a02_group-06/backend/src/FitnessTrainingSystem.Domain/bin/Debug/net9.0/FitnessTrainingSystem.Domain.dll
-/Users/mac/Subject/SWP-projectFitness/swp391-su26-ai-audit-project-swp391_se20a02_group-06/backend/src/FitnessTrainingSystem.Domain/bin/Debug/net9.0/FitnessTrainingSystem.Domain.pdb
-/Users/mac/Subject/SWP-projectFitness/swp391-su26-ai-audit-project-swp391_se20a02_group-06/backend/src/FitnessTrainingSystem.Domain/obj/Debug/net9.0/FitnessTrainingSystem.Domain.dll
-/Users/mac/Subject/SWP-projectFitness/swp391-su26-ai-audit-project-swp391_se20a02_group-06/backend/src/FitnessTrainingSystem.Domain/obj/Debug/net9.0/refint/FitnessTrainingSystem.Domain.dll
-/Users/mac/Subject/SWP-projectFitness/swp391-su26-ai-audit-project-swp391_se20a02_group-06/backend/src/FitnessTrainingSystem.Domain/obj/Debug/net9.0/FitnessTrainingSystem.Domain.pdb
-/Users/mac/Subject/SWP-projectFitness/swp391-su26-ai-audit-project-swp391_se20a02_group-06/backend/src/FitnessTrainingSystem.Domain/obj/Debug/net9.0/ref/FitnessTrainingSystem.Domain.dll
 D:\SWP391\swp391-su26-ai-audit-project-swp391_se20a02_group-06\backend\src\FitnessTrainingSystem.Domain\bin\Debug\net9.0\FitnessTrainingSystem.Domain.deps.json
 D:\SWP391\swp391-su26-ai-audit-project-swp391_se20a02_group-06\backend\src\FitnessTrainingSystem.Domain\bin\Debug\net9.0\FitnessTrainingSystem.Domain.dll
 D:\SWP391\swp391-su26-ai-audit-project-swp391_se20a02_group-06\backend\src\FitnessTrainingSystem.Domain\bin\Debug\net9.0\FitnessTrainingSystem.Domain.pdb

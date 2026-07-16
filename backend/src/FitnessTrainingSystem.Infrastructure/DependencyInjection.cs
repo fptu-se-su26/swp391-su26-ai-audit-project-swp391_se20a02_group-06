@@ -49,11 +49,11 @@ public static class DependencyInjection
 
         // 🚀 ĐĂNG KÝ HỆ THỐNG TRUY CẬP AI DƯỚI ĐÂY
         // Đăng ký HttpClient ánh xạ Interface có sẵn của bạn vào Class thực thi Python mới
-        services.AddHttpClient<IGeminiAiService, PythonGeminiAiService>(client =>
+        services.AddHttpClient<IGeminiAiService, PythonAiService>(client =>
 {
         client.BaseAddress = new Uri("http://localhost:8000/"); // Đường dẫn local của con Python
 });
-
+        services.AddScoped<IAIChatService, AIChatService>();
         return services;
     }
 }
