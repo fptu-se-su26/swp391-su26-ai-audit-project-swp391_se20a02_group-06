@@ -29,4 +29,7 @@ export interface ExerciseCardData {
     isLocked?: boolean
     isDone?: boolean
     isSkipped?: boolean
+    isWarmup?: boolean
+    duration?: number
+    breakTime?: number
 }
