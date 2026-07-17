@@ -1,15 +1,9 @@
-import React, { useState } from 'react'
+import React, { useState, useMemo } from 'react'
 import {
     Box,
     Flex,
     Heading,
     Text,
-    Table,
-    Thead,
-    Tbody,
-    Tr,
-    Th,
-    Td,
     Badge,
     Spinner,
     useDisclosure,
@@ -26,17 +20,16 @@ import {
     Input,
     Select,
     useToast,
-    IconButton,
-    HStack,
     VStack,
 } from '@chakra-ui/react'
-import { FiTrash2, FiEdit2 } from 'react-icons/fi'
 import useSWR from 'swr'
 import apiClient from '../../lib/axios'
 import AdminLayout from '../../components/shared/Layout/AdminLayout.tsx'
-import AppButton from '../../components/shared/Button/AppButton'
 import { uploadVideo } from '../../api/upload'
 import { useAuthStore } from '../../store/useAuthStore'
+import ExerciseFilters from '../../features/admin/components/ExerciseFilters'
+import ExerciseTable from '../../features/admin/components/ExerciseTable'
+import PaginationFooter from '../../features/admin/components/PaginationFooter'
 
 interface ExerciseDto {
     id: number
@@ -44,11 +37,15 @@ interface ExerciseDto {
     description?: string
     videoUrl?: string
     muscleGroup?: string
+    category?: string
+    muscleTarget?: string
     difficulty: number
     duration?: number
     createdBy?: number
     creatorName?: string
     packageId?: number | null
+    status?: 'published' | 'pending' | 'rejected'
+    thumbnailUrl?: string
 }
 
 interface ProductPackageDto {
@@ -76,6 +73,13 @@ const AdminWorkouts: React.FC = () => {
     const [isUploadingVideo, setIsUploadingVideo] = useState(false)
     const [editingExercise, setEditingExercise] = useState<ExerciseDto | null>(null)
 
+    const [searchQuery, setSearchQuery] = useState('')
+    const [categoryFilter, setCategoryFilter] = useState('All')
+    const [difficultyFilter, setDifficultyFilter] = useState('all')
+    const [muscleTargetFilter, setMuscleTargetFilter] = useState('all')
+    const [currentPage, setCurrentPage] = useState(1)
+    const pageSize = 10
+
     const [formData, setFormData] = useState({
         title: '',
         muscleGroup: '',
@@ -85,6 +89,34 @@ const AdminWorkouts: React.FC = () => {
         duration: '',
         packageId: '',
     })
+
+    const filteredExercises = useMemo(() => {
+        if (!exercises) return []
+        return exercises.filter((ex) => {
+            const q = searchQuery.toLowerCase()
+            const matchesSearch = !q || ex.title.toLowerCase().includes(q)
+            const cat = ex.category || ex.muscleGroup || 'General'
+            const matchesCategory = categoryFilter === 'All' || cat === categoryFilter
+            const matchesDifficulty = difficultyFilter === 'all' || ex.difficulty.toString() === difficultyFilter
+            const mt = ex.muscleTarget || ex.muscleGroup || ''
+            const matchesMuscle = muscleTargetFilter === 'all' || mt === muscleTargetFilter
+            return matchesSearch && matchesCategory && matchesDifficulty && matchesMuscle
+        })
+    }, [exercises, searchQuery, categoryFilter, difficultyFilter, muscleTargetFilter])
+
+    const uniqueCategories = useMemo(() => {
+        if (!exercises) return []
+        return Array.from(new Set(exercises.map(e => e.category || e.muscleGroup || 'General').filter(Boolean))).sort()
+    }, [exercises])
+
+    const uniqueMuscleTargets = useMemo(() => {
+        if (!exercises) return []
+        return Array.from(new Set(exercises.map(e => e.muscleTarget || e.muscleGroup || '').filter(Boolean))).sort()
+    }, [exercises])
+
+    const totalPages = Math.max(1, Math.ceil((filteredExercises.length || 0) / pageSize))
+    const safePage = Math.min(currentPage, totalPages)
+    const paginatedExercises = filteredExercises.slice((safePage - 1) * pageSize, safePage * pageSize)
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = e.target
@@ -218,12 +250,6 @@ const AdminWorkouts: React.FC = () => {
         }
     }
 
-    const getPackageName = (packageId: number | null | undefined) => {
-        if (!packageId || !packages) return 'Free'
-        const pkg = packages.find(p => p.id === packageId)
-        return pkg ? pkg.name : `Package #${packageId}`
-    }
-
     const getPackageBadge = (packageId: number | null | undefined) => {
         if (!packageId) return <Badge bg="#2e3040" color="#8A8A93" px="2" py="0.5" borderRadius="md">Free</Badge>
         const pkg = packages?.find(p => p.id === packageId)
@@ -350,84 +376,62 @@ const AdminWorkouts: React.FC = () => {
 
     return (
         <AdminLayout>
-            <Box p="7" maxW="1200px">
-                <Flex justify="space-between" align="center" mb="7">
-                    <Heading fontSize="24px" fontWeight="800" color="white">
-                        Exercise Management
-                    </Heading>
-                    {roleId === 1 && (
-                        <AppButton label="Create Exercise" size="sm" onClick={() => { resetForm(); onCreateOpen(); }} />
-                    )}
-                </Flex>
+            <Box p="7" maxW="1440px">
+                <Heading fontSize="24px" fontWeight="800" color="white" mb="7">
+                    Exercise Management
+                </Heading>
 
-                <Box bg="#141720" border="1px solid" borderColor="#1e2028" borderRadius="16px" overflow="hidden">
-                    {isLoading ? (
-                        <Flex justify="center" p="10">
-                            <Spinner color="red.500" />
-                        </Flex>
-                    ) : error ? (
-                        <Text color="red.500" p="5">Failed to load exercises</Text>
-                    ) : (
-                        <Table variant="simple" size="sm">
-                            <Thead bg="#0A0C10">
-                                <Tr>
-                                    <Th color="#8A8A93" borderColor="#1e2028">Title</Th>
-                                    <Th color="#8A8A93" borderColor="#1e2028">Creator</Th>
-                                    <Th color="#8A8A93" borderColor="#1e2028">Muscle Group</Th>
-                                    <Th color="#8A8A93" borderColor="#1e2028">Difficulty</Th>
-                                    <Th color="#8A8A93" borderColor="#1e2028" isNumeric>Duration</Th>
-                                    <Th color="#8A8A93" borderColor="#1e2028">Package</Th>
-                                    <Th color="#8A8A93" borderColor="#1e2028">Video</Th>
-                                    {roleId === 1 && (
-                                        <Th color="#8A8A93" borderColor="#1e2028">Actions</Th>
-                                    )}
-                                </Tr>
-                            </Thead>
-                            <Tbody>
-                                {exercises?.map((ex) => (
-                                    <Tr key={ex.id} _hover={{ bg: 'rgba(255,255,255,0.02)' }}>
-                                        <Td color="white" borderColor="#1e2028" fontWeight="600">{ex.title}</Td>
-                                        <Td color="#e2e1eb" borderColor="#1e2028">{ex.creatorName || '-'}</Td>
-                                        <Td borderColor="#1e2028">
-                                            <Badge bg="#2e3040" color="#E2E1EB" px="2" py="0.5" borderRadius="md">
-                                                {ex.muscleGroup || '-'}
-                                            </Badge>
-                                        </Td>
-                                        <Td color="#8A8A93" borderColor="#1e2028">
-                                            {difficultyLabels[ex.difficulty] || '-'}
-                                        </Td>
-                                        <Td color="#e2e1eb" borderColor="#1e2028" isNumeric>
-                                            {ex.duration ? `${ex.duration} min` : '-'}
-                                        </Td>
-                                        <Td borderColor="#1e2028">
-                                            {getPackageBadge(ex.packageId)}
-                                        </Td>
-                                        <Td borderColor="#1e2028">
-                                            {ex.videoUrl ? (
-                                                <Button size="xs" colorScheme="blue" variant="outline" onClick={() => handlePreviewVideo(ex.videoUrl)}>
-                                                    Preview
-                                                </Button>
-                                            ) : (
-                                                <Text fontSize="xs" color="#8A8A93">No Video</Text>
-                                            )}
-                                        </Td>
-                                        {roleId === 1 && (
-                                            <Td borderColor="#1e2028">
-                                                <HStack spacing={2}>
-                                                    <IconButton aria-label="Edit exercise" icon={<FiEdit2 />} size="xs" colorScheme="blue" variant="ghost" onClick={() => openEdit(ex)} />
-                                                    <IconButton aria-label="Delete exercise" icon={<FiTrash2 />} size="xs" colorScheme="red" variant="ghost" onClick={() => handleDelete(ex.id)} />
-                                                </HStack>
-                                            </Td>
-                                        )}
-                                    </Tr>
-                                ))}
-                            </Tbody>
-                        </Table>
-                    )}
-                </Box>
+                <Flex gap={6} align="flex-start">
+                    <ExerciseFilters
+                        searchQuery={searchQuery}
+                        onSearchChange={(val) => { setSearchQuery(val); setCurrentPage(1); }}
+                        categoryFilter={categoryFilter}
+                        onCategoryChange={(val) => { setCategoryFilter(val); setCurrentPage(1); }}
+                        difficultyFilter={difficultyFilter}
+                        onDifficultyChange={(val) => { setDifficultyFilter(val); setCurrentPage(1); }}
+                        muscleTargetFilter={muscleTargetFilter}
+                        onMuscleTargetChange={(val) => { setMuscleTargetFilter(val); setCurrentPage(1); }}
+                        categories={uniqueCategories}
+                        muscleTargets={uniqueMuscleTargets}
+                        onAddExercise={() => { resetForm(); onCreateOpen(); }}
+                        showAddButton={roleId === 1}
+                    />
+
+                    <Box flex={1} bg="#141720" border="1px solid" borderColor="#1e2028" borderRadius="16px" overflow="hidden">
+                        {isLoading ? (
+                            <Flex justify="center" p="10">
+                                <Spinner color="red.500" />
+                            </Flex>
+                        ) : error ? (
+                            <Text color="red.500" p="5">Failed to load exercises</Text>
+                        ) : paginatedExercises.length === 0 ? (
+                            <Flex justify="center" align="center" p="10" minH="300px">
+                                <Text color="#8A8A93" fontSize="14px">No exercises match your filters.</Text>
+                            </Flex>
+                        ) : (
+                            <>
+                                <ExerciseTable
+                                    exercises={paginatedExercises}
+                                    difficultyLabels={difficultyLabels}
+                                    getPackageBadge={getPackageBadge}
+                                    handlePreviewVideo={handlePreviewVideo}
+                                    handleDelete={handleDelete}
+                                    openEdit={openEdit}
+                                    isAdmin={roleId === 1}
+                                />
+                                <PaginationFooter
+                                    currentPage={safePage}
+                                    totalPages={totalPages}
+                                    totalItems={filteredExercises.length}
+                                    pageSize={pageSize}
+                                    onPageChange={setCurrentPage}
+                                />
+                            </>
+                        )}
+                    </Box>
+                </Flex>
             </Box>
 
-            {/* Create Modal */}
             <Modal isOpen={isCreateOpen} onClose={onCreateClose}>
                 <ModalOverlay />
                 <ModalContent bg="#141720" color="white" borderColor="#1e2028" borderWidth="1px">
@@ -447,7 +451,6 @@ const AdminWorkouts: React.FC = () => {
                 </ModalContent>
             </Modal>
 
-            {/* Edit Modal */}
             <Modal isOpen={isEditOpen} onClose={onEditClose}>
                 <ModalOverlay />
                 <ModalContent bg="#141720" color="white" borderColor="#1e2028" borderWidth="1px">

@@ -408,6 +408,35 @@ const Nutrition: React.FC = () => {
                                         >
                                             Change Settings
                                         </Button>
+                                        <Button
+                                            size="xs"
+                                            variant="ghost"
+                                            color="teal.300"
+                                            w="full"
+                                            borderRadius="8px"
+                                            fontSize="11px"
+                                            _hover={{ bg: 'rgba(0,168,150,0.08)' }}
+                                            onClick={() => {
+                                                if ('Notification' in window && Notification.permission === 'default') {
+                                                    Notification.requestPermission()
+                                                }
+                                                toast({
+                                                    title: '🥛 Water Reminder!',
+                                                    description: `Đã đến giờ uống nước! Hãy uống một cốc nước để giữ cơ thể đủ nước.`,
+                                                    status: 'info',
+                                                    duration: 5000,
+                                                    isClosable: true,
+                                                })
+                                                if ('Notification' in window && Notification.permission === 'granted') {
+                                                    new Notification('🥛 Water Reminder', {
+                                                        body: 'Đã đến giờ uống nước! Hãy uống một cốc nước nhé!',
+                                                        icon: '/favicon.ico'
+                                                    })
+                                                }
+                                            }}
+                                        >
+                                            Test Water Reminder
+                                        </Button>
                                     </Stack>
                                 ) : (
                                     <Button

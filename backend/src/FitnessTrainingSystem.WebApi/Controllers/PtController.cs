@@ -1,3 +1,4 @@
+using FitnessTrainingSystem.Application.DTOs.PTs;
 using FitnessTrainingSystem.Application.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -20,6 +21,21 @@ public class PtController : ControllerBase
     {
         var pts = await _ptService.GetAllAsync();
         return Ok(pts);
+    }
+
+    [HttpPost]
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> CreatePt([FromBody] CreatePtRequestDto dto)
+    {
+        try
+        {
+            var pt = await _ptService.CreateAsync(dto);
+            return Ok(pt);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
     }
 
     [HttpPut("{id}/activate")]

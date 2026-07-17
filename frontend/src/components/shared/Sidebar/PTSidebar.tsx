@@ -13,12 +13,14 @@ import {
     FiUsers,
     FiActivity,
     FiFileText,
+    FiUploadCloud,
     FiUser,
 } from 'react-icons/fi'
 
 const navItems = [
     { label: 'Dashboard', icon: FiGrid, path: '/pt/dashboard' },
     { label: 'My Clients', icon: FiUsers, path: '/pt/clients' },
+    { label: 'My Content', icon: FiUploadCloud, path: '/pt/content-library' },
     { label: 'Workouts', icon: FiActivity, path: '/pt/workouts' },
     { label: 'Exercise Requests', icon: FiFileText, path: '/pt/exercise-requests' },
 ]

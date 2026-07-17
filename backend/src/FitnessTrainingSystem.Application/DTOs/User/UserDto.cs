@@ -10,4 +10,5 @@ public class UserDto
     public string? PlanEndDate { get; set; }
     public string JoinDate { get; set; } = string.Empty;
     public string Status { get; set; } = string.Empty;
+    public string? AvatarUrl { get; set; }
 }

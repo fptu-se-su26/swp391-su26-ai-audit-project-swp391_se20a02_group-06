@@ -95,13 +95,31 @@ public class JobsController : ControllerBase
     [HttpPost("simulate-payment")]
     public async Task<IActionResult> SimulatePayment([FromQuery] long orderCode)
     {
-        var order = await _context.Orders.Include(o => o.Package).FirstOrDefaultAsync(o => o.Id == (int)orderCode);
-        if (order == null || order.PaymentStatus == FitnessTrainingSystem.Domain.Enums.PaymentStatus.Paid) return BadRequest();
+        var order = await _context.Orders.Include(o => o.Package).FirstOrDefaultAsync(o => o.OrderCode == orderCode);
+        if (order == null || order.PaymentStatus == FitnessTrainingSystem.Domain.Enums.PaymentStatus.Paid)
+            return BadRequest(new { message = "Order not found or already paid." });
 
         order.PaymentStatus = FitnessTrainingSystem.Domain.Enums.PaymentStatus.Paid;
-        
+
         var payment = await _context.Payments.FirstOrDefaultAsync(p => p.OrderId == order.Id);
-        if (payment != null) { payment.Status = "SUCCESS"; payment.PaidAt = DateTime.UtcNow; }
+        if (payment == null)
+        {
+            payment = new FitnessTrainingSystem.Domain.Entities.Payment
+            {
+                OrderId = order.Id,
+                PaymentMethod = "PayOs",
+                TransactionCode = orderCode.ToString(),
+                Amount = order.PricePaid,
+                Status = "SUCCESS",
+                PaidAt = DateTime.UtcNow
+            };
+            _context.Payments.Add(payment);
+        }
+        else
+        {
+            payment.Status = "SUCCESS";
+            payment.PaidAt = DateTime.UtcNow;
+        }
 
         var activeSub = await _context.MembershipSubscriptions.FirstOrDefaultAsync(s => s.UserId == order.UserId && s.Status == "ACTIVE");
         if (activeSub != null) activeSub.Status = "CANCELLED";
@@ -116,16 +134,16 @@ public class JobsController : ControllerBase
             Status = "ACTIVE"
         };
         _context.MembershipSubscriptions.Add(sub);
-        
+
         var user = await _context.Users.FindAsync(order.UserId);
-        if (user != null)
+        if (user != null && !string.IsNullOrEmpty(user.Email))
         {
-            var subject = $"Invoice for your purchase: {order.Package.Name}";
+            var subject = $"Invoice for your purchase: {order.Package?.Name}";
             var body = $"<html><body><h2>Thank you for your purchase!</h2><p><strong>Order Code:</strong> {orderCode}</p><p><strong>Amount Paid:</strong> {order.PricePaid} VND</p></body></html>";
-            await _emailService.SendEmailAsync(user.Email, subject, body);
+            try { await _emailService.SendEmailAsync(user.Email, subject, body); } catch { }
         }
 
         await _context.SaveChangesAsync();
-        return Ok();
+        return Ok(new { message = "Payment confirmed and subscription activated.", orderId = order.Id });
     }
 }

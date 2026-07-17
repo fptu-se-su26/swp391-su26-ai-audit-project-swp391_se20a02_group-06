@@ -22,6 +22,7 @@ import Progress from "../pages/member/Progress";
 import PTBooking from "../pages/member/PTBooking";
 import AIChat from "../pages/member/AIChat";
 import Profile from "../pages/member/Profile";
+import ExerciseLibrary from "../pages/member/exercises/ExerciseLibrary";
 
 // Admin & PT Area
 import AdminRoute from "./AdminRoute";
@@ -39,6 +40,7 @@ import PtExerciseRequests from "../pages/pt/PtExerciseRequests";
 import PTDashboard from "../pages/pt/PTDashboard";
 import PTClients from "../pages/pt/PTClients";
 import PTProfilePage from "../pages/pt/PTProfilePage";
+import PTContentLibrary from "../pages/pt/PTContentLibrary";
 
 const RouterContainer = () => {
     const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
@@ -148,6 +150,14 @@ const RouterContainer = () => {
                 }
             />
             <Route
+                path="/pt/content-library"
+                element={
+                    <PTRoute>
+                        <PTContentLibrary />
+                    </PTRoute>
+                }
+            />
+            <Route
                 path="/pt/profile"
                 element={
                     <PrivateRoute requiredRoles={['PT', 'PersonalTrainer']}>
@@ -196,6 +206,7 @@ const RouterContainer = () => {
             <Route path="/pt-booking" element={<PrivateRoute><PTBooking /></PrivateRoute>} />
             <Route path="/ai-chat" element={<PrivateRoute><AIChat /></PrivateRoute>} />
             <Route path="/profile" element={<PrivateRoute><Profile /></PrivateRoute>} />
+            <Route path="/exercises" element={<PrivateRoute><ExerciseLibrary /></PrivateRoute>} />
 
             {/* Default Route Redirect to Landing */}
             <Route path="*" element={<Navigate to="/" replace />} />

@@ -34,4 +34,5 @@ public class User : BaseAuditableEntity
     public ICollection<AiRecommendation> AiRecommendations { get; set; } = new List<AiRecommendation>();
     public ICollection<MealSchedule> MealSchedules { get; set; } = new List<MealSchedule>();
     public ICollection<DailyNutritionLog> DailyNutritionLogs { get; set; } = new List<DailyNutritionLog>();
+    public ICollection<MembershipSubscription> MembershipSubscriptions { get; set; } = new List<MembershipSubscription>();
 }

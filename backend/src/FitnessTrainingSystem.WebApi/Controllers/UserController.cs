@@ -46,7 +46,8 @@ public class UserController : ControllerBase
                 PlanStartDate = activeSub?.StartDate.ToString("yyyy-MM-dd"),
                 PlanEndDate = activeSub?.EndDate.ToString("yyyy-MM-dd"),
                 JoinDate = u.CreatedAt.ToString("MMM dd, yyyy"),
-                Status = u.Status ?? "ACTIVE"
+                Status = u.Status ?? "ACTIVE",
+                AvatarUrl = u.AvatarUrl
             };
         }).ToList();
 
