@@ -12,10 +12,13 @@ import {
     Td,
     Badge,
     Spinner,
+    Switch,
+    HStack,
+    useToast
 } from '@chakra-ui/react'
-import useSWR from 'swr'
+import useSWR, { useSWRConfig } from 'swr'
 import apiClient from '../../lib/axios'
-import AdminLayout from '../../components/shared/Layout/AdminLayout.tsx'
+import AdminLayout from '../../components/shared/Layout/AdminLayout'
 import AppButton from '../../components/shared/Button/AppButton'
 import { useAuthStore } from '../../store/useAuthStore'
 
@@ -24,6 +27,8 @@ interface UserDto {
     name: string;
     email: string;
     plan: string | null;
+    planStartDate: string | null;
+    planEndDate: string | null;
     joinDate: string;
     status: string;
 }
@@ -31,8 +36,36 @@ interface UserDto {
 const fetcher = (url: string) => apiClient.get(url).then(res => res.data)
 
 const AdminUsers: React.FC = () => {
-    const { data: users, error, isLoading } = useSWR<UserDto[]>('/user', fetcher)
+    const { data: users, error, isLoading, mutate } = useSWR<UserDto[]>('/user', fetcher)
     const roleId = useAuthStore(state => state.roleId)
+    const toast = useToast()
+
+    const handleToggleStatus = async (id: number, currentStatus: string) => {
+        try {
+            if (currentStatus === 'ACTIVE') {
+                await apiClient.put(`/user/${id}/deactivate`)
+            } else {
+                await apiClient.put(`/user/${id}/activate`)
+            }
+            toast({
+                title: `User ${currentStatus === 'ACTIVE' ? 'deactivated' : 'activated'} successfully`,
+                status: 'success',
+                duration: 3000,
+                isClosable: true,
+                position: 'top-right',
+            })
+            mutate()
+        } catch (err: any) {
+            toast({
+                title: 'Failed to update user status',
+                description: err.response?.data?.message || 'Something went wrong',
+                status: 'error',
+                duration: 3000,
+                isClosable: true,
+                position: 'top-right',
+            })
+        }
+    }
 
     return (
         <AdminLayout>
@@ -60,6 +93,8 @@ const AdminUsers: React.FC = () => {
                                     <Th color="#8A8A93" borderColor="#1e2028">Name</Th>
                                     <Th color="#8A8A93" borderColor="#1e2028">Email</Th>
                                     <Th color="#8A8A93" borderColor="#1e2028">Plan</Th>
+                                    <Th color="#8A8A93" borderColor="#1e2028">Start Date</Th>
+                                    <Th color="#8A8A93" borderColor="#1e2028">End Date</Th>
                                     <Th color="#8A8A93" borderColor="#1e2028">Join Date</Th>
                                     <Th color="#8A8A93" borderColor="#1e2028">Status</Th>
                                 </Tr>
@@ -70,19 +105,29 @@ const AdminUsers: React.FC = () => {
                                         <Td color="white" borderColor="#1e2028" fontWeight="600">{u.name}</Td>
                                         <Td color="#8A8A93" borderColor="#1e2028">{u.email}</Td>
                                         <Td borderColor="#1e2028">
-                                            <Text color={u.plan === 'Pro' ? '#E03030' : '#8A8A93'} fontWeight="700" fontSize="12px" textTransform="uppercase">
-                                                {u.plan || '-'}
+                                            <Text color={u.plan !== 'Free' ? '#E03030' : '#8A8A93'} fontWeight="700" fontSize="12px" textTransform="uppercase">
+                                                {u.plan || 'Free'}
                                             </Text>
                                         </Td>
+                                        <Td color="#8A8A93" borderColor="#1e2028" fontSize="12px">{u.planStartDate || '-'}</Td>
+                                        <Td color="#8A8A93" borderColor="#1e2028" fontSize="12px">{u.planEndDate || '-'}</Td>
                                         <Td color="#8A8A93" borderColor="#1e2028">{u.joinDate}</Td>
                                         <Td borderColor="#1e2028">
-                                            <Badge
-                                                bg={u.status === 'Active' ? 'green.900' : u.status === 'Banned' ? 'red.900' : '#2e3040'}
-                                                color={u.status === 'Active' ? 'green.300' : u.status === 'Banned' ? 'red.300' : '#e2e1eb'}
-                                                px="2" py="0.5" borderRadius="md"
-                                            >
-                                                {u.status || '-'}
-                                            </Badge>
+                                            <HStack spacing="3">
+                                                <Badge
+                                                    bg={u.status === 'ACTIVE' ? 'green.900' : 'red.900'}
+                                                    color={u.status === 'ACTIVE' ? 'green.300' : 'red.300'}
+                                                    px="2" py="0.5" borderRadius="md"
+                                                >
+                                                    {u.status === 'ACTIVE' ? 'Active' : 'Banned'}
+                                                </Badge>
+                                                <Switch
+                                                    isChecked={u.status === 'ACTIVE'}
+                                                    onChange={() => handleToggleStatus(u.id, u.status)}
+                                                    colorScheme="red"
+                                                    size="sm"
+                                                />
+                                            </HStack>
                                         </Td>
                                     </Tr>
                                 ))}
