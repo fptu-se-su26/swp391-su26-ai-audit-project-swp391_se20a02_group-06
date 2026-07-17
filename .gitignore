@@ -26,3 +26,8 @@ pnpm-debug.log*
 docs-me/ 
 bin/
 obj/
+
+bin/
+obj/
+*.dll
+*.pdb

@@ -8,7 +8,9 @@ public class AIChatMessage
 
     public AIChatSession Session { get; set; } = null!;
 
-    // user | assistant | system
+    /// <summary>
+    /// Maps to "sender" column in DB. Values: "user" | "assistant" | "system"
+    /// </summary>
     public string Role { get; set; } = string.Empty;
 
     public string Message { get; set; } = string.Empty;

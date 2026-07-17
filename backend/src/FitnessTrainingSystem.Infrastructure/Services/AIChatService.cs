@@ -42,7 +42,9 @@ public class AIChatService : IAIChatService
             {
                 UserId = userId,
                 Title = "Nutrition AI Chat",
-                CreatedAt = DateTime.UtcNow
+                Status = "active",
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow
             };
 
             _context.AIChatSessions.Add(session);
@@ -124,17 +126,19 @@ Weight: {metric?.Weight}
                     dietPlan);
 
 
-                return new AIChatResponse
-                {
-                    SessionId = session.Id,
+                return new AIChatResponse{
 
-                    Message =
-                        "Đã tạo thực đơn thành công.",
+        SessionId=session.Id,
 
-                    DietPlan = dietPlan,
+        Message="Đang tạo thực đơn dành cho bạn ...",
 
-                    IsCompleted = true
-                };
+        Role="assistant",
+
+        DietPlan=dietPlan,
+
+        IsCompleted=true
+
+};
             }
         }
 
@@ -155,9 +159,13 @@ Weight: {metric?.Weight}
 
         return new AIChatResponse
         {
-            SessionId = session.Id,
-            Message = aiReply,
-            IsCompleted = false
+        SessionId=session.Id,
+
+        Message=aiReply,
+
+        Role="assistant",
+
+        IsCompleted=false
         };
     }
 
@@ -170,15 +178,43 @@ Weight: {metric?.Weight}
             .OrderBy(x => x.CreatedAt)
             .ToListAsync();
 
+        var dietHistory = await _context.AIDietHistories
+            .FirstOrDefaultAsync(x => x.SessionId == sessionId);
 
-        return messages.Select(x =>
-            new AIChatResponse
+        DietPlanResponse? dietPlan = null;
+        if (dietHistory != null)
+        {
+            try
             {
-                SessionId = x.SessionId,
-                Message = x.Message,
-                IsCompleted = false,
-                DietPlan = null
-            }).ToList();
+                var options = new System.Text.Json.JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                };
+                dietPlan = System.Text.Json.JsonSerializer
+                    .Deserialize<DietPlanResponse>(dietHistory.DietJson, options);
+            }
+            catch
+            {
+                // Ignore deserialize errors
+            }
+        }
+
+        var results = messages.Select(x => new AIChatResponse
+        {
+            SessionId = x.SessionId,
+            Message = x.Message,
+            Role = x.Role,
+            IsCompleted = dietHistory != null,
+            DietPlan = null
+        }).ToList();
+
+        if (results.Count > 0 && dietPlan != null)
+        {
+            results.Last().DietPlan = dietPlan;
+            results.Last().IsCompleted = true;
+        }
+
+        return results;
     }
 
 
@@ -266,7 +302,11 @@ Conversation:
         {
             UserId = userId,
             SessionId = sessionId,
-            DietTitle = response.DietTitle,
+            DietTitle = response.DietTitle ?? "AI Diet Plan",
+            TotalCalories = response.DailyCalories,
+            Protein = response.ProteinTargetG,
+            Carbs = response.CarbsTargetG,
+            Fat = response.FatTargetG,
             DietJson =
                 System.Text.Json.JsonSerializer
                 .Serialize(response),

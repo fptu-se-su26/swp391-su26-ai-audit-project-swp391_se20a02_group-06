@@ -23,8 +23,9 @@ public class AIChatController : ControllerBase
     public async Task<IActionResult> SendMessage(
         [FromBody] AIChatRequest request)
     {
-        var userId = int.Parse(
-            User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
+        var userIdClaim = User.FindFirst("sub") ?? User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier);
+        if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out var userId))
+            return Unauthorized(new { message = "Invalid token: user ID not found." });
 
         var result = await _chatService.SendMessageAsync(
             userId,

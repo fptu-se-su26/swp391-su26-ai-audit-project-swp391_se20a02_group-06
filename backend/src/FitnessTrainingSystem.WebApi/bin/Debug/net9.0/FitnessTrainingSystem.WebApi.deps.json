@@ -54,12 +54,6 @@
           "Newtonsoft.Json": "13.0.4",
           "System.Net.Http": "4.3.4",
           "System.Text.RegularExpressions": "4.3.1"
-        },
-        "runtime": {
-          "lib/netstandard2.0/CloudinaryDotNet.dll": {
-            "assemblyVersion": "1.26.2.0",
-            "fileVersion": "1.26.2.0"
-          }
         }
       },
       "DotNetEnv/3.2.0": {
