@@ -6,6 +6,8 @@ import { useAuthStore } from "../store/useAuthStore";
 import Landing from "../pages/public/Landing";
 import Pricing from "../pages/public/Pricing";
 import About from "../pages/public/About";
+import PaymentSuccess from "../pages/public/PaymentSuccess";
+import PaymentCancel from "../pages/public/PaymentCancel";
 
 // Pages - Auth
 import Login from "../pages/auth/Login";
@@ -23,6 +25,7 @@ import Profile from "../pages/member/Profile";
 
 // Admin & PT Area
 import AdminRoute from "./AdminRoute";
+import PTRoute from "./PTRoute";
 import PrivateRoute from "./PrivateRoute";
 import AdminDashboard from "../pages/admin/AdminDashboard";
 import AdminUsers from "../pages/admin/AdminUsers";
@@ -33,6 +36,8 @@ import AdminPayments from "../pages/admin/AdminPayments";
 import AdminPackages from "../pages/admin/AdminPackages";
 import AdminExerciseRequests from "../pages/admin/AdminExerciseRequests";
 import PtExerciseRequests from "../pages/pt/PtExerciseRequests";
+import PTDashboard from "../pages/pt/PTDashboard";
+import PTClients from "../pages/pt/PTClients";
 import PTProfilePage from "../pages/pt/PTProfilePage";
 
 const RouterContainer = () => {
@@ -64,12 +69,14 @@ const RouterContainer = () => {
             {/* Public Marketing Pages */}
             <Route path="/pricing" element={<Pricing />} />
             <Route path="/about" element={<About />} />
+            <Route path="/payment/success" element={<PaymentSuccess />} />
+            <Route path="/payment/cancel" element={<PaymentCancel />} />
 
             {/* Admin & PT Area Routes */}
             <Route
                 path="/admin"
                 element={
-                    <AdminRoute>
+                    <AdminRoute requiredRole={1}>
                         <AdminDashboard />
                     </AdminRoute>
                 }
@@ -77,7 +84,7 @@ const RouterContainer = () => {
             <Route
                 path="/admin/users"
                 element={
-                    <AdminRoute>
+                    <AdminRoute requiredRole={1}>
                         <AdminUsers />
                     </AdminRoute>
                 }
@@ -85,7 +92,7 @@ const RouterContainer = () => {
             <Route
                 path="/admin/workouts"
                 element={
-                    <AdminRoute>
+                    <AdminRoute requiredRole={1}>
                         <AdminWorkouts />
                     </AdminRoute>
                 }
@@ -93,7 +100,7 @@ const RouterContainer = () => {
             <Route
                 path="/admin/exercise-requests"
                 element={
-                    <AdminRoute>
+                    <AdminRoute requiredRole={1}>
                         <AdminExerciseRequests />
                     </AdminRoute>
                 }
@@ -101,9 +108,43 @@ const RouterContainer = () => {
             <Route
                 path="/admin/pt-requests"
                 element={
-                    <AdminRoute>
+                    <AdminRoute requiredRole={1}>
                         <PtExerciseRequests />
                     </AdminRoute>
+                }
+            />
+
+            {/* PT Area Routes */}
+            <Route
+                path="/pt/dashboard"
+                element={
+                    <PTRoute>
+                        <PTDashboard />
+                    </PTRoute>
+                }
+            />
+            <Route
+                path="/pt/clients"
+                element={
+                    <PTRoute>
+                        <PTClients />
+                    </PTRoute>
+                }
+            />
+            <Route
+                path="/pt/workouts"
+                element={
+                    <PTRoute>
+                        <AdminWorkouts />
+                    </PTRoute>
+                }
+            />
+            <Route
+                path="/pt/exercise-requests"
+                element={
+                    <PTRoute>
+                        <PtExerciseRequests />
+                    </PTRoute>
                 }
             />
             <Route
@@ -117,7 +158,7 @@ const RouterContainer = () => {
             <Route
                 path="/admin/pts"
                 element={
-                    <AdminRoute>
+                    <AdminRoute requiredRole={1}>
                         <AdminPTs />
                     </AdminRoute>
                 }
@@ -125,7 +166,7 @@ const RouterContainer = () => {
             <Route
                 path="/admin/platform"
                 element={
-                    <AdminRoute>
+                    <AdminRoute requiredRole={1}>
                         <AdminPlatform />
                     </AdminRoute>
                 }
@@ -133,7 +174,7 @@ const RouterContainer = () => {
             <Route
                 path="/admin/payments"
                 element={
-                    <AdminRoute>
+                    <AdminRoute requiredRole={1}>
                         <AdminPayments />
                     </AdminRoute>
                 }
@@ -141,7 +182,7 @@ const RouterContainer = () => {
             <Route
                 path="/admin/packages"
                 element={
-                    <AdminRoute>
+                    <AdminRoute requiredRole={1}>
                         <AdminPackages />
                     </AdminRoute>
                 }

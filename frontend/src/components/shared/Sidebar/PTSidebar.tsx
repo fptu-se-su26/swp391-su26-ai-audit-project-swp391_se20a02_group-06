@@ -17,10 +17,10 @@ import {
 } from 'react-icons/fi'
 
 const navItems = [
-    { label: 'Dashboard', icon: FiGrid, path: '/admin' },
-    { label: 'My Clients', icon: FiUsers, path: '/admin/users' },
-    { label: 'Workouts', icon: FiActivity, path: '/admin/workouts' },
-    { label: 'Exercise Requests', icon: FiFileText, path: '/admin/pt-requests' },
+    { label: 'Dashboard', icon: FiGrid, path: '/pt/dashboard' },
+    { label: 'My Clients', icon: FiUsers, path: '/pt/clients' },
+    { label: 'Workouts', icon: FiActivity, path: '/pt/workouts' },
+    { label: 'Exercise Requests', icon: FiFileText, path: '/pt/exercise-requests' },
 ]
 
 const PTSidebar: React.FC = () => {
@@ -28,7 +28,7 @@ const PTSidebar: React.FC = () => {
     const location = useLocation()
 
     const isActivePath = (path: string) => {
-        if (path === '/admin') return location.pathname === '/admin'
+        if (path === '/pt/dashboard') return location.pathname === '/pt/dashboard'
         return location.pathname.startsWith(path)
     }
 
@@ -55,7 +55,7 @@ const PTSidebar: React.FC = () => {
                     color="white"
                     letterSpacing="-0.02em"
                     cursor="pointer"
-                    onClick={() => navigate('/')}
+                    onClick={() => navigate('/pt/dashboard')}
                 >
                     AISTHEA
                 </Heading>
