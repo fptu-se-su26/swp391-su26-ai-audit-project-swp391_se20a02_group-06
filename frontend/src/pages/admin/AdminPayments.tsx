@@ -17,12 +17,14 @@ import {
     InputGroup,
     InputLeftElement,
     HStack,
+    VStack,
     Button,
-    Spinner
+    Spinner,
+    Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalFooter, IconButton
 } from '@chakra-ui/react'
 import AdminLayout from '../../components/shared/Layout/AdminLayout'
 import AppButton from '../../components/shared/Button/AppButton'
-import { FiSearch, FiCalendar } from 'react-icons/fi'
+import { FiSearch, FiCalendar, FiX } from 'react-icons/fi'
 import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
 import { 
@@ -38,12 +40,23 @@ const MotionTr = motion(Tr)
 
 const fetcher = (url: string) => apiClient.get(url).then(res => res.data)
 
+const DetailRow: React.FC<{ label: string; value: string; mono?: boolean; color?: string; children?: React.ReactNode }> = ({ label, value, mono, color, children }) => (
+  <Flex justify="space-between" align="center">
+    <Text fontSize="13px" color="#8A8A93">{label}</Text>
+    <HStack>
+      <Text fontSize="13px" color={color || 'white'} fontWeight="600" fontFamily={mono ? 'monospace' : undefined}>{value}</Text>
+      {children}
+    </HStack>
+  </Flex>
+)
+
 const AdminPayments: React.FC = () => {
     const [searchTerm, setSearchTerm] = useState('')
     const [statusFilter, setStatusFilter] = useState('All')
     const [dateRange, setDateRange] = useState<[Date | null, Date | null]>([null, null])
     const [startDate, endDate] = dateRange
     const [activeQuickFilter, setActiveQuickFilter] = useState('All')
+    const [selectedPayment, setSelectedPayment] = useState<any>(null)
 
     const { data: payments, isLoading } = useSWR<any[]>('/payments', fetcher)
 
@@ -320,7 +333,7 @@ const AdminPayments: React.FC = () => {
                                             </Badge>
                                         </Td>
                                         <Td borderColor="#1e2028" textAlign="right">
-                                            <Button size="xs" variant="ghost" color="#3182ce" _hover={{ bg: 'rgba(49, 130, 206, 0.1)' }}>View</Button>
+                                            <Button size="xs" variant="ghost" color="#3182ce" _hover={{ bg: 'rgba(49, 130, 206, 0.1)' }} onClick={() => setSelectedPayment(t)}>View</Button>
                                         </Td>
                                     </MotionTr>
                                     )
@@ -337,6 +350,51 @@ const AdminPayments: React.FC = () => {
                     )}
                 </MotionBox>
             </Box>
+
+            {/* Payment Detail Modal */}
+            <Modal isOpen={!!selectedPayment} onClose={() => setSelectedPayment(null)} isCentered>
+                <ModalOverlay bg="rgba(0,0,0,0.7)" />
+                <ModalContent bg="#141720" border="1px solid" borderColor="#1e2028" borderRadius="16px" maxW="480px">
+                    <ModalHeader borderBottom="1px solid" borderColor="#1e2028">
+                        <HStack justify="space-between">
+                            <Heading fontSize="18px" color="white" fontWeight="700">Payment Detail</Heading>
+                            <IconButton
+                                aria-label="Close"
+                                icon={<FiX />}
+                                variant="ghost"
+                                color="#8A8A93"
+                                onClick={() => setSelectedPayment(null)}
+                            />
+                        </HStack>
+                    </ModalHeader>
+                    <ModalBody py="6">
+                        {selectedPayment && (
+                            <VStack align="stretch" spacing="4">
+                                <DetailRow label="Order Code" value={selectedPayment.orderCode?.toString()} mono />
+                                <DetailRow label="Transaction Code" value={selectedPayment.transactionCode || 'N/A'} mono />
+                                <DetailRow label="User" value={`${selectedPayment.userName || 'N/A'} (${selectedPayment.userEmail || ''})`} />
+                                <DetailRow label="Package" value={selectedPayment.packageName || 'N/A'} />
+                                <DetailRow label="Amount" value={toVnd(selectedPayment.amount)} color="#E03030" />
+                                <DetailRow label="Payment Method" value={selectedPayment.paymentMethod || 'N/A'} />
+                                <DetailRow label="Status" value={selectedPayment.status === 'SUCCESS' ? 'Completed' : selectedPayment.status}>
+                                    {(selectedPayment.status === 'SUCCESS' || selectedPayment.status === 'FAILED' || selectedPayment.status === 'PENDING') && (
+                                        <Badge ml="2" px="2" py="0.5" borderRadius="md" textTransform="none" fontSize="11px"
+                                            bg={selectedPayment.status === 'SUCCESS' ? 'green.900' : selectedPayment.status === 'FAILED' ? 'red.900' : 'yellow.900'}
+                                            color={selectedPayment.status === 'SUCCESS' ? 'green.300' : selectedPayment.status === 'FAILED' ? 'red.300' : 'yellow.300'}
+                                        >
+                                            {selectedPayment.status === 'SUCCESS' ? 'Completed' : selectedPayment.status}
+                                        </Badge>
+                                    )}
+                                </DetailRow>
+                                <DetailRow label="Paid At" value={selectedPayment.paidAt ? new Date(selectedPayment.paidAt).toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' }) : 'N/A'} />
+                            </VStack>
+                        )}
+                    </ModalBody>
+                    <ModalFooter borderTop="1px solid" borderColor="#1e2028">
+                        <Button variant="ghost" color="#8A8A93" onClick={() => setSelectedPayment(null)}>Close</Button>
+                    </ModalFooter>
+                </ModalContent>
+            </Modal>
         </AdminLayout>
     )
 }
