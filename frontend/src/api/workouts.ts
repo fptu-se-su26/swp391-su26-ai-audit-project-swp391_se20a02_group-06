@@ -54,6 +54,7 @@ export interface WorkoutSessionDetailDto {
     exerciseName?: string
     setsDone?: number
     repsDone?: number
+    weight?: number
     durationSeconds?: number
     caloriesBurned?: number
 }
