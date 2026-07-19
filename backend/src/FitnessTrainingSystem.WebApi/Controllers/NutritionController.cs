@@ -1,75 +1,33 @@
-using FitnessTrainingSystem.Application.DTOs.Nutrition;
-using FitnessTrainingSystem.Application.Interfaces;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using FitnessTrainingSystem.Application.Features.Nutrition;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Security.Claims;
-using System.Threading.Tasks;
 
 namespace FitnessTrainingSystem.WebApi.Controllers;
 
-[Route("api/[controller]")]
 [ApiController]
-[Authorize]
+[Route("api/[controller]")]
+
 public class NutritionController : ControllerBase
 {
-    private readonly INutritionService _nutritionService;
+    private readonly IMediator _mediator;
 
-    public NutritionController(INutritionService nutritionService)
+    public NutritionController(IMediator mediator)
     {
-        _nutritionService = nutritionService;
+        _mediator = mediator;
     }
 
-    private int GetCurrentUserId()
+    [HttpPost("generate-diet-plan")]
+    public async Task<IActionResult> GenerateDietPlan([FromBody] CreateDietPlanCommand command)
     {
-        var userIdString = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        if (int.TryParse(userIdString, out var userId))
-            return userId;
-        throw new UnauthorizedAccessException("User not authenticated.");
-    }
+        
+        var userId = 1; 
 
-    [HttpGet("daily")]
-    public async Task<ActionResult<DailyNutritionSummaryDto>> GetDailySummary([FromQuery] DateTime date)
-    {
-        try
-        {
-            var userId = GetCurrentUserId();
-            var summary = await _nutritionService.GetDailySummaryAsync(userId, date);
-            return Ok(summary);
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(new { message = ex.Message });
-        }
-    }
-
-    [HttpPost("water")]
-    public async Task<ActionResult<DailyNutritionSummaryDto>> LogWater([FromQuery] DateTime date, [FromBody] LogWaterDto dto)
-    {
-        try
-        {
-            var userId = GetCurrentUserId();
-            var summary = await _nutritionService.LogWaterAsync(userId, date, dto);
-            return Ok(summary);
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(new { message = ex.Message });
-        }
-    }
-    [HttpPut("reminder-settings")]
-    public async Task<IActionResult> UpdateReminderSettings([FromBody] UpdateReminderSettingsDto dto)
-    {
-        try
-        {
-            var userId = GetCurrentUserId();
-            var result = await _nutritionService.UpdateReminderSettingsAsync(userId, dto);
-            if (!result) return BadRequest(new { message = "Failed to update reminder settings." });
-            return Ok(new { success = true });
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(new { message = ex.Message });
-        }
+        // Khởi tạo lại command với UserId cố định vừa gán
+        var authenticatedCommand = command with { UserId = userId }; //
+        var result = await _mediator.Send(authenticatedCommand); //
+        return Ok(result); //
     }
 }

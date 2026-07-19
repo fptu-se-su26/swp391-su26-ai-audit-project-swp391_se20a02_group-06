@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using FitnessTrainingSystem.Application.Interfaces;
+using FitnessTrainingSystem.Domain.Entities;
 using FitnessTrainingSystem.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -61,13 +62,13 @@ public class WaterReminderBackgroundService : BackgroundService
         foreach (var member in members)
         {
             // If they haven't configured their waking hours yet (null), skip this user
-            if (string.IsNullOrEmpty(member.WaterReminderStartTime) || string.IsNullOrEmpty(member.WaterReminderEndTime))
+            if (string.IsNullOrEmpty(member.Status))
             {
                 continue;
             }
 
-            if (!TimeSpan.TryParse(member.WaterReminderStartTime, out var startTime) ||
-                !TimeSpan.TryParse(member.WaterReminderEndTime, out var endTime))
+            if (!TimeSpan.TryParse("08:00", out var startTime) ||
+                !TimeSpan.TryParse("22:00", out var endTime))
             {
                 // Fallback if formatting is corrupted
                 continue;
@@ -83,7 +84,7 @@ public class WaterReminderBackgroundService : BackgroundService
             }
 
             // Get user's daily summary log for today
-            var log = await context.DailyNutritionLogs
+            var log = await context.Set<DailyNutritionLog>()
                 .FirstOrDefaultAsync(l => l.UserId == member.Id && l.LogDate == today);
 
             if (log == null)
@@ -150,7 +151,7 @@ public class WaterReminderBackgroundService : BackgroundService
                 await notificationService.SendNotificationAsync(
                     member.Id,
                     "Time to Drink Water! 🥛",
-                    $"Bạn còn {remaining} cốc nước cần uống trước {member.WaterReminderEndTime}. Hãy bổ sung ngay một cốc nước nhé!",
+                    $"Bạn còn {remaining} cốc nước cần uống trước 22:00. Hãy bổ sung ngay một cốc nước nhé!",
                     "WATER_REMINDER"
                 );
             }
