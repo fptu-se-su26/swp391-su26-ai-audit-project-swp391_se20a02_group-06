@@ -6,7 +6,7 @@ import { FiChevronDown, FiX, FiChevronRight, FiChevronLeft } from 'react-icons/f
 import useSWR from 'swr'
 import apiClient from '../../../lib/axios'
 import MemberLayout from '../../../components/shared/Layout/MemberLayout'
-import HeaderActions from '../../../components/shared/Header/HeaderActions'
+
 import ExerciseGridCard from './components/ExerciseGridCard'
 import PlanSidebar from './components/PlanSidebar'
 import WorkoutExerciseModal from '../../../features/workout/components/WorkoutExerciseModal'
@@ -130,12 +130,6 @@ const ExerciseLibrary: React.FC = () => {
     return (
         <MemberLayout>
             <Box p={{ base: '4', md: '7' }} maxW="1280px" mx="auto" position="relative">
-                {/* Top Bar */}
-                <Flex justify="space-between" align="center" mb="6">
-                    <Box />
-                    <HeaderActions />
-                </Flex>
-
                 {/* Header */}
                 <Flex
                     direction={{ base: 'column', lg: 'row' }}

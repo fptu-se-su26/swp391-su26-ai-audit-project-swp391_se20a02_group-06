@@ -20,7 +20,7 @@ import {
 } from 'react-icons/fi'
 import AppButton from '../../components/shared/Button/AppButton'
 import MemberLayout from '../../components/shared/Layout/MemberLayout.tsx'
-import HeaderActions from '../../components/shared/Header/HeaderActions.tsx'
+
 import {
     GoalRing,
     MacroBar,
@@ -54,12 +54,6 @@ const Dashboard: React.FC = () => {
     return (
         <MemberLayout>
             <Box p="7" maxW="1200px">
-                {/* Top Bar */}
-                <Flex justify="space-between" align="center" mb="7">
-                    <Box />
-                        <HeaderActions />
-                </Flex>
-
                 {/* Stat Cards Row */}
                 <Grid templateColumns="repeat(4, 1fr)" gap="4" mb="5">
                     {/* Active Calories */}

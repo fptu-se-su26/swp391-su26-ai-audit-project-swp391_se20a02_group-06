@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import {
     Box,
     Button,
@@ -6,6 +6,7 @@ import {
     Flex,
     HStack,
     Icon,
+    IconButton,
     Input,
     InputGroup,
     InputLeftElement,
@@ -15,6 +16,7 @@ import {
 } from '@chakra-ui/react'
 import type { IconType } from 'react-icons'
 import {
+    FiLock,
     FiMoreVertical,
     FiPlus,
     FiSearch,
@@ -168,39 +170,76 @@ export const AdminIconButton: React.FC<AdminIconButtonProps> = ({ icon, label })
     </Button>
 )
 
-import { Menu, MenuButton, MenuList, MenuItem } from '@chakra-ui/react'
+import { Menu, MenuButton, MenuList, MenuItem, useDisclosure } from '@chakra-ui/react'
 import { useNavigate } from 'react-router-dom'
 import { useAuthStore } from '../../store/useAuthStore'
+import { getProfile } from '../../api/user'
+import ChangePasswordModal from '../member/components/ChangePasswordModal'
 
 export const TopbarActions: React.FC = () => {
     const navigate = useNavigate()
     const logout = useAuthStore((state) => state.logout)
+    const [profile, setProfile] = useState<{ name: string; avatarUrl: string | null } | null>(null)
+    const { isOpen: isPwOpen, onOpen: onPwOpen, onClose: onPwClose } = useDisclosure()
+
+    useEffect(() => {
+        getProfile().then(data => {
+            if (data) setProfile(data)
+        }).catch(() => {})
+    }, [])
 
     const handleLogout = () => {
         logout()
         navigate('/login')
     }
 
+    const displayName = profile?.name || 'Admin Profile'
+    const avatarSrc = profile?.avatarUrl || undefined
+
     return (
-        <HStack spacing="8px">
-            <NotificationBell />
-            <AdminIconButton icon={FiSettings} label="Settings" />
-            <Menu>
-                <MenuButton as={Box} cursor="pointer" borderRadius="full">
-                    <Avatar name="Admin Profile" src={adminAvatar} size="32px" />
-                </MenuButton>
-                <MenuList bg={adminColors.surfaceHigh} borderColor={adminColors.surfaceVariant} minW="150px">
-                    <MenuItem
-                        bg="transparent"
-                        _hover={{ bg: adminColors.surfaceVariant }}
-                        onClick={handleLogout}
-                        color={adminColors.error}
-                    >
-                        Logout
-                    </MenuItem>
-                </MenuList>
-            </Menu>
-        </HStack>
+        <>
+            <HStack spacing="8px">
+                <NotificationBell />
+                <Menu>
+                    <MenuButton
+                        as={IconButton}
+                        aria-label="Settings"
+                        icon={<Icon as={FiSettings} boxSize="18px" />}
+                        variant="ghost"
+                        color="#8A8A93"
+                        _hover={{ color: 'white', bg: 'rgba(255,255,255,0.05)' }}
+                        borderRadius="10px"
+                    />
+                    <MenuList bg={adminColors.surfaceHigh} borderColor={adminColors.surfaceVariant} minW="160px">
+                        <MenuItem
+                            bg="transparent"
+                            _hover={{ bg: adminColors.surfaceVariant }}
+                            icon={<Icon as={FiLock} boxSize="14px" />}
+                            color={adminColors.text}
+                            onClick={onPwOpen}
+                        >
+                            Change Password
+                        </MenuItem>
+                    </MenuList>
+                </Menu>
+                <Menu>
+                    <MenuButton as={Box} cursor="pointer" borderRadius="full">
+                        <Avatar name={displayName} src={avatarSrc} size="36px" />
+                    </MenuButton>
+                    <MenuList bg={adminColors.surfaceHigh} borderColor={adminColors.surfaceVariant} minW="150px">
+                        <MenuItem
+                            bg="transparent"
+                            _hover={{ bg: adminColors.surfaceVariant }}
+                            onClick={handleLogout}
+                            color={adminColors.error}
+                        >
+                            Logout
+                        </MenuItem>
+                    </MenuList>
+                </Menu>
+            </HStack>
+            <ChangePasswordModal isOpen={isPwOpen} onClose={onPwClose} onSuccess={onPwClose} />
+        </>
     )
 }
 

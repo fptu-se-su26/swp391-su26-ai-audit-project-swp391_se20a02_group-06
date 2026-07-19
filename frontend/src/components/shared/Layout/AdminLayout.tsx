@@ -5,20 +5,17 @@ import AdminSidebar from '../Sidebar/AdminSidebar'
 import PTSidebar from '../Sidebar/PTSidebar'
 import {
     adminColors,
-    SearchField,
     TopbarActions,
 } from '../../../pages/admin/AdminPrimitives'
 
 interface AdminLayoutProps {
     children: React.ReactNode
     title?: string
-    searchPlaceholder?: string
 }
 
 const AdminLayout: React.FC<AdminLayoutProps> = ({
     children,
     title = 'Elite Dashboard',
-    searchPlaceholder = 'Search...',
 }) => {
     const roleId = useAuthStore((state) => state.roleId)
     const isPT = roleId === 2
@@ -47,13 +44,10 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({
                     borderColor={adminColors.surfaceVariant}
                     zIndex={40}
                 >
-                    <Text color={adminColors.primarySoft} fontSize="18px" lineHeight="24px" fontWeight="700">
+                    <Text color={adminColors.text} fontSize="18px" fontWeight="700">
                         {title}
                     </Text>
-                    <Flex align="center" gap="24px">
-                        <SearchField placeholder={searchPlaceholder} />
-                        <TopbarActions />
-                    </Flex>
+                    <TopbarActions />
                 </Flex>
 
                 <Box as="main" px={{ base: '20px', xl: '32px' }} pt="96px" pb="32px" minH="100vh">
