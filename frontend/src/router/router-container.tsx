@@ -6,6 +6,8 @@ import { useAuthStore } from "../store/useAuthStore";
 import Landing from "../pages/public/Landing";
 import Pricing from "../pages/public/Pricing";
 import About from "../pages/public/About";
+import PaymentSuccess from "../pages/public/PaymentSuccess";
+import PaymentCancel from "../pages/public/PaymentCancel";
 
 // Pages - Auth
 import Login from "../pages/auth/Login";
@@ -20,9 +22,11 @@ import Progress from "../pages/member/Progress";
 import PTBooking from "../pages/member/PTBooking";
 import AIChat from "../pages/member/AIChat";
 import Profile from "../pages/member/Profile";
+import ExerciseLibrary from "../pages/member/exercises/ExerciseLibrary";
 
 // Admin & PT Area
 import AdminRoute from "./AdminRoute";
+import PTRoute from "./PTRoute";
 import PrivateRoute from "./PrivateRoute";
 import AdminDashboard from "../pages/admin/AdminDashboard";
 import AdminUsers from "../pages/admin/AdminUsers";
@@ -33,7 +37,10 @@ import AdminPayments from "../pages/admin/AdminPayments";
 import AdminPackages from "../pages/admin/AdminPackages";
 import AdminExerciseRequests from "../pages/admin/AdminExerciseRequests";
 import PtExerciseRequests from "../pages/pt/PtExerciseRequests";
+import PTDashboard from "../pages/pt/PTDashboard";
+import PTClients from "../pages/pt/PTClients";
 import PTProfilePage from "../pages/pt/PTProfilePage";
+import PTContentLibrary from "../pages/pt/PTContentLibrary";
 
 const RouterContainer = () => {
     const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
@@ -64,12 +71,14 @@ const RouterContainer = () => {
             {/* Public Marketing Pages */}
             <Route path="/pricing" element={<Pricing />} />
             <Route path="/about" element={<About />} />
+            <Route path="/payment/success" element={<PaymentSuccess />} />
+            <Route path="/payment/cancel" element={<PaymentCancel />} />
 
             {/* Admin & PT Area Routes */}
             <Route
                 path="/admin"
                 element={
-                    <AdminRoute>
+                    <AdminRoute requiredRole={1}>
                         <AdminDashboard />
                     </AdminRoute>
                 }
@@ -77,7 +86,7 @@ const RouterContainer = () => {
             <Route
                 path="/admin/users"
                 element={
-                    <AdminRoute>
+                    <AdminRoute requiredRole={1}>
                         <AdminUsers />
                     </AdminRoute>
                 }
@@ -85,7 +94,7 @@ const RouterContainer = () => {
             <Route
                 path="/admin/workouts"
                 element={
-                    <AdminRoute>
+                    <AdminRoute requiredRole={1}>
                         <AdminWorkouts />
                     </AdminRoute>
                 }
@@ -93,7 +102,7 @@ const RouterContainer = () => {
             <Route
                 path="/admin/exercise-requests"
                 element={
-                    <AdminRoute>
+                    <AdminRoute requiredRole={1}>
                         <AdminExerciseRequests />
                     </AdminRoute>
                 }
@@ -101,9 +110,51 @@ const RouterContainer = () => {
             <Route
                 path="/admin/pt-requests"
                 element={
-                    <AdminRoute>
+                    <AdminRoute requiredRole={1}>
                         <PtExerciseRequests />
                     </AdminRoute>
+                }
+            />
+
+            {/* PT Area Routes */}
+            <Route
+                path="/pt/dashboard"
+                element={
+                    <PTRoute>
+                        <PTDashboard />
+                    </PTRoute>
+                }
+            />
+            <Route
+                path="/pt/clients"
+                element={
+                    <PTRoute>
+                        <PTClients />
+                    </PTRoute>
+                }
+            />
+            <Route
+                path="/pt/workouts"
+                element={
+                    <PTRoute>
+                        <AdminWorkouts />
+                    </PTRoute>
+                }
+            />
+            <Route
+                path="/pt/exercise-requests"
+                element={
+                    <PTRoute>
+                        <PtExerciseRequests />
+                    </PTRoute>
+                }
+            />
+            <Route
+                path="/pt/content-library"
+                element={
+                    <PTRoute>
+                        <PTContentLibrary />
+                    </PTRoute>
                 }
             />
             <Route
@@ -117,7 +168,7 @@ const RouterContainer = () => {
             <Route
                 path="/admin/pts"
                 element={
-                    <AdminRoute>
+                    <AdminRoute requiredRole={1}>
                         <AdminPTs />
                     </AdminRoute>
                 }
@@ -125,7 +176,7 @@ const RouterContainer = () => {
             <Route
                 path="/admin/platform"
                 element={
-                    <AdminRoute>
+                    <AdminRoute requiredRole={1}>
                         <AdminPlatform />
                     </AdminRoute>
                 }
@@ -133,7 +184,7 @@ const RouterContainer = () => {
             <Route
                 path="/admin/payments"
                 element={
-                    <AdminRoute>
+                    <AdminRoute requiredRole={1}>
                         <AdminPayments />
                     </AdminRoute>
                 }
@@ -141,7 +192,7 @@ const RouterContainer = () => {
             <Route
                 path="/admin/packages"
                 element={
-                    <AdminRoute>
+                    <AdminRoute requiredRole={1}>
                         <AdminPackages />
                     </AdminRoute>
                 }
@@ -155,6 +206,7 @@ const RouterContainer = () => {
             <Route path="/pt-booking" element={<PrivateRoute><PTBooking /></PrivateRoute>} />
             <Route path="/ai-chat" element={<PrivateRoute><AIChat /></PrivateRoute>} />
             <Route path="/profile" element={<PrivateRoute><Profile /></PrivateRoute>} />
+            <Route path="/exercises" element={<PrivateRoute><ExerciseLibrary /></PrivateRoute>} />
 
             {/* Default Route Redirect to Landing */}
             <Route path="*" element={<Navigate to="/" replace />} />

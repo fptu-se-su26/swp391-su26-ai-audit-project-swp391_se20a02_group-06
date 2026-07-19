@@ -69,6 +69,7 @@ public partial class ApplicationDbContext : DbContext
         configurationBuilder.Properties<FitnessTrainingSystem.Domain.Enums.ExerciseDifficulty>().HaveConversion<string>();
         configurationBuilder.Properties<FitnessTrainingSystem.Domain.Enums.PackageType>().HaveConversion<string>();
         configurationBuilder.Properties<FitnessTrainingSystem.Domain.Enums.ScheduleStatus>().HaveConversion<string>();
+        configurationBuilder.Properties<FitnessTrainingSystem.Domain.Enums.PaymentStatus>().HaveConversion<string>();
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -141,6 +142,22 @@ public partial class ApplicationDbContext : DbContext
             .HasOne(e => e.MuscleGroup)
             .WithMany(m => m.Exercises)
             .HasForeignKey(e => e.MuscleGroupId);
+
+        modelBuilder.Entity<Exercise>()
+            .HasOne(e => e.Package)
+            .WithMany(p => p.Exercises)
+            .HasForeignKey(e => e.PackageId)
+            .OnDelete(DeleteBehavior.SetNull);
+
+        modelBuilder.Entity<MembershipSubscription>()
+            .HasOne(s => s.User)
+            .WithMany(u => u.MembershipSubscriptions)
+            .HasForeignKey(s => s.UserId);
+
+        modelBuilder.Entity<MembershipSubscription>()
+            .HasOne(s => s.Package)
+            .WithMany()
+            .HasForeignKey(s => s.PackageId);
     }
 }
 

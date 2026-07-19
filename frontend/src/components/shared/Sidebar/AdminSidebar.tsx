@@ -40,8 +40,8 @@ const AdminSidebar: React.FC = () => {
             py="8"
             px="4"
         >
-            <Text color="white" fontSize="20px" fontWeight="800" mb="8" px="4">
-                AISTHEA <Text as="span" color="#E03030">{isPT ? 'PT' : 'ADMIN'}</Text>
+            <Text color="white" fontSize="20px" fontWeight="800" mb="8" px="4" cursor="pointer" onClick={() => navigate('/admin')}>
+                AISTHEA <Text as="span" color="#E03030">ADMIN</Text>
             </Text>
             <VStack align="stretch" spacing="2">
                 <NavItem href="/admin" label="Dashboard" />

@@ -18,5 +18,10 @@ public class Exercise : BaseAuditableEntity
 
     [ForeignKey("CreatedBy")]
     public User? Creator { get; set; }
+
+    public int? PackageId { get; set; }
+
+    [ForeignKey("PackageId")]
+    public ProductPackage? Package { get; set; }
     public ICollection<WorkoutSessionDetail> WorkoutSessionDetails { get; set; } = new List<WorkoutSessionDetail>();
 }

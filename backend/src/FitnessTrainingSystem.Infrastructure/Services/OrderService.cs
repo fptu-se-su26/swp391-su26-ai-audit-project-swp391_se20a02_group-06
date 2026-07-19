@@ -80,4 +80,26 @@ public class OrderService : IOrderService
 
         return orderDto;
     }
+
+    public async Task<IEnumerable<OrderListDto>> GetAllOrdersAsync()
+    {
+        return await _context.Orders
+            .Include(o => o.User)
+            .Include(o => o.Package)
+            .OrderByDescending(o => o.PurchasedAt)
+            .Select(o => new OrderListDto
+            {
+                Id = o.Id,
+                OrderCode = o.OrderCode,
+                UserId = o.UserId,
+                UserName = o.User != null ? o.User.Fullname : null,
+                UserEmail = o.User != null ? o.User.Email : null,
+                PackageId = o.PackageId,
+                PackageName = o.Package != null ? o.Package.Name : null,
+                PricePaid = o.PricePaid,
+                PaymentStatus = o.PaymentStatus.ToString(),
+                PurchasedAt = o.PurchasedAt
+            })
+            .ToListAsync();
+    }
 }

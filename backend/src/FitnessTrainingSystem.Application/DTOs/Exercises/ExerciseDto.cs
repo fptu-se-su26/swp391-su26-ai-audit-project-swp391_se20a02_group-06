@@ -14,4 +14,5 @@ public class ExerciseDto
     public int? Duration { get; set; }
     public int? CreatedBy { get; set; }
     public string? CreatorName { get; set; }
+    public int? PackageId { get; set; }
 }
