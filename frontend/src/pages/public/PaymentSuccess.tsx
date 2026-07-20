@@ -29,7 +29,7 @@ const PaymentSuccess = () => {
           setTimeout(() => navigate('/dashboard'), 3000)
         } else {
           setStatus('error')
-          setMessage('Failed to confirm payment. Please contact support.')
+          setMessage(err.response?.data?.message || 'Failed to confirm payment. Please contact support.')
         }
       }
     }
