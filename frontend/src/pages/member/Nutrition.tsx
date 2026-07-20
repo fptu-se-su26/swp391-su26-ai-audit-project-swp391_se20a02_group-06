@@ -1,4 +1,5 @@
-import React, { useState } from 'react'
+import React, { useState, useCallback, useEffect } from 'react'
+import { useLocation } from 'react-router-dom'
 import {
     Box,
     Flex,
@@ -12,6 +13,7 @@ import {
     Spinner,
     Input,
     Badge,
+    useToast,
 } from '@chakra-ui/react'
 import {
     FiChevronLeft,
@@ -22,7 +24,7 @@ import {
     FiActivity,
     FiSearch,
 } from 'react-icons/fi'
-import useSWR from 'swr'
+import useSWR, { mutate as globalMutate } from 'swr'
 import apiClient from '../../lib/axios'
 import AppButton from '../../components/shared/Button/AppButton'
 import MemberLayout from '../../components/shared/Layout/MemberLayout.tsx'
@@ -30,25 +32,71 @@ import {
     AIDinnerCard,
     DonutRing,
     FoodItem,
+    HydrationCountdown,
     HydrationTracker,
     MacroCard,
     MealSection,
 } from '../../features/nutrition/components/NutritionWidgets.tsx'
+import { logWater, updateReminderSettings } from '../../api/nutrition'
+import { triggerTestWaterReminder } from '../../api/notifications'
+import { useAuthStore } from '../../store/useAuthStore'
 
 const fetcher = (url: string) => apiClient.get(url).then((res) => res.data)
 
 /* ── Nutrition Page ─────────────────────────── */
 const Nutrition: React.FC = () => {
-    const dateStr = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+    const today = new Date()
+    const todayStr = today.toISOString().split('T')[0]
+    const dateStr = today.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
     const [searchQuery, setSearchQuery] = useState('')
+    const toast = useToast()
+    const sessionId = useAuthStore(state => state.sessionId)
 
     // Fetch foods from API
-    const { data: foods, isLoading, error } = useSWR('/foods', fetcher)
+    const { data: foods, isLoading, error } = useSWR(sessionId ? '/foods' : null, fetcher)
+
+    // Fetch daily nutrition summary
+    const { data: summary } = useSWR(sessionId ? `/nutrition/daily?date=${todayStr}` : null, fetcher)
+
+    const handleLogWater = useCallback(async () => {
+        const key = `/nutrition/daily?date=${todayStr}`
+        try {
+            await logWater(todayStr, 1)
+            globalMutate(key)
+            toast({
+                title: 'Water logged!',
+                description: '1 glass of water added.',
+                status: 'success',
+                duration: 2000,
+                isClosable: true,
+            })
+        } catch {
+            globalMutate(key)
+            toast({
+                title: 'Failed to log water',
+                status: 'error',
+                duration: 2000,
+                isClosable: true,
+            })
+        }
+    }, [todayStr, toast])
 
     const filteredFoods = foods?.filter((food: any) => {
         const foodName = typeof food?.name === 'string' ? food.name : ''
         return foodName.toLowerCase().includes(searchQuery.toLowerCase())
     }) || []
+
+    // Pre-filled water count when navigated from notification
+    const location = useLocation()
+    const waterFromNotification = (location.state as { waterConsumedGlasses?: number } | null)?.waterConsumedGlasses
+    useEffect(() => {
+        if (waterFromNotification) {
+            globalMutate(`/nutrition/daily?date=${todayStr}`)
+        }
+    }, [waterFromNotification])
+
+    const waterCurrent = summary?.waterConsumedGlasses ?? 0
+    const waterTotal = summary?.waterTargetGlasses ?? 8
 
     return (
         <MemberLayout>
@@ -249,7 +297,34 @@ const Nutrition: React.FC = () => {
                     {/* RIGHT panel */}
                     <Stack spacing="4">
                         {/* Hydration */}
-                        <HydrationTracker current={6} total={8} />
+                        <HydrationTracker current={waterCurrent} total={waterTotal} onLogWater={handleLogWater} />
+
+                        {/* Hydration Countdown */}
+                        <HydrationCountdown
+                            current={waterCurrent}
+                            target={waterTotal}
+                            startTime={summary?.waterReminderStartTime}
+                            endTime={summary?.waterReminderEndTime}
+                            onRemind={() => {
+                                toast({
+                                    title: 'Time to drink water! 🥛',
+                                    description: `Còn ${Math.max(0, waterTotal - waterCurrent)} cốc nước cần uống.`,
+                                    status: 'success',
+                                    duration: 5000,
+                                    isClosable: true,
+                                })
+                                triggerTestWaterReminder()
+                            }}
+                        />
+
+                        {/* Water Reminder Schedule */}
+                        <WaterReminderSettings
+                            startTime={summary?.waterReminderStartTime || '07:00'}
+                            endTime={summary?.waterReminderEndTime || '22:00'}
+                        />
+
+                        {/* Test Water Reminder Button */}
+                        <TestWaterReminderButton />
 
                         {/* AI Recommendation */}
                         <AIDinnerCard />
@@ -269,7 +344,7 @@ const Nutrition: React.FC = () => {
                                 {[
                                     { label: 'Total Calories', val: '1,850 / 2,400', pct: 77 },
                                     { label: 'Protein', val: '140 / 180g', pct: 78 },
-                                    { label: 'Water', val: '6 / 8 Glasses', pct: 75 },
+                                    { label: 'Water', val: `${waterCurrent} / ${waterTotal} Glasses`, pct: waterTotal > 0 ? Math.round((waterCurrent / waterTotal) * 100) : 0 },
                                 ].map((s, i) => (
                                     <Box key={i}>
                                         <Flex justify="space-between" mb="1">
@@ -292,6 +367,125 @@ const Nutrition: React.FC = () => {
                 </Grid>
             </Box>
         </MemberLayout>
+    )
+}
+
+/* ── Water Reminder Settings ─────────────────── */
+const WaterReminderSettings: React.FC<{ startTime: string; endTime: string }> = ({ startTime, endTime }) => {
+    const [start, setStart] = useState(startTime)
+    const [end, setEnd] = useState(endTime)
+    const [saving, setSaving] = useState(false)
+    const toast = useToast()
+
+    const handleSave = async () => {
+        setSaving(true)
+        try {
+            await updateReminderSettings(start, end)
+            toast({ title: 'Reminder schedule saved', status: 'success', duration: 2000, isClosable: true })
+        } catch {
+            toast({ title: 'Failed to save', status: 'error', duration: 2000, isClosable: true })
+        } finally {
+            setSaving(false)
+        }
+    }
+
+    return (
+        <Box bg="#141720" border="1px solid" borderColor="#1e2028" borderRadius="14px" p="4">
+            <Flex justify="space-between" align="center" mb="3">
+                <Text fontSize="11px" fontWeight="700" color="#8A8A93" textTransform="uppercase" letterSpacing="wider">
+                    Water Reminder
+                </Text>
+                <Box
+                    as="button"
+                    fontSize="11px" fontWeight="600"
+                    color="#E03030"
+                    _hover={{ color: '#ff6b6b' }}
+                    onClick={handleSave}
+                    isLoading={saving}
+                >
+                    Save
+                </Box>
+            </Flex>
+            <Flex gap="2" align="center">
+                <Box flex="1">
+                    <Text fontSize="10px" color="#8A8A93" mb="1">From</Text>
+                    <Box
+                        as="input"
+                        type="time"
+                        value={start}
+                        onChange={(e: any) => setStart(e.target.value)}
+                        bg="#0A0C10" border="1px solid" borderColor="#1e2028"
+                        borderRadius="8px" color="white" fontSize="13px"
+                        p="2" w="full"
+                        _focus={{ borderColor: '#E03030', outline: 'none' }}
+                    />
+                </Box>
+                <Box flex="1">
+                    <Text fontSize="10px" color="#8A8A93" mb="1">To</Text>
+                    <Box
+                        as="input"
+                        type="time"
+                        value={end}
+                        onChange={(e: any) => setEnd(e.target.value)}
+                        bg="#0A0C10" border="1px solid" borderColor="#1e2028"
+                        borderRadius="8px" color="white" fontSize="13px"
+                        p="2" w="full"
+                        _focus={{ borderColor: '#E03030', outline: 'none' }}
+                    />
+                </Box>
+            </Flex>
+        </Box>
+    )
+}
+
+/* ── Test Water Reminder Button ─────────────── */
+const TestWaterReminderButton: React.FC = () => {
+    const toast = useToast()
+    const [loading, setLoading] = useState(false)
+
+    const handleClick = async () => {
+        setLoading(true)
+        try {
+            await triggerTestWaterReminder()
+            toast({
+                title: 'Water Reminder Sent! 🥛',
+                description: 'Check your notifications to log water.',
+                status: 'success',
+                duration: 3000,
+                isClosable: true,
+            })
+        } catch {
+            toast({
+                title: 'Failed to send reminder',
+                status: 'error',
+                duration: 2000,
+                isClosable: true,
+            })
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    return (
+        <Box
+            as="button"
+            w="full"
+            bg="#141720"
+            border="1px dashed"
+            borderColor="#2e3040"
+            borderRadius="14px"
+            p="3"
+            textAlign="center"
+            cursor="pointer"
+            _hover={{ borderColor: '#E03030', bg: '#1a1c24' }}
+            transition="all 0.2s"
+            onClick={handleClick}
+            isLoading={loading}
+        >
+            <Text fontSize="12px" fontWeight="600" color="#8A8A93">
+                🔔 Test Water Reminder Notification
+            </Text>
+        </Box>
     )
 }
 

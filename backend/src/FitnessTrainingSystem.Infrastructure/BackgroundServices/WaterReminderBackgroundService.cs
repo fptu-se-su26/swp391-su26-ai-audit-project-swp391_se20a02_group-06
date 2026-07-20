@@ -41,8 +41,9 @@ public class WaterReminderBackgroundService : BackgroundService
                 _logger.LogError(ex, "Error occurred while sending water reminders.");
             }
 
-            // Scan every 30 minutes
-            await Task.Delay(TimeSpan.FromMinutes(30), stoppingToken);
+            _logger.LogInformation("Water reminder scan cycle completed at {Time}", DateTime.Now);
+            // Scan every 5 minutes
+            await Task.Delay(TimeSpan.FromMinutes(5), stoppingToken);
         }
     }
 
@@ -61,16 +62,15 @@ public class WaterReminderBackgroundService : BackgroundService
 
         foreach (var member in members)
         {
-            // If they haven't configured their waking hours yet (null), skip this user
-            if (string.IsNullOrEmpty(member.Status))
+            // Skip if reminder schedule not configured
+            if (string.IsNullOrEmpty(member.WaterReminderStartTime) || string.IsNullOrEmpty(member.WaterReminderEndTime))
             {
                 continue;
             }
 
-            if (!TimeSpan.TryParse("08:00", out var startTime) ||
-                !TimeSpan.TryParse("22:00", out var endTime))
+            if (!TimeSpan.TryParse(member.WaterReminderStartTime, out var startTime) ||
+                !TimeSpan.TryParse(member.WaterReminderEndTime, out var endTime))
             {
-                // Fallback if formatting is corrupted
                 continue;
             }
 
@@ -151,7 +151,7 @@ public class WaterReminderBackgroundService : BackgroundService
                 await notificationService.SendNotificationAsync(
                     member.Id,
                     "Time to Drink Water! 🥛",
-                    $"Bạn còn {remaining} cốc nước cần uống trước 22:00. Hãy bổ sung ngay một cốc nước nhé!",
+                    $"Bạn còn {remaining} cốc nước cần uống trước {member.WaterReminderEndTime}. Hãy bổ sung ngay một cốc nước nhé!",
                     "WATER_REMINDER"
                 );
             }

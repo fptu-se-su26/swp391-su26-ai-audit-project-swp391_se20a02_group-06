@@ -136,8 +136,8 @@ const WorkoutResults: React.FC = () => {
     const remainingSeconds = Math.max(0, totalSeconds - elapsedSeconds)
 
     useEffect(() => {
-        if (!activeSessionId && activePlanId) {
-            startWorkoutSession({ workoutPlanId: activePlanId })
+        if (!activeSessionId) {
+            startWorkoutSession({ workoutPlanId: activePlanId ?? null })
                 .then(session => setActiveSessionId(session.id))
                 .catch(console.error)
         }
@@ -206,7 +206,7 @@ const WorkoutResults: React.FC = () => {
             navigate('/nutrition')
             return
         }
-        const doneExercises = exercises.filter(e => e.isDone)
+        const doneExercises = exercises.filter(e => e.isDone && e.id > 0)
         const totalCalories = data?.targetCalories || (doneExercises.length * 30)
         try {
             await completeWorkoutSession(activeSessionId, {
