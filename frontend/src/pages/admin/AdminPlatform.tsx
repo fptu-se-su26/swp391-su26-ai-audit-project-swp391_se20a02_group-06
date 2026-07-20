@@ -14,12 +14,13 @@ const AdminPlatform: React.FC = () => {
                 <Box
                     position="absolute"
                     inset={0}
-                    bg="blackAlpha.700"
+                    bg="blackAlpha.500"
                     display="flex"
                     alignItems="center"
                     justifyContent="center"
                     zIndex={10}
                     borderRadius="16px"
+                    pointerEvents="none"
                 >
                     <Text fontSize="28px" fontWeight="800" color="white">
                         Coming Soon
@@ -32,7 +33,7 @@ const AdminPlatform: React.FC = () => {
                     </Heading>
                 </Flex>
 
-                <Flex gap="4" mb="5" opacity={0.15}>
+                <Flex gap="4" mb="5">
                     <Box bg="#141720" border="1px solid" borderColor="#1e2028" borderRadius="16px" p="5" flex={1}>
                         <Text fontSize="12px" color="#8A8A93" textTransform="uppercase" fontWeight="700">Retention Rate</Text>
                         <Text fontSize="28px" fontWeight="800" color="white">--%</Text>
@@ -47,7 +48,7 @@ const AdminPlatform: React.FC = () => {
                     </Box>
                 </Flex>
 
-                <Flex gap="4" opacity={0.15}>
+                <Flex gap="4">
                     <Box bg="#141720" border="1px solid" borderColor="#1e2028" borderRadius="16px" p="6" minH="300px" flex={2}>
                         <Text fontSize="14px" fontWeight="700" color="white" mb="2">Traffic & Signups</Text>
                         <Box h="200px" bg="#0A0C10" borderRadius="10px" border="1px dashed" borderColor="#2e3040" display="flex" alignItems="center" justifyContent="center">
