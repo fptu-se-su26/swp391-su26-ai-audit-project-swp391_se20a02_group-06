@@ -24,7 +24,7 @@ import {
     FiActivity,
     FiSearch,
 } from 'react-icons/fi'
-import useSWR from 'swr'
+import useSWR, { mutate as globalMutate } from 'swr'
 import apiClient from '../../lib/axios'
 import AppButton from '../../components/shared/Button/AppButton'
 import MemberLayout from '../../components/shared/Layout/MemberLayout.tsx'
@@ -55,14 +55,13 @@ const Nutrition: React.FC = () => {
     const { data: foods, isLoading, error } = useSWR(sessionId ? '/foods' : null, fetcher)
 
     // Fetch daily nutrition summary
-    const { data: summary, mutate: refreshSummary } = useSWR(sessionId ? `/nutrition/daily?date=${todayStr}` : null, fetcher)
+    const { data: summary } = useSWR(sessionId ? `/nutrition/daily?date=${todayStr}` : null, fetcher)
 
     const handleLogWater = useCallback(async () => {
-        // Optimistic update
-        refreshSummary((prev: any) => prev ? { ...prev, waterConsumedGlasses: (prev.waterConsumedGlasses || 0) + 1 } : prev, { revalidate: false })
+        const key = `/nutrition/daily?date=${todayStr}`
         try {
             await logWater(todayStr, 1)
-            refreshSummary()
+            globalMutate(key)
             toast({
                 title: 'Water logged!',
                 description: '1 glass of water added.',
@@ -71,7 +70,7 @@ const Nutrition: React.FC = () => {
                 isClosable: true,
             })
         } catch {
-            refreshSummary()
+            globalMutate(key)
             toast({
                 title: 'Failed to log water',
                 status: 'error',
@@ -79,7 +78,7 @@ const Nutrition: React.FC = () => {
                 isClosable: true,
             })
         }
-    }, [todayStr, refreshSummary, toast])
+    }, [todayStr, toast])
 
     const filteredFoods = foods?.filter((food: any) => {
         const foodName = typeof food?.name === 'string' ? food.name : ''
@@ -91,12 +90,11 @@ const Nutrition: React.FC = () => {
     const waterFromNotification = (location.state as { waterConsumedGlasses?: number } | null)?.waterConsumedGlasses
     useEffect(() => {
         if (waterFromNotification) {
-            refreshSummary((prev: any) => prev ? { ...prev, waterConsumedGlasses: waterFromNotification } : prev, { revalidate: false })
-            refreshSummary()
+            globalMutate(`/nutrition/daily?date=${todayStr}`)
         }
     }, [waterFromNotification])
 
-    const waterCurrent = summary?.waterConsumedGlasses ?? 6
+    const waterCurrent = summary?.waterConsumedGlasses ?? 0
     const waterTotal = summary?.waterTargetGlasses ?? 8
 
     return (
