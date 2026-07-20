@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Box, Flex, Heading, Text, Spinner } from '@chakra-ui/react'
+import { Flex, Heading, Text, Spinner } from '@chakra-ui/react'
 import { useSearchParams, useNavigate } from 'react-router-dom'
 import apiClient from '../../lib/axios'
 

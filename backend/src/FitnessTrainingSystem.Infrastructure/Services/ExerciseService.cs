@@ -1,4 +1,4 @@
-using FitnessTrainingSystem.Application.DTOs.Exercises;
+﻿using FitnessTrainingSystem.Application.DTOs.Exercises;
 using FitnessTrainingSystem.Application.Interfaces;
 using FitnessTrainingSystem.Domain.Entities;
 using FitnessTrainingSystem.Infrastructure.Persistence;
@@ -175,6 +175,15 @@ public class ExerciseService : IExerciseService
     {
         var exercise = await _context.Exercises.FindAsync(id);
         if (exercise == null) return false;
+
+        var relatedRequests = await _context.PtUploadRequests
+            .Where(r => r.ExerciseId == id)
+            .ToListAsync();
+
+        foreach (var request in relatedRequests)
+        {
+            request.ExerciseId = null;
+        }
 
         _context.Exercises.Remove(exercise);
         await _context.SaveChangesAsync();

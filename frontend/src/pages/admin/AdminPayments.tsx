@@ -29,7 +29,7 @@ import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
 import { 
     startOfWeek, endOfWeek, startOfMonth, endOfMonth, 
-    startOfYear, endOfYear, parse, isWithinInterval 
+    startOfYear, endOfYear, isWithinInterval 
 } from 'date-fns'
 import { motion } from 'framer-motion'
 import useSWR from 'swr'

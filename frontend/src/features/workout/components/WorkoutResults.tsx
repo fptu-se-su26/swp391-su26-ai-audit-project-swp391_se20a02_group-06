@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react'
+﻿import React, { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
     AspectRatio,
@@ -256,7 +256,7 @@ const WorkoutResults: React.FC = () => {
             <Box minH="100vh" display="flex" flexDirection="column">
                 <Box flex="1" p="7" pb="28" maxW="900px">
                     <Flex align="center" gap="3" mb="1" flexWrap="wrap">
-                        <Heading fontSize="24px" fontWeight="800" color="white">Today — {goalNames[data.goal] ?? 'Custom Phase'}</Heading>
+                        <Heading fontSize="24px" fontWeight="800" color="white">Today â€” {goalNames[data.goal] ?? 'Custom Phase'}</Heading>
                         <Badge bg="rgba(224,48,48,0.15)" color="#E03030" border="1px solid" borderColor="rgba(224,48,48,0.3)" fontSize="10px" fontWeight="700" px="3" py="1" borderRadius="full" display="flex" alignItems="center" gap="1">AI Optimized</Badge>
                     </Flex>
                     <Text fontSize="11px" color="#8A8A93" mb="5" cursor="pointer" _hover={{ color: '#E03030' }} display="inline-block" onClick={resetWorkout}>Regenerate Workout</Text>

@@ -13,7 +13,8 @@ public class UpdateExerciseDto
 
     public string? VideoUrl { get; set; }
 
-    [MaxLength(100, ErrorMessage = "Muscle Group must not exceed 100 characters")]
+    public int? MuscleGroupId { get; set; }
+
     public string? MuscleGroup { get; set; }
 
     [Required(ErrorMessage = "Difficulty is required")]

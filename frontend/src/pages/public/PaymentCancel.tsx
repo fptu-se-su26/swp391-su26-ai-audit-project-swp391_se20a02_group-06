@@ -1,4 +1,4 @@
-import { Box, Flex, Heading, Text } from '@chakra-ui/react'
+import { Flex, Heading, Text } from '@chakra-ui/react'
 import { useNavigate } from 'react-router-dom'
 import AppButton from '../../components/shared/Button/AppButton'
 

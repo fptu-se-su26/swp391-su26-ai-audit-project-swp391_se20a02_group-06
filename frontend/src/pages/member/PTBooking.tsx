@@ -6,8 +6,8 @@ import PTBookingModal from '../../features/pt/components/PTBookingModal.tsx'
 import PTCalendar from '../../features/pt/components/PTCalendar.tsx'
 import PTCoachCard from '../../features/pt/components/PTCoachCard.tsx'
 import PTSessionPanel from '../../features/pt/components/PTSessionPanel.tsx'
-import { usePTBooking } from '../../features/pt/hooks/usePTBooking.ts'
-import { MOCK_COACH } from '../../features/pt/types/pt.ts'
+import { usePTBooking } from '../../features/pt/hooks/usePTBooking'
+import { MOCK_COACH } from '../../features/pt/types/pt'
 
 
 const PTBooking: React.FC = () => {

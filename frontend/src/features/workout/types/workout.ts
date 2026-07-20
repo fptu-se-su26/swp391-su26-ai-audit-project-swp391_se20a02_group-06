@@ -1,4 +1,4 @@
-export type WorkoutPhase = 'intro' | 'setup' | 'loading' | 'results'
+﻿export type WorkoutPhase = 'intro' | 'setup' | 'loading' | 'results'
 
 export type WorkoutFormData = {
     planType: 'daily' | 'weekly'

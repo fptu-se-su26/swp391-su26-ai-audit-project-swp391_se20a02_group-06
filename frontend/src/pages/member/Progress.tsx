@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react'
+﻿import React, { useState, useMemo } from 'react'
 import {
     Box, Flex, Heading, Text, Icon, Button, Spinner, HStack, Stack, Select,
 } from '@chakra-ui/react'
@@ -123,7 +123,7 @@ const Progress: React.FC = () => {
                                             </Heading>
                                             <HStack spacing="2" color="#8A8A93" fontSize="12px">
                                                 <Text>{session.details.length} Exercises</Text>
-                                                <Text>•</Text>
+                                                <Text>â€¢</Text>
                                                 <Text>{session.totalDurationMinutes || 0} mins</Text>
                                             </HStack>
                                         </Flex>

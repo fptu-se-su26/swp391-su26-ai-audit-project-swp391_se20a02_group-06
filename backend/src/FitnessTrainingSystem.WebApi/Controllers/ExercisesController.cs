@@ -36,7 +36,7 @@ public class ExercisesController : ControllerBase
     [Authorize(Roles = "Admin,ADMIN,PT,PersonalTrainer")]
     public async Task<IActionResult> GetMyExercises()
     {
-        var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var userIdString = User.FindFirstValue(JwtRegisteredClaimNames.Sub) ?? User.FindFirstValue(ClaimTypes.NameIdentifier);
         if (!int.TryParse(userIdString, out int userId))
         {
             return Unauthorized(new { message = "Invalid user identifier." });
@@ -62,8 +62,7 @@ public class ExercisesController : ControllerBase
     {
         if (!ModelState.IsValid) return BadRequest(ModelState);
 
-        // Get the ID of the user creating the exercise
-        var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var userIdString = User.FindFirstValue(JwtRegisteredClaimNames.Sub) ?? User.FindFirstValue(ClaimTypes.NameIdentifier);
         if (!int.TryParse(userIdString, out int userId))
         {
             return Unauthorized(new { message = "Invalid user identifier." });

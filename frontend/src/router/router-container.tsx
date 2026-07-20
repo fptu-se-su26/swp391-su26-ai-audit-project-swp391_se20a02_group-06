@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+﻿import { useEffect } from "react";
 import { Route, Routes, Navigate } from "react-router-dom";
 import { useAuthStore } from "../store/useAuthStore";
 
@@ -63,7 +63,7 @@ const RouterContainer = () => {
             {/* Public Homepage / Landing Page */}
             <Route path="/" element={<Landing />} />
 
-            {/* Auth Pages — redirect to dashboard if already logged in */}
+            {/* Auth Pages â€” redirect to dashboard if already logged in */}
             <Route path="/login" element={<GuestRoute><Login /></GuestRoute>} />
             <Route path="/register" element={<GuestRoute><Register /></GuestRoute>} />
             <Route path="/forgot-password" element={<GuestRoute><ForgotPassword /></GuestRoute>} />
@@ -198,7 +198,7 @@ const RouterContainer = () => {
                 }
             />
 
-            {/* Member Area Routes — Protected */}
+            {/* Member Area Routes â€” Protected */}
             <Route path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
             <Route path="/workouts" element={<PrivateRoute><Workouts /></PrivateRoute>} />
             <Route path="/nutrition" element={<PrivateRoute><Nutrition /></PrivateRoute>} />

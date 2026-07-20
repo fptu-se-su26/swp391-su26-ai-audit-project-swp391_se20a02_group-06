@@ -36,9 +36,9 @@ public class ExerciseRequestService : IExerciseRequestService
         {
             PtId = dto.PtId,
             Status = "PENDING",
-            RequestedBy = adminId,
+            AdminId = adminId,
             MuscleGroup = dto.MuscleGroup,
-            Difficulty = dto.Difficulty,
+            Difficulty = (int?)dto.Difficulty,
             Instructions = dto.Instructions,
             Priority = dto.Priority,
             Deadline = dto.Deadline,
@@ -53,10 +53,11 @@ public class ExerciseRequestService : IExerciseRequestService
         var adminUser = await _context.Users.FirstOrDefaultAsync(u => u.Id == adminId);
         var adminName = adminUser?.Fullname ?? "Admin";
 
+        var groupInfo = string.IsNullOrEmpty(dto.MuscleGroup) ? "not specified" : dto.MuscleGroup;
         await _notificationService.SendNotificationAsync(
             dto.PtId,
             "New Exercise Request",
-            $"{adminName} requested a new exercise for group: {dto.MuscleGroup ?? "General"}.",
+            $"{adminName} requested a new exercise for group: {groupInfo}.",
             "EXERCISE_REQUEST"
         );
 
@@ -68,12 +69,11 @@ public class ExerciseRequestService : IExerciseRequestService
         var requests = await _context.PtUploadRequests
             .Include(r => r.Pt)
             .Include(r => r.Admin)
-            .Include(r => r.RequestedByUser)
             .Include(r => r.Exercise)
             .OrderByDescending(r => r.Id)
             .ToListAsync();
 
-        return requests.Select(r => MapToDto(r, r.Pt.Fullname, r.Admin?.Fullname, r.RequestedByUser?.Fullname, r.Exercise?.Title));
+        return requests.Select(r => MapToDto(r, r.Pt.Fullname, r.Admin?.Fullname, null, r.Exercise?.Title));
     }
 
     public async Task<IEnumerable<ExerciseRequestDto>> GetRequestsByPtAsync(int ptId)
@@ -81,13 +81,12 @@ public class ExerciseRequestService : IExerciseRequestService
         var requests = await _context.PtUploadRequests
             .Include(r => r.Pt)
             .Include(r => r.Admin)
-            .Include(r => r.RequestedByUser)
             .Include(r => r.Exercise)
             .Where(r => r.PtId == ptId)
             .OrderByDescending(r => r.Id)
             .ToListAsync();
 
-        return requests.Select(r => MapToDto(r, r.Pt.Fullname, r.Admin?.Fullname, r.RequestedByUser?.Fullname, r.Exercise?.Title));
+        return requests.Select(r => MapToDto(r, r.Pt.Fullname, r.Admin?.Fullname, null, r.Exercise?.Title));
     }
 
     public async Task<ExerciseRequestDto> SubmitExerciseAsync(int requestId, PtSubmitExerciseDto dto, int ptId)
@@ -95,7 +94,6 @@ public class ExerciseRequestService : IExerciseRequestService
         var request = await _context.PtUploadRequests
             .Include(r => r.Pt)
             .Include(r => r.Admin)
-            .Include(r => r.RequestedByUser)
             .Include(r => r.Exercise)
             .FirstOrDefaultAsync(r => r.Id == requestId);
 
@@ -120,7 +118,7 @@ public class ExerciseRequestService : IExerciseRequestService
         await _context.SaveChangesAsync();
 
         // Notify Requesting Admin
-        var adminIdToNotify = request.RequestedBy ?? 1; // default to first admin
+        var adminIdToNotify = request.AdminId ?? 1; // default to first admin
         await _notificationService.SendNotificationAsync(
             adminIdToNotify,
             "Exercise Submission Received",
@@ -128,7 +126,7 @@ public class ExerciseRequestService : IExerciseRequestService
             "EXERCISE_SUBMISSION"
         );
 
-        return MapToDto(request, request.Pt.Fullname, request.Admin?.Fullname, request.RequestedByUser?.Fullname, request.Exercise?.Title);
+        return MapToDto(request, request.Pt.Fullname, request.Admin?.Fullname, null, request.Exercise?.Title);
     }
 
     public async Task<ExerciseRequestDto> ReviewRequestAsync(int requestId, ReviewExerciseRequestDto dto, int adminId)
@@ -136,7 +134,6 @@ public class ExerciseRequestService : IExerciseRequestService
         var request = await _context.PtUploadRequests
             .Include(r => r.Pt)
             .Include(r => r.Admin)
-            .Include(r => r.RequestedByUser)
             .Include(r => r.Exercise)
             .FirstOrDefaultAsync(r => r.Id == requestId);
 
@@ -155,16 +152,13 @@ public class ExerciseRequestService : IExerciseRequestService
                 throw new Exception("Cannot approve a request without a submitted exercise title.");
             }
 
-            var muscleGroupObj = string.IsNullOrEmpty(request.MuscleGroup) ? null : await _context.MuscleGroups.FirstOrDefaultAsync(m => m.Name == request.MuscleGroup);
-
             // Create new Exercise
             var exercise = new Exercise
             {
                 Title = request.Title,
                 Description = request.Description,
                 VideoUrl = request.VideoUrl,
-                MuscleGroupId = muscleGroupObj?.Id,
-                Difficulty = request.Difficulty ?? ExerciseDifficulty.Intermediate,
+                Difficulty = request.Difficulty != null ? (ExerciseDifficulty)request.Difficulty : ExerciseDifficulty.Intermediate,
                 DurationMinutes = request.Duration,
                 CreatedBy = request.PtId,
                 CreatedAt = DateTime.UtcNow
@@ -208,7 +202,7 @@ public class ExerciseRequestService : IExerciseRequestService
             );
         }
 
-        return MapToDto(request, request.Pt.Fullname, adminUser?.Fullname, request.RequestedByUser?.Fullname, request.Exercise?.Title);
+        return MapToDto(request, request.Pt.Fullname, adminUser?.Fullname, null, request.Exercise?.Title);
     }
 
     private ExerciseRequestDto MapToDto(PtUploadRequest request, string ptName, string? adminName, string? requestedByName, string? exerciseTitle)
@@ -229,10 +223,10 @@ public class ExerciseRequestService : IExerciseRequestService
             ReviewNote = request.ReviewNote,
             SubmittedAt = request.SubmittedAt,
             ReviewedAt = request.ReviewedAt,
-            RequestedBy = request.RequestedBy,
+            RequestedBy = request.AdminId,
             RequestedByName = requestedByName,
             MuscleGroup = request.MuscleGroup,
-            Difficulty = request.Difficulty,
+            Difficulty = request.Difficulty != null ? (ExerciseDifficulty?)request.Difficulty : null,
             Instructions = request.Instructions,
             Priority = request.Priority,
             Deadline = request.Deadline,
