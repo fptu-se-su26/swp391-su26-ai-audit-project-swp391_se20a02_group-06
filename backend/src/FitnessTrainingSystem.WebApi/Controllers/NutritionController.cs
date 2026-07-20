@@ -7,9 +7,11 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace FitnessTrainingSystem.WebApi.Controllers;
 
+public record GenerateDietPlanRequest(string UserRequest);
+
 [ApiController]
 [Route("api/[controller]")]
-
+[Authorize]
 public class NutritionController : ControllerBase
 {
     private readonly IMediator _mediator;
@@ -20,14 +22,14 @@ public class NutritionController : ControllerBase
     }
 
     [HttpPost("generate-diet-plan")]
-    public async Task<IActionResult> GenerateDietPlan([FromBody] CreateDietPlanCommand command)
+    public async Task<IActionResult> GenerateDietPlan([FromBody] GenerateDietPlanRequest request)
     {
-        
-        var userId = 1; 
+        var userIdString = User.FindFirstValue(JwtRegisteredClaimNames.Sub) ?? User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (!int.TryParse(userIdString, out int userId))
+            return Unauthorized(new { message = "Invalid user identifier." });
 
-        // Khởi tạo lại command với UserId cố định vừa gán
-        var authenticatedCommand = command with { UserId = userId }; //
-        var result = await _mediator.Send(authenticatedCommand); //
-        return Ok(result); //
+        var command = new CreateDietPlanCommand(userId, request.UserRequest);
+        var result = await _mediator.Send(command);
+        return Ok(result);
     }
 }

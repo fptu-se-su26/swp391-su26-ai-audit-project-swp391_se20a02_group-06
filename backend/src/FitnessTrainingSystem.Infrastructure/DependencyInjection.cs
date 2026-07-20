@@ -1,4 +1,4 @@
-using FitnessTrainingSystem.Application.Common.Interfaces; 
+using FitnessTrainingSystem.Application.Common.Interfaces;
 using FitnessTrainingSystem.Application.Interfaces;
 using FitnessTrainingSystem.Infrastructure.Authentication;
 using FitnessTrainingSystem.Infrastructure.Persistence;
@@ -6,6 +6,7 @@ using FitnessTrainingSystem.Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using PayOS;
 
 namespace FitnessTrainingSystem.Infrastructure;
 
@@ -20,15 +21,13 @@ public static class DependencyInjection
             throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
         }
 
-        // We use a fixed MySqlServerVersion to avoid requiring a running database server during design-time migrations.
-        // Adjust the version (e.g. Version(8, 0, 36)) to match your production/local MySQL server version.
         var serverVersion = new MySqlServerVersion(new Version(8, 0, 36));
 
         services.AddDbContext<ApplicationDbContext>(options =>
             options.UseMySql(
                 connectionString,
                 serverVersion,
-                builder => 
+                builder =>
                 {
                     builder.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName);
                     builder.EnableRetryOnFailure();
@@ -46,14 +45,30 @@ public static class DependencyInjection
         services.AddScoped<FitnessTrainingSystem.Application.Interfaces.IEmailService, FitnessTrainingSystem.Infrastructure.Services.EmailService>();
         services.AddScoped<FitnessTrainingSystem.Application.Interfaces.IOTPService, FitnessTrainingSystem.Infrastructure.Services.OTPService>();
         services.AddScoped<IMuscleGroupService, MuscleGroupService>();
+        services.AddScoped<IWorkoutService, WorkoutService>();
+        services.AddScoped<INutritionService, NutritionService>();
+        services.AddScoped<IExerciseRequestService, ExerciseRequestService>();
+        services.AddScoped<INotificationService, NotificationService>();
+        services.AddScoped<IDashboardService, DashboardService>();
+        services.AddScoped<IPTProfileService, PTProfileService>();
+        services.AddScoped<IMembershipService, MembershipService>();
 
-        // 🚀 ĐĂNG KÝ HỆ THỐNG TRUY CẬP AI DƯỚI ĐÂY
-        // Đăng ký HttpClient ánh xạ Interface có sẵn của bạn vào Class thực thi Python mới
-        services.AddHttpClient<IGeminiAiService, PythonAiService>(client =>
-{
-        client.BaseAddress = new Uri("http://localhost:8000/"); // Đường dẫn local của con Python
-});
+        services.AddHostedService<FitnessTrainingSystem.Infrastructure.BackgroundServices.ExerciseDeadlineReminderService>();
+        services.AddHostedService<FitnessTrainingSystem.Infrastructure.BackgroundServices.WaterReminderBackgroundService>();
+
+        services.AddScoped<ICloudinaryService, CloudinaryService>();
+
+        services.AddHttpClient<IGeminiAiService, DirectGeminiService>();
         services.AddScoped<IAIChatService, AIChatService>();
+
+        services.AddSingleton(new PayOSClient(new PayOSOptions
+        {
+            ClientId = configuration["PayOS:ClientId"] ?? "",
+            ApiKey = configuration["PayOS:ApiKey"] ?? "",
+            ChecksumKey = configuration["PayOS:ChecksumKey"] ?? ""
+        }));
+        services.AddScoped<IPayOSService, PayOSService>();
+
         return services;
     }
 }

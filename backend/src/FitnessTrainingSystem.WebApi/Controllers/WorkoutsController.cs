@@ -1,3 +1,4 @@
+using System.IdentityModel.Tokens.Jwt;
 using FitnessTrainingSystem.Application.DTOs.Workouts;
 using FitnessTrainingSystem.Application.Interfaces;
 using Microsoft.AspNetCore.Authorization;
@@ -23,7 +24,8 @@ public class WorkoutsController : ControllerBase
 
     private int GetCurrentUserId()
     {
-        var userIdString = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        var userIdString = User.FindFirst(JwtRegisteredClaimNames.Sub)?.Value
+            ?? User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         if (int.TryParse(userIdString, out var userId))
             return userId;
         throw new UnauthorizedAccessException("User not authenticated.");
@@ -75,12 +77,12 @@ public class WorkoutsController : ControllerBase
     }
 
     [HttpGet("history")]
-    public async Task<ActionResult<IEnumerable<WorkoutSessionDto>>> GetHistory()
+    public async Task<ActionResult<IEnumerable<WorkoutSessionDto>>> GetHistory([FromQuery] string filter = "all")
     {
         try
         {
             var userId = GetCurrentUserId();
-            var history = await _workoutService.GetUserWorkoutHistoryAsync(userId);
+            var history = await _workoutService.GetUserWorkoutHistoryAsync(userId, filter);
             return Ok(history);
         }
         catch (Exception ex)

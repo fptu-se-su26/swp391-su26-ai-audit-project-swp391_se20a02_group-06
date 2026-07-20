@@ -29,10 +29,8 @@ public class User : BaseAuditableEntity
     public ICollection<WorkoutSession> WorkoutSessions { get; set; } = new List<WorkoutSession>();
     public ICollection<AiRecommendation> AiRecommendations { get; set; } = new List<AiRecommendation>();
     public ICollection<MealSchedule> MealSchedules { get; set; } = new List<MealSchedule>();
-
-    public ICollection<AIChatSession>AIChatSessions
-                = new List<AIChatSession>();
-    public ICollection<AIDietHistory>AIDietHistories
-                = new List<AIDietHistory>();
-
+    public ICollection<DailyNutritionLog> DailyNutritionLogs { get; set; } = new List<DailyNutritionLog>();
+    public ICollection<MembershipSubscription> MembershipSubscriptions { get; set; } = new List<MembershipSubscription>();
+    public ICollection<AIChatSession> AIChatSessions = new List<AIChatSession>();
+    public ICollection<AIDietHistory> AIDietHistories = new List<AIDietHistory>();
 }

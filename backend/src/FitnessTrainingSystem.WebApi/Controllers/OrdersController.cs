@@ -1,3 +1,4 @@
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using FitnessTrainingSystem.Application.DTOs.Orders;
 using FitnessTrainingSystem.Application.Interfaces;
@@ -26,7 +27,7 @@ public class OrdersController : ControllerBase
             return BadRequest(ModelState);
         }
 
-        var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? User.FindFirstValue("sub");
+        var userIdString = User.FindFirstValue(JwtRegisteredClaimNames.Sub) ?? User.FindFirstValue(ClaimTypes.NameIdentifier);
         if (string.IsNullOrEmpty(userIdString) || !int.TryParse(userIdString, out var userId))
         {
             return Unauthorized(new { message = "Invalid token or user ID not found." });
@@ -41,5 +42,13 @@ public class OrdersController : ControllerBase
         {
             return BadRequest(new { message = ex.Message });
         }
+    }
+
+    [HttpGet]
+    [Authorize(Roles = "Admin")] // Admin only
+    public async Task<IActionResult> GetAllOrders()
+    {
+        var orders = await _orderService.GetAllOrdersAsync();
+        return Ok(orders);
     }
 }

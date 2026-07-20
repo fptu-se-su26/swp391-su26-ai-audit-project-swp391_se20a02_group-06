@@ -54,6 +54,7 @@ export interface WorkoutSessionDetailDto {
     exerciseName?: string
     setsDone?: number
     repsDone?: number
+    weight?: number
     durationSeconds?: number
     caloriesBurned?: number
 }
@@ -73,7 +74,7 @@ export const completeWorkoutSession = async (sessionId: number, data: CompleteWo
     return response.data
 }
 
-export const getWorkoutHistory = async (): Promise<WorkoutSessionDto[]> => {
-    const response = await apiClient.get('/workouts/history')
+export const getWorkoutHistory = async (filter: string = 'all'): Promise<WorkoutSessionDto[]> => {
+    const response = await apiClient.get(`/workouts/history?filter=${filter}`)
     return response.data
 }

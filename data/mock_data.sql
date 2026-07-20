@@ -8,6 +8,29 @@ SET FOREIGN_KEY_CHECKS=0;
 USE FitnessProject;
 
 -- ==========================================
+-- TRUNCATE ALL TABLES (clean re-seed)
+-- ==========================================
+TRUNCATE TABLE pt_upload_requests;
+TRUNCATE TABLE notifications;
+TRUNCATE TABLE meal_schedule_items;
+TRUNCATE TABLE meal_schedules;
+TRUNCATE TABLE workout_session_details;
+TRUNCATE TABLE workout_sessions;
+TRUNCATE TABLE workout_plan_exercises;
+TRUNCATE TABLE workout_plans;
+TRUNCATE TABLE ai_recommendations;
+TRUNCATE TABLE body_metrics;
+TRUNCATE TABLE schedules;
+TRUNCATE TABLE membership_subscriptions;
+TRUNCATE TABLE payments;
+TRUNCATE TABLE orders;
+TRUNCATE TABLE product_packages;
+TRUNCATE TABLE exercises;
+TRUNCATE TABLE muscle_groups;
+TRUNCATE TABLE foods;
+TRUNCATE TABLE pt_profiles;
+
+-- ==========================================
 -- PT_PROFILES  (PT = user_id 2)
 -- ==========================================
 INSERT IGNORE INTO pt_profiles (user_id, bio, experience_years, rating) VALUES
@@ -32,24 +55,46 @@ INSERT IGNORE INTO muscle_groups (id, name, description) VALUES
 -- EXERCISES  (created_by PT = 2 or Admin = 1)
 -- ==========================================
 INSERT IGNORE INTO exercises (id, title, description, video_url, muscle_group_id, difficulty, duration, created_by, created_at) VALUES
-(1,  'Barbell Bench Press',    'Classic flat-bench chest compound movement with a barbell.',                                'https://example.com/videos/bench-press',     1, 1, 45, 2, CURRENT_TIMESTAMP(6)),
-(2,  'Pull-Up',                'Upper-body pulling exercise targeting lats and biceps.',                                    'https://example.com/videos/pull-up',         2, 1, 30, 2, CURRENT_TIMESTAMP(6)),
-(3,  'Barbell Back Squat',     'King of leg exercises — full lower-body compound movement.',                                'https://example.com/videos/back-squat',      3, 2, 60, 2, CURRENT_TIMESTAMP(6)),
-(4,  'Overhead Press',         'Press a barbell overhead to build shoulder strength and stability.',                        'https://example.com/videos/ohp',             4, 1, 40, 2, CURRENT_TIMESTAMP(6)),
-(5,  'Dumbbell Bicep Curl',    'Isolation exercise for building bicep peak and size.',                                      'https://example.com/videos/bicep-curl',      5, 0, 20, 2, CURRENT_TIMESTAMP(6)),
-(6,  'Plank',                  'Isometric core hold building stability and endurance.',                                     'https://example.com/videos/plank',           6, 0, 15, 2, CURRENT_TIMESTAMP(6)),
-(7,  'Deadlift',               'Full-body posterior-chain compound lift.',                                                  'https://example.com/videos/deadlift',        2, 2, 50, 2, CURRENT_TIMESTAMP(6)),
-(8,  'HIIT Treadmill Sprint',  '30-second all-out sprints alternated with 30-second rest intervals.',                      'https://example.com/videos/hiit-treadmill',  7, 1, 20, 2, CURRENT_TIMESTAMP(6)),
-(9,  'Dumbbell Lunges',        'Unilateral leg exercise improving balance and quad strength.',                              'https://example.com/videos/lunges',          3, 0, 25, 2, CURRENT_TIMESTAMP(6)),
-(10, 'Cable Tricep Pushdown',  'Isolation movement for tricep mass and definition.',                                        'https://example.com/videos/tricep-pushdown', 5, 0, 20, 2, CURRENT_TIMESTAMP(6)),
-(11, 'Romanian Deadlift',      'Hip-hinge movement targeting hamstrings and glutes.',                                       'https://example.com/videos/rdl',             3, 1, 35, 2, CURRENT_TIMESTAMP(6)),
-(12, 'Battle Ropes',           'High-intensity conditioning exercise using heavy ropes.',                                   'https://example.com/videos/battle-ropes',    7, 1, 15, 2, CURRENT_TIMESTAMP(6)),
-(13, 'Incline Dumbbell Press', 'Targets the upper chest on a 30–45-degree incline bench.',                                 'https://example.com/videos/incline-press',   1, 1, 35, 2, CURRENT_TIMESTAMP(6)),
-(14, 'Hanging Leg Raise',      'Core exercise: hang from a bar and raise legs to 90 degrees.',                             'https://example.com/videos/leg-raise',       6, 1, 20, 2, CURRENT_TIMESTAMP(6)),
-(15, 'Yoga Sun Salutation',    'Flowing 12-pose sequence to warm up and mobilize the entire body.',                        'https://example.com/videos/sun-salutation',  7, 0, 20, 1, CURRENT_TIMESTAMP(6));
+(1,  'Warmup Exercise 1',    'Gentle marching in place to warm up the body.',                                'https://res.cloudinary.com/bucd22r4/video/upload/v1783519878/8017173331047_zjmdja.mp4',     7, 0, 5,  2, CURRENT_TIMESTAMP(6)),
+(2,  'Warmup Exercise 2',                'Raise arms overhead while alternating side steps in rhythm.',                                    'https://res.cloudinary.com/bucd22r4/video/upload/v1783520882/8017173395908_lzpx23.mp4',         7, 0, 5,  2, CURRENT_TIMESTAMP(6)),
+(3,  'Warmup Exercise 3',     'Lower hips while stepping one leg backward, alternating sides.',                                'https://res.cloudinary.com/bucd22r4/video/upload/v1783521212/8017173637193_ybxuoq.mp4',      3, 0, 5,  2, CURRENT_TIMESTAMP(6)),
+(4,  'Warmup Exercise 4',         'Simple low intensity exercise to prepare for a workout.',                        'https://res.cloudinary.com/bucd22r4/video/upload/v1783523875/8017173747145_aqfvrr.mp4',             7, 0, 5,  2, CURRENT_TIMESTAMP(6)),
+(5,  'Warmup Exercise 5',    'Easy movement designed to loosen up tight muscles safely.',                                      'https://res.cloudinary.com/bucd22r4/video/upload/v1783524064/8017174522387_i6last.mp4',      7, 0, 5,  2, CURRENT_TIMESTAMP(6)),
+(6,  'Warmup Exercise 6',                  'Low-impact movement to elevate core temperature and heart rate.',                                     'https://res.cloudinary.com/bucd22r4/video/upload/v1783524815/8017174582040_veciou.mp4',           7, 0, 5,  2, CURRENT_TIMESTAMP(6)),
+(7,  'Warmup Exercise 7',               'Basic exercise to activate target muscles before your workout.',                                                  'https://res.cloudinary.com/bucd22r4/video/upload/v1783524892/8017174806631_ygekab.mp4',        7, 0, 5,  2, CURRENT_TIMESTAMP(6)),
+(8,  'Mountain Climbers',  'Drive knees toward the chest alternating from a plank.',                      'https://res.cloudinary.com/bucd22r4/video/upload/v1783527937/8018825646358_nelbm3.mp4',  6, 1, 10, 2, CURRENT_TIMESTAMP(6)),
+(9,  'Plank Crunch',        'Bring opposite knee and elbow inward while holding plank.',                              'https://res.cloudinary.com/bucd22r4/video/upload/v1783527957/8018825658035_hlqygj.mp4',          6, 2, 15, 2, CURRENT_TIMESTAMP(6)),
+(10, 'Plank Hops',  'Hop both feet forward and backward from a plank.',                                        'https://res.cloudinary.com/bucd22r4/video/upload/v1783527962/8018825676592_lqzlgr.mp4', 6, 1, 10, 2, CURRENT_TIMESTAMP(6));
 
 
 -- ==========================================
+-- EXERCISES  (new bodyweight exercises, created_by Admin = 1)
+-- ==========================================
+INSERT IGNORE INTO exercises (id, title, description, video_url, muscle_group_id, difficulty, duration, created_by, created_at) VALUES
+(11, '3/4 Sit-Up',              'Lie flat on your back with your knees bent and feet flat on the ground. Place your hands behind your head with your elbows pointing outwards. Engaging your abs, slowly lift your upper body off the ground, curling forward until your torso is at a 45-degree angle. Pause for a moment at the top, then slowly lower back down.',                                                                                                                                                                  'https://res.cloudinary.com/bucd22r4/image/upload/v1784125265/fitness-training/exercises/j2c6n0smecvzapwclvio.gif',  6, 0, 15, 1, CURRENT_TIMESTAMP(6)),
+(12, 'Air Bike',                'Lie flat on your back with your hands placed behind your head. Lift your legs off the ground and bend your knees at a 90-degree angle. Bring your right elbow towards your left knee while simultaneously straightening your right leg. Return to the starting position and repeat on the opposite side. Continue alternating sides in a pedaling motion.',                                                                                                                                              'https://res.cloudinary.com/bucd22r4/image/upload/v1784125337/fitness-training/exercises/b7cmgdnuzp7x5kqc21p9.gif',  6, 1, 10, 1, CURRENT_TIMESTAMP(6)),
+(13, 'All Fours Quad Stretch',  'Start on all fours with your hands directly under your shoulders and your knees directly under your hips. Extend one leg straight back, keeping your knee bent and your foot flexed. Slowly lower your hips towards the ground, feeling a stretch in your quads. Hold for 20-30 seconds. Switch legs and repeat.',                                                                                                                                                                                     'https://res.cloudinary.com/bucd22r4/image/upload/v1784125409/fitness-training/exercises/wywsquxqpkfmqqueb3ow.gif',  3, 0, 10, 1, CURRENT_TIMESTAMP(6)),
+(16, 'Astride Jumps',           'Stand with your feet shoulder-width apart. Bend your knees and lower your body into a squat position. Jump explosively upwards, extending your legs and arms. While in the air, spread your legs apart and bring your arms out to the sides. Land softly with your feet shoulder-width apart, bending your knees to absorb the impact.',                                                                                                                                                              'https://res.cloudinary.com/bucd22r4/image/upload/v1784125664/fitness-training/exercises/etgupapgmftvgmlzd0qc.gif',  3, 1, 10, 1, CURRENT_TIMESTAMP(6)),
+(17, 'Basic Toe Touch',         'Stand with your feet shoulder-width apart and your arms by your sides. Bend forward at the waist, keeping your back straight and your knees slightly bent. Reach down towards your toes with your hands, keeping your legs as straight as possible. Pause for a moment at the bottom, then slowly return to the starting position.',                                                                                                                                                                    'https://res.cloudinary.com/bucd22r4/image/upload/v1784125699/fitness-training/exercises/kqpxuiiqamunag8taaog.gif',  3, 0, 10, 1, CURRENT_TIMESTAMP(6)),
+(18, 'Bear Crawl',              'Start on all fours with your hands directly under your shoulders and your knees directly under your hips. Lift your knees slightly off the ground, keeping your back flat and your core engaged. Move your right hand and left foot forward simultaneously, followed by your left hand and right foot. Continue crawling forward, alternating movements.',                                                                                                                                               'https://res.cloudinary.com/bucd22r4/image/upload/v1784125740/fitness-training/exercises/jetd1uh9vra2kcneelzp.gif',  6, 1, 10, 1, CURRENT_TIMESTAMP(6)),
+(19, 'Burpee',                  'Start in a standing position. Lower your body into a squat and place your hands on the floor. Kick your feet back into a push-up position. Perform a push-up. Jump your feet back into the squat position. Jump up explosively, reaching your arms overhead. Land softly and immediately lower back into a squat to begin the next repetition.',                                                                                                                                                     'https://res.cloudinary.com/bucd22r4/image/upload/v1784125808/fitness-training/exercises/fcocpmzvnnykh0eibupo.gif',  7, 2, 10, 1, CURRENT_TIMESTAMP(6)),
+(20, 'Close-Grip Push-Up',      'Start in a high plank position with your hands placed close together, directly under your shoulders. Engage your core and lower your body towards the ground, keeping your elbows close to your sides. Push through your palms to extend your arms and return to the starting position.',                                                                                                                                                                                                              'https://res.cloudinary.com/bucd22r4/image/upload/v1784126060/fitness-training/exercises/amropb8hmj29i0yowxfu.gif',  1, 1, 10, 1, CURRENT_TIMESTAMP(6)),
+(21, 'Neck Side Stretch',       'Stand or sit up straight with your shoulders relaxed. Tilt your head to one side, bringing your ear towards your shoulder. Hold the stretch for 15-30 seconds. Repeat on the other side. Perform 2-4 sets on each side.',                                                                                                                                                                                                                                                                           'https://res.cloudinary.com/bucd22r4/image/upload/v1784126115/fitness-training/exercises/gdbhxrdizqwfqwyctsof.gif',  2, 0, 10, 1, CURRENT_TIMESTAMP(6)),
+(22, 'Inchworm',                'Start in a standing position with your feet hip-width apart. Bend forward and place your hands on the ground. Walk your hands forward until you are in a high plank position. Pause, then walk your hands back towards your feet, keeping your legs as straight as possible. Stand back up to the starting position.',                                                                                                                                                                                 'https://res.cloudinary.com/bucd22r4/image/upload/v1784126178/fitness-training/exercises/ft4m3t1cubjehbhcif4g.gif',  4, 1, 10, 1, CURRENT_TIMESTAMP(6)),
+(23, 'Chest Tap Push-Up',       'Start in a high plank position. Lower your body towards the ground by bending your elbows. As you lower yourself, tap your chest with your right hand. Push yourself back up. Repeat, tapping your chest with your left hand. Continue alternating sides for the desired number of repetitions.',                                                                                                                                                                                                     'https://res.cloudinary.com/bucd22r4/image/upload/v1784126261/fitness-training/exercises/jt4olsus94eifdapndmg.gif',  5, 1, 10, 1, CURRENT_TIMESTAMP(6)),
+(24, 'Diamond Push-Up',         'Start in a high plank position with your hands close together, forming a diamond shape with your thumbs and index fingers. Keep your body in a straight line. Lower your chest towards the diamond shape, keeping your elbows close to your body. Pause at the bottom, then push back up to the starting position.',                                                                                                                                                                                   'https://res.cloudinary.com/bucd22r4/image/upload/v1784126544/fitness-training/exercises/psq6kkytqqaqu6fvjpof.gif',  1, 1, 10, 1, CURRENT_TIMESTAMP(6)),
+(25, 'Rear Deltoid Stretch',    'Stand tall with your feet shoulder-width apart. Extend your right arm across your chest, placing your left hand on your right elbow. Gently pull your right arm towards your left shoulder, feeling a stretch in your right shoulder. Hold for 15-30 seconds, then release. Repeat on the other side.',                                                                                                                                                                                               'https://res.cloudinary.com/bucd22r4/image/upload/v1784126590/fitness-training/exercises/pcnahf5p7iphwoqs4hxz.gif',  2, 0, 10, 1, CURRENT_TIMESTAMP(6)),
+(26, 'Side Push Neck Stretch',  'Stand or sit up straight with your shoulders relaxed. Tilt your head to the right, bringing your right ear towards your right shoulder. Place your right hand on the left side of your head and gently apply pressure to increase the stretch. Hold for 15-30 seconds. Repeat on the other side 2-3 times.',                                                                                                                                                                                         'https://res.cloudinary.com/bucd22r4/image/upload/v1784126626/fitness-training/exercises/tve5tlyvhue2bafdchoj.gif',  2, 0, 10, 1, CURRENT_TIMESTAMP(6)),
+(27, 'Pelvic Tilt',             'Lie flat on your back with your knees bent and feet flat on the ground. Engage your abs and tilt your pelvis upward, pressing your lower back into the ground. Hold this position for a few seconds, focusing on contracting your abs. Release the tilt and return to the starting position. Repeat for the desired number of repetitions.',                                                                                                                                                          'https://res.cloudinary.com/bucd22r4/image/upload/v1784126674/fitness-training/exercises/rdla9v1fwn6v5a8wn70t.gif',  2, 0, 10, 1, CURRENT_TIMESTAMP(6)),
+(28, 'Scapula Dips',            'Start by standing with your feet shoulder-width apart and your arms extended in front of you. Bend your knees slightly and hinge forward at the hips. Lower your body by bending your elbows and retracting your shoulder blades, as if squeezing a pencil between them. Pause at the bottom, then push back up to the starting position.',                                                                                                                                                          'https://res.cloudinary.com/bucd22r4/image/upload/v1784126711/fitness-training/exercises/qe8ngpzuyyj0luva1nul.gif',  2, 1, 10, 1, CURRENT_TIMESTAMP(6)),
+(29, 'Butterfly Yoga Pose',     'Sit on the floor with your legs extended in front of you. Bend your knees and bring the soles of your feet together, allowing your knees to fall out to the sides. Hold onto your ankles or feet with your hands. Sit up tall and lengthen your spine. Gently press your knees down towards the floor, feeling a stretch in your inner thighs. Hold for a few breaths.',                                                                                                                              'https://res.cloudinary.com/bucd22r4/image/upload/v1784126778/fitness-training/exercises/atvirwjnjp52kkgkrrrz.gif',  3, 0, 10, 1, CURRENT_TIMESTAMP(6)),
+(30, 'Shoulder Tap',            'Start in a high plank position with your hands directly under your shoulders and your body in a straight line. Engage your core and lift your right hand off the ground, reaching across to tap your left shoulder. Place it back and repeat with your left hand tapping your right shoulder. Continue alternating while keeping your hips and torso stable.',                                                                                                                                          'https://res.cloudinary.com/bucd22r4/image/upload/v1784126822/fitness-training/exercises/ugaefk06gjytde87xjbq.gif',  4, 1, 10, 1, CURRENT_TIMESTAMP(6)),
+(31, 'Push-Up',                 'Start in a high plank position with your hands slightly wider than shoulder-width apart and your feet together. Engage your core and lower your body towards the ground by bending your elbows, keeping your body in a straight line. Pause when your chest is just above the ground, then push yourself back up by straightening your arms.',                                                                                                                                                         'https://res.cloudinary.com/bucd22r4/image/upload/v1784126867/fitness-training/exercises/gbflxiaou7yqo0v5y1s4.gif',  5, 1, 10, 1, CURRENT_TIMESTAMP(6)),
+(32, 'Scapula Push-Up',         'Start in a high plank position with your hands directly under your shoulders and your body in a straight line. Lower your chest towards the ground, keeping your elbows close to your body. As you lower, squeeze your shoulder blades together and push your chest forward. Pause at the bottom, then push back up to the starting position.',                                                                                                                                                        'https://res.cloudinary.com/bucd22r4/image/upload/v1784126912/fitness-training/exercises/gs3j7ebud8huhup6zex3.gif',  5, 1, 10, 1, CURRENT_TIMESTAMP(6));
+
+
+-- ==========================================
+
 -- PRODUCT_PACKAGES
 -- ==========================================
 INSERT IGNORE INTO product_packages (id, name, type, price, duration_days, description, is_active) VALUES
@@ -106,14 +151,14 @@ INSERT IGNORE INTO body_metrics (user_id, height, weight, body_fat_percentage, m
 -- ==========================================
 -- SCHEDULES  (pt_id=2, member_id=3)
 -- ==========================================
-INSERT IGNORE INTO schedules (pt_id, member_id, start_time, end_time, status, meeting_url) VALUES
-(2, 3, '2025-02-10 08:00:00', '2025-02-10 09:00:00', 'COMPLETED', NULL),
-(2, 3, '2025-02-17 08:00:00', '2025-02-17 09:00:00', 'COMPLETED', NULL),
-(2, 3, '2025-02-24 08:00:00', '2025-02-24 09:00:00', 'COMPLETED', NULL),
-(2, 3, '2025-03-03 08:00:00', '2025-03-03 09:00:00', 'COMPLETED', 'https://meet.google.com/abc-def-ghi'),
-(2, 3, '2025-06-23 08:00:00', '2025-06-23 09:00:00', 'CONFIRMED', NULL),
-(2, 3, '2025-06-30 08:00:00', '2025-06-30 09:00:00', 'PENDING', NULL),
-(2, 3, '2025-04-07 08:00:00', '2025-04-07 09:00:00', 'CANCELLED', NULL);
+INSERT IGNORE INTO schedules (pt_id, member_id, start_time, end_time, status) VALUES
+(2, 3, '2025-02-10 08:00:00', '2025-02-10 09:00:00', 2),   -- COMPLETED: Initial assessment
+(2, 3, '2025-02-17 08:00:00', '2025-02-17 09:00:00', 2),   -- COMPLETED: Upper body push
+(2, 3, '2025-02-24 08:00:00', '2025-02-24 09:00:00', 2),   -- COMPLETED: Lower body squat
+(2, 3, '2025-03-03 08:00:00', '2025-03-03 09:00:00', 2),   -- COMPLETED: Deadlift online session
+(2, 3, '2025-06-23 08:00:00', '2025-06-23 09:00:00', 1),   -- CONFIRMED: Pull day
+(2, 3, '2025-06-30 08:00:00', '2025-06-30 09:00:00', 0),   -- PENDING:   Cardio and core
+(2, 3, '2025-04-07 08:00:00', '2025-04-07 09:00:00', 3);   -- CANCELLED
 
 
 -- ==========================================
@@ -183,35 +228,32 @@ INSERT IGNORE INTO workout_plans (id, user_id, ai_recommendation_id, title, goal
 -- ==========================================
 INSERT IGNORE INTO workout_plan_exercises (workout_plan_id, exercise_id, sets, reps, duration_seconds, rest_seconds, exercise_order) VALUES
 -- Plan 1: 4-Day Body Recomp
-(1, 1,  4, 8,   NULL, 120, 1),   -- Bench Press
-(1, 4,  3, 10,  NULL, 90,  2),   -- OHP
-(1, 13, 3, 12,  NULL, 90,  3),   -- Incline DB Press
-(1, 3,  4, 6,   NULL, 180, 4),   -- Squat
-(1, 11, 3, 10,  NULL, 90,  5),   -- RDL
-(1, 9,  3, 12,  NULL, 60,  6),   -- Lunges
-(1, 2,  4, 8,   NULL, 90,  7),   -- Pull-Up
-(1, 5,  3, 12,  NULL, 60,  8),   -- Bicep Curl
-(1, 10, 3, 15,  NULL, 60,  9),   -- Tricep Pushdown
-(1, 8,  4, NULL, 30,  30,  10),  -- HIIT Sprint
-(1, 12, 3, NULL, 45,  45,  11),  -- Battle Ropes
-(1, 6,  3, NULL, 60,  45,  12),  -- Plank
+(1, 1,  4, 8,   NULL, 120, 1),   -- Warmup Exercise 1
+(1, 2,  3, 10,  NULL, 90,  2),   -- Warmup Exercise 2
+(1, 3,  3, 12,  NULL, 90,  3),   -- Warmup Exercise 3
+(1, 4,  4, 6,   NULL, 180, 4),   -- Warmup Exercise 4
+(1, 5,  3, 10,  NULL, 90,  5),   -- Warmup Exercise 5
+(1, 6,  3, 12,  NULL, 60,  6),   -- Warmup Exercise 6
+(1, 7,  4, 8,   NULL, 90,  7),   -- Warmup Exercise 7
+(1, 8,  3, 12,  NULL, 60,  8),   -- Mountain Climbers
+(1, 9,  3, 15,  NULL, 60,  9),   -- Plank Crunch
+(1, 10, 4, NULL, 30,  30,  10),  -- Plank Hops
 -- Plan 2: 5-Day Hypertrophy
 (2, 1,  4, 10,  NULL, 90,  1),
-(2, 13, 3, 12,  NULL, 75,  2),
-(2, 10, 3, 15,  NULL, 60,  3),
-(2, 7,  4, 5,   NULL, 180, 4),
-(2, 2,  4, 8,   NULL, 90,  5),
-(2, 5,  3, 12,  NULL, 60,  6),
-(2, 3,  4, 8,   NULL, 180, 7),
-(2, 11, 3, 10,  NULL, 90,  8),
+(2, 2,  3, 12,  NULL, 75,  2),
+(2, 3,  3, 15,  NULL, 60,  3),
+(2, 4,  4, 5,   NULL, 180, 4),
+(2, 5,  4, 8,   NULL, 90,  5),
+(2, 6,  3, 12,  NULL, 60,  6),
+(2, 7,  4, 8,   NULL, 180, 7),
+(2, 8,  3, 10,  NULL, 90,  8),
 (2, 9,  3, 12,  NULL, 60,  9),
-(2, 4,  4, 8,   NULL, 120, 10),
-(2, 14, 3, 12,  NULL, 60,  11),
+(2, 10, 4, 8,   NULL, 120, 10),
 -- Plan 3: PT Custom
-(3, 3,  3, 8,   NULL, 180, 1),
-(3, 1,  3, 8,   NULL, 120, 2),
-(3, 7,  3, 5,   NULL, 180, 3),
-(3, 6,  3, NULL, 60,  45,  4);
+(3, 1,  3, 8,   NULL, 180, 1),
+(3, 2,  3, 8,   NULL, 120, 2),
+(3, 8,  3, 5,   NULL, 180, 3),
+(3, 9,  3, NULL, 60,  45,  4);
 
 
 -- ==========================================
@@ -234,31 +276,31 @@ INSERT IGNORE INTO workout_sessions (id, user_id, workout_plan_id, total_duratio
 INSERT IGNORE INTO workout_session_details (workout_session_id, exercise_id, sets_done, reps_done, duration_seconds, calories_burned) VALUES
 -- Session 1 (Plan 1 - Upper Push + Core)
 (1, 1,  4, 8,   NULL,  110.00),
-(1, 4,  3, 10,  NULL,   85.00),
-(1, 5,  3, 12,  NULL,   55.00),
-(1, 6,  3, NULL, 60,    20.00),
+(1, 2,  3, 10,  NULL,   85.00),
+(1, 3,  3, 12,  NULL,   55.00),
+(1, 10, 3, NULL, 60,    20.00),
 -- Session 2 (Plan 1 - Lower Body)
-(2, 3,  4, 6,   NULL,  200.00),
-(2, 11, 3, 10,  NULL,  120.00),
-(2, 9,  3, 12,  NULL,   75.00),
+(2, 4,  4, 6,   NULL,  200.00),
+(2, 5,  3, 10,  NULL,  120.00),
+(2, 6,  3, 12,  NULL,   75.00),
 -- Session 3 (PT Custom)
-(3, 3,  3, 8,   NULL,  160.00),
-(3, 1,  3, 8,   NULL,   95.00),
-(3, 7,  3, 5,   NULL,  125.00),
+(3, 1,  3, 8,   NULL,  160.00),
+(3, 2,  3, 8,   NULL,   95.00),
+(3, 8,  3, 5,   NULL,  125.00),
 -- Session 4 (PT Custom)
-(4, 3,  3, 8,   NULL,  155.00),
-(4, 1,  3, 9,   NULL,  100.00),
-(4, 6,  3, NULL, 60,    20.00),
+(4, 1,  3, 8,   NULL,  155.00),
+(4, 2,  3, 9,   NULL,  100.00),
+(4, 9,  3, NULL, 60,    20.00),
 -- Session 5 (Plan 1 - Pull + HIIT)
-(5, 2,  4, 8,   NULL,  100.00),
+(5, 7,  4, 8,   NULL,  100.00),
 (5, 8,  4, NULL, 30,   195.00),
-(5, 12, 3, NULL, 45,   175.00),
+(5, 9,  3, NULL, 45,   175.00),
 -- Session 7 (Plan 2 - Chest & Triceps)
 (7, 1,  4, 10,  NULL,  115.00),
-(7, 13, 3, 12,  NULL,   90.00),
-(7, 10, 3, 15,  NULL,   55.00),
+(7, 2,  3, 12,  NULL,   90.00),
+(7, 3,  3, 15,  NULL,   55.00),
 -- Session 8 (Plan 2 - in progress, partial)
-(8, 7,  2, 5,   NULL,  110.00);
+(8, 4,  2, 5,   NULL,  110.00);
 
 
 -- ==========================================
@@ -304,6 +346,7 @@ INSERT IGNORE INTO meal_schedule_items (meal_schedule_id, food_id, amount, is_ea
 (6, 5,  '2 slices', 0),   -- Whole Wheat Bread 
 (6, 19, '1 tbsp',   0),   -- Peanut Butter 
 (6, 16, '250ml',    0);   -- Whole Milk 
+
 -- ==========================================
 -- NOTIFICATIONS
 -- ==========================================
@@ -327,9 +370,9 @@ INSERT IGNORE INTO notifications (user_id, title, content, type, is_read, create
 -- PT_UPLOAD_REQUESTS  (pt_id=2, admin=1)
 -- ==========================================
 INSERT IGNORE INTO pt_upload_requests (pt_id, exercise_id, title, description, video_url, status, admin_id, review_note, submitted_at, reviewed_at) VALUES
-(2, 13, 'Incline Dumbbell Press Tutorial',
- 'Step-by-step guide to proper incline DB press form, covering setup, grip, and range of motion for upper chest development.',
- 'https://example.com/uploads/incline-db-press.mp4', 'PENDING', NULL, NULL, '2025-05-15 14:00:00', NULL),
+(2, 1, 'Warmup Exercise 1 Tutorial',
+ 'Step-by-step guide to proper warmup exercise 1 form, covering setup and range of motion.',
+ 'https://example.com/uploads/warmup-exercise-1.mp4', 'PENDING', NULL, NULL, '2025-05-15 14:00:00', NULL),
 
 (2, NULL, 'Cable Fly Chest Isolation Guide',
  'Demonstration of cable fly with emphasis on mind-muscle connection and proper arc path.',

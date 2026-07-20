@@ -28,7 +28,7 @@ interface WorkoutSetupProps {
 /* ─── Main Wizard ──────────────────────────── */
 const WorkoutSetup: React.FC<WorkoutSetupProps> = ({ onComplete }) => {
     const [step, setStep] = useState(0)
-    const TOTAL = 4
+    const TOTAL = 3
 
     const [form, setForm] = useState<WorkoutFormData>({
         planType: 'daily',
@@ -56,9 +56,9 @@ const WorkoutSetup: React.FC<WorkoutSetupProps> = ({ onComplete }) => {
                     // Try to find a shape matching the name
                     const shape = muscleShapes.find(s => s.label.toLowerCase() === apiM.name.toLowerCase() || s.id === apiM.name.toLowerCase())
                     return {
-                        id: apiM.id.toString(), // use DB id or keep name
+                        id: apiM.name.toLowerCase(),
                         label: apiM.name,
-                        d: shape?.d || '' // default empty path if not found
+                        d: shape?.d || ''
                     }
                 })
                 setMuscleZones(mappedZones)
@@ -72,14 +72,11 @@ const WorkoutSetup: React.FC<WorkoutSetupProps> = ({ onComplete }) => {
     const set = (key: keyof WorkoutFormData, value: WorkoutFormData[keyof WorkoutFormData]) =>
         setForm((prev) => ({ ...prev, [key]: value }))
 
-    const toggleArr = (key: 'equipment' | 'muscles', val: string) =>
-        setForm((prev) => {
-            const arr = prev[key] as string[]
-            return {
-                ...prev,
-                [key]: arr.includes(val) ? arr.filter((x) => x !== val) : [...arr, val],
-            }
-        })
+    const toggleMuscle = (val: string) =>
+        setForm((prev) => ({
+            ...prev,
+            muscles: prev.muscles.includes(val) ? [] : [val],
+        }))
 
     const canNext = () => {
         if (step === 0) return !!form.planType
@@ -98,7 +95,6 @@ const WorkoutSetup: React.FC<WorkoutSetupProps> = ({ onComplete }) => {
         { title: 'Plan Type', sub: 'Do you want a single day or a full week plan?' },
         { title: 'Training Goal', sub: 'Choose your main goal for the AI to adjust your program.' },
         { title: 'Target Muscles', sub: 'Select the target muscles you want AISTHEA to focus on.' },
-        { title: 'Availability & Schedule', sub: 'Customize duration, frequency, and equipment.' },
     ]
 
     return (
@@ -185,10 +181,9 @@ const WorkoutSetup: React.FC<WorkoutSetupProps> = ({ onComplete }) => {
                             <Box w="160px" flexShrink={0}>
                                 <Stack spacing="4" mb="5">
                                     {[
-                                        { label: 'Goal', sub: 'Goal & Level', done: true },
-                                        { label: 'Muscles', sub: 'Muscle Targeting', active: true },
-                                        { label: 'Plan', sub: 'Daily or Weekly', done: false },
-                                        { label: 'Schedule', sub: 'Availability', done: false },
+                                        { label: 'Plan', sub: 'Daily or Weekly', done: true },
+                                        { label: 'Goal', sub: 'Goal & Level', active: true },
+                                        { label: 'Muscles', sub: 'Muscle Targeting', done: false },
                                     ].map((item, i) => (
                                         <HStack key={i} spacing="3" align="flex-start">
                                             <Box
@@ -246,7 +241,7 @@ const WorkoutSetup: React.FC<WorkoutSetupProps> = ({ onComplete }) => {
                                                             color="#8A8A93"
                                                             cursor="pointer"
                                                             _hover={{ color: '#E03030' }}
-                                                            onClick={() => toggleArr('muscles', m)}
+                                                            onClick={() => toggleMuscle(m)}
                                                         >
                                                             ×
                                                         </Box>
@@ -260,7 +255,7 @@ const WorkoutSetup: React.FC<WorkoutSetupProps> = ({ onComplete }) => {
 
                             {/* Right: body diagram */}
                             <Box flex="1">
-                                <BodyDiagram selected={form.muscles} onToggle={(id) => toggleArr('muscles', id)} muscleZones={muscleZones} />
+                                <BodyDiagram selected={form.muscles} onToggle={(id) => toggleMuscle(id)} muscleZones={muscleZones} />
                                 <Flex
                                     justify="center"
                                     mt="3"
@@ -283,18 +278,17 @@ const WorkoutSetup: React.FC<WorkoutSetupProps> = ({ onComplete }) => {
                                             key={z.id}
                                             label={z.label}
                                             selected={form.muscles.includes(z.id)}
-                                            onClick={() => toggleArr('muscles', z.id)}
+                                            onClick={() => toggleMuscle(z.id)}
                                         />
                                     ))}
                                     <OptionChip
                                         label="Full Body"
                                         selected={form.muscles.length === muscleZones.length && muscleZones.length > 0}
                                         onClick={() => {
-                                            if (form.muscles.length === muscleZones.length) {
-                                                setForm((p) => ({ ...p, muscles: [] }))
-                                            } else {
-                                                setForm((p) => ({ ...p, muscles: muscleZones.map((z) => z.id) }))
-                                            }
+                                            setForm((p) => ({
+                                                ...p,
+                                                muscles: p.muscles.length === muscleZones.length ? [] : muscleZones.map((z) => z.id),
+                                            }))
                                         }}
                                     />
                                 </Flex>
@@ -345,117 +339,7 @@ const WorkoutSetup: React.FC<WorkoutSetupProps> = ({ onComplete }) => {
                         </Stack>
                     )}
 
-                    {/* ── STEP 3: Schedule & conditions ── */}
-                    {step === 3 && (
-                        <Stack spacing="5">
-                            {/* Duration */}
-                            <Box>
-                                <SectionLabel>Workout Duration</SectionLabel>
-                                <HStack spacing="2" flexWrap="wrap">
-                                    {[10, 20, 30, 45].map((d) => (
-                                        <OptionChip
-                                            key={d}
-                                            label={`${d} mins`}
-                                            selected={form.duration === d}
-                                            onClick={() => set('duration', d)}
-                                        />
-                                    ))}
-                                </HStack>
-                            </Box>
 
-                            {/* Frequency */}
-                            {form.planType === 'weekly' && (
-                                <Box>
-                                    <SectionLabel>Weekly Frequency</SectionLabel>
-                                    <HStack spacing="2">
-                                        {[3, 4, 5].map((f) => (
-                                            <OptionChip
-                                                key={f}
-                                                label={`${f} sessions/week`}
-                                                selected={form.frequency === f}
-                                                onClick={() => set('frequency', f)}
-                                            />
-                                        ))}
-                                    </HStack>
-                                </Box>
-                            )}
-
-                            {/* Equipment */}
-                            <Box>
-                                <SectionLabel>Available Equipment</SectionLabel>
-                                <HStack spacing="2" flexWrap="wrap">
-                                    {[
-                                        { id: 'none', label: 'No Equipment' },
-                                        { id: 'mat', label: 'Yoga Mat' },
-                                        { id: 'bands', label: 'Resistance Bands' },
-                                    ].map((eq) => (
-                                        <OptionChip
-                                            key={eq.id}
-                                            label={eq.label}
-                                            selected={form.equipment.includes(eq.id)}
-                                            onClick={() => toggleArr('equipment', eq.id)}
-                                            multi
-                                        />
-                                    ))}
-                                </HStack>
-                            </Box>
-
-                            {/* Target calories */}
-                            <Box>
-                                <SectionLabel>Target Calories Burn</SectionLabel>
-                                <HStack spacing="2" mb="3">
-                                    {[100, 200, 300, 400, 500].map((c) => (
-                                        <OptionChip
-                                            key={c}
-                                            label={`${c} kcal`}
-                                            selected={form.targetCalories === c}
-                                            onClick={() => set('targetCalories', c)}
-                                        />
-                                    ))}
-                                </HStack>
-                                <Box
-                                    p="3"
-                                    bg="rgba(224,48,48,0.06)"
-                                    border="1px solid"
-                                    borderColor="rgba(224,48,48,0.2)"
-                                    borderRadius="10px"
-                                >
-                                    <Flex justify="space-between" align="center">
-                                        <Text fontSize="12px" color="#8A8A93">Target Burn</Text>
-                                        <Text fontSize="16px" fontWeight="800" color="#E03030">
-                                            {form.targetCalories} <Text as="span" fontSize="11px" fontWeight="400">kcal</Text>
-                                        </Text>
-                                    </Flex>
-                                </Box>
-                            </Box>
-
-                            {/* Summary preview */}
-                            <Box
-                                p="4"
-                                bg="#0f1117"
-                                border="1px solid"
-                                borderColor="#1e2028"
-                                borderRadius="14px"
-                            >
-                                <Text fontSize="11px" fontWeight="700" color="#8A8A93" textTransform="uppercase" letterSpacing="wider" mb="3">
-                                    Program Summary
-                                </Text>
-                                <Grid templateColumns={form.planType === 'weekly' ? "repeat(4, 1fr)" : "repeat(3, 1fr)"} gap="3">
-                                    {[
-                                        { val: form.level, label: 'Level' },
-                                        { val: `${form.duration}m`, label: 'Duration' },
-                                        ...(form.planType === 'weekly' ? [{ val: `${form.frequency}x`, label: 'Week' }] : []),
-                                        { val: `${form.targetCalories}`, label: 'kcal' },
-                                    ].map((s, i) => (
-                                        <Box key={i} textAlign="center">
-                                            <Text fontSize="14px" fontWeight="800" color="white">{s.val}</Text>
-                                            <Text fontSize="9px" color="#8A8A93">{s.label}</Text>
-                                        </Box>
-                                    ))}
-                                </Grid>
-                            </Box>
-                        </Stack>
-                    )}
                 </Box>
 
                 {/* Footer nav */}

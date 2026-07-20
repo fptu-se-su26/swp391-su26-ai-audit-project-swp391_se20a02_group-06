@@ -11,11 +11,11 @@ public partial class PtUploadRequest
 
     public int? ExerciseId { get; set; }
 
-    public string Title { get; set; } = null!;
+    public string? Title { get; set; }
 
     public string? Description { get; set; }
 
-    public string VideoUrl { get; set; } = null!;
+    public string? VideoUrl { get; set; }
 
     public string? Status { get; set; }
 
@@ -28,6 +28,18 @@ public partial class PtUploadRequest
     public DateTime? SubmittedAt { get; set; }
 
     public DateTime? ReviewedAt { get; set; }
+
+    public string? MuscleGroup { get; set; }
+
+    public int? Difficulty { get; set; }
+
+    public int? Duration { get; set; }
+
+    public string? Instructions { get; set; }
+
+    public string? Priority { get; set; }
+
+    public DateTime? Deadline { get; set; }
 
     public virtual User? Admin { get; set; }
 

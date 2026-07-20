@@ -41,9 +41,8 @@ export const StatCard: React.FC<{
     </Box>
 )
 
-export const MiniBarChart: React.FC = () => {
-    const bars = [4, 6, 5, 8, 9, 7, 10]
-    const max = Math.max(...bars)
+export const MiniBarChart: React.FC<{ bars?: number[] }> = ({ bars = [0, 0, 0, 0, 0, 0, 0] }) => {
+    const max = Math.max(...bars, 1) // Prevent division by zero
     return (
         <Flex align="flex-end" gap="3px" h="28px">
             {bars.map((v, i) => (
@@ -59,9 +58,8 @@ export const MiniBarChart: React.FC = () => {
     )
 }
 
-export const StreakDots: React.FC = () => {
+export const StreakDots: React.FC<{ activeDays?: number[] }> = ({ activeDays = [] }) => {
     const days = ['M', 'T', 'W', 'T', 'F', 'S', 'S']
-    const active = [0, 1, 2, 3, 4]
     return (
         <HStack spacing="4px" mt="1">
             {days.map((d, i) => (
@@ -70,14 +68,14 @@ export const StreakDots: React.FC = () => {
                         w="22px"
                         h="22px"
                         borderRadius="full"
-                        bg={active.includes(i) ? '#E03030' : '#1e2028'}
+                        bg={activeDays.includes(i) ? '#E03030' : '#1e2028'}
                         border="1px solid"
-                        borderColor={active.includes(i) ? '#E03030' : '#2e3040'}
+                        borderColor={activeDays.includes(i) ? '#E03030' : '#2e3040'}
                         display="flex"
                         alignItems="center"
                         justifyContent="center"
                     >
-                        <Text fontSize="7px" fontWeight="700" color={active.includes(i) ? 'white' : '#8A8A93'}>
+                        <Text fontSize="7px" fontWeight="700" color={activeDays.includes(i) ? 'white' : '#8A8A93'}>
                             {d}
                         </Text>
                     </Box>

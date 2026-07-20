@@ -6,6 +6,7 @@
 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0;
 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
+SET NAMES utf8mb4;
 
 -- -----------------------------------------------------
 -- Schema mydb
@@ -84,7 +85,7 @@ CREATE TABLE IF NOT EXISTS `FitnessProject`.`exercises` (
   `muscle_group_id` INT NULL DEFAULT NULL,
   `difficulty` ENUM('BEGINNER', 'INTERMEDIATE', 'ADVANCED') NOT NULL,
   `equipment` VARCHAR(100) NULL DEFAULT 'No Equipment',
-  `duration_minutes` INT NULL DEFAULT NULL,
+  `duration` INT NULL DEFAULT NULL,
   `calories_burn_per_min` DECIMAL(5,2) NULL DEFAULT '0.00',
   `created_by` INT NULL DEFAULT NULL,
   `status` ENUM('PENDING', 'APPROVED', 'REJECTED') NULL DEFAULT 'APPROVED',
@@ -323,6 +324,7 @@ CREATE TABLE IF NOT EXISTS `FitnessProject`.`product_packages` (
   `duration_days` INT NOT NULL,
   `description` TEXT NULL DEFAULT NULL,
   `is_active` TINYINT(1) NULL DEFAULT '1',
+  `is_popular` TINYINT(1) NULL DEFAULT '0',
   `created_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`))
 ENGINE = InnoDB
@@ -461,6 +463,8 @@ CREATE TABLE IF NOT EXISTS `FitnessProject`.`users` (
   `status` ENUM('ACTIVE', 'INACTIVE', 'BANNED') NULL DEFAULT 'ACTIVE',
   `created_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` TIMESTAMP NULL DEFAULT NULL,
+  `password_changed_at` DATETIME NULL DEFAULT NULL,
+  `fitness_goal` VARCHAR(50) NULL DEFAULT 'MAINTAIN',
   PRIMARY KEY (`id`),
   UNIQUE INDEX `email` (`email` ASC) VISIBLE,
   INDEX `role_id` (`role_id` ASC) VISIBLE,
@@ -606,11 +610,11 @@ INSERT IGNORE INTO `FitnessProject`.`roles` (`id`, `role_name`) VALUES
 (3, 'MEMBER');
 
 INSERT IGNORE INTO `FitnessProject`.`users` (`id`, `fullname`, `email`, `password_hash`, `phone`, `role_id`) 
-VALUES (1, 'Nguyễn Văn Admin', 'admin@fitness.com', '$2a$11$5I3trWCyKCoczywUHf4Efena5j5zz2fTUfdMJOu1oHvumqT/uG7Lm', '0123456789', 1);
+VALUES (1, 'Nguyễn Văn Admin', 'admin@fitness.com', '$2a$11$1Bjs3dENbnKx99Muw8XbTu4bHmgNIdZS491RU1URKMeOPR37XjmWi', '0123456789', 1);
 INSERT IGNORE INTO `FitnessProject`.`users` (`id`, `fullname`, `email`, `password_hash`, `phone`, `role_id`)
-VALUES (2, 'Huấn Luyện Viên', 'pt@fitness.com', '$2a$11$040grBe6AgpYET886d0Dh.ulaaCXeXr3L3KW4OoWdVPPr4Pp0cVBu', '0123456789', 2);
+VALUES (2, 'Huấn Luyện Viên', 'pt@fitness.com', '$2a$11$t9nhk9K0pu1kiGHvH9FaBOOcIo5fEKnEKE5gkh8pVue3UaOAhcHHq', '0123456789', 2);
 INSERT IGNORE INTO `FitnessProject`.`users` (`id`, `fullname`, `email`, `password_hash`, `phone`, `role_id`) 
-VALUES (3, 'Hội Viên', 'member@fitness.com', '$2a$11$040grBe6AgpYET886d0Dh.ulaaCXeXr3L3KW4OoWdVPPr4Pp0cVBu', '0123456789', 3);
+VALUES (3, 'Hội Viên', 'member@fitness.com', '$2a$11$xMG3qPdRx6zlnIXt4sUrv.iTSaunifiOyqeeJS/AZIZgQlXDsFrAm', '0123456789', 3);
 
 INSERT IGNORE INTO `FitnessProject`.`foods` (`name`, `serving_size`, `unit`, `calories`, `protein`, `carbs`, `fat`) VALUES 
 ('Chicken Breast (Cooked)', '100', 'g', 165, 31.02, 0.00, 3.57),
@@ -644,3 +648,122 @@ INSERT IGNORE INTO `FitnessProject`.`foods` (`name`, `serving_size`, `unit`, `ca
 ('Tomato (Raw)', '100', 'g', 18, 0.88, 3.89, 0.20),
 ('Cucumber (Raw)', '100', 'g', 15, 0.65, 3.63, 0.11),
 ('Whey Protein Isolate', '30', 'g', 110, 25.00, 1.00, 0.50);
+-- Seed Muscle Groups
+INSERT IGNORE INTO `FitnessProject`.`muscle_groups` (`id`, `name`, `description`) VALUES
+(1, 'Chest', 'Pectoral muscles'),
+(2, 'Back', 'Latissimus dorsi, rhomboids, trapezius, and lower back'),
+(3, 'Legs', 'Quadriceps, hamstrings, glutes, and calves'),
+(4, 'Shoulders', 'Deltoid muscles (anterior, lateral, posterior)'),
+(5, 'Arms', 'Biceps, triceps, and forearms'),
+(6, 'Core', 'Abdominals and obliques');
+
+-- Seed Exercises
+INSERT IGNORE INTO `FitnessProject`.`exercises` 
+(`title`, `description`, `muscle_group_id`, `difficulty`, `equipment`, `duration`, `calories_burn_per_min`, `created_by`, `status`) VALUES
+-- Chest (Muscle Group 1)
+('Barbell Bench Press', 'Lie on a flat bench and press a barbell upwards.', 1, 'INTERMEDIATE', 'Barbell, Bench', 10, 5.0, 1, 'APPROVED'),
+('Incline Dumbbell Press', 'Press dumbbells upwards on an incline bench.', 1, 'INTERMEDIATE', 'Dumbbells, Incline Bench', 10, 4.5, 1, 'APPROVED'),
+('Push-ups', 'Standard bodyweight push-up targeting the chest.', 1, 'BEGINNER', 'Bodyweight', 5, 4.0, 1, 'APPROVED'),
+('Cable Crossovers', 'Pull cables together in front of your chest.', 1, 'INTERMEDIATE', 'Cable Machine', 8, 4.0, 1, 'APPROVED'),
+('Chest Flyes', 'Lie on a bench and perform flyes with dumbbells.', 1, 'BEGINNER', 'Dumbbells, Bench', 8, 3.5, 1, 'APPROVED'),
+
+-- Back (Muscle Group 2)
+('Deadlift', 'Lift a loaded barbell off the ground to the hips.', 2, 'ADVANCED', 'Barbell', 15, 6.5, 1, 'APPROVED'),
+('Pull-ups', 'Pull your body up to a bar.', 2, 'INTERMEDIATE', 'Pull-up Bar', 5, 5.5, 1, 'APPROVED'),
+('Barbell Rows', 'Bend over and pull a barbell to your lower chest.', 2, 'INTERMEDIATE', 'Barbell', 10, 5.0, 1, 'APPROVED'),
+('Lat Pulldowns', 'Pull the bar down to your chest on a lat machine.', 2, 'BEGINNER', 'Lat Machine', 10, 4.0, 1, 'APPROVED'),
+('Seated Cable Rows', 'Pull the cable handle towards your stomach while seated.', 2, 'BEGINNER', 'Cable Machine', 10, 4.0, 1, 'APPROVED'),
+
+-- Legs (Muscle Group 3)
+('Barbell Squats', 'Squat down with a barbell across your upper back.', 3, 'INTERMEDIATE', 'Barbell, Squat Rack', 15, 6.0, 1, 'APPROVED'),
+('Leg Press', 'Press the platform away with your legs on the machine.', 3, 'BEGINNER', 'Leg Press Machine', 10, 5.0, 1, 'APPROVED'),
+('Walking Lunges', 'Step forward into a lunge and repeat walking forward.', 3, 'BEGINNER', 'Bodyweight or Dumbbells', 10, 4.5, 1, 'APPROVED'),
+('Leg Extensions', 'Extend your legs upwards on the extension machine.', 3, 'BEGINNER', 'Leg Extension Machine', 8, 3.0, 1, 'APPROVED'),
+('Standing Calf Raises', 'Raise your heels off the ground standing.', 3, 'BEGINNER', 'Bodyweight or Machine', 5, 2.5, 1, 'APPROVED'),
+
+-- Shoulders (Muscle Group 4)
+('Overhead Press', 'Press a barbell or dumbbells overhead from the shoulders.', 4, 'INTERMEDIATE', 'Barbell or Dumbbells', 10, 4.5, 1, 'APPROVED'),
+('Lateral Raises', 'Raise dumbbells out to your sides.', 4, 'BEGINNER', 'Dumbbells', 8, 3.0, 1, 'APPROVED'),
+('Front Raises', 'Raise dumbbells straight out in front of you.', 4, 'BEGINNER', 'Dumbbells', 8, 3.0, 1, 'APPROVED'),
+('Reverse Pec Deck', 'Pull the machine handles backwards targeting rear delts.', 4, 'BEGINNER', 'Pec Deck Machine', 8, 3.0, 1, 'APPROVED'),
+('Arnold Press', 'Dumbbell press with a rotational movement.', 4, 'INTERMEDIATE', 'Dumbbells', 10, 4.0, 1, 'APPROVED'),
+
+-- Arms (Muscle Group 5)
+('Barbell Bicep Curls', 'Curl a barbell upwards towards your chest.', 5, 'BEGINNER', 'Barbell', 10, 3.0, 1, 'APPROVED'),
+('Tricep Pushdowns', 'Push the cable attachment downwards.', 5, 'BEGINNER', 'Cable Machine', 10, 3.0, 1, 'APPROVED'),
+('Hammer Curls', 'Curl dumbbells with a neutral grip.', 5, 'BEGINNER', 'Dumbbells', 8, 3.0, 1, 'APPROVED'),
+('Skull Crushers', 'Lower an EZ bar to your forehead while lying down.', 5, 'INTERMEDIATE', 'EZ Bar, Bench', 10, 3.5, 1, 'APPROVED'),
+('Concentration Curls', 'Curl a dumbbell while sitting, elbow resting on thigh.', 5, 'BEGINNER', 'Dumbbell', 8, 2.5, 1, 'APPROVED'),
+
+-- Core (Muscle Group 6)
+('Crunches', 'Basic abdominal crunch on the floor.', 6, 'BEGINNER', 'Bodyweight', 5, 3.5, 1, 'APPROVED'),
+('Plank', 'Hold a push-up position resting on forearms.', 6, 'BEGINNER', 'Bodyweight', 5, 3.0, 1, 'APPROVED'),
+('Russian Twists', 'Twist your torso side to side while seated, feet off floor.', 6, 'INTERMEDIATE', 'Bodyweight or Medicine Ball', 5, 4.0, 1, 'APPROVED'),
+('Hanging Leg Raises', 'Hang from a bar and raise your legs up.', 6, 'ADVANCED', 'Pull-up Bar', 5, 4.5, 1, 'APPROVED'),
+('Bicycle Crunches', 'Alternate bringing elbows to opposite knees.', 6, 'BEGINNER', 'Bodyweight', 5, 4.0, 1, 'APPROVED');
+
+
+DROP TABLE IF EXISTS `EmailOTP`;
+
+CREATE TABLE `EmailOTP` (
+    `Id` CHAR(36) NOT NULL,
+    `Email` VARCHAR(255) NOT NULL,
+    `OTPCode` VARCHAR(10) NOT NULL,
+    `Purpose` VARCHAR(50) NOT NULL,
+    `ExpiredAt` DATETIME NOT NULL,
+    `IsUsed` BIT(1) NOT NULL DEFAULT b'0',
+    `AttemptCount` INT NOT NULL DEFAULT 0,
+    `CreatedAt` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `UpdatedAt` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (`Id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE INDEX `IX_EmailOTP_Email` ON `EmailOTP` (`Email`);
+CREATE INDEX `IX_EmailOTP_Purpose` ON `EmailOTP` (`Purpose`);
+CREATE INDEX `IX_EmailOTP_ExpiredAt` ON `EmailOTP` (`ExpiredAt`);
+
+
+
+-- -----------------------------------------------------
+-- Table `FitnessProject`.`__EFMigrationsHistory`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `FitnessProject`.`__EFMigrationsHistory` ;
+
+CREATE TABLE IF NOT EXISTS `FitnessProject`.`__EFMigrationsHistory` (
+  `migration_id` VARCHAR(150) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_0900_ai_ci' NOT NULL,
+  `product_version` VARCHAR(32) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_0900_ai_ci' NOT NULL,
+  PRIMARY KEY (`migration_id`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_0900_ai_ci;
+
+-- -----------------------------------------------------
+-- Table `FitnessProject`.`daily_nutrition_logs`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `FitnessProject`.`daily_nutrition_logs` ;
+
+CREATE TABLE IF NOT EXISTS `FitnessProject`.`daily_nutrition_logs` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `user_id` INT NOT NULL,
+  `log_date` DATETIME(6) NOT NULL,
+  `calories_target` INT NOT NULL,
+  `protein_target_grams` DECIMAL(65,30) NOT NULL,
+  `carbs_target_grams` DECIMAL(65,30) NOT NULL,
+  `fat_target_grams` DECIMAL(65,30) NOT NULL,
+  `water_target_glasses` INT NOT NULL,
+  `calories_consumed` INT NOT NULL,
+  `protein_consumed_grams` DECIMAL(65,30) NOT NULL,
+  `carbs_consumed_grams` DECIMAL(65,30) NOT NULL,
+  `fat_consumed_grams` DECIMAL(65,30) NOT NULL,
+  `water_consumed_glasses` INT NOT NULL,
+  `calories_burned` DECIMAL(65,30) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE INDEX `IX_DailyNutritionLog_UserId_LogDate` (`user_id` ASC, `log_date` ASC) VISIBLE,
+  CONSTRAINT `fk_daily_nutrition_logs_users_user_id`
+    FOREIGN KEY (`user_id`)
+    REFERENCES `FitnessProject`.`users` (`id`)
+    ON DELETE CASCADE)
+ENGINE = InnoDB
+AUTO_INCREMENT = 6
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_unicode_ci;

@@ -27,7 +27,16 @@ docs-me/
 bin/
 obj/
 
+<<<<<<< HEAD
 bin/
 obj/
 *.dll
 *.pdb
+=======
+# Agents
+.agents/workflows/
+
+# Superpowers Plugin (Local Only)
+.agents/skills/superpowers/
+docs/superpowers_guide.md
+>>>>>>> dev

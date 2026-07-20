@@ -460,3 +460,191 @@ Sinh viên/nhóm cam kết rằng:
 | Đại diện sinh viên/nhóm | Ngày xác nhận |
 |---|---|
 |  |  |
+
+---
+
+### Prompt số 10
+
+| Nội dung | Thông tin |
+|---|---|
+| Ngày sử dụng | 08/07/2026 |
+| Công cụ AI | Antigravity |
+| Mục đích | Ẩn chức năng CRUD của PT và kết nối Backend API cho User Dashboard |
+| Phần việc liên quan | Coding |
+| Mức độ sử dụng | Hỏi sinh code |
+
+#### 5.1. Prompt nguyên văn
+
+```text
+- ở phần role PT chỉ cho xem danh sách user, danh sách bào tập chứ không có crud như role admin đưuocj sửa lại cho tôi /feature
+- code tiếp phần dashboard của user cho tôi. phải hoạt đồng được chuẩn /refactor hỏi tôi về chức năng của các tab thì cứ hỏi tôi nhé.
+```
+
+#### 5.2. Bối cảnh khi viết prompt
+
+```text
+Cần phân quyền chi tiết cho role PT (chỉ được xem) và làm cho User Dashboard hoạt động với dữ liệu thực thay vì số liệu tĩnh.
+```
+
+#### 5.3. Kết quả AI trả về
+
+```text
+AI đã sửa các component AdminUsers và AdminWorkouts để ẩn nút. AI lập kế hoạch tạo DashboardSummaryDto, viết DashboardService để gom dữ liệu Streak, Calories, Macros, sau đó sửa Dashboard.tsx dùng useSWR.
+```
+
+#### 5.4. Kết quả đã áp dụng vào bài
+
+```text
+Giữ lại toàn bộ code phân quyền và Dashboard API.
+```
+
+#### 5.5. Phần sinh viên/nhóm đã chỉnh sửa hoặc cải tiến
+
+```text
+Xác nhận với AI về việc không hiển thị dữ liệu của các chức năng chưa làm (Weekly Goal, Volume) và giữ nguyên giao diện mẫu.
+```
+
+#### 5.6. Đánh giá chất lượng prompt
+
+- [x] Prompt rõ ràng
+- [x] Prompt có đủ bối cảnh
+- [x] Prompt tạo ra kết quả tốt
+
+#### 5.7. Minh chứng liên quan
+
+| Loại minh chứng | Nội dung |
+|---|---|
+| Link commit | 0b5a897 |
+| File liên quan | DashboardService.cs, Dashboard.tsx, DashboardWidgets.tsx, AdminUsers.tsx, AdminWorkouts.tsx |
+| Screenshot | N/A |
+| Kết quả chạy/test | Build pass 100% |
+| Link tài liệu/báo cáo | N/A |
+| Ghi chú khác | N/A |
+
+---
+
+### Prompt số 9
+
+| Nội dung | Thông tin |
+|---|---|
+| Ngày sử dụng | 09/07/2026 |
+| Công cụ AI | Antigravity |
+| Mục đích | Phát triển logic tạo bài tập, cải thiện UI Popup và fix lỗi cấu trúc DB khóa ngoại |
+| Phần việc liên quan | Coding / Debug / Design |
+| Mức độ sử dụng | Hỏi sinh code, Hỏi debug DB |
+
+#### 5.1. Prompt nguyên văn
+
+```text
+1. "đã có phần lịch sử tôi biết vì sao nó đang lấy theo ngày, thêm filter để lấy lịch sử bài tập theo tuần, theo tháng nữa /feature"
+2. "hiện tại số set và số rep đang là cố định là sai rồi. logic tạo bài tập phải phù hợp và thực tế từ yêu cầu... mở bài tập lên chuển bài mà không cần đóng popup lại"
+3. "ở phần DB của tôi phần creator_id đang trống lại thiếu chỉnh lại DB cho đúng PT thêm bài cho tôi."
+```
+
+#### 5.2. Bối cảnh khi viết prompt
+
+```text
+Chức năng tự tạo bài tập bằng AI đang bị hardcode số bài và số hiệp, gây trải nghiệm không sát thực tế. 
+UI modal bài tập đang khá bất tiện khi phải tắt mở liên tục.
+Trang quản lý bài tập của PT gặp vấn đề khi lưu thông tin người tạo (Creator ID), do DB bị dư 1 cột `creator_id` thay vì dùng `created_by`.
+```
+
+#### 5.3. Kết quả AI trả về
+
+```text
+- Code Frontend: Logic tính toán cường độ bài tập dựa vào Goal, Level, và tổng thời gian (Duration). Modal với mũi tên điều hướng và nút Complete & Next.
+- Code Backend: Filter TimeRange cho Workout History. EF Core Migration drop cột thừa và update Khóa ngoại cho bài tập.
+```
+
+#### 5.4. Kết quả đã áp dụng vào bài
+
+```text
+Toàn bộ phần code logic và EF Core Migration được duyệt và áp dụng 100%.
+```
+
+#### 5.5. Phần sinh viên/nhóm đã chỉnh sửa hoặc cải tiến
+
+```text
+Cung cấp feedback bổ sung để tính thêm nhóm cơ (Muscles) thay vì chỉ random bài tập.
+```
+
+#### 5.6. Đánh giá chất lượng prompt
+
+- [x] Prompt rõ ràng
+- [x] Prompt có đủ bối cảnh
+- [x] Prompt tạo ra kết quả tốt
+
+#### 5.7. Minh chứng liên quan
+
+| Loại minh chứng | Nội dung |
+|---|---|
+| Link commit | ead4498 |
+| File liên quan | workoutExercises.ts, WorkoutResults.tsx, FixCreatorId.cs |
+| Screenshot | N/A |
+| Kết quả chạy/test | Build Success (FE/BE) & DB Migration Applied |
+| Link tài liệu/báo cáo | N/A |
+| Ghi chú khác | N/A |
+
+---
+
+### Prompt số 10
+
+| Nội dung | Thông tin |
+|---|---|
+| Ngày sử dụng | 14/07/2026 |
+| Công cụ AI | Antigravity |
+| Mục đích | Thêm giao diện API docs (Swagger/Scalar) cho Backend .NET 9 |
+| Phần việc liên quan | Coding / Debug |
+| Mức độ sử dụng | Hỏi sinh code, Hỏi debug |
+
+#### 5.1. Prompt nguyên văn
+
+```text
+1. "BE có swagger đâu" — yêu cầu bổ sung giao diện test API
+2. "có đâu tôi thấy gì đâu" — Swagger UI cài rồi nhưng vẫn 404
+3. "vẫn không được" — tiếp tục yêu cầu tìm giải pháp
+```
+
+#### 5.2. Bối cảnh khi viết prompt
+
+```text
+Backend .NET 9 dùng MapOpenApi() mới, không có sẵn Swagger UI. 
+Cần giao diện trực quan để test API thay vì dùng curl/Postman.
+```
+
+#### 5.3. Kết quả AI trả về
+
+```text
+- Ban đầu cài Swashbuckle.AspNetCore nhưng không hoạt động trên .NET 9 OpenAPI mới.
+- Chuyển sang Scalar.AspNetCore — tương thích native với MapOpenApi().
+- Cấu hình MapScalarApiReference() trong Program.cs.
+```
+
+#### 5.4. Kết quả đã áp dụng vào bài
+
+```text
+Toàn bộ cấu hình Scalar được áp dụng: using directive, NuGet package, và middleware config.
+```
+
+#### 5.5. Phần sinh viên/nhóm đã chỉnh sửa hoặc cải tiến
+
+```text
+Sinh viên tự test trên trình duyệt và phản hồi khi Swagger UI không hoạt động, buộc AI phải tìm giải pháp thay thế phù hợp hơn.
+```
+
+#### 5.6. Đánh giá chất lượng prompt
+
+- [x] Prompt rõ ràng
+- [x] Prompt có đủ bối cảnh
+- [x] Prompt tạo ra kết quả tốt
+
+#### 5.7. Minh chứng liên quan
+
+| Loại minh chứng | Nội dung |
+|---|---|
+| Link commit | 7de96b23db92899152bce1def1f7b3343b925e5d |
+| File liên quan | Program.cs, FitnessTrainingSystem.WebApi.csproj |
+| Screenshot | N/A |
+| Kết quả chạy/test | Build succeeded — 0 Warning(s), 0 Error(s) |
+| Link tài liệu/báo cáo | N/A |
+| Ghi chú khác | N/A |

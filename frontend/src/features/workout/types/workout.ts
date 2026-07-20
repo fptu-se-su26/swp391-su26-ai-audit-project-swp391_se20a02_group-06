@@ -1,4 +1,4 @@
-export type WorkoutPhase = 'intro' | 'setup' | 'loading' | 'results'
+﻿export type WorkoutPhase = 'intro' | 'setup' | 'loading' | 'results'
 
 export type WorkoutFormData = {
     planType: 'daily' | 'weekly'
@@ -16,6 +16,7 @@ export type WorkoutFormData = {
 }
 
 export interface ExerciseCardData {
+    id: number
     index: number
     name: string
     tags: string[]
@@ -28,4 +29,7 @@ export interface ExerciseCardData {
     isLocked?: boolean
     isDone?: boolean
     isSkipped?: boolean
+    isWarmup?: boolean
+    duration?: number
+    breakTime?: number
 }

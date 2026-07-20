@@ -15,9 +15,13 @@ public class UpdateExerciseDto
 
     public int? MuscleGroupId { get; set; }
 
+    public string? MuscleGroup { get; set; }
+
     [Required(ErrorMessage = "Difficulty is required")]
     public ExerciseDifficulty Difficulty { get; set; }
 
     [Range(1, 1000, ErrorMessage = "Duration must be between 1 and 1000 minutes")]
     public int? Duration { get; set; }
+
+    public int? PackageId { get; set; }
 }

@@ -45,15 +45,22 @@ const Pricing: React.FC = () => {
 
     setPurchasingPlan(pkgId)
     try {
-      await orderService.purchasePackage(pkgId)
-      toast({
-        title: 'Purchase Successful',
-        description: `You have successfully purchased the ${planName} package.`,
-        status: 'success',
-        duration: 5000,
-        isClosable: true,
-        position: 'top-right',
-      })
+      const result = await orderService.purchasePackage(pkgId)
+      
+      if (result && result.checkoutUrl) {
+        // Redirect to PayOS checkout page
+        window.location.href = result.checkoutUrl
+      } else {
+        // Fallback for packages that might not need payment
+        toast({
+          title: 'Purchase Successful',
+          description: `You have successfully purchased the ${planName} package.`,
+          status: 'success',
+          duration: 5000,
+          isClosable: true,
+          position: 'top-right',
+        })
+      }
     } catch (error: any) {
       toast({
         title: 'Purchase Failed',
@@ -166,16 +173,23 @@ const Pricing: React.FC = () => {
                   </Stack>
 
                   {/* Purchase Button */}
-                  <AppButton
-                    label={purchasingPlan === pkg.id ? 'Processing...' : 'Purchase Plan'}
-                    variant={isPopular ? 'solid' : 'ghost'}
-                    w="full"
-                    bg={isPopular ? '#e03030' : '#1a1a1a'}
-                    color={isPopular ? 'white' : '#e2e1eb'}
-                    _hover={{ bg: isPopular ? '#c92424' : '#262626', color: 'white' }}
-                    onClick={() => handlePurchaseClick(pkg.id, pkg.name)}
-                    isDisabled={purchasingPlan !== null}
-                  />
+                  {pkg.isPurchased ? (
+                    <Flex w="full" bg="#1a3a1a" border="1px solid" borderColor="#2a5a2a" borderRadius="12px" py="3" px="4" align="center" justify="center">
+                      <Box as="span" className="material-symbols-outlined" style={{ color: '#4ade80', fontSize: '20px', marginRight: '8px' }}>check_circle</Box>
+                      <Text color="#4ade80" fontWeight="600" fontSize="14px">Subscribed</Text>
+                    </Flex>
+                  ) : (
+                    <AppButton
+                      label={purchasingPlan === pkg.id ? 'Processing...' : 'Purchase Plan'}
+                      variant={isPopular ? 'solid' : 'ghost'}
+                      w="full"
+                      bg={isPopular ? '#e03030' : '#1a1a1a'}
+                      color={isPopular ? 'white' : '#e2e1eb'}
+                      _hover={{ bg: isPopular ? '#c92424' : '#262626', color: 'white' }}
+                      onClick={() => handlePurchaseClick(pkg.id, pkg.name)}
+                      isDisabled={purchasingPlan !== null}
+                    />
+                  )}
                 </Flex>
               )
             })}
