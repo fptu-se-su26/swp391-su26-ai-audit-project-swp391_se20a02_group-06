@@ -27,16 +27,14 @@ docs-me/
 bin/
 obj/
 
-<<<<<<< HEAD
-bin/
-obj/
-*.dll
-*.pdb
-=======
+## Bỏ qua các file build của .NET
+**/bin/
+**/obj/
+*.user
+*.suo
 # Agents
 .agents/workflows/
 
 # Superpowers Plugin (Local Only)
 .agents/skills/superpowers/
 docs/superpowers_guide.md
->>>>>>> dev
