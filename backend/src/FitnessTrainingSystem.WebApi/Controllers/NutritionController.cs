@@ -28,8 +28,15 @@ public class NutritionController : ControllerBase
         if (!int.TryParse(userIdString, out int userId))
             return Unauthorized(new { message = "Invalid user identifier." });
 
-        var command = new CreateDietPlanCommand(userId, request.UserRequest);
-        var result = await _mediator.Send(command);
-        return Ok(result);
+        try
+        {
+            var command = new CreateDietPlanCommand(userId, request.UserRequest);
+            var result = await _mediator.Send(command);
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(502, new { detail = "AI service temporarily unavailable: " + ex.Message });
+        }
     }
 }

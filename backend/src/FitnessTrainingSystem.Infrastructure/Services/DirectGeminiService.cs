@@ -4,6 +4,7 @@ using System.Text.Json.Serialization;
 using FitnessTrainingSystem.Application.DTOs.Nutrition;
 using FitnessTrainingSystem.Application.Common.Interfaces;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 
 namespace FitnessTrainingSystem.Infrastructure.Services;
 
@@ -11,11 +12,14 @@ public class DirectGeminiService : IGeminiAiService
 {
     private readonly HttpClient _httpClient;
     private readonly string _apiKey;
+    private readonly ILogger<DirectGeminiService> _logger;
+    private static readonly Random _jitter = new();
 
-    public DirectGeminiService(HttpClient httpClient, IConfiguration configuration)
+    public DirectGeminiService(HttpClient httpClient, IConfiguration configuration, ILogger<DirectGeminiService> logger)
     {
         _httpClient = httpClient;
         _apiKey = configuration["GEMINI_API_KEY"] ?? configuration["GeminiApiKey"] ?? "";
+        _logger = logger;
     }
 
     public async Task<DietPlanResponse> GenerateDietPlanAsync(string userInfo, string foodListJson)
@@ -79,7 +83,7 @@ DANH SÁCH MÓN ĂN DATABASE
 {foodListJson}
 """;
 
-        var resultJson = await CallGeminiAsync(systemInstruction, userPrompt);
+        var resultJson = await CallGeminiWithRetryAsync(systemInstruction, userPrompt);
         var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
         return JsonSerializer.Deserialize<DietPlanResponse>(resultJson, options)
             ?? throw new Exception("Không đọc được JSON từ AI.");
@@ -103,7 +107,38 @@ LỊCH SỬ CHAT
 {conversation}
 """;
 
-        return await CallGeminiAsync(systemInstruction, prompt);
+        return await CallGeminiWithRetryAsync(systemInstruction, prompt);
+    }
+
+    private async Task<string> CallGeminiWithRetryAsync(string systemInstruction, string userPrompt, int maxRetries = 3)
+    {
+        for (int attempt = 1; attempt <= maxRetries; attempt++)
+        {
+            try
+            {
+                return await CallGeminiAsync(systemInstruction, userPrompt);
+            }
+            catch (HttpRequestException ex) when (attempt < maxRetries && IsTransientError(ex))
+            {
+                var delay = TimeSpan.FromMilliseconds((int)Math.Pow(2, attempt) * 1000 + _jitter.Next(0, 1000));
+                _logger.LogWarning(ex, "Gemini API transient error (attempt {Attempt}/{MaxRetries}), retrying in {Delay}ms", attempt, maxRetries, delay.TotalMilliseconds);
+                await Task.Delay(delay);
+            }
+        }
+
+        return await CallGeminiAsync(systemInstruction, userPrompt);
+    }
+
+    private static bool IsTransientError(HttpRequestException ex)
+    {
+        return ex.StatusCode switch
+        {
+            System.Net.HttpStatusCode.TooManyRequests => true,
+            System.Net.HttpStatusCode.ServiceUnavailable => true,
+            System.Net.HttpStatusCode.BadGateway => true,
+            System.Net.HttpStatusCode.GatewayTimeout => true,
+            _ => false
+        };
     }
 
     private async Task<string> CallGeminiAsync(string systemInstruction, string userPrompt)
