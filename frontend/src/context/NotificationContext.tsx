@@ -156,26 +156,56 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
         }
     }
 
+    const getNextReminderTime = (remaining: number, startTime?: string, endTime?: string): string => {
+        const now = new Date()
+        const start = startTime || '07:00'
+        const end = endTime || '22:00'
+        const [startH, startM] = start.split(':').map(Number)
+        const [endH, endM] = end.split(':').map(Number)
+        const startMin = startH * 60 + startM
+        const endMin = endH * 60 + endM
+        const nowMin = now.getHours() * 60 + now.getMinutes()
+
+        if (nowMin >= endMin) return `Tomorrow ${start}`
+        if (nowMin < startMin) return `Today ${start}`
+        if (remaining <= 0) return `Done for today!`
+
+        const hoursLeft = (endMin - nowMin) / 60
+        const intervalMinutes = Math.round((hoursLeft / remaining) * 60)
+        const nextReminder = new Date(now.getTime() + intervalMinutes * 60000)
+        const nextH = String(nextReminder.getHours()).padStart(2, '0')
+        const nextM = String(nextReminder.getMinutes()).padStart(2, '0')
+        return `${nextH}:${nextM}`
+    }
+
     const drinkWaterFromNotification = async (notificationId: number) => {
         try {
             const todayStr = new Date().toISOString().split('T')[0]
             
             // Log 1 glass of water
-            await logWater(todayStr, 1)
+            const result = await logWater(todayStr, 1)
             
             // Mark notification as read
             await markRead(notificationId)
 
+            const waterConsumedGlasses = result?.waterConsumedGlasses ?? 0
+            const waterTargetGlasses = result?.waterTargetGlasses ?? 8
+            const remaining = Math.max(0, waterTargetGlasses - waterConsumedGlasses)
+            const nextTime = getNextReminderTime(remaining, result?.waterReminderStartTime, result?.waterReminderEndTime)
+            const nextMsg = nextTime.startsWith('Tomorrow') || nextTime.startsWith('Today')
+                ? `Next reminder: ${nextTime}`
+                : `Next reminder at ~${nextTime}`
+
             toast({
                 title: 'Water Logged! 🥛',
-                description: 'Logged 1 glass of water successfully.',
+                description: `+1 glass. ${nextMsg}`,
                 status: 'success',
-                duration: 3000,
+                duration: 4000,
                 isClosable: true,
             })
 
-            // Navigate to Nutrition page
-            navigate('/nutrition')
+            // Navigate to Nutrition page with updated water count
+            navigate('/nutrition', { state: { waterConsumedGlasses } })
         } catch (error) {
             console.error('Failed to log water from notification:', error)
             toast({
