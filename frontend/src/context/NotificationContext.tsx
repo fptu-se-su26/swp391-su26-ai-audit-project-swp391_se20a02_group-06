@@ -198,7 +198,7 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
 
             toast({
                 title: 'Water Logged! 🥛',
-                description: `+1 glass. ${nextMsg}`,
+                description: `+1 glass (${remaining} left). ${nextMsg}`,
                 status: 'success',
                 duration: 4000,
                 isClosable: true,
