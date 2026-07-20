@@ -32,6 +32,7 @@ import {
     AIDinnerCard,
     DonutRing,
     FoodItem,
+    HydrationCountdown,
     HydrationTracker,
     MacroCard,
     MealSection,
@@ -297,6 +298,24 @@ const Nutrition: React.FC = () => {
                     <Stack spacing="4">
                         {/* Hydration */}
                         <HydrationTracker current={waterCurrent} total={waterTotal} onLogWater={handleLogWater} />
+
+                        {/* Hydration Countdown */}
+                        <HydrationCountdown
+                            current={waterCurrent}
+                            target={waterTotal}
+                            startTime={summary?.waterReminderStartTime}
+                            endTime={summary?.waterReminderEndTime}
+                            onRemind={() => {
+                                toast({
+                                    title: 'Time to drink water! 🥛',
+                                    description: `Còn ${Math.max(0, waterTotal - waterCurrent)} cốc nước cần uống.`,
+                                    status: 'success',
+                                    duration: 5000,
+                                    isClosable: true,
+                                })
+                                triggerTestWaterReminder()
+                            }}
+                        />
 
                         {/* Water Reminder Schedule */}
                         <WaterReminderSettings

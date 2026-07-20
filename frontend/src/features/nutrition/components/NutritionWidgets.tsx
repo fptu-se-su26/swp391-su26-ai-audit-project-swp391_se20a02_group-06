@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import {
     Badge,
     Box,
@@ -10,7 +10,7 @@ import {
     Stack,
     Text,
 } from '@chakra-ui/react'
-import { FiCpu, FiDroplet, FiPlus } from 'react-icons/fi'
+import { FiClock, FiCpu, FiDroplet, FiPlus } from 'react-icons/fi'
 import AppButton from '../../../components/shared/Button/AppButton'
 
 export const DonutRing: React.FC<{ current: number; total: number }> = ({ current, total }) => {
@@ -251,6 +251,102 @@ export const HydrationTracker: React.FC<{ current: number; total: number; onLogW
         </Flex>
     </Box>
 )
+
+export const HydrationCountdown: React.FC<{
+    current: number
+    target: number
+    startTime?: string
+    endTime?: string
+    onRemind?: () => void
+}> = ({ current, target, startTime, endTime, onRemind }) => {
+    const [display, setDisplay] = useState('--:--')
+    const [progress, setProgress] = useState(0)
+    const [endTimestamp, setEndTimestamp] = useState(0)
+    const [totalInterval, setTotalInterval] = useState(0)
+
+    const calcInterval = useCallback(() => {
+        const remaining = target - current
+        if (remaining <= 0) {
+            setDisplay('Done!')
+            setProgress(1)
+            setEndTimestamp(0)
+            return
+        }
+
+        const now = new Date()
+        const start = startTime || '07:00'
+        const end = endTime || '22:00'
+        const [startH, startM] = start.split(':').map(Number)
+        const [endH, endM] = end.split(':').map(Number)
+        const startMin = startH * 60 + startM
+        const endMin = endH * 60 + endM
+        const nowMin = now.getHours() * 60 + now.getMinutes()
+
+        if (nowMin >= endMin || nowMin < startMin) {
+            setDisplay(nowMin >= endMin ? 'Tomorrow' : '--:--')
+            setProgress(0)
+            setEndTimestamp(0)
+            return
+        }
+
+        const hoursLeft = (endMin - nowMin) / 60
+        const intervalMs = (hoursLeft / remaining) * 3600 * 1000
+        setTotalInterval(intervalMs)
+        setEndTimestamp(Date.now() + intervalMs)
+    }, [current, target, startTime, endTime])
+
+    useEffect(() => {
+        calcInterval()
+    }, [calcInterval])
+
+    useEffect(() => {
+        if (endTimestamp <= 0) return
+
+        const tick = () => {
+            const remaining = endTimestamp - Date.now()
+            if (remaining <= 0) {
+                setDisplay('00:00')
+                setProgress(1)
+                if (onRemind) onRemind()
+                calcInterval()
+                return
+            }
+
+            const mins = Math.floor(remaining / 60000)
+            const secs = Math.floor((remaining % 60000) / 1000)
+            setDisplay(`${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`)
+            setProgress(1 - remaining / totalInterval)
+        }
+
+        tick()
+        const interval = setInterval(tick, 1000)
+        return () => clearInterval(interval)
+    }, [endTimestamp, totalInterval])
+
+    return (
+        <Box bg="#141720" border="1px solid" borderColor="#1e2028" borderRadius="14px" p="4">
+            <Flex align="center" justify="space-between" mb="2">
+                <HStack spacing="2">
+                    <Icon as={FiClock} color="teal.300" boxSize="14px" />
+                    <Text fontSize="12px" fontWeight="700" color="white">
+                        Next glass in
+                    </Text>
+                </HStack>
+                <Text fontSize="18px" fontWeight="800" color="teal.300" fontFamily="mono">
+                    {display}
+                </Text>
+            </Flex>
+            <Box h="4px" bg="#1e2028" borderRadius="full" overflow="hidden">
+                <Box
+                    h="full"
+                    borderRadius="full"
+                    bg="teal.400"
+                    style={{ width: `${Math.min(progress * 100, 100)}%`, transition: 'width 1s linear' }}
+                />
+            </Box>
+        </Box>
+    )
+}
 
 export const AIDinnerCard: React.FC = () => {
     const items = [
