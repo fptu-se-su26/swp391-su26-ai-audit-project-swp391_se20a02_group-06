@@ -37,6 +37,11 @@ public class ExerciseRequestService : IExerciseRequestService
             PtId = dto.PtId,
             Status = "PENDING",
             AdminId = adminId,
+            MuscleGroup = dto.MuscleGroup,
+            Difficulty = (int?)dto.Difficulty,
+            Instructions = dto.Instructions,
+            Priority = dto.Priority,
+            Deadline = dto.Deadline,
             SubmittedAt = null,
             ReviewedAt = null
         };
@@ -48,10 +53,11 @@ public class ExerciseRequestService : IExerciseRequestService
         var adminUser = await _context.Users.FirstOrDefaultAsync(u => u.Id == adminId);
         var adminName = adminUser?.Fullname ?? "Admin";
 
+        var groupInfo = string.IsNullOrEmpty(dto.MuscleGroup) ? "not specified" : dto.MuscleGroup;
         await _notificationService.SendNotificationAsync(
             dto.PtId,
             "New Exercise Request",
-            $"{adminName} requested a new exercise for group: {dto.MuscleGroup ?? "General"}.",
+            $"{adminName} requested a new exercise for group: {groupInfo}.",
             "EXERCISE_REQUEST"
         );
 
@@ -105,6 +111,7 @@ public class ExerciseRequestService : IExerciseRequestService
         request.Title = dto.Title;
         request.Description = dto.Description;
         request.VideoUrl = dto.VideoUrl;
+        request.Duration = dto.Duration;
         request.Status = "SUBMITTED";
         request.SubmittedAt = DateTime.UtcNow;
 
@@ -151,7 +158,8 @@ public class ExerciseRequestService : IExerciseRequestService
                 Title = request.Title,
                 Description = request.Description,
                 VideoUrl = request.VideoUrl,
-                Difficulty = ExerciseDifficulty.Intermediate,
+                Difficulty = request.Difficulty != null ? (ExerciseDifficulty)request.Difficulty : ExerciseDifficulty.Intermediate,
+                DurationMinutes = request.Duration,
                 CreatedBy = request.PtId,
                 CreatedAt = DateTime.UtcNow
             };
@@ -217,12 +225,12 @@ public class ExerciseRequestService : IExerciseRequestService
             ReviewedAt = request.ReviewedAt,
             RequestedBy = request.AdminId,
             RequestedByName = requestedByName,
-            MuscleGroup = null,
-            Difficulty = null,
-            Instructions = null,
-            Priority = null,
-            Deadline = null,
-            Duration = null
+            MuscleGroup = request.MuscleGroup,
+            Difficulty = request.Difficulty != null ? (ExerciseDifficulty?)request.Difficulty : null,
+            Instructions = request.Instructions,
+            Priority = request.Priority,
+            Deadline = request.Deadline,
+            Duration = request.Duration
         };
     }
 }

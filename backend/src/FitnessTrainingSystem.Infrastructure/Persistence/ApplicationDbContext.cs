@@ -107,6 +107,9 @@ public partial class ApplicationDbContext : DbContext
                 .WithMany()
                 .HasForeignKey(r => r.RequestedBy)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            entity.Property(e => e.Difficulty)
+                .HasConversion<string>();
         });
 
         modelBuilder.Entity<Exercise>()

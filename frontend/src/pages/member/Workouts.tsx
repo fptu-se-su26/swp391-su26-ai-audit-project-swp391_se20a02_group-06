@@ -1,10 +1,10 @@
 import React, { useEffect } from 'react'
-import WorkoutIntro from '../../features/workout/components/WorkoutIntro.tsx'
-import WorkoutLoading from '../../features/workout/components/WorkoutLoading.tsx'
-import WorkoutResults from '../../features/workout/components/WorkoutResults.tsx'
-import WorkoutSetup from '../../features/workout/components/WorkoutSetup.tsx'
-import { generateExercises } from '../../features/workout/data/workoutExercises.ts'
-import { useWorkoutStore } from '../../store/useWorkoutStore.ts'
+import WorkoutIntro from '../../features/workout/components/WorkoutIntro'
+import WorkoutLoading from '../../features/workout/components/WorkoutLoading'
+import WorkoutResults from '../../features/workout/components/WorkoutResults'
+import WorkoutSetup from '../../features/workout/components/WorkoutSetup'
+import { generateExercises } from '../../features/workout/data/workoutExercises'
+import { useWorkoutStore } from '../../store/useWorkoutStore'
 
 const Workouts: React.FC = () => {
     const { phase, formData, setPhase, setFormData, setExercises } = useWorkoutStore()

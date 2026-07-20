@@ -1,3 +1,4 @@
+using System.IdentityModel.Tokens.Jwt;
 using FitnessTrainingSystem.Application.DTOs.Nutrition;
 using FitnessTrainingSystem.Application.Interfaces;
 using Microsoft.AspNetCore.Authorization;
@@ -23,8 +24,9 @@ public class AIChatController : ControllerBase
     public async Task<IActionResult> SendMessage(
         [FromBody] AIChatRequest request)
     {
-        var userId = int.Parse(
-            User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
+        var userIdString = User.FindFirstValue(JwtRegisteredClaimNames.Sub) ?? User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (!int.TryParse(userIdString, out var userId))
+            return Unauthorized(new { message = "Invalid user identifier." });
 
         var result = await _chatService.SendMessageAsync(
             userId,

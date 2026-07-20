@@ -19,8 +19,7 @@ const fetcher = (url: string) => apiClient.get(url).then(res => res.data)
 const toVnd = (amount: number) => `\u20ab${Math.round(amount).toLocaleString('vi-VN')}`
 
 const AdminDashboard: React.FC = () => {
-  const user = useAuthStore(s => s.user)
-  const roleId = user?.roleId ?? useAuthStore(s => s.roleId)
+  const roleId = useAuthStore(s => s.roleId)
   const isAdmin = roleId === 1
 
   const { data: dash, isLoading } = useSWR(isAdmin ? '/admin/dashboard' : null, fetcher)

@@ -15,6 +15,8 @@ public class CreateExerciseDto
 
     public int? MuscleGroupId { get; set; }
 
+    public string? MuscleGroup { get; set; }
+
     [Required(ErrorMessage = "Difficulty is required")]
     public ExerciseDifficulty Difficulty { get; set; }
 

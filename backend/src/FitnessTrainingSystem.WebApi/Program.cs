@@ -73,24 +73,9 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 return Task.CompletedTask;
             }
         };
-
-
-        options.Events = new JwtBearerEvents
-        {
-            OnMessageReceived = context =>
-            {
-                var accessToken = context.Request.Query["access_token"];
-
-                // Read token from query string if it is a SignalR hub request
-                var path = context.HttpContext.Request.Path;
-                if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/r/notifications"))
-                {
-                    context.Token = accessToken;
-                }
-                return Task.CompletedTask;
-            }
-        };
     });
+
+builder.Services.AddSignalR();
 
 builder.Services.AddCors(options =>
 {
@@ -118,6 +103,7 @@ app.UseCors("AllowFrontend");
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
+app.MapHub<FitnessTrainingSystem.Infrastructure.Hubs.NotificationHub>("/r/notifications");
 
 // (Bạn có thể giữ hoặc xóa đoạn code WeatherForecast mặc định này tùy ý)
 var summaries = new[]

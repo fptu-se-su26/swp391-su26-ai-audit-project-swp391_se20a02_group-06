@@ -58,10 +58,7 @@ public static class DependencyInjection
 
         services.AddScoped<ICloudinaryService, CloudinaryService>();
 
-        services.AddHttpClient<IGeminiAiService, PythonAiService>(client =>
-        {
-            client.BaseAddress = new Uri("http://localhost:8000/");
-        });
+        services.AddHttpClient<IGeminiAiService, DirectGeminiService>();
         services.AddScoped<IAIChatService, AIChatService>();
 
         services.AddSingleton(new PayOSClient(new PayOSOptions
