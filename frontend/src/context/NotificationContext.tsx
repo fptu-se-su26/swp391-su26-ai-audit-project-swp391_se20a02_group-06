@@ -12,6 +12,7 @@ interface NotificationContextProps {
     isLoading: boolean
     markRead: (id: number) => Promise<void>
     markAllRead: () => Promise<void>
+    clearAll: () => Promise<void>
     drinkWaterFromNotification: (notificationId: number) => Promise<void>
 }
 
@@ -206,6 +207,16 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
         return `${nextH}:${nextM}`
     }
 
+    const clearAll = async () => {
+        try {
+            await markAllAsRead()
+            setNotifications([])
+            setUnreadCount(0)
+        } catch (error) {
+            console.error('Failed to clear notifications:', error)
+        }
+    }
+
     const drinkWaterFromNotification = async (notificationId: number) => {
         try {
             const todayStr = new Date().toISOString().split('T')[0]
@@ -213,8 +224,9 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
             // Log 1 glass of water
             const result = await logWater(todayStr, 1)
             
-            // Mark notification as read
-            await markRead(notificationId)
+            // Remove from local state
+            setNotifications((prev) => prev.filter((n) => n.id !== notificationId))
+            setUnreadCount((prev) => Math.max(0, prev - 1))
 
             const waterConsumedGlasses = result?.waterConsumedGlasses ?? 0
             const waterTargetGlasses = result?.waterTargetGlasses ?? 8
@@ -253,6 +265,7 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
                 isLoading,
                 markRead,
                 markAllRead,
+                clearAll,
                 drinkWaterFromNotification,
             }}
         >
