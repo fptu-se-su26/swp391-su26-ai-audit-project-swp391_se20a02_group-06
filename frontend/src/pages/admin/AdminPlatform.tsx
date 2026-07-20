@@ -20,9 +20,8 @@ const AdminPlatform: React.FC = () => {
                     justifyContent="center"
                     zIndex={10}
                     borderRadius="16px"
-                    pointerEvents="none"
                 >
-                    <Box bg="#1a1d27" border="1px solid" borderColor="#E03030" borderRadius="12px" px="8" py="4" boxShadow="0 0 30px rgba(224,48,48,0.25)">
+                    <Box bg="#1a1d27" border="1px solid" borderColor="#E03030" borderRadius="12px" px="8" py="4" boxShadow="0 0 30px rgba(224,48,48,0.25)" pointerEvents="auto">
                         <Text fontSize="28px" fontWeight="800" color="#E03030">
                             Coming Soon
                         </Text>
