@@ -14,7 +14,7 @@ const AdminPlatform: React.FC = () => {
                 <Box
                     position="absolute"
                     inset={0}
-                    bg="blackAlpha.500"
+                    bg="blackAlpha.600"
                     display="flex"
                     alignItems="center"
                     justifyContent="center"
@@ -22,7 +22,7 @@ const AdminPlatform: React.FC = () => {
                     borderRadius="16px"
                     pointerEvents="none"
                 >
-                    <Text fontSize="28px" fontWeight="800" color="white">
+                    <Text fontSize="28px" fontWeight="800" color="#E03030" textShadow="0 0 20px rgba(224,48,48,0.4)">
                         Coming Soon
                     </Text>
                 </Box>
