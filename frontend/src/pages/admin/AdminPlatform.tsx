@@ -22,9 +22,11 @@ const AdminPlatform: React.FC = () => {
                     borderRadius="16px"
                     pointerEvents="none"
                 >
-                    <Text fontSize="28px" fontWeight="800" color="#E03030" textShadow="0 0 20px rgba(224,48,48,0.4)">
-                        Coming Soon
-                    </Text>
+                    <Box bg="#1a1d27" border="1px solid" borderColor="#E03030" borderRadius="12px" px="8" py="4" boxShadow="0 0 30px rgba(224,48,48,0.25)">
+                        <Text fontSize="28px" fontWeight="800" color="#E03030">
+                            Coming Soon
+                        </Text>
+                    </Box>
                 </Box>
 
                 <Flex justify="space-between" align="center" mb="7">
