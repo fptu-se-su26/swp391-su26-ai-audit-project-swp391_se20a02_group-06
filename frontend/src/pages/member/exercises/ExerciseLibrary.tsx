@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react'
+import React, { useState, useRef, useEffect, useCallback } from 'react'
 import {
     Box, Flex, Grid, Heading, Text, Icon, Button, Spinner,
 } from '@chakra-ui/react'
@@ -43,34 +43,33 @@ const ExerciseLibrary: React.FC = () => {
         tags: string[]
         duration?: number
     } | null>(null)
+    const [loadingDetails, setLoadingDetails] = useState(false)
     const muscleRef = useRef<HTMLDivElement>(null)
     const diffRef = useRef<HTMLDivElement>(null)
     const resetPage = () => setPage(1)
 
-    const { data: exercises, isLoading, error } = useSWR<any[]>('/exercises', fetcher)
+    const { data: catalog, isLoading, error } = useSWR<any[]>('/exercises/catalog', fetcher)
     const { data: membership } = useSWR<any>('/membership/my', fetcher)
 
-    const userTier = membership?.packageName || 'Free'
-
     const mapped: ExerciseGridItem[] = React.useMemo(() => {
-        if (!exercises) return []
-        return exercises.map((ex: any) => {
+        if (!catalog) return []
+        return catalog.map((ex: any) => {
             const pkgName = ex.packageName || 'Free'
             const badge = packageBadgeMap[pkgName] || { label: pkgName.toUpperCase(), color: '#8A8A93', bg: 'rgba(138,138,147,0.15)' }
-            const isLocked = ex.packageId != null && ex.packageName !== userTier && userTier === 'Free'
+            const isLocked = ex.isLocked
             return {
                 id: ex.id,
-                title: ex.title || ex.description || 'Untitled',
+                title: ex.title || 'Untitled',
                 muscleGroup: ex.muscleGroup || 'General',
                 difficulty: ex.difficulty !== undefined ? (difficultyLabels[String(ex.difficulty)] || 'General') : 'General',
-                duration: ex.duration ? `${ex.duration}m` : '--',
-                thumbnail: ex.videoUrl || undefined,
+                duration: ex.durationMinutes ? `${ex.durationMinutes}m` : '--',
                 packageBadge: badge,
                 isLocked,
                 requiredPlan: isLocked ? pkgName : undefined,
+                thumbnailUrl: ex.thumbnailUrl || undefined,
             }
         })
-    }, [exercises, userTier])
+    }, [catalog])
 
     const filtered = React.useMemo(() => {
         let result = mapped
@@ -87,18 +86,26 @@ const ExerciseLibrary: React.FC = () => {
     const safePage = Math.min(page, totalPages)
     const paginated = filtered.slice((safePage - 1) * PER_PAGE, safePage * PER_PAGE)
 
-    const handlePlay = (id: number) => {
-        const raw = exercises?.find((e: any) => e.id === id)
+    const handlePlay = useCallback(async (id: number) => {
         const grid = mapped.find(e => e.id === id)
         if (!grid) return
-        setSelectedModal({
-            name: grid.title,
-            videoUrl: raw?.videoUrl || undefined,
-            description: raw?.description || undefined,
-            tags: [grid.muscleGroup, grid.difficulty],
-            duration: raw?.duration || undefined,
-        })
-    }
+        setLoadingDetails(true)
+        try {
+            const res = await apiClient.get(`/exercises/${id}`)
+            const full = res.data
+            setSelectedModal({
+                name: full.title || grid.title,
+                videoUrl: full.videoUrl || undefined,
+                description: full.description || undefined,
+                tags: [full.muscleGroup || grid.muscleGroup, full.difficulty !== undefined ? (difficultyLabels[String(full.difficulty)] || 'General') : grid.difficulty],
+                duration: full.duration || undefined,
+            })
+        } catch {
+            setSelectedModal(null)
+        } finally {
+            setLoadingDetails(false)
+        }
+    }, [mapped])
 
     const handleModalComplete = () => {
         setSelectedModal(null)

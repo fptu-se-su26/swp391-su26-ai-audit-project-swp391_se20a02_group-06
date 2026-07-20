@@ -16,6 +16,8 @@ public class User : BaseAuditableEntity
     public DateTime? UpdatedAt { get; set; }
     public DateTime? PasswordChangedAt { get; set; }
     public int? RoleId { get; set; }
+    public string? WaterReminderStartTime { get; set; }
+    public string? WaterReminderEndTime { get; set; }
 
     // Navigation properties
     public Role? Role { get; set; }

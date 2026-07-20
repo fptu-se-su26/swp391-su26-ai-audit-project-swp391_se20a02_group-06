@@ -87,6 +87,7 @@ const AdminWorkouts: React.FC = () => {
     const [categoryFilter, setCategoryFilter] = useState('All')
     const [difficultyFilter, setDifficultyFilter] = useState('all')
     const [muscleTargetFilter, setMuscleTargetFilter] = useState('all')
+    const [packageFilter, setPackageFilter] = useState('all')
     const [currentPage, setCurrentPage] = useState(1)
     const pageSize = 10
 
@@ -110,9 +111,12 @@ const AdminWorkouts: React.FC = () => {
             const matchesDifficulty = difficultyFilter === 'all' || ex.difficulty.toString() === difficultyFilter
             const mt = ex.muscleTarget || ex.muscleGroup || ''
             const matchesMuscle = muscleTargetFilter === 'all' || mt === muscleTargetFilter
-            return matchesSearch && matchesCategory && matchesDifficulty && matchesMuscle
+            const matchesPackage = packageFilter === 'all'
+                || (packageFilter === 'free' && ex.packageId == null)
+                || ex.packageId?.toString() === packageFilter
+            return matchesSearch && matchesCategory && matchesDifficulty && matchesMuscle && matchesPackage
         })
-    }, [exercises, searchQuery, categoryFilter, difficultyFilter, muscleTargetFilter])
+    }, [exercises, searchQuery, categoryFilter, difficultyFilter, muscleTargetFilter, packageFilter])
 
     const uniqueCategories = useMemo(() => {
         if (!exercises) return []
@@ -123,6 +127,11 @@ const AdminWorkouts: React.FC = () => {
         if (!exercises) return []
         return Array.from(new Set(exercises.map(e => e.muscleTarget || e.muscleGroup || '').filter(Boolean))).sort()
     }, [exercises])
+
+    const packageOptions = useMemo(() => {
+        if (!packages) return []
+        return packages.filter(p => p.tier > 0).map(p => ({ id: p.id, name: p.name }))
+    }, [packages])
 
     const totalPages = Math.max(1, Math.ceil((filteredExercises.length || 0) / pageSize))
     const safePage = Math.min(currentPage, totalPages)
@@ -410,8 +419,11 @@ const AdminWorkouts: React.FC = () => {
                         onDifficultyChange={(val) => { setDifficultyFilter(val); setCurrentPage(1); }}
                         muscleTargetFilter={muscleTargetFilter}
                         onMuscleTargetChange={(val) => { setMuscleTargetFilter(val); setCurrentPage(1); }}
+                        packageFilter={packageFilter}
+                        onPackageChange={(val) => { setPackageFilter(val); setCurrentPage(1); }}
                         categories={uniqueCategories}
                         muscleTargets={uniqueMuscleTargets}
+                        packages={packageOptions}
                         onAddExercise={() => { resetForm(); onCreateOpen(); }}
                         showAddButton={roleId === 1}
                     />

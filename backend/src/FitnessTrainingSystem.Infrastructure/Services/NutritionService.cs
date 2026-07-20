@@ -184,7 +184,8 @@ public class NutritionService : INutritionService
         var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
         if (user == null) return false;
 
-        user.Status = user.Status ?? "ACTIVE";
+        user.WaterReminderStartTime = dto.StartTime;
+        user.WaterReminderEndTime = dto.EndTime;
 
         await _context.SaveChangesAsync();
         return true;
@@ -238,8 +239,8 @@ public class NutritionService : INutritionService
             HasBodyMetrics = hasMetrics,
             FitnessGoal = fitnessGoal,
 
-            WaterReminderStartTime = null,
-            WaterReminderEndTime = null
+            WaterReminderStartTime = user?.WaterReminderStartTime,
+            WaterReminderEndTime = user?.WaterReminderEndTime
         };
     }
 }

@@ -16,10 +16,11 @@ public class MembershipService : IMembershipService
 
     public async Task<MembershipDto?> GetCurrentSubscriptionAsync(int userId)
     {
+        var now = DateTime.UtcNow;
         var sub = await _context.MembershipSubscriptions
             .Include(s => s.Package)
             .Include(s => s.User)
-            .Where(s => s.UserId == userId && s.Status == "ACTIVE")
+            .Where(s => s.UserId == userId && s.Status == "ACTIVE" && s.EndDate >= now)
             .OrderByDescending(s => s.StartDate)
             .FirstOrDefaultAsync();
 
@@ -36,7 +37,7 @@ public class MembershipService : IMembershipService
             OrderId = sub.OrderId,
             StartDate = sub.StartDate,
             EndDate = sub.EndDate,
-            Status = sub.EndDate > DateTime.UtcNow ? sub.Status : "EXPIRED"
+            Status = sub.EndDate > now ? sub.Status : "EXPIRED"
         };
     }
 

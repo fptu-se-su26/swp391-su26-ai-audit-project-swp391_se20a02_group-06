@@ -207,7 +207,7 @@ export const MealSection: React.FC<{
     </Box>
 )
 
-export const HydrationTracker: React.FC<{ current: number; total: number }> = ({ current, total }) => (
+export const HydrationTracker: React.FC<{ current: number; total: number; onLogWater?: () => void }> = ({ current, total, onLogWater }) => (
     <Box
         bg="#141720"
         border="1px solid"
@@ -224,25 +224,30 @@ export const HydrationTracker: React.FC<{ current: number; total: number }> = ({
             </Text>
         </Flex>
         <Flex gap="2" flexWrap="wrap">
-            {Array.from({ length: total }).map((_, i) => (
-                <Box
-                    key={i}
-                    w="28px"
-                    h="34px"
-                    borderRadius="8px"
-                    bg={i < current ? 'rgba(59,130,246,0.3)' : '#1e2028'}
-                    border="1px solid"
-                    borderColor={i < current ? 'rgba(59,130,246,0.5)' : '#2e3040'}
-                    display="flex"
-                    alignItems="center"
-                    justifyContent="center"
-                    transition="all 0.2s"
-                    cursor="pointer"
-                    _hover={{ borderColor: 'rgba(59,130,246,0.7)' }}
-                >
-                    <Icon as={FiDroplet} color={i < current ? '#3b82f6' : '#3e4050'} boxSize="12px" />
-                </Box>
-            ))}
+            {Array.from({ length: total }).map((_, i) => {
+                const filled = i < current
+                const isNext = i === current
+                return (
+                    <Box
+                        key={i}
+                        w="28px"
+                        h="34px"
+                        borderRadius="8px"
+                        bg={filled ? 'rgba(59,130,246,0.3)' : '#1e2028'}
+                        border="1px solid"
+                        borderColor={isNext && current < total ? 'rgba(59,130,246,0.7)' : filled ? 'rgba(59,130,246,0.5)' : '#2e3040'}
+                        display="flex"
+                        alignItems="center"
+                        justifyContent="center"
+                        transition="all 0.2s"
+                        cursor={isNext && onLogWater ? 'pointer' : 'default'}
+                        _hover={isNext && onLogWater ? { bg: 'rgba(59,130,246,0.2)', borderColor: '#3b82f6' } : undefined}
+                        onClick={() => { if (isNext && onLogWater) onLogWater() }}
+                    >
+                        <Icon as={FiDroplet} color={filled ? '#3b82f6' : '#3e4050'} boxSize="12px" />
+                    </Box>
+                )
+            })}
         </Flex>
     </Box>
 )
