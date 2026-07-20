@@ -35,6 +35,7 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
     const [unreadCount, setUnreadCount] = useState(0)
     const [isLoading, setIsLoading] = useState(false)
     const [connection, setConnection] = useState<HubConnection | null>(null)
+    const [connectionState, setConnectionState] = useState<'connected' | 'disconnected' | 'reconnecting'>('disconnected')
 
     // 1. Fetch initial notifications
     const fetchNotifications = async () => {
@@ -91,6 +92,7 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
         const startConnection = async () => {
             try {
                 await connection.start()
+                setConnectionState('connected')
                 console.log('SignalR Notification Hub connected successfully.')
 
                 connection.on('ReceiveNotification', (newNotif: NotificationDto) => {
@@ -114,6 +116,20 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
                         position: 'top-right',
                     })
                 })
+
+                connection.onreconnecting(() => {
+                    console.log('SignalR reconnecting...')
+                    setConnectionState('reconnecting')
+                })
+                connection.onreconnected(() => {
+                    console.log('SignalR reconnected.')
+                    setConnectionState('connected')
+                    fetchNotifications()
+                })
+                connection.onclose(() => {
+                    console.log('SignalR disconnected.')
+                    setConnectionState('disconnected')
+                })
             } catch (error) {
                 console.error('SignalR Hub connection failed:', error)
             }
@@ -127,7 +143,19 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
         }
     }, [connection, toast])
 
-    // 4. Notification actions
+    // 4. Polling fallback: fetch every 30s when SignalR is not connected
+    useEffect(() => {
+        if (!isAuthenticated) return
+        if (connectionState === 'connected') return
+
+        const intervalId = setInterval(() => {
+            fetchNotifications()
+        }, 30000)
+
+        return () => clearInterval(intervalId)
+    }, [isAuthenticated, connectionState])
+
+    // 5. Notification actions
     const markRead = async (id: number) => {
         try {
             await markAsRead(id)
