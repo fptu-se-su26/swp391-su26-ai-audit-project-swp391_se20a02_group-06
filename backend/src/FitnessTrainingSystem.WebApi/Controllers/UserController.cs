@@ -128,13 +128,14 @@ public class UserController : ControllerBase
             }
         }
 
+        var now2 = DateTime.UtcNow;
         var profile = new UserProfileDto
         {
             Name = user.Fullname,
             Email = user.Email,
             AvatarUrl = user.AvatarUrl,
             Tier = user.MembershipSubscriptions
-                .Where(ms => ms.Status == "ACTIVE")
+                .Where(ms => ms.Status == "ACTIVE" && ms.EndDate >= now2)
                 .OrderByDescending(ms => ms.StartDate)
                 .Select(ms => ms.Package != null ? ms.Package.Name : "Free")
                 .FirstOrDefault() ?? "Free",
@@ -143,7 +144,7 @@ public class UserController : ControllerBase
             WorkoutsCompleted = workoutsCompleted,
             CurrentStreak = currentStreak,
             ActivePlan = user.MembershipSubscriptions
-                .Where(ms => ms.Status == "ACTIVE")
+                .Where(ms => ms.Status == "ACTIVE" && ms.EndDate >= now2)
                 .OrderByDescending(ms => ms.StartDate)
                 .Select(ms => ms.Package != null ? ms.Package.Name : "None")
                 .FirstOrDefault() ?? "None"
