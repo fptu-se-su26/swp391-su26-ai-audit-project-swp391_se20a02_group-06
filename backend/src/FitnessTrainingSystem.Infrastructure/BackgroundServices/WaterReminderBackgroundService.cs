@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using FitnessTrainingSystem.Application.Interfaces;
+using FitnessTrainingSystem.Domain.Entities;
 using FitnessTrainingSystem.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -40,8 +41,9 @@ public class WaterReminderBackgroundService : BackgroundService
                 _logger.LogError(ex, "Error occurred while sending water reminders.");
             }
 
-            // Scan every 30 minutes
-            await Task.Delay(TimeSpan.FromMinutes(30), stoppingToken);
+            _logger.LogInformation("Water reminder scan cycle completed at {Time}", DateTime.Now);
+            // Scan every 5 minutes
+            await Task.Delay(TimeSpan.FromMinutes(5), stoppingToken);
         }
     }
 
@@ -60,7 +62,7 @@ public class WaterReminderBackgroundService : BackgroundService
 
         foreach (var member in members)
         {
-            // If they haven't configured their waking hours yet (null), skip this user
+            // Skip if reminder schedule not configured
             if (string.IsNullOrEmpty(member.WaterReminderStartTime) || string.IsNullOrEmpty(member.WaterReminderEndTime))
             {
                 continue;
@@ -69,7 +71,6 @@ public class WaterReminderBackgroundService : BackgroundService
             if (!TimeSpan.TryParse(member.WaterReminderStartTime, out var startTime) ||
                 !TimeSpan.TryParse(member.WaterReminderEndTime, out var endTime))
             {
-                // Fallback if formatting is corrupted
                 continue;
             }
 
@@ -83,7 +84,7 @@ public class WaterReminderBackgroundService : BackgroundService
             }
 
             // Get user's daily summary log for today
-            var log = await context.DailyNutritionLogs
+            var log = await context.Set<DailyNutritionLog>()
                 .FirstOrDefaultAsync(l => l.UserId == member.Id && l.LogDate == today);
 
             if (log == null)

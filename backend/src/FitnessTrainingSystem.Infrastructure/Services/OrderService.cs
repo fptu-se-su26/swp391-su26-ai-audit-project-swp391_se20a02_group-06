@@ -12,11 +12,13 @@ public class OrderService : IOrderService
 {
     private readonly ApplicationDbContext _context;
     private readonly IMapper _mapper;
+    private readonly IPayOSService _payOsService;
 
-    public OrderService(ApplicationDbContext context, IMapper mapper)
+    public OrderService(ApplicationDbContext context, IMapper mapper, IPayOSService payOsService)
     {
         _context = context;
         _mapper = mapper;
+        _payOsService = payOsService;
     }
 
     public async Task<OrderDto> PurchasePackageAsync(int userId, PurchasePackageDto dto)
@@ -28,19 +30,76 @@ public class OrderService : IOrderService
             throw new Exception("Product package not found.");
         }
 
+        var user = await _context.Users.FindAsync(userId);
+        if (user == null)
+        {
+            throw new Exception("User not found.");
+        }
+
+        var orderCode = long.Parse(DateTime.Now.ToString("yyMMddHHmmssfff"));
+
         var order = new Order
         {
+            OrderCode = orderCode,
             UserId = userId,
             PackageId = package.Id,
             PricePaid = package.Price,
-            PaymentStatus = PaymentStatus.Paid, // Mocking successful payment
-            PurchasedAt = DateTime.UtcNow,
-            ExpiredAt = DateTime.UtcNow.AddDays(package.DurationDays)
+            PaymentStatus = PaymentStatus.Pending,
+            PurchasedAt = DateTime.UtcNow
         };
 
         _context.Orders.Add(order);
         await _context.SaveChangesAsync();
 
-        return _mapper.Map<OrderDto>(order);
+        var orderDto = _mapper.Map<OrderDto>(order);
+
+        // If package is free or zero cost, just complete the order immediately
+        if (package.Price <= 0)
+        {
+            order.PaymentStatus = PaymentStatus.Paid;
+            await _context.SaveChangesAsync();
+            orderDto.PaymentStatus = PaymentStatus.Paid;
+            return orderDto;
+        }
+
+        // Call PayOS for payment link and QR code
+        var amountVnd = (int)Math.Round(package.Price);
+        var description = $"Order {orderCode}";
+        var buyerName = user.Fullname ?? user.Email ?? "Customer";
+
+        try
+        {
+            var (checkoutUrl, qrCode) = await _payOsService.CreatePaymentLinkAsync(orderCode, amountVnd, description, buyerName);
+            orderDto.CheckoutUrl = checkoutUrl;
+            orderDto.QrCode = qrCode;
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"Failed to connect to PayOS: {ex.Message}");
+        }
+
+        return orderDto;
+    }
+
+    public async Task<IEnumerable<OrderListDto>> GetAllOrdersAsync()
+    {
+        return await _context.Orders
+            .Include(o => o.User)
+            .Include(o => o.Package)
+            .OrderByDescending(o => o.PurchasedAt)
+            .Select(o => new OrderListDto
+            {
+                Id = o.Id,
+                OrderCode = o.OrderCode,
+                UserId = o.UserId,
+                UserName = o.User != null ? o.User.Fullname : null,
+                UserEmail = o.User != null ? o.User.Email : null,
+                PackageId = o.PackageId,
+                PackageName = o.Package != null ? o.Package.Name : null,
+                PricePaid = o.PricePaid,
+                PaymentStatus = o.PaymentStatus.ToString(),
+                PurchasedAt = o.PurchasedAt
+            })
+            .ToListAsync();
     }
 }

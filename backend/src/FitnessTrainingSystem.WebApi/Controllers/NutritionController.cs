@@ -1,40 +1,46 @@
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using FitnessTrainingSystem.Application.DTOs.Nutrition;
+using FitnessTrainingSystem.Application.Features.Nutrition;
 using FitnessTrainingSystem.Application.Interfaces;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Security.Claims;
-using System.Threading.Tasks;
 
 namespace FitnessTrainingSystem.WebApi.Controllers;
 
-[Route("api/[controller]")]
+public record GenerateDietPlanRequest(string UserRequest);
+
 [ApiController]
+[Route("api/[controller]")]
 [Authorize]
 public class NutritionController : ControllerBase
 {
+    private readonly IMediator _mediator;
     private readonly INutritionService _nutritionService;
 
-    public NutritionController(INutritionService nutritionService)
+    public NutritionController(IMediator mediator, INutritionService nutritionService)
     {
+        _mediator = mediator;
         _nutritionService = nutritionService;
     }
 
-    private int GetCurrentUserId()
+    private int GetUserId()
     {
-        var userIdString = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        if (int.TryParse(userIdString, out var userId))
-            return userId;
-        throw new UnauthorizedAccessException("User not authenticated.");
+        var userIdString = User.FindFirstValue(JwtRegisteredClaimNames.Sub) ?? User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (!int.TryParse(userIdString, out int userId))
+            throw new UnauthorizedAccessException("Invalid user identifier.");
+        return userId;
     }
 
     [HttpGet("daily")]
-    public async Task<ActionResult<DailyNutritionSummaryDto>> GetDailySummary([FromQuery] DateTime date)
+    public async Task<IActionResult> GetDailySummary([FromQuery] string date)
     {
         try
         {
-            var userId = GetCurrentUserId();
-            var summary = await _nutritionService.GetDailySummaryAsync(userId, date);
+            var userId = GetUserId();
+            var parsedDate = DateTime.Parse(date);
+            var summary = await _nutritionService.GetDailySummaryAsync(userId, parsedDate);
             return Ok(summary);
         }
         catch (Exception ex)
@@ -44,12 +50,13 @@ public class NutritionController : ControllerBase
     }
 
     [HttpPost("water")]
-    public async Task<ActionResult<DailyNutritionSummaryDto>> LogWater([FromQuery] DateTime date, [FromBody] LogWaterDto dto)
+    public async Task<IActionResult> LogWater([FromQuery] string date, [FromBody] LogWaterDto dto)
     {
         try
         {
-            var userId = GetCurrentUserId();
-            var summary = await _nutritionService.LogWaterAsync(userId, date, dto);
+            var userId = GetUserId();
+            var parsedDate = DateTime.Parse(date);
+            var summary = await _nutritionService.LogWaterAsync(userId, parsedDate, dto);
             return Ok(summary);
         }
         catch (Exception ex)
@@ -63,14 +70,29 @@ public class NutritionController : ControllerBase
     {
         try
         {
-            var userId = GetCurrentUserId();
+            var userId = GetUserId();
             var result = await _nutritionService.UpdateReminderSettingsAsync(userId, dto);
-            if (!result) return BadRequest(new { message = "Failed to update reminder settings." });
-            return Ok(new { success = true });
+            return Ok(new { success = result });
         }
         catch (Exception ex)
         {
             return BadRequest(new { message = ex.Message });
+        }
+    }
+
+    [HttpPost("generate-diet-plan")]
+    public async Task<IActionResult> GenerateDietPlan([FromBody] GenerateDietPlanRequest request)
+    {
+        try
+        {
+            var userId = GetUserId();
+            var command = new CreateDietPlanCommand(userId, request.UserRequest);
+            var result = await _mediator.Send(command);
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(502, new { detail = "AI service temporarily unavailable: " + ex.Message });
         }
     }
 }

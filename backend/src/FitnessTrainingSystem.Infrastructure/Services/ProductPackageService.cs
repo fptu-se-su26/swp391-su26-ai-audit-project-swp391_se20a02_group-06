@@ -18,18 +18,47 @@ public class ProductPackageService : IProductPackageService
         _mapper = mapper;
     }
 
-    public async Task<IEnumerable<ProductPackageDto>> GetAllAsync()
+    public async Task<IEnumerable<ProductPackageDto>> GetAllAsync(int? currentUserId = null)
     {
         var packages = await _context.ProductPackages.ToListAsync();
-        return _mapper.Map<IEnumerable<ProductPackageDto>>(packages);
+
+        var activePackageIds = new HashSet<int>();
+        if (currentUserId.HasValue)
+        {
+            var now = DateTime.UtcNow;
+            activePackageIds = (await _context.MembershipSubscriptions
+                .Where(s => s.UserId == currentUserId.Value && s.Status == "ACTIVE" && s.EndDate >= now)
+                .Select(s => s.PackageId)
+                .ToListAsync())
+                .ToHashSet();
+        }
+
+        var dtos = _mapper.Map<List<ProductPackageDto>>(packages);
+        foreach (var dto in dtos)
+        {
+            if (activePackageIds.Contains(dto.Id))
+                dto.IsPurchased = true;
+        }
+
+        return dtos;
     }
 
-    public async Task<ProductPackageDto?> GetByIdAsync(int id)
+    public async Task<ProductPackageDto?> GetByIdAsync(int id, int? currentUserId = null)
     {
         var package = await _context.ProductPackages.FindAsync(id);
         if (package == null) return null;
 
-        return _mapper.Map<ProductPackageDto>(package);
+        var dto = _mapper.Map<ProductPackageDto>(package);
+
+        if (currentUserId.HasValue)
+        {
+            var now = DateTime.UtcNow;
+            var isPurchased = await _context.MembershipSubscriptions
+                .AnyAsync(s => s.UserId == currentUserId.Value && s.PackageId == id && s.Status == "ACTIVE" && s.EndDate >= now);
+            dto.IsPurchased = isPurchased;
+        }
+
+        return dto;
     }
 
     public async Task<ProductPackageDto> CreateAsync(CreateProductPackageDto dto)

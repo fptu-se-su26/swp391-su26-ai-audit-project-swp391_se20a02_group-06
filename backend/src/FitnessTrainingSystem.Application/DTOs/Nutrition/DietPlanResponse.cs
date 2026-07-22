@@ -1,60 +1,60 @@
-using System.Collections.Generic;
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
-namespace FitnessTrainingSystem.Application.DTOs.Nutrition
+namespace FitnessTrainingSystem.Application.DTOs.Nutrition;
+
+public class DietPlanResponse
 {
-    // Lớp bọc ngoài cùng của kết quả trả về
-    public class DietPlanResponse
-    {
-        [JsonProperty("success")]
-        public bool Success { get; set; }
+    [JsonPropertyName("diet_title")]
+    public string DietTitle { get; set; } = "";
 
-        [JsonProperty("data")]
-        public DietData? Data { get; set; }
-    }
+    [JsonPropertyName("daily_calories")]
+    public int DailyCalories { get; set; }
 
-    // Lớp chứa thông tin calo mục tiêu và danh sách các bữa ăn
-    public class DietData
-    {
-        [JsonProperty("total_calories_target")]
-        public int TotalCaloriesTarget { get; set; }
+    [JsonPropertyName("protein_target_g")]
+    public int ProteinTargetG { get; set; }
 
-        [JsonProperty("meal_plan")]
-        public List<MealPlanItem>? MealPlan { get; set; }
-    }
+    [JsonPropertyName("carbs_target_g")]
+    public int CarbsTargetG { get; set; }
 
-    // Lớp đại diện cho từng bữa ăn (Ví dụ: Bữa sáng, Bữa trưa...)
-    public class MealPlanItem
-    {
-        [JsonProperty("meal_time")]
-        public string? MealTime { get; set; }
+    [JsonPropertyName("fat_target_g")]
+    public int FatTargetG { get; set; }
 
-        [JsonProperty("foods")]
-        public List<FoodItemResult>? Foods { get; set; }
-    }
+    [JsonPropertyName("meals")]
+    public List<MealDto> Meals { get; set; } = new();
+}
 
-    // Lớp chi tiết của từng món ăn trong bữa ăn đó
-    public class FoodItemResult
-    {
-        [JsonProperty("food_id")]
-        public string? FoodId { get; set; }
+public class MealDto
+{
+    [JsonPropertyName("name")]
+    public string Name { get; set; } = "";
 
-        [JsonProperty("amount")]
-        public string? Amount { get; set; }
+    [JsonPropertyName("calories")]
+    public int Calories { get; set; }
 
-        [JsonProperty("protein")]
-        public double Protein { get; set; }
+    [JsonPropertyName("foods")]
+    public List<FoodItemDto> Foods { get; set; } = new();
+}
 
-        [JsonProperty("carbs")]
-        public double Carbs { get; set; }
+public class FoodItemDto
+{
+    [JsonPropertyName("food_id")]
+    public int FoodId { get; set; }
 
-        [JsonProperty("fat")]
-        public double Fat { get; set; }
+    [JsonPropertyName("food_name")]
+    public string FoodName { get; set; } = "";
 
-        [JsonProperty("calories")]
-        public double Calories { get; set; }
+    [JsonPropertyName("amount")]
+    public string Amount { get; set; } = "";
 
-        [JsonProperty("sugar")]
-        public double Sugar { get; set; } 
-    }
+    [JsonPropertyName("calories")]
+    public int Calories { get; set; }
+
+    [JsonPropertyName("protein")]
+    public double Protein { get; set; }
+
+    [JsonPropertyName("carbs")]
+    public double Carbs { get; set; }
+
+    [JsonPropertyName("fat")]
+    public double Fat { get; set; }
 }

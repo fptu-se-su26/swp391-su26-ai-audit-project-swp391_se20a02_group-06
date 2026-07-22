@@ -1,6 +1,8 @@
 using System.Text;
 using FitnessTrainingSystem.Infrastructure;
+using FitnessTrainingSystem.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Scalar.AspNetCore;
 
@@ -29,21 +31,24 @@ builder.Services.AddAutoMapper(cfg => cfg.AddMaps(typeof(FitnessTrainingSystem.A
 
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
-builder.Services.AddControllers();
-builder.Services.AddSignalR();
+
+// 🟢 Đã tối ưu hóa định dạng JSON ở đây
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase;
+    });
+
+// 🟢 Đã bổ sung MediatR để kích hoạt Command Handler xử lý AI
+builder.Services.AddMediatR(cfg => {
+    cfg.RegisterServicesFromAssemblies(AppDomain.CurrentDomain.GetAssemblies());
+});
 
 var jwtSettings = builder.Configuration.GetSection("JwtSettings");
-var jwtSecretKey = jwtSettings["SecretKey"];
-if (string.IsNullOrWhiteSpace(jwtSecretKey))
-{
-    throw new InvalidOperationException(
-        "JWT SecretKey is not configured. Please set 'JwtSettings__SecretKey' in your .env file or appsettings.json. " +
-        "See .env.example for reference.");
-}
-
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
+        options.MapInboundClaims = false; // Giữ nguyên tên claim 'sub' từ JWT, không map sang URI dài
         options.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateIssuer = true,
@@ -52,7 +57,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateIssuerSigningKey = true,
             ValidIssuer = jwtSettings["Issuer"],
             ValidAudience = jwtSettings["Audience"],
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSecretKey))
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings["SecretKey"]!))
         };
 
         options.Events = new JwtBearerEvents
@@ -72,6 +77,9 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 
+builder.Services.AddSignalR();
+builder.Services.AddSingleton<Microsoft.AspNetCore.SignalR.IUserIdProvider, FitnessTrainingSystem.Infrastructure.Hubs.SubClaimUserIdProvider>();
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", policy =>
@@ -82,6 +90,32 @@ builder.Services.AddCors(options =>
 });
 
 var app = builder.Build();
+
+// Auto-create missing tables in development
+if (app.Environment.IsDevelopment())
+{
+    using var scope = app.Services.CreateScope();
+    var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    db.Database.EnsureCreated();
+    // Ensure EmailOTP table exists (for OTP feature) - snake_case columns match EF Core naming convention
+    db.Database.ExecuteSqlRaw(@"
+        CREATE TABLE IF NOT EXISTS `EmailOTP` (
+            `id` VARCHAR(36) NOT NULL,
+            `email` VARCHAR(100) NOT NULL,
+            `otp_code` VARCHAR(10) NOT NULL,
+            `purpose` VARCHAR(50) NOT NULL,
+            `expired_at` DATETIME NOT NULL,
+            `is_used` TINYINT(1) NOT NULL DEFAULT 0,
+            `attempt_count` INT NOT NULL DEFAULT 0,
+            `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            PRIMARY KEY (`id`),
+            INDEX `IX_EmailOTP_Email` (`email`),
+            INDEX `IX_EmailOTP_Purpose` (`purpose`),
+            INDEX `IX_EmailOTP_ExpiredAt` (`expired_at`)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+    ");
+}
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -94,21 +128,20 @@ if (app.Environment.IsDevelopment())
 }
 
 // app.UseHttpsRedirection(); // Disabled: HTTPS port not configured
-
 app.UseCors("AllowFrontend");
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 app.MapHub<FitnessTrainingSystem.Infrastructure.Hubs.NotificationHub>("/r/notifications");
 
+// (Bạn có thể giữ hoặc xóa đoạn code WeatherForecast mặc định này tùy ý)
 var summaries = new[]
 {
     "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
 };
-
 app.MapGet("/weatherforecast", () =>
 {
-    var forecast =  Enumerable.Range(1, 5).Select(index =>
+    var forecast = Enumerable.Range(1, 5).Select(index =>
         new WeatherForecast
         (
             DateOnly.FromDateTime(DateTime.Now.AddDays(index)),

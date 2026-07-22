@@ -1,0 +1,13 @@
+﻿{
+    "id":  6,
+    "userId":  5,
+    "packageId":  1,
+    "packageName":  "1-Month Gym Membership",
+    "orderCode":  178411594505,
+    "pricePaid":  350000.00,
+    "paymentStatus":  0,
+    "purchasedAt":  "2026-07-15T11:45:45.2457108Z",
+    "checkoutUrl":  "https://pay.payos.vn/web/56edf432d16c4a1885ab0321ce6a1f6c",
+    "subscriptionStartDate":  null,
+    "subscriptionEndDate":  null
+}

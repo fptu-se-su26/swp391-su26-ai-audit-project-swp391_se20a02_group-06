@@ -1,3 +1,4 @@
+using System.IdentityModel.Tokens.Jwt;
 using FitnessTrainingSystem.Application.DTOs.Workouts;
 using FitnessTrainingSystem.Application.Interfaces;
 using Microsoft.AspNetCore.Authorization;
@@ -23,7 +24,8 @@ public class WorkoutsController : ControllerBase
 
     private int GetCurrentUserId()
     {
-        var userIdString = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        var userIdString = User.FindFirst(JwtRegisteredClaimNames.Sub)?.Value
+            ?? User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         if (int.TryParse(userIdString, out var userId))
             return userId;
         throw new UnauthorizedAccessException("User not authenticated.");

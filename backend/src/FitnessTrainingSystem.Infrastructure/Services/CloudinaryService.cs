@@ -52,4 +52,44 @@ public class CloudinaryService : ICloudinaryService
 
         return result.SecureUrl.ToString();
     }
+
+    public async Task<string> UploadImageAsync(Stream fileStream, string fileName)
+    {
+        if (fileStream == null || fileStream.Length == 0)
+            throw new ArgumentException("No file stream provided or stream is empty.");
+
+        var uploadParams = new ImageUploadParams
+        {
+            File = new FileDescription(fileName, fileStream),
+            Folder = "fitness-training/avatars",
+            Transformation = new CloudinaryDotNet.Transformation().Width(400).Height(400).Crop("fill")
+        };
+
+        var result = await _cloudinary.UploadAsync(uploadParams);
+
+        if (result.Error != null)
+            throw new Exception($"Cloudinary image upload failed: {result.Error.Message}");
+
+        return result.SecureUrl.ToString();
+    }
+
+    public async Task<string> UploadGifAsync(Stream fileStream, string fileName)
+    {
+        if (fileStream == null || fileStream.Length == 0)
+            throw new ArgumentException("No file stream provided or stream is empty.");
+
+        var uploadParams = new ImageUploadParams
+        {
+            File = new FileDescription(fileName, fileStream),
+            Folder = "fitness-training/exercises"
+            // No transformation — preserve animation and aspect ratio
+        };
+
+        var result = await _cloudinary.UploadAsync(uploadParams);
+
+        if (result.Error != null)
+            throw new Exception($"Cloudinary GIF upload failed: {result.Error.Message}");
+
+        return result.SecureUrl.ToString();
+    }
 }

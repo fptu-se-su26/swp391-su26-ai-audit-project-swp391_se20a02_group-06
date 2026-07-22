@@ -244,9 +244,14 @@ DD/MM/YYYY
 | 6 | Thêm chức năng Nutrition, đồng bộ Mock DB | Đạt | `Nutrition.tsx`, `NutritionService.cs`, `mock_data.sql` | Commit c9c75ad |
 | 7 | Thiết kế & tích hợp Hệ thống thông báo Realtime SignalR | Đạt | `NotificationHub.cs`, `NotificationService.cs`, `NotificationContext.tsx`, `NotificationBell.tsx` | Commit 78d5b98 |
 | 8 | Cấu hình giờ Thức/Ngủ, nhắc uống nước tự động thông minh | Đạt | `Nutrition.tsx`, `WaterReminderBackgroundService.cs` | Commit 78d5b98 |
+| 8 | Cấu hình giờ Thức/Ngủ, nhắc uống nước tự động thông minh | Đạt | `Nutrition.tsx`, `WaterReminderBackgroundService.cs` | Commit 78d5b98 |
 | 9 | Sửa lỗi EF Core Mapping (InvalidCastException, shadow property) | Đạt | `Exercise.cs`, `ApplicationDbContext.cs` | Commit 40c8805 |
 | 11 | Hoàn thiện Logic AI Workout, UI Popup và Fix DB Exercises FK | Đạt | workoutExercises.ts, FixCreatorId.cs | Commit ead4498 |
 | 12 | Thêm Scalar API Reference thay thế Swagger UI cho .NET 9 | Đạt | Program.cs, WebApi.csproj | Commit 7de96b2 |
+| 13 | Khắc phục lỗi 500 API, JWT Claim Mapping & Retry Gemini API | Đạt | DirectGeminiService.cs, Program.cs | Commit a3e7084 |
+| 14 | Redesign Topbar Layout, Timeline Progress UI & ComingSoon Overlay | Đạt | Progress.tsx, ComingSoonOverlay.tsx | Commit 787a4e6 |
+| 15 | Tích hợp SignalR Realtime Hydration Reminder & Custom UserProvider | Đạt | SubClaimUserIdProvider.cs, HydrationCountdown.tsx | Commit 78ae5ed |
+| 16 | Đồng bộ Database SQL, Fix schema emailotp, cấu hình appsettings.json Production | Đạt | appsettings.json, AuthController.cs | Commit 2047286 |
 
 ## AI có hỗ trợ không?
 

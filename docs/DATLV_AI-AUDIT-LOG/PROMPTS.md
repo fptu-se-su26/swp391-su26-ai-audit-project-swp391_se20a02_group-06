@@ -291,210 +291,6 @@ Viết tại đây...
 
 ---
 
-### Prompt số 4
-
-| Nội dung | Thông tin |
-|---|---|
-| Ngày sử dụng | 05/07/2026 |
-| Công cụ AI | Antigravity |
-| Mục đích | Viết tài liệu giải thích logic nghiệp vụ Nutrition và đồng bộ Database team |
-| Phần việc liên quan | Requirement / Database / Report |
-| Mức độ sử dụng | Hỏi sinh tài liệu / Hỏi setup |
-
-#### 5.1. Prompt nguyên văn
-
-```text
-- "cho tôi 1 docs giải thích chi tiết về việc tính những thông số trên để tôi chia sẽ cho team tôi hiểu và và nghiệp vụ cho đúng"
-- "tạo 1 file để team tôi chạy DB cho đồng bộ đi nào"
-- "/commit"
-```
-
-#### 5.2. Bối cảnh khi viết prompt
-
-```text
-Team cần một tài liệu mô tả chính xác công thức Y khoa (Mifflin-St Jeor, tính TDEE, chia tỉ lệ Macros) mà AI đã dùng để code Backend, nhằm đảm bảo mọi thành viên hiểu đúng nghiệp vụ của trang Nutrition. Ngoài ra, do Database có sự sai lệch với file mock_data cũ nên cần đồng bộ lại toàn bộ dữ liệu mẫu (mock_data.sql) cho cả team. Cuối cùng, thực hiện commit để lưu lại kết quả công việc bằng quy trình tự động.
-```
-
-#### 5.3. Kết quả AI trả về
-
-```text
-- AI tự động viết file tài liệu chuẩn Markdown NUTRITION_BUSINESS_LOGIC.md trình bày rõ ràng các công thức tính BMR, TDEE, Calories Target và Macros, đi kèm giải thích ý nghĩa từng field trong Database.
-- Xác nhận file data/mock_data.sql đã chứa toàn bộ dữ liệu cần thiết để đồng bộ.
-- Chạy toàn bộ quy trình /commit: build project, tạo commit tự động, và append các audit log (vào AI_AUDIT_LOG.md, CHANGELOG.md, PROMPTS.md).
-```
-
-#### 5.4. Kết quả đã áp dụng vào bài
-
-```text
-- Giữ nguyên tài liệu mô tả nghiệp vụ NUTRITION_BUSINESS_LOGIC.md để sử dụng.
-- Dùng cấu trúc `mock_data.sql` đã được fix lỗi để import Database cho toàn team.
-- Hoàn tất commit và cập nhật Audit Log thành công.
-```
-
-#### 5.5. Phần sinh viên/nhóm đã chỉnh sửa hoặc cải tiến
-
-```text
-N/A - Kết quả tự động của AI đáp ứng hoàn toàn nhu cầu báo cáo và đồng bộ của team.
-```
-
-#### 5.6. Đánh giá chất lượng prompt
-
-- [x] Prompt rõ ràng
-- [x] Prompt có đủ bối cảnh
-- [ ] Prompt còn thiếu thông tin
-- [x] Prompt tạo ra kết quả tốt
-- [ ] Prompt tạo ra kết quả chưa phù hợp
-- [ ] Cần hỏi lại AI nhiều lần
-- [ ] Cần tự kiểm tra và chỉnh sửa nhiều
-- [ ] Kết quả AI có lỗi hoặc chưa chính xác
-
-#### 5.7. Minh chứng liên quan
-
-| Loại minh chứng | Nội dung |
-|---|---|
-| Link commit | c9c75ad |
-| File liên quan | NUTRITION_BUSINESS_LOGIC.md, data/mock_data.sql |
-| Screenshot | Đã check tài liệu chi tiết |
-| Kết quả chạy/test | Đã chạy lệnh import MySQL thành công |
-| Link tài liệu/báo cáo | docs/NUTRITION_BUSINESS_LOGIC.md |
-| Ghi chú khác | N/A |
-
-#### 5.8. Ghi chú thêm
-
-```text
-Lệnh `/commit` của custom workflow rất hữu ích để đảm bảo chuẩn hoá báo cáo AI cho toàn dự án mà không tốn công copy-paste thủ công.
-```
-
----
-
-### Prompt số 5
-
-| Nội dung | Thông tin |
-|---|---|
-| Ngày sử dụng | 05/07/2026 |
-| Công cụ AI | Antigravity |
-| Mục đích | Sửa lỗi phân quyền chéo vai trò, múi giờ và cấu hình thời gian thức nhắc nước tự động thông minh |
-| Phần việc liên quan | Coding / Debug / Database |
-| Mức độ sử dụng | Hỏi sinh code / Hỏi debug / Hỏi tối ưu |
-
-#### 5.1. Prompt nguyên văn
-
-```text
-- "đang ở admin bấm test water reminder thì vẫn nhận đưuocj thông báo và bấm vào thì lại nhảy sang user, fix lại lỗi, hiển thị thông báo đúng role, chặt chẽ, không ở role này mà hiển thị thoong báo role kia."
-- "láy thời gian đúng real -time cho tôi"
-- "ở phần user thông báo nhắc nhở uống nước phải là tự động. chia đúng thời gian chuẩn trừ thời gian ngủ buổi tối đến sáng là không thông báo uóng nước. uống phải tính từ lúc thức dậy đến trước lúc đi ngủ. thêm UI thời gian bắt đầu và kết thúc nhắc nhở uống nước. là trong thời gian đó thì phải tính toán nhắc nhở thời gian uống nước sao cho đúng với thẻ trạng mà đã tính số lượng nước. cho tôi plan của bạn về việc này đẻ tôi củng cố cho đúng logic của tôi"
-```
-
-#### 5.2. Bối cảnh khi viết prompt
-
-```text
-Phát hiện lỗi phân quyền chéo khi Admin có thể nhận được thông báo nước của Member khi chạy test, và khi click thì bị điều hướng sai trang. Ngoài ra, thông báo bị hiển thị sai múi giờ do UTC, và người dùng Member cần tự cấu hình giờ thức/ngủ để hệ thống tính toán tần suất nhắc nước hợp lý theo thể trạng.
-```
-
-#### 5.3. Kết quả AI trả về
-
-```text
-- Chèn [Authorize(Roles = "Member,MEMBER")] ở backend controller và lọc hiển thị nút test nước ở client.
-- Sửa đổi hàm formatTime chèn thêm suffix 'Z' để chuyển múi giờ chính xác.
-- Triển khai cột DB mới, viết API, thêm popup modal tự động và sidebar panel thiết lập giờ thức/ngủ, đồng thời cập nhật service quét background 30 phút/lần tính tần suất nhắc nước động.
-```
-
-#### 5.4. Kết quả đã áp dụng vào bài
-
-```text
-- Đã áp dụng toàn bộ code phân quyền và sửa múi giờ.
-- Triển khai thành công tính năng đặt giờ thức/ngủ nhắc nước.
-```
-
-#### 5.5. Phần sinh viên/nhóm đã chỉnh sửa hoặc cải tiến
-
-```text
-Tự tạo migration EF Core, update DB vật lý và dọn dẹp các import unused.
-```
-
-#### 5.6. Đánh giá chất lượng prompt
-
-- [x] Prompt rõ ràng
-- [x] Prompt có đủ bối cảnh
-- [x] Prompt tạo ra kết quả tốt
-
-#### 5.7. Minh chứng liên quan
-
-| Loại minh chứng | Nội dung |
-|---|---|
-| Link commit | 78d5b981ae67b60af43751fda748eb369a60a549 |
-| File liên quan | User.cs, NutritionService.cs, NotificationsController.cs, WaterReminderBackgroundService.cs, Nutrition.tsx, NotificationBell.tsx, NotificationTestWidget.tsx |
-| Screenshot | N/A |
-| Kết quả chạy/test | Build FE/BE thành công, database migration chạy chuẩn |
-| Link tài liệu/báo cáo | docs/DATLV_AI-AUDIT-LOG/AI_AUDIT_LOG.md |
-| Ghi chú khác | N/A |
-
----
-
-### Prompt số 6
-
-| Nội dung | Thông tin |
-|---|---|
-| Ngày sử dụng | 08/07/2026 |
-| Công cụ AI | Antigravity |
-| Mục đích | Tìm và sửa lỗi không hiển thị danh sách Bài tập và Lịch sử tập luyện |
-| Phần việc liên quan | Backend / Database |
-| Mức độ sử dụng | Hỏi debug |
-
-#### 5.1. Prompt nguyên văn
-
-```text
-- tại sao lịch sử bài tập của tôi không hiển thị nữa. ở role user.
-- nó chưa hiển thị được bài tập nữa vì thế nên không có lịch sử bài tập là đúng rồi
-- đây nó lỗi đâu có bài tập đâu (Kèm screenshot)
-```
-
-#### 5.2. Bối cảnh khi viết prompt
-
-```text
-Sau khi gộp nhánh, backend phát sinh lỗi runtime khi fetch bài tập (Exercise) dẫn tới trang Workouts trống và Lịch sử tập luyện trống, cần AI đọc log tìm lỗi.
-```
-
-#### 5.3. Kết quả AI trả về
-
-```text
-AI phân tích các file log `task-XXX.log`, nhận ra các lỗi:
-1. Thiếu thuộc tính `DurationMinutes` -> ánh xạ lại.
-2. Lỗi shadow property `user_id` -> sửa `WithMany`.
-3. Lỗi `InvalidCastException` cho enum `Difficulty` -> gỡ bỏ `HasConversion<string>()`.
-```
-
-#### 5.4. Kết quả đã áp dụng vào bài
-
-```text
-Áp dụng tất cả các fix mapping của AI vào Entity Framework Core.
-```
-
-#### 5.5. Phần sinh viên/nhóm đã chỉnh sửa hoặc cải tiến
-
-```text
-Chụp ảnh minh chứng phần hiển thị bị hỏng để cung cấp context cho AI định vị lỗi nhanh hơn.
-```
-
-#### 5.6. Đánh giá chất lượng prompt
-
-- [x] Prompt rõ ràng
-- [x] Prompt có đủ bối cảnh
-- [x] Prompt tạo ra kết quả tốt
-
-#### 5.7. Minh chứng liên quan
-
-| Loại minh chứng | Nội dung |
-|---|---|
-| Link commit | 40c88051b1ad8cb8fd3127f510e1e39a827f4980 |
-| File liên quan | Exercise.cs, ApplicationDbContext.cs |
-| Screenshot | Đã cung cấp lỗi UI "0 Exercises" |
-| Kết quả chạy/test | Build pass, Backend lấy danh sách bài tập thành công |
-| Link tài liệu/báo cáo | N/A |
-| Ghi chú khác | N/A |
-
----
-
 ## 6. Prompt quan trọng nhất
 
 Chọn một prompt có ảnh hưởng lớn nhất đến bài tập/project.
@@ -852,3 +648,251 @@ Sinh viên tự test trên trình duyệt và phản hồi khi Swagger UI không
 | Kết quả chạy/test | Build succeeded — 0 Warning(s), 0 Error(s) |
 | Link tài liệu/báo cáo | N/A |
 | Ghi chú khác | N/A |
+
+---
+
+### Prompt số 11
+
+| Nội dung | Thông tin |
+|---|---|
+| Ngày sử dụng | 18/07/2026 |
+| Công cụ AI | Antigravity |
+| Mục đích | Fix lỗi 500 API, JWT Claim Mapping, Retry logic Gemini API và định dạng PayOS |
+| Phần việc liên quan | Coding / Debug |
+| Mức độ sử dụng | Hỏi sinh code, Hỏi debug |
+
+#### 5.1. Prompt nguyên văn
+
+```text
+- "khắc phục lỗi 500 API và kiểm tra claim JWT khi MapInboundClaims = false"
+- "tích hợp retry logic và xử lý ngoại lệ cho các cuộc gọi Gemini API"
+- "sửa hiển thị định dạng tiền tệ VNĐ trong PlanSidebar và hiển thị thông báo lỗi Backend từ PayOS"
+```
+
+#### 5.2. Bối cảnh khi viết prompt
+
+```text
+Các API khi thay đổi cấu hình authentication `MapInboundClaims = false` bị mất claim `sub`, gây ra lỗi 500 ở các service truy vấn profile. Đồng thời dịch vụ kết nối Gemini API thỉnh thoảng gặp sự cố kết nối mạng và cần retry.
+```
+
+#### 5.3. Kết quả AI trả về
+
+```text
+AI sửa đổi cấu hình JWT, viết Retry Mechanism cho Gemini Service, và sửa định dạng tiền VNĐ trên Frontend.
+```
+
+#### 5.4. Kết quả đã áp dụng vào bài
+
+```text
+Được áp dụng 100% vào codebase.
+```
+
+#### 5.5. Phần sinh viên/nhóm đã chỉnh sửa hoặc cải tiến
+
+```text
+Yêu cầu AI bổ sung thông báo lỗi chi tiết khi thanh toán bị từ chối.
+```
+
+#### 5.6. Đánh giá chất lượng prompt
+
+- [x] Prompt rõ ràng
+- [x] Prompt có đủ bối cảnh
+- [x] Prompt tạo ra kết quả tốt
+
+#### 5.7. Minh chứng liên quan
+
+| Loại minh chứng | Nội dung |
+|---|---|
+| Link commit | a3e7084c6e9464ef72d7eeecdf30bb402120e3a4 |
+| File liên quan | Program.cs, DirectGeminiService.cs, PlanSidebar.tsx |
+| Screenshot | N/A |
+| Kết quả chạy/test | Build pass 100% |
+| Link tài liệu/báo cáo | N/A |
+| Ghi chú khác | N/A |
+
+---
+
+### Prompt số 12
+
+| Nội dung | Thông tin |
+|---|---|
+| Ngày sử dụng | 20/07/2026 |
+| Công cụ AI | Antigravity |
+| Mục đích | Thống nhất Topbar Layout, phát triển trang Progress Timeline UI và Coming Soon Overlay |
+| Phần việc liên quan | Coding / Design |
+| Mức độ sử dụng | Hỏi sinh code, Hỏi thiết kế |
+
+#### 5.1. Prompt nguyên văn
+
+```text
+- "đồng nhất thanh Topbar trên tất cả Layout, ẩn thanh tìm kiếm không cần thiết, thêm nút Đổi mật khẩu"
+- "thiết kế lại trang Progress theo giao diện Timeline UI, thêm bộ lọc theo nhóm cơ và popup Xem/Thử lại"
+- "tạo lớp phủ Coming Soon tối màu nổi bật cho các trang mới dùng dữ liệu giả"
+```
+
+#### 5.2. Bối cảnh khi viết prompt
+
+```text
+Giao diện ứng dụng chưa đồng bộ giữa các Role (Admin, PT, Member). Trang Progress cũ hiển thị đơn điệu chưa có mốc thời gian rõ ràng.
+```
+
+#### 5.3. Kết quả AI trả về
+
+```text
+AI tái cấu trúc Topbar chung và tạo component Timeline Progress UI và ComingSoonOverlay.
+```
+
+#### 5.4. Kết quả đã áp dụng vào bài
+
+```text
+Toàn bộ phần code UI được áp dụng vào dự án.
+```
+
+#### 5.5. Phần sinh viên/nhóm đã chỉnh sửa hoặc cải tiến
+
+```text
+Tự tinh chỉnh lại tông màu viền đỏ và hiệu ứng làm mờ của Overlay.
+```
+
+#### 5.6. Đánh giá chất lượng prompt
+
+- [x] Prompt rõ ràng
+- [x] Prompt có đủ bối cảnh
+- [x] Prompt tạo ra kết quả tốt
+
+#### 5.7. Minh chứng liên quan
+
+| Loại minh chứng | Nội dung |
+|---|---|
+| Link commit | 787a4e69b22e1c9e88a0110352ef2e557b4ca2f3 |
+| File liên quan | MemberLayout.tsx, AdminLayout.tsx, Progress.tsx, ComingSoonOverlay.tsx |
+| Screenshot | N/A |
+| Kết quả chạy/test | FE Build Success |
+| Link tài liệu/báo cáo | N/A |
+| Ghi chú khác | N/A |
+
+---
+
+### Prompt số 13
+
+| Nội dung | Thông tin |
+|---|---|
+| Ngày sử dụng | 21/07/2026 |
+| Công cụ AI | Antigravity |
+| Mục đích | Xây dựng và sửa lỗi tính năng Nhắc nhở Uống nước Realtime qua SignalR |
+| Phần việc liên quan | Coding / Debug |
+| Mức độ sử dụng | Hỏi sinh code, Hỏi debug |
+
+#### 5.1. Prompt nguyên văn
+
+```text
+- "thêm đếm ngược HydrationCountdown thời gian thực và tự động nhắc nhở uống nước"
+- "fix lỗi SignalR không nhận diện được User ID sau khi tắt MapInboundClaims"
+- "thêm nút Clear All thông báo và tự động ẩn thông báo sau khi chọn Đã uống"
+```
+
+#### 5.2. Bối cảnh khi viết prompt
+
+```text
+Nhắc nhở uống nước cần gửi thông báo đẩy Realtime từ Backend xuống Frontend thông qua SignalR WebSockets.
+```
+
+#### 5.3. Kết quả AI trả về
+
+```text
+AI viết `SubClaimUserIdProvider.cs`, `HydrationCountdown.tsx` và dọn dẹp notification tự động.
+```
+
+#### 5.4. Kết quả đã áp dụng vào bài
+
+```text
+Được tích hợp vào hệ thống Notification.
+```
+
+#### 5.5. Phần sinh viên/nhóm đã chỉnh sửa hoặc cải tiến
+
+```text
+Thêm Toast thông báo số ly nước còn lại để người dùng theo dõi tiến độ.
+```
+
+#### 5.6. Đánh giá chất lượng prompt
+
+- [x] Prompt rõ ràng
+- [x] Prompt có đủ bối cảnh
+- [x] Prompt tạo ra kết quả tốt
+
+#### 5.7. Minh chứng liên quan
+
+| Loại minh chứng | Nội dung |
+|---|---|
+| Link commit | 78ae5ed9846b14d2e825e6f6630f989f5bc39e1a |
+| File liên quan | SubClaimUserIdProvider.cs, HydrationCountdown.tsx, NotificationContext.tsx |
+| Screenshot | N/A |
+| Kết quả chạy/test | Build pass 100% |
+| Link tài liệu/báo cáo | N/A |
+| Ghi chú khác | N/A |
+
+---
+
+### Prompt số 14
+
+| Nội dung | Thông tin |
+|---|---|
+| Ngày sử dụng | 22/07/2026 |
+| Công cụ AI | Antigravity |
+| Mục đích | Fix lỗi OTP, nạp toàn bộ SQL mới, sửa bảng `emailotp` và gom cấu hình vào `appsettings.json` |
+| Phần việc liên quan | Fullstack |
+| Mức độ sử dụng | Hỏi sinh code, Hỏi debug, Hỏi config |
+
+#### 5.1. Prompt nguyên văn
+
+```text
+- "fix và chạy dự án cho tôi đi"
+- "đây là sql full mới và data mới hãy chạy chuẩn cái này cho tôi"
+- "sao không gửi otp được là sao"
+- "tắt dev mode này kiểm tra kỹ vì đây sẽ đưa lên production"
+- "AxiosError: Request failed with status code 502 ở generateDietPlan"
+- "ở dotnet thì env sẽ để trong appsettings luôn đúng không, hãy tổng hợp và để vào cho tôi"
+```
+
+#### 5.2. Bối cảnh khi viết prompt
+
+```text
+Pull code dev mới nhất gặp lỗi thiếu node_modules, thiếu bảng MySQL, lỗi 502 service AI Python và cần đưa ứng dụng về chuẩn Production.
+```
+
+#### 5.3. Kết quả AI trả về
+
+```text
+AI cài gói frontend, nạp lại MySQL database `fitnessproject`, sửa bảng `emailotp`, cấu hình Gemini Key & SMTP Gmail trong `appsettings.json` và ẩn OTP code khỏi response.
+```
+
+#### 5.4. Kết quả đã áp dụng vào bài
+
+```text
+Toàn bộ cấu hình và code fix được áp dụng 100%.
+```
+
+#### 5.5. Phần sinh viên/nhóm đã chỉnh sửa hoặc cải tiến
+
+```text
+Cung cấp file SQL gốc (`fullsql.sql` + `data.sql`), mật khẩu root MySQL local và thực hiện kiểm thử thực tế trên giao diện web.
+```
+
+#### 5.6. Đánh giá chất lượng prompt
+
+- [x] Prompt rõ ràng
+- [x] Prompt có đủ bối cảnh
+- [x] Prompt tạo ra kết quả tốt
+
+#### 5.7. Minh chứng liên quan
+
+| Loại minh chứng | Nội dung |
+|---|---|
+| Link commit | 2047286c51521fee9a26034300394b326b836d97 |
+| File liên quan | appsettings.json, appsettings.Development.json, AuthController.cs, DependencyInjection.cs |
+| Screenshot | N/A |
+| Kết quả chạy/test | FE & BE Build Success, OTP & AI Service hoạt động |
+| Link tài liệu/báo cáo | N/A |
+| Ghi chú khác | N/A |
+
