@@ -114,6 +114,40 @@ if (app.Environment.IsDevelopment())
             INDEX `IX_EmailOTP_Purpose` (`purpose`),
             INDEX `IX_EmailOTP_ExpiredAt` (`expired_at`)
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+        CREATE TABLE IF NOT EXISTS `ai_chat_sessions` (
+            `id` INT AUTO_INCREMENT PRIMARY KEY,
+            `user_id` INT NOT NULL,
+            `title` VARCHAR(255) NULL,
+            `status` VARCHAR(50) NOT NULL DEFAULT 'active',
+            `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            CONSTRAINT `fk_ai_chat_sessions_users` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+        CREATE TABLE IF NOT EXISTS `ai_chat_messages` (
+            `id` INT AUTO_INCREMENT PRIMARY KEY,
+            `session_id` INT NOT NULL,
+            `sender` VARCHAR(50) NOT NULL,
+            `message` LONGTEXT NOT NULL,
+            `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            CONSTRAINT `fk_ai_chat_messages_sessions` FOREIGN KEY (`session_id`) REFERENCES `ai_chat_sessions` (`id`) ON DELETE CASCADE
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+        CREATE TABLE IF NOT EXISTS `ai_diet_histories` (
+            `id` INT AUTO_INCREMENT PRIMARY KEY,
+            `user_id` INT NOT NULL,
+            `session_id` INT NULL,
+            `diet_title` VARCHAR(255) NULL,
+            `total_calories` INT NULL,
+            `protein` INT NULL,
+            `carbs` INT NULL,
+            `fat` INT NULL,
+            `raw_json` LONGTEXT NULL,
+            `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            CONSTRAINT `fk_ai_diet_users` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
+            CONSTRAINT `fk_ai_diet_sessions` FOREIGN KEY (`session_id`) REFERENCES `ai_chat_sessions` (`id`) ON DELETE SET NULL
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
     ");
 }
 
