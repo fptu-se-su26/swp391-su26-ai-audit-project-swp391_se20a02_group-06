@@ -121,11 +121,26 @@ DANH SÁCH MÓN ĂN DATABASE
             )
         )
 
+        if not response.candidates or not response.candidates[0].content:
+            raise Exception("AI did not generate a response. It might be blocked by safety filters.")
+            
         raw_json = response.text
+        if not raw_json:
+             raise Exception("AI returned empty text.")
 
         print("\n========== GEMINI RESPONSE ==========")
         print(raw_json)
         print("=====================================\n")
+
+        # Clean markdown formatting if present
+        if raw_json.startswith("```json"):
+            raw_json = raw_json[7:]
+        if raw_json.startswith("```"):
+            raw_json = raw_json[3:]
+        if raw_json.endswith("```"):
+            raw_json = raw_json[:-3]
+        
+        raw_json = raw_json.strip()
 
         result = json.loads(raw_json)
         return result

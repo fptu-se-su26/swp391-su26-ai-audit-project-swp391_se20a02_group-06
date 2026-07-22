@@ -318,4 +318,41 @@ Conversation:
         _context.AIDietHistories.Add(entity);
         await _context.SaveChangesAsync();
     }
+
+    public async Task<List<AIDietHistoryDto>> GetDietHistoriesAsync(int userId)
+    {
+        var histories = await _context.AIDietHistories
+            .Where(x => x.UserId == userId)
+            .OrderByDescending(x => x.CreatedAt)
+            .ToListAsync();
+
+        return histories.Select(x => {
+            DietPlanResponse dietPlan = null;
+            try
+            {
+                var options = new System.Text.Json.JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                };
+                dietPlan = System.Text.Json.JsonSerializer.Deserialize<DietPlanResponse>(x.DietJson, options);
+            }
+            catch
+            {
+                // ignore
+            }
+
+            return new AIDietHistoryDto
+            {
+                Id = x.Id,
+                SessionId = x.SessionId,
+                DietTitle = x.DietTitle,
+                TotalCalories = x.TotalCalories,
+                Protein = x.Protein,
+                Carbs = x.Carbs,
+                Fat = x.Fat,
+                DietPlan = dietPlan,
+                CreatedAt = x.CreatedAt
+            };
+        }).ToList();
+    }
 }

@@ -26,3 +26,20 @@ export const getChatMessages = async (sessionId: number): Promise<AIChatResponse
     const response = await apiClient.get<AIChatResponse[]>(`/AIChat/${sessionId}`)
     return response.data
 }
+
+export interface AIDietHistoryDto {
+    id: number
+    sessionId: number
+    dietTitle: string
+    totalCalories: number
+    protein: number
+    carbs: number
+    fat: number
+    dietPlan: DietPlanResponse
+    createdAt: string
+}
+
+export const getDietHistories = async (): Promise<AIDietHistoryDto[]> => {
+    const response = await apiClient.get<AIDietHistoryDto[]>('/AIChat/diet-history')
+    return response.data
+}

@@ -17,6 +17,14 @@ import {
     IconButton,
     Avatar,
     Grid,
+    Drawer,
+    DrawerBody,
+    DrawerFooter,
+    DrawerHeader,
+    DrawerOverlay,
+    DrawerContent,
+    DrawerCloseButton,
+    useDisclosure,
 } from '@chakra-ui/react'
 import {
     FiMessageSquare,
@@ -31,7 +39,7 @@ import {
     FiFileText,
 } from 'react-icons/fi'
 import MemberLayout from '../../components/shared/Layout/MemberLayout.tsx'
-import { sendChatMessage, getChatMessages } from '../../api/aiChat'
+import { sendChatMessage, getChatMessages, getDietHistories, type AIDietHistoryDto } from '../../api/aiChat'
 import { type DietPlanResponse } from '../../api/nutrition'
 
 interface LocalMessage {
@@ -48,6 +56,8 @@ const AIChat: React.FC = () => {
     const [loadingHistory, setLoadingHistory] = useState(false)
     const [sending, setSending] = useState(false)
     const [generatingPlan, setGeneratingPlan] = useState(false)
+    const [dietHistories, setDietHistories] = useState<AIDietHistoryDto[]>([])
+    const { isOpen, onOpen, onClose } = useDisclosure()
     
     const messagesEndRef = useRef<HTMLDivElement>(null)
     const toast = useToast()
@@ -118,6 +128,28 @@ const AIChat: React.FC = () => {
         } finally {
             setLoadingHistory(false)
         }
+    }
+
+    const loadDietHistories = async () => {
+        try {
+            const data = await getDietHistories()
+            setDietHistories(data)
+        } catch (error) {
+            console.error('Failed to load diet histories:', error)
+        }
+    }
+
+    const handleOpenHistory = () => {
+        loadDietHistories()
+        onOpen()
+    }
+
+    const handleSelectHistory = (history: AIDietHistoryDto) => {
+        if (history.dietPlan) {
+            setActiveDietPlan(history.dietPlan)
+            // Optionally set session ID if you want to switch chat context, but for now we just show the plan.
+        }
+        onClose()
     }
 
     const handleSendMessage = async (textToSend?: string) => {
@@ -274,6 +306,18 @@ const AIChat: React.FC = () => {
                                 In thực đơn
                             </Button>
                         )}
+                        <Button
+                            leftIcon={<Icon as={FiFileText} />}
+                            size="sm"
+                            variant="outline"
+                            colorScheme="gray"
+                            color="white"
+                            borderColor="#2e3040"
+                            _hover={{ bg: '#1e2028', borderColor: '#8A8A93' }}
+                            onClick={handleOpenHistory}
+                        >
+                            Lịch sử thực đơn
+                        </Button>
                         <Button
                             leftIcon={<Icon as={FiRefreshCw} />}
                             size="sm"
@@ -748,7 +792,7 @@ const AIChat: React.FC = () => {
                             background: white !important;
                             color: black !important;
                         }
-                        #root, .no-print, header, nav, footer {
+                        .no-print, header, nav, footer, aside {
                             display: none !important;
                         }
                         .print-container {
@@ -767,6 +811,54 @@ const AIChat: React.FC = () => {
                     }
                 `}</style>
             </Box>
+
+            {/* Diet History Drawer */}
+            <Drawer isOpen={isOpen} placement="right" onClose={onClose} size="sm">
+                <DrawerOverlay />
+                <DrawerContent bg="#141720" color="white">
+                    <DrawerCloseButton />
+                    <DrawerHeader borderBottomWidth="1px" borderColor="#1e2028">Lịch sử thực đơn AI</DrawerHeader>
+                    <DrawerBody p={0} css={{
+                        '&::-webkit-scrollbar': { width: '6px' },
+                        '&::-webkit-scrollbar-track': { background: 'transparent' },
+                        '&::-webkit-scrollbar-thumb': { background: '#2d313a', borderRadius: '10px' },
+                    }}>
+                        {dietHistories.length === 0 ? (
+                            <Flex align="center" justify="center" h="200px" color="#8A8A93">
+                                Chưa có thực đơn nào được tạo.
+                            </Flex>
+                        ) : (
+                            <Stack spacing="0" divider={<Divider borderColor="#1e2028" />}>
+                                {dietHistories.map((item) => (
+                                    <Box
+                                        key={item.id}
+                                        p="4"
+                                        cursor="pointer"
+                                        _hover={{ bg: 'rgba(255,255,255,0.02)' }}
+                                        onClick={() => handleSelectHistory(item)}
+                                    >
+                                        <Heading fontSize="15px" color="white" mb="2">
+                                            {item.dietTitle || 'AI Diet Plan'}
+                                        </Heading>
+                                        <Flex justify="space-between" align="center" fontSize="13px" color="#8A8A93">
+                                            <Text>{new Date(item.createdAt).toLocaleDateString('vi-VN')} {new Date(item.createdAt).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })}</Text>
+                                            <Badge bg="rgba(224,48,48,0.1)" color="#E03030">
+                                                {item.totalCalories} kcal
+                                            </Badge>
+                                        </Flex>
+                                        <HStack spacing="3" mt="2" fontSize="11px" color="#8A8A93">
+                                            <Text>P: {item.protein}g</Text>
+                                            <Text>C: {item.carbs}g</Text>
+                                            <Text>F: {item.fat}g</Text>
+                                        </HStack>
+                                    </Box>
+                                ))}
+                            </Stack>
+                        )}
+                    </DrawerBody>
+                </DrawerContent>
+            </Drawer>
+
         </MemberLayout>
     )
 }
