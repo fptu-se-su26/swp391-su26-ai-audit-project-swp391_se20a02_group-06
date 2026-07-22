@@ -21,6 +21,9 @@ public class WorkoutService : IWorkoutService
 
     public async Task<WorkoutPlanDto> CreateWorkoutPlanAsync(int userId, CreateWorkoutPlanDto dto)
     {
+        var exerciseIds = dto.Exercises.Select(e => e.ExerciseId).ToList();
+        await ValidateExerciseAccessAsync(userId, exerciseIds);
+
         var plan = new WorkoutPlan
         {
             UserId = userId,
@@ -84,6 +87,9 @@ public class WorkoutService : IWorkoutService
 
         if (session == null)
             throw new Exception("Session not found or does not belong to user");
+
+        var exerciseIds = dto.Details.Select(d => d.ExerciseId).ToList();
+        await ValidateExerciseAccessAsync(userId, exerciseIds);
 
         session.Status = "COMPLETED";
         session.CompletedAt = DateTime.UtcNow;
@@ -166,5 +172,34 @@ public class WorkoutService : IWorkoutService
                 CaloriesBurned = d.CaloriesBurned
             }).ToList()
         };
+    }
+
+    private async Task ValidateExerciseAccessAsync(int userId, List<int> exerciseIds)
+    {
+        if (exerciseIds.Count == 0) return;
+
+        var activeSub = await _context.MembershipSubscriptions
+            .Include(s => s.Package)
+            .Where(s => s.UserId == userId && s.Status == "ACTIVE" && s.EndDate > DateTime.UtcNow)
+            .OrderByDescending(s => s.StartDate)
+            .FirstOrDefaultAsync();
+
+        var userTier = activeSub?.Package?.Tier;
+
+        var inaccessibleExercises = await _context.Exercises
+            .Include(e => e.Package)
+            .Where(e => e.Package != null)
+            .ToListAsync();
+
+        inaccessibleExercises = inaccessibleExercises
+            .Where(e => exerciseIds.Contains(e.Id))
+            .Where(e => userTier == null || e.Package!.Tier > userTier)
+            .ToList();
+
+        if (inaccessibleExercises.Count > 0)
+        {
+            var names = string.Join(", ", inaccessibleExercises.Select(e => $"'{e.Title}' (requires {e.Package!.Name})"));
+            throw new UnauthorizedAccessException($"Access denied to exercises: {names}. Please upgrade your plan.");
+        }
     }
 }

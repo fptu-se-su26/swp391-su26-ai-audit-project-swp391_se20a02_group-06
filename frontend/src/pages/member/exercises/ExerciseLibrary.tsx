@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect, useCallback } from 'react'
 import {
     Box, Flex, Grid, Heading, Text, Icon, Button, Spinner,
 } from '@chakra-ui/react'
-import { FiChevronDown, FiX, FiChevronRight, FiChevronLeft } from 'react-icons/fi'
+import { FiChevronDown, FiX, FiChevronRight } from 'react-icons/fi'
 import useSWR from 'swr'
 import apiClient from '../../../lib/axios'
 import MemberLayout from '../../../components/shared/Layout/MemberLayout'
@@ -10,6 +10,7 @@ import MemberLayout from '../../../components/shared/Layout/MemberLayout'
 import ExerciseGridCard from './components/ExerciseGridCard'
 import PlanSidebar from './components/PlanSidebar'
 import WorkoutExerciseModal from '../../../features/workout/components/WorkoutExerciseModal'
+import PaginationFooter from '../../../features/admin/components/PaginationFooter'
 import type { ExerciseGridItem } from './components/ExerciseGridCard'
 
 const fetcher = (url: string) => apiClient.get(url).then(res => res.data)
@@ -43,7 +44,6 @@ const ExerciseLibrary: React.FC = () => {
         tags: string[]
         duration?: number
     } | null>(null)
-    const [loadingDetails, setLoadingDetails] = useState(false)
     const muscleRef = useRef<HTMLDivElement>(null)
     const diffRef = useRef<HTMLDivElement>(null)
     const resetPage = () => setPage(1)
@@ -89,7 +89,6 @@ const ExerciseLibrary: React.FC = () => {
     const handlePlay = useCallback(async (id: number) => {
         const grid = mapped.find(e => e.id === id)
         if (!grid) return
-        setLoadingDetails(true)
         try {
             const res = await apiClient.get(`/exercises/${id}`)
             const full = res.data
@@ -102,8 +101,6 @@ const ExerciseLibrary: React.FC = () => {
             })
         } catch {
             setSelectedModal(null)
-        } finally {
-            setLoadingDetails(false)
         }
     }, [mapped])
 
@@ -410,61 +407,24 @@ const ExerciseLibrary: React.FC = () => {
                             ))}
                         </Grid>
 
-                        {/* Pagination */}
+                        {/* Pagination — reuses admin PaginationFooter with member colors */}
                         {totalPages > 1 && (
-                            <Flex justify="center" align="center" gap="2" mt="12" mb="8">
-                                <Flex
-                                    as="button"
-                                    align="center" justify="center"
-                                    w="36px" h="36px"
-                                    borderRadius="full"
-                                    color={safePage === 1 ? '#555' : '#8A8A93'}
-                                    bg={safePage === 1 ? 'transparent' : '#1A1A1A'}
-                                    border="1px solid"
-                                    borderColor={safePage === 1 ? 'rgba(255,255,255,0.04)' : 'rgba(255,255,255,0.08)'}
-                                    cursor={safePage === 1 ? 'not-allowed' : 'pointer'}
-                                    _hover={safePage > 1 ? { color: 'white', borderColor: 'white' } : undefined}
-                                    onClick={() => { if (safePage > 1) setPage(safePage - 1) }}
-                                >
-                                    <Icon as={FiChevronLeft} boxSize="16px" />
-                                </Flex>
-
-                                {Array.from({ length: totalPages }, (_, i) => i + 1).map(p => (
-                                    <Flex
-                                        key={p}
-                                        as="button"
-                                        align="center" justify="center"
-                                        w="36px" h="36px"
-                                        borderRadius="full"
-                                        fontSize="13px" fontWeight="600"
-                                        bg={safePage === p ? '#E03030' : '#1A1A1A'}
-                                        color={safePage === p ? 'white' : '#8A8A93'}
-                                        border="1px solid"
-                                        borderColor={safePage === p ? '#E03030' : 'rgba(255,255,255,0.08)'}
-                                        _hover={{ bg: safePage === p ? '#C62828' : '#262626', color: 'white' }}
-                                        transition="all 0.15s"
-                                        onClick={() => setPage(p)}
-                                    >
-                                        {p}
-                                    </Flex>
-                                ))}
-
-                                <Flex
-                                    as="button"
-                                    align="center" justify="center"
-                                    w="36px" h="36px"
-                                    borderRadius="full"
-                                    color={safePage === totalPages ? '#555' : '#8A8A93'}
-                                    bg={safePage === totalPages ? 'transparent' : '#1A1A1A'}
-                                    border="1px solid"
-                                    borderColor={safePage === totalPages ? 'rgba(255,255,255,0.04)' : 'rgba(255,255,255,0.08)'}
-                                    cursor={safePage === totalPages ? 'not-allowed' : 'pointer'}
-                                    _hover={safePage < totalPages ? { color: 'white', borderColor: 'white' } : undefined}
-                                    onClick={() => { if (safePage < totalPages) setPage(safePage + 1) }}
-                                >
-                                    <Icon as={FiChevronRight} boxSize="16px" />
-                                </Flex>
-                            </Flex>
+                            <Box mt="10" mb="6">
+                                <PaginationFooter
+                                    currentPage={safePage}
+                                    totalPages={totalPages}
+                                    totalItems={filtered.length}
+                                    pageSize={PER_PAGE}
+                                    onPageChange={setPage}
+                                    hideItemCount
+                                    colors={{
+                                        dim: '#8A8A93',
+                                        text: '#FFFFFF',
+                                        primary: '#E03030',
+                                        surfaceVariant: 'rgba(255,255,255,0.06)',
+                                    }}
+                                />
+                            </Box>
                         )}
                     </>
                 )}

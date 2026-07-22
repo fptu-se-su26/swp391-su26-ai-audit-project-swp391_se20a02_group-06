@@ -44,7 +44,17 @@ const ForgotPassword = () => {
 
     setIsLoading(true)
     try {
-      await authApi.sendForgotPasswordOTP({ email })
+      const res = await authApi.sendForgotPasswordOTP({ email })
+      // In dev mode, show OTP code directly
+      if ((res as any)?.otpCode) {
+        toast({
+          title: 'Dev Mode OTP',
+          description: `Your OTP code is: ${(res as any).otpCode}`,
+          status: 'info',
+          duration: 10000,
+          isClosable: true,
+        })
+      }
       setIsOtpModalOpen(true)
     } catch (error: any) {
       toast({

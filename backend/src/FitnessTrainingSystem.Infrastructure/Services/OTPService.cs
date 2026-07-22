@@ -58,40 +58,42 @@ public class OTPService : IOTPService
         }
     }
 
-    private async Task<bool> SendOTPAsync(string email, string purpose)
+    private async Task<string> SendOTPAsync(string email, string purpose)
     {
-        if (!IsValidEmail(email))
+        try
         {
-            _logger.LogWarning($"Attempt to send OTP to invalid email format: {email}");
-            return false;
-        }
+            if (!IsValidEmail(email))
+            {
+                _logger.LogWarning($"Attempt to send OTP to invalid email format: {email}");
+                return "";
+            }
 
-        // Check Cooldown
-        var cooldownSeconds = int.TryParse(_configuration["OTP_RESEND_COOLDOWN_SECONDS"], out int c) ? c : 60;
-        var latestOTP = await _otpRepository.GetLatestOTPAsync(email, purpose);
+            // Check Cooldown
+            var cooldownSeconds = int.TryParse(_configuration["OTP_RESEND_COOLDOWN_SECONDS"], out int c) ? c : 60;
+            var latestOTP = await _otpRepository.GetLatestOTPAsync(email, purpose);
 
-        if (latestOTP != null && (DateTime.UtcNow - latestOTP.CreatedAt).TotalSeconds < cooldownSeconds)
-        {
-            _logger.LogWarning($"OTP send requested for {email} ({purpose}) before cooldown period ended.");
-            return false;
-        }
+            if (latestOTP != null && (DateTime.UtcNow - latestOTP.CreatedAt).TotalSeconds < cooldownSeconds)
+            {
+                _logger.LogWarning($"OTP send requested for {email} ({purpose}) before cooldown period ended.");
+                return "";
+            }
 
-        var otpCode = GenerateOTP();
-        var expireMinutes = int.TryParse(_configuration["OTP_EXPIRE_MINUTES"], out int m) ? m : 5;
+            var otpCode = GenerateOTP();
+            var expireMinutes = int.TryParse(_configuration["OTP_EXPIRE_MINUTES"], out int m) ? m : 5;
 
-        var otpRecord = new EmailOTP
-        {
-            Email = email,
-            OTPCode = otpCode,
-            Purpose = purpose,
-            ExpiredAt = DateTime.UtcNow.AddMinutes(expireMinutes)
-        };
+            var otpRecord = new EmailOTP
+            {
+                Email = email,
+                OTPCode = otpCode,
+                Purpose = purpose,
+                ExpiredAt = DateTime.UtcNow.AddMinutes(expireMinutes)
+            };
 
-        await _otpRepository.CreateOTPAsync(otpRecord);
+            await _otpRepository.CreateOTPAsync(otpRecord);
 
-        // Send Email
-        var subject = "AISTHEA Verification Code";
-        var body = $@"
+            // Send Email
+            var subject = "AISTHEA Verification Code";
+            var body = $@"
         <html>
         <body>
             <p>Hello,</p>
@@ -104,16 +106,14 @@ public class OTPService : IOTPService
         </body>
         </html>";
 
-        try
-        {
             await _emailService.SendEmailAsync(email, subject, body);
             _logger.LogInformation($"Sent {purpose} OTP to {email}.");
-            return true;
+            return otpCode;
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, $"Failed to send {purpose} OTP to {email}.");
-            return false;
+            return "";
         }
     }
 
@@ -162,7 +162,7 @@ public class OTPService : IOTPService
         return true;
     }
 
-    public async Task<bool> SendRegisterOTPAsync(string email)
+    public async Task<string> SendRegisterOTPAsync(string email)
     {
         return await SendOTPAsync(email, "Register");
     }
@@ -172,7 +172,7 @@ public class OTPService : IOTPService
         return await VerifyOTPAsync(email, otpCode, "Register");
     }
 
-    public async Task<bool> SendForgotPasswordOTPAsync(string email)
+    public async Task<string> SendForgotPasswordOTPAsync(string email)
     {
         return await SendOTPAsync(email, "ForgotPassword");
     }

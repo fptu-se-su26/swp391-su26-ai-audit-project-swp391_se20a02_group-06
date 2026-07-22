@@ -4,7 +4,7 @@ namespace FitnessTrainingSystem.Application.Interfaces;
 
 public interface IExerciseService
 {
-    Task<IEnumerable<ExerciseDto>> GetAllAsync(int? userId = null);
+    Task<IEnumerable<ExerciseDto>> GetAllAsync(int? userId = null, bool? isAdmin = false);
     Task<IEnumerable<ExerciseCatalogDto>> GetCatalogAsync(int? userId = null);
     Task<IEnumerable<ExerciseDto>> GetMyExercisesAsync(int creatorId);
     Task<ExerciseDto?> GetByIdAsync(int id);

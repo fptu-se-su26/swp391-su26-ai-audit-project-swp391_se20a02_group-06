@@ -101,20 +101,20 @@ const ExerciseTable: React.FC<ExerciseTableProps> = ({
     isAdmin,
 }) => {
     return (
-        <Box overflowX="auto">
-            <Table variant="simple" size="sm">
-                <Thead bg="#0A0C10">
+        <Box overflow="auto" maxHeight="calc(100vh - 300px)" sx={{ '&::-webkit-scrollbar': { width: '6px', height: '6px' }, '&::-webkit-scrollbar-track': { bg: '#0A0C10' }, '&::-webkit-scrollbar-thumb': { bg: '#2e3040', borderRadius: '3px' } }}>
+            <Table variant="simple" size="sm" w="100%">
+                <Thead position="sticky" top={0} zIndex={1} bg="#0A0C10">
                     <Tr>
-                        <Th color="#8A8A93" borderColor="#1e2028" w="52px"></Th>
-                        <Th color="#8A8A93" borderColor="#1e2028">Exercise Name</Th>
-                        <Th color="#8A8A93" borderColor="#1e2028">Category</Th>
-                        <Th color="#8A8A93" borderColor="#1e2028">Difficulty</Th>
-                        <Th color="#8A8A93" borderColor="#1e2028">Muscle Target</Th>
-                        <Th color="#8A8A93" borderColor="#1e2028">Trainer</Th>
-                        <Th color="#8A8A93" borderColor="#1e2028" isNumeric>Duration</Th>
-                        <Th color="#8A8A93" borderColor="#1e2028">Package</Th>
+                        <Th color="#8A8A93" borderColor="#1e2028" w="60px"></Th>
+                        <Th color="#8A8A93" borderColor="#1e2028" w="300px">Exercise Name</Th>
+                        <Th color="#8A8A93" borderColor="#1e2028" w="130px">Category</Th>
+                        <Th color="#8A8A93" borderColor="#1e2028" w="100px">Difficulty</Th>
+                        <Th color="#8A8A93" borderColor="#1e2028" w="140px">Muscle Target</Th>
+                        <Th color="#8A8A93" borderColor="#1e2028" w="150px">Trainer</Th>
+                        <Th color="#8A8A93" borderColor="#1e2028" w="80px" isNumeric>Duration</Th>
+                        <Th color="#8A8A93" borderColor="#1e2028" w="180px">Package</Th>
                         {isAdmin && (
-                            <Th color="#8A8A93" borderColor="#1e2028">Action</Th>
+                            <Th color="#8A8A93" borderColor="#1e2028" w="70px">Action</Th>
                         )}
                     </Tr>
                 </Thead>
@@ -143,10 +143,10 @@ const ExerciseTable: React.FC<ExerciseTableProps> = ({
                                         </Circle>
                                     </Box>
                                 </Td>
-                                <Td color="white" borderColor="#1e2028" fontWeight="600" fontSize="14px">
+                                <Td color="white" borderColor="#1e2028" fontWeight="600" fontSize="14px" whiteSpace="nowrap" overflow="hidden" textOverflow="ellipsis" title={ex.title}>
                                     {ex.title}
                                 </Td>
-                                <Td borderColor="#1e2028">
+                                <Td borderColor="#1e2028" overflow="hidden" textOverflow="ellipsis" whiteSpace="nowrap">
                                     <Badge
                                         bg="rgba(224, 48, 48, 0.12)"
                                         color={adminColors.primarySoft}
@@ -160,29 +160,30 @@ const ExerciseTable: React.FC<ExerciseTableProps> = ({
                                         {ex.category || ex.muscleGroup || 'General'}
                                     </Badge>
                                 </Td>
-                                <Td borderColor="#1e2028">
+                                <Td borderColor="#1e2028" overflow="hidden" whiteSpace="nowrap">
                                     <HStack spacing={1.5}>
                                         <Box
                                             w="8px"
                                             h="8px"
                                             borderRadius="full"
                                             bg={difficultyColors[ex.difficulty] || '#8A8A93'}
+                                            flexShrink={0}
                                         />
-                                        <Text color="#e2e1eb" fontSize="13px">
+                                        <Text color="#e2e1eb" fontSize="13px" overflow="hidden" textOverflow="ellipsis" whiteSpace="nowrap">
                                             {difficultyLabels[ex.difficulty] || '-'}
                                         </Text>
                                     </HStack>
                                 </Td>
-                                <Td color="#8A8A93" borderColor="#1e2028" fontSize="13px">
+                                <Td color="#8A8A93" borderColor="#1e2028" fontSize="13px" overflow="hidden" textOverflow="ellipsis" whiteSpace="nowrap" title={ex.muscleTarget || ex.muscleGroup || '-'}>
                                     {ex.muscleTarget || ex.muscleGroup || '-'}
                                 </Td>
-                                <Td color="#e2e1eb" borderColor="#1e2028" fontSize="13px">
+                                <Td color="#e2e1eb" borderColor="#1e2028" fontSize="13px" overflow="hidden" textOverflow="ellipsis" whiteSpace="nowrap" title={ex.creatorName || 'AI Generated'}>
                                     {ex.creatorName || 'AI Generated'}
                                 </Td>
-                                <Td color="#e2e1eb" borderColor="#1e2028" isNumeric fontSize="13px">
+                                <Td color="#e2e1eb" borderColor="#1e2028" isNumeric fontSize="13px" overflow="hidden" whiteSpace="nowrap">
                                     {ex.duration ? `${ex.duration} min` : '-'}
                                 </Td>
-                                <Td borderColor="#1e2028">
+                                <Td borderColor="#1e2028" overflow="hidden" textOverflow="ellipsis" whiteSpace="nowrap">
                                     {getPackageBadge(ex.packageId)}
                                 </Td>
                                 {isAdmin && (

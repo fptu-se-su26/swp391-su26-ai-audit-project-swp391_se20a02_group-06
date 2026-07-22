@@ -54,6 +54,27 @@ public class UserController : ControllerBase
         return Ok(dtos);
     }
 
+    [HttpGet("creators")]
+    [Authorize(Roles = "Admin,ADMIN,PT,PersonalTrainer")]
+    public async Task<IActionResult> GetCreators()
+    {
+        var creators = await _context.Users
+            .Include(u => u.Role)
+            .Where(u => u.RoleId == 1 || u.RoleId == 2)
+            .Where(u => u.Status == "ACTIVE")
+            .Select(u => new
+            {
+                u.Id,
+                u.Fullname,
+                u.Email,
+                RoleName = u.Role != null ? u.Role.RoleName : ""
+            })
+            .OrderBy(u => u.Fullname)
+            .ToListAsync();
+
+        return Ok(creators);
+    }
+
     [Authorize(Roles = "Admin")]
     [HttpPut("{id}/activate")]
     public async Task<IActionResult> Activate(int id)

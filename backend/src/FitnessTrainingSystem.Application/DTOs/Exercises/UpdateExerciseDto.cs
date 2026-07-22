@@ -24,4 +24,6 @@ public class UpdateExerciseDto
     public int? Duration { get; set; }
 
     public int? PackageId { get; set; }
+
+    public int? CreatedBy { get; set; }
 }
