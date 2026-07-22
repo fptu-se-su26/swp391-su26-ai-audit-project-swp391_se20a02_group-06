@@ -137,7 +137,7 @@ const WorkoutResults: React.FC = () => {
 
     useEffect(() => {
         if (!activeSessionId) {
-            startWorkoutSession({ workoutPlanId: activePlanId ?? null })
+            startWorkoutSession({ workoutPlanId: activePlanId ?? undefined })
                 .then(session => setActiveSessionId(session.id))
                 .catch(console.error)
         }

@@ -4,6 +4,7 @@ using FitnessTrainingSystem.Domain.Entities;
 using FitnessTrainingSystem.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -18,11 +19,14 @@ public class AuthController : ControllerBase
     private readonly IOTPService _otpService;
     private readonly ApplicationDbContext _context; // Required to update password directly if AuthService doesn't have ResetPassword
 
-    public AuthController(IAuthService authService, IOTPService otpService, ApplicationDbContext context)
+    private readonly IConfiguration _configuration;
+
+    public AuthController(IAuthService authService, IOTPService otpService, ApplicationDbContext context, IConfiguration configuration)
     {
         _authService = authService;
         _otpService = otpService;
         _context = context;
+        _configuration = configuration;
     }
 
     [HttpPost("register")]
@@ -73,8 +77,13 @@ public class AuthController : ControllerBase
     [HttpPost("send-register-otp")]
     public async Task<IActionResult> SendRegisterOTP([FromBody] SendOTPDto request)
     {
-        var result = await _otpService.SendRegisterOTPAsync(request.Email);
-        if (result) return Ok(new { message = "OTP sent successfully." });
+        var otpCode = await _otpService.SendRegisterOTPAsync(request.Email);
+        if (!string.IsNullOrEmpty(otpCode))
+        {
+            var isDev = string.IsNullOrEmpty(_configuration["SMTP_USER"]) || string.IsNullOrEmpty(_configuration["SMTP_PASS"]);
+            if (isDev) return Ok(new { message = "OTP sent successfully. (Dev mode)", otpCode });
+            return Ok(new { message = "OTP sent successfully." });
+        }
         return BadRequest(new { message = "Failed to send OTP or cooldown active." });
     }
 
@@ -92,8 +101,14 @@ public class AuthController : ControllerBase
         var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
         if (user == null) return BadRequest(new { message = "Email not found." });
 
-        var result = await _otpService.SendForgotPasswordOTPAsync(request.Email);
-        if (result) return Ok(new { message = "OTP sent successfully." });
+        var otpCode = await _otpService.SendForgotPasswordOTPAsync(request.Email);
+        if (!string.IsNullOrEmpty(otpCode))
+        {
+            // In development, return OTP code since SMTP might not be configured
+            var isDev = string.IsNullOrEmpty(_configuration["SMTP_USER"]) || string.IsNullOrEmpty(_configuration["SMTP_PASS"]);
+            if (isDev) return Ok(new { message = "OTP sent successfully. (Dev mode)", otpCode });
+            return Ok(new { message = "OTP sent successfully." });
+        }
         return BadRequest(new { message = "Failed to send OTP or cooldown active." });
     }
 

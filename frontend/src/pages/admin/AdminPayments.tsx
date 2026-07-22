@@ -27,6 +27,7 @@ import AppButton from '../../components/shared/Button/AppButton'
 import { FiSearch, FiCalendar, FiX } from 'react-icons/fi'
 import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
+import { Button as ShadcnButton } from '@/components/ui/button'
 import { 
     startOfWeek, endOfWeek, startOfMonth, endOfMonth, 
     startOfYear, endOfYear, isWithinInterval 
@@ -190,7 +191,10 @@ const AdminPayments: React.FC = () => {
                     <Heading fontSize="28px" fontWeight="900" color="white" textTransform="uppercase">
                         Payments & Revenue
                     </Heading>
-                    <AppButton label="Export Report" size="sm" />
+                    <HStack spacing={4}>
+                        <ShadcnButton variant="default">Shadcn Button</ShadcnButton>
+                        <AppButton label="Export Report" size="sm" />
+                    </HStack>
                 </Flex>
 
                 <Grid templateColumns="repeat(4, 1fr)" gap="4" mb="7">

@@ -28,7 +28,8 @@ public class ExercisesController : ControllerBase
         {
             userId = uid;
         }
-        var exercises = await _exerciseService.GetAllAsync(userId);
+        var isAdmin = User.IsInRole("Admin") || User.IsInRole("ADMIN");
+        var exercises = await _exerciseService.GetAllAsync(userId, isAdmin);
         return Ok(exercises);
     }
 

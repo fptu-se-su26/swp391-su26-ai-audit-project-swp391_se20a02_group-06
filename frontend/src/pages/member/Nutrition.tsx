@@ -401,9 +401,8 @@ const WaterReminderSettings: React.FC<{ startTime: string; endTime: string }> = 
                     color="#E03030"
                     _hover={{ color: '#ff6b6b' }}
                     onClick={handleSave}
-                    isLoading={saving}
                 >
-                    Save
+                    {saving ? 'Saving...' : 'Save'}
                 </Box>
             </Flex>
             <Flex gap="2" align="center">
@@ -480,10 +479,9 @@ const TestWaterReminderButton: React.FC = () => {
             _hover={{ borderColor: '#E03030', bg: '#1a1c24' }}
             transition="all 0.2s"
             onClick={handleClick}
-            isLoading={loading}
         >
-            <Text fontSize="12px" fontWeight="600" color="#8A8A93">
-                🔔 Test Water Reminder Notification
+            <Text fontSize="12px" fontWeight="600" color={loading ? '#E03030' : '#8A8A93'}>
+                {loading ? 'Sending...' : '🔔 Test Water Reminder Notification'}
             </Text>
         </Box>
     )

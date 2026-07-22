@@ -15,13 +15,34 @@ public class ExerciseService : IExerciseService
         _context = context;
     }
 
-    public async Task<IEnumerable<ExerciseDto>> GetAllAsync(int? userId = null)
+    public async Task<IEnumerable<ExerciseDto>> GetAllAsync(int? userId = null, bool? isAdmin = false)
     {
         var query = _context.Exercises
             .Include(e => e.Creator)
             .Include(e => e.MuscleGroup)
             .Include(e => e.Package)
             .AsQueryable();
+
+        // Admin sees all exercises
+        if (isAdmin == true)
+        {
+            return await query
+                .Select(e => new ExerciseDto
+                {
+                    Id = e.Id,
+                    Title = e.Title,
+                    Description = e.Description,
+                    VideoUrl = e.VideoUrl,
+                    MuscleGroup = e.MuscleGroup != null ? e.MuscleGroup.Name : null,
+                    MuscleGroupId = e.MuscleGroupId,
+                    Difficulty = e.Difficulty,
+                    Duration = e.DurationMinutes,
+                    CreatedBy = e.CreatedBy,
+                    CreatorName = e.Creator != null ? e.Creator.Fullname : null,
+                    PackageId = e.PackageId
+                })
+                .ToListAsync();
+        }
 
         // If user is logged in, check their subscription to determine which exercises they can see
         if (userId.HasValue)
@@ -255,6 +276,8 @@ public class ExerciseService : IExerciseService
         exercise.Difficulty = dto.Difficulty;
         exercise.DurationMinutes = dto.Duration;
         exercise.PackageId = dto.PackageId;
+        if (dto.CreatedBy.HasValue)
+            exercise.CreatedBy = dto.CreatedBy.Value;
 
         _context.Exercises.Update(exercise);
         await _context.SaveChangesAsync();
