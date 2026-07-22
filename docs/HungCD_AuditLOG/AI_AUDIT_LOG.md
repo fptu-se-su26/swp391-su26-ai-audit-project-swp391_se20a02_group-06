@@ -757,34 +757,34 @@ Giúp hình dung rõ luồng xử lý của AI tư vấn bài tập cho users,t�
 
 | Nội dung | Thông tin |
 |---|---|
-| Ngày sử dụng |  |
-| Công cụ AI | ChatGPT / Gemini / Claude / GitHub Copilot / Cursor / Antigravity / Khác |
+| Ngày sử dụng | 6/7/2026 |
+| Công cụ AI | Gemini  |
 | Mục đích sử dụng |  |
-| Phần việc liên quan | Requirement / Design / Database / Frontend / Backend / Testing / Debug / Report / Presentation / Other |
-| Mức độ sử dụng | Hỗ trợ ý tưởng / Hỗ trợ một phần / Hỗ trợ nhiều / Sinh chính nội dung |
+| Phần việc liên quan |  Backend  |
+| Mức độ sử dụng | Hỗ trợ một phần  |
 
 #### 4.1. Prompt đã sử dụng
 
 ```text
-Dán nguyên văn prompt đã hỏi AI tại đây.
+Làm sao để đảm bảo AI Gemini không bao giờ tự bịa ra bài tập không có trong Database?Dán nguyên văn prompt đã hỏi AI tại đây.
 ```
 
 #### 4.2. Kết quả AI gợi ý
 
 ```text
-Viết tại đây...
+Dùng kỹ thuật RAG (Retrieval-Augmented Generation) đơn giản bằng cách lọc danh sách bài tập từ MySQL trước rồi mới gửi sang Python, kết hợp với tính năng Structured Output (Pydantic Schema) của Gemini để khóa chặt đầu ra.
 ```
 
 #### 4.3. Phần sinh viên/nhóm đã sử dụng từ AI
 
 ```text
-Viết tại đây...
+để triệt tiêu hoàn toàn hiện tượng bị ảo (Hallucination) của AI, nhóm không cho phép Gemini tự do sáng tạo bài tập. Thay vào đó, nhóm áp dụng mô hình RAG thu nhỏ.Trước khi gửi yêu cầu sang AI, Backend C# (.NET 9) sẽ truy vấn MySQL để lọc ra danh sách các bài tập hợp lệ (Status = Approved) thuộc đúng nhóm cơ người dùng yêu cầu. Danh sách này được đóng gói và ném sang cho AI làm ngữ cảnh cố định (Context Boundary). AI chỉ được phép lựa chọn và sắp xếp dựa trên tập dữ liệu thực tế.
 ```
 
 #### 4.4. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
 
 ```text
-Viết tại đây...
+Để triệt tiêu hoàn toàn hiện tượng AI tự bịa ra bài tập (Hallucination), hệ thống áp dụng mô hình RAG thu nhỏ kết hợp kiểm soát dữ liệu hai lớp: Đầu tiên, Backend C# sẽ truy vấn MySQL để lọc ra danh sách bài tập hợp lệ và truyền sang cho Python làm ngữ cảnh cố định; tại Microservice Python, nhóm sử dụng tính năng Structured Output của Gemini kết hợp Pydantic Schema để ép AI bắt buộc phải trả về JSON chuẩn chứa đúng các ID bài tập có trong danh sách. Nhờ đó, AI chỉ đóng vai trò tính toán số Set, Rep và thời gian nghỉ tối ưu chứ không thể tự sáng tạo bài tập nằm ngoài Database
 ```
 
 #### 4.5. Minh chứng
@@ -793,7 +793,8 @@ Viết tại đây...
 |---|---|
 | Link commit |  |
 | File liên quan |  |
-| Screenshot |  |
+| Screenshot | <img width="1197" height="652" alt="image" src="https://github.com/user-attachments/assets/fb46d2cb-6528-4ea6-bf30-86a23e204319" />
+ |
 | Kết quả chạy/test |  |
 | Link video demo |  |
 | Ghi chú khác |  |
