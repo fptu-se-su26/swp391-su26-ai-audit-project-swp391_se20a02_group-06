@@ -648,3 +648,251 @@ Sinh viên tự test trên trình duyệt và phản hồi khi Swagger UI không
 | Kết quả chạy/test | Build succeeded — 0 Warning(s), 0 Error(s) |
 | Link tài liệu/báo cáo | N/A |
 | Ghi chú khác | N/A |
+
+---
+
+### Prompt số 11
+
+| Nội dung | Thông tin |
+|---|---|
+| Ngày sử dụng | 18/07/2026 |
+| Công cụ AI | Antigravity |
+| Mục đích | Fix lỗi 500 API, JWT Claim Mapping, Retry logic Gemini API và định dạng PayOS |
+| Phần việc liên quan | Coding / Debug |
+| Mức độ sử dụng | Hỏi sinh code, Hỏi debug |
+
+#### 5.1. Prompt nguyên văn
+
+```text
+- "khắc phục lỗi 500 API và kiểm tra claim JWT khi MapInboundClaims = false"
+- "tích hợp retry logic và xử lý ngoại lệ cho các cuộc gọi Gemini API"
+- "sửa hiển thị định dạng tiền tệ VNĐ trong PlanSidebar và hiển thị thông báo lỗi Backend từ PayOS"
+```
+
+#### 5.2. Bối cảnh khi viết prompt
+
+```text
+Các API khi thay đổi cấu hình authentication `MapInboundClaims = false` bị mất claim `sub`, gây ra lỗi 500 ở các service truy vấn profile. Đồng thời dịch vụ kết nối Gemini API thỉnh thoảng gặp sự cố kết nối mạng và cần retry.
+```
+
+#### 5.3. Kết quả AI trả về
+
+```text
+AI sửa đổi cấu hình JWT, viết Retry Mechanism cho Gemini Service, và sửa định dạng tiền VNĐ trên Frontend.
+```
+
+#### 5.4. Kết quả đã áp dụng vào bài
+
+```text
+Được áp dụng 100% vào codebase.
+```
+
+#### 5.5. Phần sinh viên/nhóm đã chỉnh sửa hoặc cải tiến
+
+```text
+Yêu cầu AI bổ sung thông báo lỗi chi tiết khi thanh toán bị từ chối.
+```
+
+#### 5.6. Đánh giá chất lượng prompt
+
+- [x] Prompt rõ ràng
+- [x] Prompt có đủ bối cảnh
+- [x] Prompt tạo ra kết quả tốt
+
+#### 5.7. Minh chứng liên quan
+
+| Loại minh chứng | Nội dung |
+|---|---|
+| Link commit | a3e7084c6e9464ef72d7eeecdf30bb402120e3a4 |
+| File liên quan | Program.cs, DirectGeminiService.cs, PlanSidebar.tsx |
+| Screenshot | N/A |
+| Kết quả chạy/test | Build pass 100% |
+| Link tài liệu/báo cáo | N/A |
+| Ghi chú khác | N/A |
+
+---
+
+### Prompt số 12
+
+| Nội dung | Thông tin |
+|---|---|
+| Ngày sử dụng | 20/07/2026 |
+| Công cụ AI | Antigravity |
+| Mục đích | Thống nhất Topbar Layout, phát triển trang Progress Timeline UI và Coming Soon Overlay |
+| Phần việc liên quan | Coding / Design |
+| Mức độ sử dụng | Hỏi sinh code, Hỏi thiết kế |
+
+#### 5.1. Prompt nguyên văn
+
+```text
+- "đồng nhất thanh Topbar trên tất cả Layout, ẩn thanh tìm kiếm không cần thiết, thêm nút Đổi mật khẩu"
+- "thiết kế lại trang Progress theo giao diện Timeline UI, thêm bộ lọc theo nhóm cơ và popup Xem/Thử lại"
+- "tạo lớp phủ Coming Soon tối màu nổi bật cho các trang mới dùng dữ liệu giả"
+```
+
+#### 5.2. Bối cảnh khi viết prompt
+
+```text
+Giao diện ứng dụng chưa đồng bộ giữa các Role (Admin, PT, Member). Trang Progress cũ hiển thị đơn điệu chưa có mốc thời gian rõ ràng.
+```
+
+#### 5.3. Kết quả AI trả về
+
+```text
+AI tái cấu trúc Topbar chung và tạo component Timeline Progress UI và ComingSoonOverlay.
+```
+
+#### 5.4. Kết quả đã áp dụng vào bài
+
+```text
+Toàn bộ phần code UI được áp dụng vào dự án.
+```
+
+#### 5.5. Phần sinh viên/nhóm đã chỉnh sửa hoặc cải tiến
+
+```text
+Tự tinh chỉnh lại tông màu viền đỏ và hiệu ứng làm mờ của Overlay.
+```
+
+#### 5.6. Đánh giá chất lượng prompt
+
+- [x] Prompt rõ ràng
+- [x] Prompt có đủ bối cảnh
+- [x] Prompt tạo ra kết quả tốt
+
+#### 5.7. Minh chứng liên quan
+
+| Loại minh chứng | Nội dung |
+|---|---|
+| Link commit | 787a4e69b22e1c9e88a0110352ef2e557b4ca2f3 |
+| File liên quan | MemberLayout.tsx, AdminLayout.tsx, Progress.tsx, ComingSoonOverlay.tsx |
+| Screenshot | N/A |
+| Kết quả chạy/test | FE Build Success |
+| Link tài liệu/báo cáo | N/A |
+| Ghi chú khác | N/A |
+
+---
+
+### Prompt số 13
+
+| Nội dung | Thông tin |
+|---|---|
+| Ngày sử dụng | 21/07/2026 |
+| Công cụ AI | Antigravity |
+| Mục đích | Xây dựng và sửa lỗi tính năng Nhắc nhở Uống nước Realtime qua SignalR |
+| Phần việc liên quan | Coding / Debug |
+| Mức độ sử dụng | Hỏi sinh code, Hỏi debug |
+
+#### 5.1. Prompt nguyên văn
+
+```text
+- "thêm đếm ngược HydrationCountdown thời gian thực và tự động nhắc nhở uống nước"
+- "fix lỗi SignalR không nhận diện được User ID sau khi tắt MapInboundClaims"
+- "thêm nút Clear All thông báo và tự động ẩn thông báo sau khi chọn Đã uống"
+```
+
+#### 5.2. Bối cảnh khi viết prompt
+
+```text
+Nhắc nhở uống nước cần gửi thông báo đẩy Realtime từ Backend xuống Frontend thông qua SignalR WebSockets.
+```
+
+#### 5.3. Kết quả AI trả về
+
+```text
+AI viết `SubClaimUserIdProvider.cs`, `HydrationCountdown.tsx` và dọn dẹp notification tự động.
+```
+
+#### 5.4. Kết quả đã áp dụng vào bài
+
+```text
+Được tích hợp vào hệ thống Notification.
+```
+
+#### 5.5. Phần sinh viên/nhóm đã chỉnh sửa hoặc cải tiến
+
+```text
+Thêm Toast thông báo số ly nước còn lại để người dùng theo dõi tiến độ.
+```
+
+#### 5.6. Đánh giá chất lượng prompt
+
+- [x] Prompt rõ ràng
+- [x] Prompt có đủ bối cảnh
+- [x] Prompt tạo ra kết quả tốt
+
+#### 5.7. Minh chứng liên quan
+
+| Loại minh chứng | Nội dung |
+|---|---|
+| Link commit | 78ae5ed9846b14d2e825e6f6630f989f5bc39e1a |
+| File liên quan | SubClaimUserIdProvider.cs, HydrationCountdown.tsx, NotificationContext.tsx |
+| Screenshot | N/A |
+| Kết quả chạy/test | Build pass 100% |
+| Link tài liệu/báo cáo | N/A |
+| Ghi chú khác | N/A |
+
+---
+
+### Prompt số 14
+
+| Nội dung | Thông tin |
+|---|---|
+| Ngày sử dụng | 22/07/2026 |
+| Công cụ AI | Antigravity |
+| Mục đích | Fix lỗi OTP, nạp toàn bộ SQL mới, sửa bảng `emailotp` và gom cấu hình vào `appsettings.json` |
+| Phần việc liên quan | Fullstack |
+| Mức độ sử dụng | Hỏi sinh code, Hỏi debug, Hỏi config |
+
+#### 5.1. Prompt nguyên văn
+
+```text
+- "fix và chạy dự án cho tôi đi"
+- "đây là sql full mới và data mới hãy chạy chuẩn cái này cho tôi"
+- "sao không gửi otp được là sao"
+- "tắt dev mode này kiểm tra kỹ vì đây sẽ đưa lên production"
+- "AxiosError: Request failed with status code 502 ở generateDietPlan"
+- "ở dotnet thì env sẽ để trong appsettings luôn đúng không, hãy tổng hợp và để vào cho tôi"
+```
+
+#### 5.2. Bối cảnh khi viết prompt
+
+```text
+Pull code dev mới nhất gặp lỗi thiếu node_modules, thiếu bảng MySQL, lỗi 502 service AI Python và cần đưa ứng dụng về chuẩn Production.
+```
+
+#### 5.3. Kết quả AI trả về
+
+```text
+AI cài gói frontend, nạp lại MySQL database `fitnessproject`, sửa bảng `emailotp`, cấu hình Gemini Key & SMTP Gmail trong `appsettings.json` và ẩn OTP code khỏi response.
+```
+
+#### 5.4. Kết quả đã áp dụng vào bài
+
+```text
+Toàn bộ cấu hình và code fix được áp dụng 100%.
+```
+
+#### 5.5. Phần sinh viên/nhóm đã chỉnh sửa hoặc cải tiến
+
+```text
+Cung cấp file SQL gốc (`fullsql.sql` + `data.sql`), mật khẩu root MySQL local và thực hiện kiểm thử thực tế trên giao diện web.
+```
+
+#### 5.6. Đánh giá chất lượng prompt
+
+- [x] Prompt rõ ràng
+- [x] Prompt có đủ bối cảnh
+- [x] Prompt tạo ra kết quả tốt
+
+#### 5.7. Minh chứng liên quan
+
+| Loại minh chứng | Nội dung |
+|---|---|
+| Link commit | 2047286c51521fee9a26034300394b326b836d97 |
+| File liên quan | appsettings.json, appsettings.Development.json, AuthController.cs, DependencyInjection.cs |
+| Screenshot | N/A |
+| Kết quả chạy/test | FE & BE Build Success, OTP & AI Service hoạt động |
+| Link tài liệu/báo cáo | N/A |
+| Ghi chú khác | N/A |
+
