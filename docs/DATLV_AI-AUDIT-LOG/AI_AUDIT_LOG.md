@@ -1218,3 +1218,239 @@ Yêu cầu AI cập nhật thêm luồng lọc bài tập theo chính xác nhóm
 Cấu trúc Database do EF Core sinh ra cần phải theo dõi cẩn thận vì có thể phát sinh cột phụ nếu cấu hình Fluent API và Attributes không thống nhất.
 Trải nghiệm UX/UI trên các luồng luyện tập cần được tối ưu hóa số lượng thao tác click cho người dùng.
 ```
+
+---
+
+### Lần sử dụng AI số 12
+
+| Nội dung | Thông tin |
+|---|---|
+| Ngày sử dụng | 18/07/2026 |
+| Công cụ AI | Antigravity |
+| Mục đích sử dụng | Xử lý lỗi API 500, ánh xạ JWT Claim (`sub`), tích hợp cơ chế Retry Gemini AI Service và định dạng giá tiền PayOS |
+| Phần việc liên quan | Fullstack (.NET Core BE + React FE + Gemini AI) |
+| Mức độ sử dụng | Hỗ trợ nhiều |
+
+#### 4.1. Prompt đã sử dụng
+
+```text
+- "khắc phục lỗi 500 API và kiểm tra claim JWT khi MapInboundClaims = false"
+- "tích hợp retry logic và xử lý ngoại lệ cho các cuộc gọi Gemini API"
+- "sửa hiển thị định dạng tiền tệ VNĐ trong PlanSidebar và hiển thị thông báo lỗi Backend từ PayOS"
+```
+
+#### 4.2. Kết quả AI gợi ý
+
+```text
+- Sửa cấu hình JWT authentication trong Program.cs và bổ sung claim mapper `sub`.
+- Bổ sung Try-catch và Exponential Backoff Retry trong `DirectGeminiService.cs`.
+- Cập nhật UI `PlanSidebar.tsx` sử dụng `toLocaleString('vi-VN')` hiển thị ký hiệu đồng (đ).
+- Bổ sung hiển thị thông báo lỗi từ server khi thanh toán PayOS bị gián đoạn.
+```
+
+#### 4.3. Phần sinh viên/nhóm đã sử dụng từ AI
+
+```text
+Toàn bộ code xử lý JWT claim, retry logic cho Gemini AI service và định dạng tiền tệ trên Frontend.
+```
+
+#### 4.4. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
+
+```text
+Yêu cầu AI kiểm tra cẩn thận chuỗi kết nối PayOS và kiểm thử với các gói dịch vụ thực tế.
+```
+
+#### 4.5. Minh chứng
+
+| Loại minh chứng | Nội dung |
+|---|---|
+| Link commit | a3e7084c6e9464ef72d7eeecdf30bb402120e3a4 |
+| File liên quan | Program.cs, DirectGeminiService.cs, PlanSidebar.tsx, simulate-payment.ts |
+| Screenshot | Đã kiểm tra UI thanh toán và kết nối API |
+| Kết quả chạy/test | Build FE (`npm run build`) và BE (`dotnet build`) pass 100% |
+| Link video demo | N/A |
+| Ghi chú khác | N/A |
+
+#### 4.6. Nhận xét cá nhân/nhóm
+
+```text
+Cần đảm bảo việc map Claims giữa JWT Token và Entity Framework Core đồng bộ để tránh các lỗi NullReference hoặc 401 Unauthorized rải rác.
+```
+
+---
+
+### Lần sử dụng AI số 13
+
+| Nội dung | Thông tin |
+|---|---|
+| Ngày sử dụng | 20/07/2026 |
+| Công cụ AI | Antigravity |
+| Mục đích sử dụng | Đồng bộ Topbar layout toàn ứng dụng, phát triển trang Progress với Timeline UI & Muscle Filter, thêm Coming Soon Overlay cho trang Mock |
+| Phần việc liên quan | Frontend (React UI/UX + Chakra UI) |
+| Mức độ sử dụng | Hỗ trợ nhiều |
+
+#### 4.1. Prompt đã sử dụng
+
+```text
+- "đồng nhất thanh Topbar trên tất cả Layout, ẩn thanh tìm kiếm không cần thiết, thêm nút Đổi mật khẩu"
+- "thiết kế lại trang Progress theo giao diện Timeline UI, thêm bộ lọc theo nhóm cơ và popup Xem/Thử lại"
+- "tạo lớp phủ Coming Soon tối màu nổi bật cho các trang mới dùng dữ liệu giả"
+```
+
+#### 4.2. Kết quả AI gợi ý
+
+```text
+- Tách và chuẩn hóa Topbar component cho MemberLayout, AdminLayout và PTLayout.
+- Xây dựng component Timeline Progress với bộ lọc bài tập theo nhóm cơ trong `Progress.tsx`.
+- Tạo `ComingSoonOverlay.tsx` với hiệu ứng kính mờ và viền đỏ tương phản cao.
+```
+
+#### 4.3. Phần sinh viên/nhóm đã sử dụng từ AI
+
+```text
+Giao diện Timeline UI, cấu trúc Topbar dùng chung và component `ComingSoonOverlay`.
+```
+
+#### 4.4. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
+
+```text
+Tự thiết kế lại độ mờ của Background Overlay (`blackAlpha.600`) để người dùng vẫn nhìn thấy mờ mờ nội dung phía dưới.
+```
+
+#### 4.5. Minh chứng
+
+| Loại minh chứng | Nội dung |
+|---|---|
+| Link commit | 787a4e69b22e1c9e88a0110352ef2e557b4ca2f3 |
+| File liên quan | MemberLayout.tsx, AdminLayout.tsx, Progress.tsx, ComingSoonOverlay.tsx |
+| Screenshot | Đã giao diện hiển thị mượt mà trên browser |
+| Kết quả chạy/test | FE build pass (`npm run build`) |
+| Link video demo | N/A |
+| Ghi chú khác | N/A |
+
+#### 4.6. Nhận xét cá nhân/nhóm
+
+```text
+Việc thống nhất các thành phần Layout chung (Topbar/Sidebar) giúp mã nguồn sạch hơn và giảm thiểu việc duplicate code.
+```
+
+---
+
+### Lần sử dụng AI số 14
+
+| Nội dung | Thông tin |
+|---|---|
+| Ngày sử dụng | 21/07/2026 |
+| Công cụ AI | Antigravity |
+| Mục đích sử dụng | Xây dựng và sửa lỗi tính năng Nhắc nhở Uống nước Realtime qua SignalR (UserProvider, HydrationCountdown timer, auto-clear notification) |
+| Phần việc liên quan | Fullstack (SignalR WebSockets + React SWR + Background Service) |
+| Mức độ sử dụng | Hỗ trợ nhiều |
+
+#### 4.1. Prompt đã sử dụng
+
+```text
+- "thêm đếm ngược HydrationCountdown thời gian thực và tự động nhắc nhở uống nước"
+- "fix lỗi SignalR không nhận diện được User ID sau khi tắt MapInboundClaims"
+- "thêm nút Clear All thông báo và tự động ẩn thông báo sau khi chọn Đã uống"
+```
+
+#### 4.2. Kết quả AI gợi ý
+
+```text
+- Tạo `SubClaimUserIdProvider.cs` giúp SignalR map đúng User ID từ JWT `sub` claim.
+- Xây dựng component `HydrationCountdown.tsx` đếm ngược theo số giây sinh động.
+- Cập nhật `NotificationContext.tsx` tự dọn dẹp thông báo nước sau khi bấm hành động "Đã uống".
+```
+
+#### 4.3. Phần sinh viên/nhóm đã sử dụng từ AI
+
+```text
+Class `SubClaimUserIdProvider`, custom hook đếm ngược thời gian và logic SignalR Realtime connection.
+```
+
+#### 4.4. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
+
+```text
+Yêu cầu AI bổ sung Toast thông báo số ly nước còn lại cần uống trong ngày để tăng trải nghiệm người dùng.
+```
+
+#### 4.5. Minh chứng
+
+| Loại minh chứng | Nội dung |
+|---|---|
+| Link commit | 78ae5ed9846b14d2e825e6f6630f989f5bc39e1a |
+| File liên quan | SubClaimUserIdProvider.cs, HydrationCountdown.tsx, NotificationContext.tsx, WaterReminderBackgroundService.cs |
+| Screenshot | Đã kiểm thử gửi nhận thông báo Realtime trên local |
+| Kết quả chạy/test | Build pass 100% FE & BE |
+| Link video demo | N/A |
+| Ghi chú khác | N/A |
+
+#### 4.6. Nhận xét cá nhân/nhóm
+
+```text
+Realtime SignalR đòi hỏi việc đồng bộ User ID kỹ càng giữa Authentication Middleware và Hub Connection Context.
+```
+
+---
+
+### Lần sử dụng AI số 15
+
+| Nội dung | Thông tin |
+|---|---|
+| Ngày sử dụng | 22/07/2026 |
+| Công cụ AI | Antigravity |
+| Mục đích sử dụng | Sửa lỗi OTP 400 Bad Request, đồng bộ toàn bộ Schema & Data SQL mới nhất, sửa lỗi bảng `emailotp` và gom cấu hình SMTP & Gemini vào `appsettings.json` |
+| Phần việc liên quan | Fullstack (Database MySQL + .NET Core BE + Gemini Python Service) |
+| Mức độ sử dụng | Hỗ trợ nhiều |
+
+#### 4.1. Prompt đã sử dụng
+
+```text
+- "fix và chạy dự án cho tôi đi"
+- "đây là sql full mới và data mới hãy chạy chuẩn cái này cho tôi"
+- "sao không gửi otp được là sao"
+- "tắt dev mode này kiểm tra kỹ vì đây sẽ đưa lên production"
+- "AxiosError: Request failed with status code 502 ở generateDietPlan"
+- "ở dotnet thì env sẽ để trong appsettings luôn đúng không, hãy tổng hợp và để vào cho tôi"
+```
+
+#### 4.2. Kết quả AI gợi ý
+
+```text
+- Cài đặt đầy đủ gói phụ thuộc npm bị thiếu (`@base-ui/react`, `@tailwindcss/vite`, `clsx`, `recharts`,...).
+- Import lại toàn bộ 24 bảng trong `fullsql.sql` và dữ liệu mẫu trong `data.sql` vào MySQL `fitnessproject`.
+- Tạo lại bảng `emailotp` chứa đầy đủ cột `attempt_count`.
+- Cấu hình file `.env` cho `fitness-ai-service` để giải quyết lỗi 502 Bad Gateway.
+- Tổng hợp toàn bộ biến môi trường (Database, JWT, Google, PayOS, SMTP, OTP, Gemini Key) vào `appsettings.json` & `appsettings.Development.json`.
+- Bảo mật API `send-forgot-password-otp` bằng cách xóa `otpCode` trong HTTP response để sẵn sàng Production.
+```
+
+#### 4.3. Phần sinh viên/nhóm đã sử dụng từ AI
+
+```text
+Toàn bộ file cấu hình `appsettings.json`, DDL sửa bảng `emailotp`, code bảo mật AuthController và các câu lệnh import Database.
+```
+
+#### 4.4. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
+
+```text
+Cung cấp file SQL chuẩn (`fullsql.sql` + `data.sql`), thông tin mật khẩu MySQL local (`Levandat2004^`) và kiểm thử trực tiếp luồng gửi OTP qua Gmail thực tế.
+```
+
+#### 4.5. Minh chứng
+
+| Loại minh chứng | Nội dung |
+|---|---|
+| Link commit | 2047286c51521fee9a26034300394b326b836d97 |
+| File liên quan | appsettings.json, appsettings.Development.json, AuthController.cs, DependencyInjection.cs, fitness-ai-service/.env |
+| Screenshot | Đã kiểm thử gửi OTP thực tế và tạo thực đơn AI thành công |
+| Kết quả chạy/test | Build pass 100% FE & BE (`npm run build` pass, `dotnet build` pass) |
+| Link video demo | N/A |
+| Ghi chú khác | DB đã được đồng bộ với 354 bài tập và 30 món ăn. |
+
+#### 4.6. Nhận xét cá nhân/nhóm
+
+```text
+Việc tập trung cấu hình môi trường vào `appsettings.json` giúp ứng dụng .NET quản lý biến môi trường nhất quán, dễ triển khai Production và hạn chế lỗi thiếu cấu hình cục bộ.
+```
+
