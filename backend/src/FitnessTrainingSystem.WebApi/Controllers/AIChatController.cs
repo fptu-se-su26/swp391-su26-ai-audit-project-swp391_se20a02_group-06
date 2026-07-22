@@ -20,13 +20,32 @@ public class AIChatController : ControllerBase
         _chatService = chatService;
     }
 
+    private int GetUserId()
+    {
+        var userIdString = User.FindFirstValue(JwtRegisteredClaimNames.Sub)
+                        ?? User.FindFirstValue(ClaimTypes.NameIdentifier)
+                        ?? User.FindFirst("sub")?.Value
+                        ?? User.FindFirst("id")?.Value;
+
+        if (!int.TryParse(userIdString, out var userId))
+            throw new UnauthorizedAccessException("Invalid user identifier.");
+
+        return userId;
+    }
+
     [HttpPost("send")]
     public async Task<IActionResult> SendMessage(
         [FromBody] AIChatRequest request)
     {
-        var userIdString = User.FindFirstValue(JwtRegisteredClaimNames.Sub) ?? User.FindFirstValue(ClaimTypes.NameIdentifier);
-        if (!int.TryParse(userIdString, out var userId))
-            return Unauthorized(new { message = "Invalid user identifier." });
+        int userId;
+        try
+        {
+            userId = GetUserId();
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            return Unauthorized(new { message = ex.Message });
+        }
 
         var result = await _chatService.SendMessageAsync(
             userId,
@@ -34,6 +53,7 @@ public class AIChatController : ControllerBase
 
         return Ok(result);
     }
+
     [HttpGet("{sessionId}")]
     public async Task<IActionResult> GetMessages(int sessionId)
     {
@@ -44,9 +64,15 @@ public class AIChatController : ControllerBase
     [HttpGet("diet-history")]
     public async Task<IActionResult> GetDietHistory()
     {
-        var userIdString = User.FindFirstValue(JwtRegisteredClaimNames.Sub) ?? User.FindFirstValue(ClaimTypes.NameIdentifier);
-        if (!int.TryParse(userIdString, out var userId))
-            return Unauthorized(new { message = "Invalid user identifier." });
+        int userId;
+        try
+        {
+            userId = GetUserId();
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            return Unauthorized(new { message = ex.Message });
+        }
 
         var result = await _chatService.GetDietHistoriesAsync(userId);
         return Ok(result);
