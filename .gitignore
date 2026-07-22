@@ -27,6 +27,11 @@ docs-me/
 bin/
 obj/
 
+## Bỏ qua các file build của .NET
+**/bin/
+**/obj/
+*.user
+*.suo
 # Agents
 .agents/workflows/
 
