@@ -674,11 +674,11 @@ Giải thích khá chi tiết và giúp tôi hình dung bao quát về các tạ
 
 | Nội dung | Thông tin |
 |---|---|
-| Ngày sử dụng |  |
-| Công cụ AI | ChatGPT / Gemini / Claude / GitHub Copilot / Cursor / Antigravity / Khác |
-| Mục đích sử dụng |  |
-| Phần việc liên quan | Requirement / Design / Database / Frontend / Backend / Testing / Debug / Report / Presentation / Other |
-| Mức độ sử dụng | Hỗ trợ ý tưởng / Hỗ trợ một phần / Hỗ trợ nhiều / Sinh chính nội dung |
+| Ngày sử dụng | 25/6/2004  |
+| Công cụ AI |  Antigravity  |
+| Mục đích sử dụng | Hỏi về luồng xử lý của code dành cho AI tư vấn bài tập cho users  |
+| Phần việc liên quan |  Other |
+| Mức độ sử dụng |  Hỗ trợ nhiều  |
 
 #### 4.1. Prompt đã sử dụng
 
