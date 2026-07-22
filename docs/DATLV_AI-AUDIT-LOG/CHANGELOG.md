@@ -252,6 +252,7 @@ DD/MM/YYYY
 | 14 | Redesign Topbar Layout, Timeline Progress UI & ComingSoon Overlay | Đạt | Progress.tsx, ComingSoonOverlay.tsx | Commit 787a4e6 |
 | 15 | Tích hợp SignalR Realtime Hydration Reminder & Custom UserProvider | Đạt | SubClaimUserIdProvider.cs, HydrationCountdown.tsx | Commit 78ae5ed |
 | 16 | Đồng bộ Database SQL, Fix schema emailotp, cấu hình appsettings.json Production | Đạt | appsettings.json, AuthController.cs | Commit 2047286 |
+| 17 | Cập nhật pnpm-lock.yaml sửa lỗi ERR_PNPM_OUTDATED_LOCKFILE trên CI/CD GitHub Actions | Đạt | `pnpm-lock.yaml` | Commit 9f17f8e |
 
 ## AI có hỗ trợ không?
 

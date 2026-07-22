@@ -896,3 +896,63 @@ Cung cấp file SQL gốc (`fullsql.sql` + `data.sql`), mật khẩu root MySQL 
 | Link tài liệu/báo cáo | N/A |
 | Ghi chú khác | N/A |
 
+---
+
+### Prompt số 15
+
+| Nội dung | Thông tin |
+|---|---|
+| Ngày sử dụng | 23/07/2026 |
+| Công cụ AI | Antigravity |
+| Mục đích | Sửa lỗi CI/CD `ERR_PNPM_OUTDATED_LOCKFILE` trên GitHub Actions |
+| Phần việc liên quan | CI/CD / Deployment |
+| Mức độ sử dụng | Hỏi debug / Hỗ trợ fix CI |
+
+#### 5.1. Prompt nguyên văn
+
+```text
+- "[Anh chup loi ERR_PNPM_OUTDATED_LOCKFILE] trên GitHub Actions"
+- "oke push lên cho tôi"
+```
+
+#### 5.2. Bối cảnh khi viết prompt
+
+```text
+Quy trình CI deploy GitHub Actions bị fail ở bước Install dependencies với lỗi ERR_PNPM_OUTDATED_LOCKFILE do pnpm-lock.yaml lệch với package.json.
+```
+
+#### 5.3. Kết quả AI trả về
+
+```text
+AI phân tích chính xác nguyên nhân, chạy `pnpm install --lockfile-only`, test build `pnpm build` thành công, thực hiện commit & push lên Git.
+```
+
+#### 5.4. Kết quả đã áp dụng vào bài
+
+```text
+File `pnpm-lock.yaml` đã được đồng bộ 100%.
+```
+
+#### 5.5. Phần sinh viên/nhóm đã chỉnh sửa hoặc cải tiến
+
+```text
+Cung cấp screenshot lỗi trên GitHub Actions và yêu cầu AI tự động commit & push.
+```
+
+#### 5.6. Đánh giá chất lượng prompt
+
+- [x] Prompt rõ ràng
+- [x] Prompt có đủ bối cảnh
+- [x] Prompt tạo ra kết quả tốt
+
+#### 5.7. Minh chứng liên quan
+
+| Loại minh chứng | Nội dung |
+|---|---|
+| Link commit | 9f17f8e81552300b95fae223bdfedffc7b51b72a |
+| File liên quan | frontend/pnpm-lock.yaml |
+| Screenshot | Đã phân tích đúng screenshot CI log |
+| Kết quả chạy/test | FE Build Success |
+| Link tài liệu/báo cáo | N/A |
+| Ghi chú khác | N/A |
+

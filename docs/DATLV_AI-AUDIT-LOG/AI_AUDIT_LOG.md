@@ -1454,3 +1454,60 @@ Cung cấp file SQL chuẩn (`fullsql.sql` + `data.sql`), thông tin mật khẩ
 Việc tập trung cấu hình môi trường vào `appsettings.json` giúp ứng dụng .NET quản lý biến môi trường nhất quán, dễ triển khai Production và hạn chế lỗi thiếu cấu hình cục bộ.
 ```
 
+---
+
+### Lần sử dụng AI số 16
+
+| Nội dung | Thông tin |
+|---|---|
+| Ngày sử dụng | 23/07/2026 |
+| Công cụ AI | Antigravity |
+| Mục đích sử dụng | Khắc phục lỗi CI/CD `ERR_PNPM_OUTDATED_LOCKFILE` trên GitHub Actions do lệch `pnpm-lock.yaml` và `package.json` |
+| Phần việc liên quan | Frontend / CI/CD Deployment |
+| Mức độ sử dụng | Hỗ trợ nhiều |
+
+#### 4.1. Prompt đã sử dụng
+
+```text
+- "[Image of GitHub Actions ERR_PNPM_OUTDATED_LOCKFILE error]"
+- "oke push lên cho tôi"
+```
+
+#### 4.2. Kết quả AI gợi ý
+
+```text
+- Phân tích nguyên nhân lỗi CI/CD do `pnpm-lock.yaml` chưa đồng bộ với `@tailwindcss/vite` trong `package.json`.
+- Chạy `pnpm install --lockfile-only` tại thư mục frontend để tái tạo và cập nhật chuẩn xác `pnpm-lock.yaml`.
+- Kiểm thử build thành công bằng `pnpm build` (`tsc -b && vite build`).
+- Thực hiện commit chuẩn Conventional Commits `fix(ci): update pnpm-lock.yaml to sync with package.json` và push lên nhánh `feature/dat/fe`.
+```
+
+#### 4.3. Phần sinh viên/nhóm đã sử dụng từ AI
+
+```text
+Toàn bộ file `pnpm-lock.yaml` được AI cập nhật chuẩn xác và quy trình pre-commit audit check.
+```
+
+#### 4.4. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
+
+```text
+Cung cấp screenshot lỗi CI từ GitHub Actions và xác nhận đồng ý commit & push code.
+```
+
+#### 4.5. Minh chứng
+
+| Loại minh chứng | Nội dung |
+|---|---|
+| Link commit | 9f17f8e81552300b95fae223bdfedffc7b51b72a |
+| File liên quan | frontend/pnpm-lock.yaml |
+| Screenshot | Đã phân tích đúng lỗi từ screenshot GitHub Actions |
+| Kết quả chạy/test | Build FE pass 100% (`pnpm build` pass) |
+| Link video demo | N/A |
+| Ghi chú khác | N/A |
+
+#### 4.6. Nhận xét cá nhân/nhóm
+
+```text
+Hiểu rõ cơ chế `frozen-lockfile` trong CI/CD giúp đảm bảo tất cả các lần build sản phẩm đều nhất quán phiên bản thư viện, tránh lỗi chênh lệch phiên bản giữa máy dev và máy chủ CI.
+```
+
