@@ -8,6 +8,7 @@ import uvicorn
 import json
 import os
 import traceback
+import time
 
 # =============================
 # Load Environment Variables
@@ -22,6 +23,23 @@ app = FastAPI(title="Fitness AI Agent - Nutrition Expert")
 client = genai.Client(
     api_key=os.getenv("GEMINI_API_KEY")
 )
+
+def generate_content_with_retry(model="gemini-2.0-flash", contents=None, config=None, max_retries=4):
+    for attempt in range(1, max_retries + 1):
+        try:
+            return client.models.generate_content(
+                model=model,
+                contents=contents,
+                config=config
+            )
+        except Exception as e:
+            err_str = str(e)
+            if ("429" in err_str or "RESOURCE_EXHAUSTED" in err_str or "Quota" in err_str or "Too Many Requests" in err_str) and attempt < max_retries:
+                wait_time = attempt * 3
+                print(f"[Gemini 429 Rate Limit] Retrying in {wait_time}s... (Attempt {attempt}/{max_retries})")
+                time.sleep(wait_time)
+            else:
+                raise e
 
 # =============================
 # Response Schema
@@ -110,8 +128,8 @@ DANH SÁCH MÓN ĂN DATABASE
 {request.food_list_json}
 """
 
-        response = client.models.generate_content(
-            model="gemini-1.5-flash",
+        response = generate_content_with_retry(
+            model="gemini-2.0-flash",
             contents=user_prompt,
             config=types.GenerateContentConfig(
                 system_instruction=system_instruction,
@@ -188,8 +206,8 @@ LỊCH SỬ CHAT:
 {request.conversation}
 """
 
-        response = client.models.generate_content(
-            model="gemini-1.5-flash",
+        response = generate_content_with_retry(
+            model="gemini-2.0-flash",
             contents=prompt,
             config=types.GenerateContentConfig(
                 system_instruction=system_instruction,
