@@ -325,14 +325,20 @@ const WorkoutSetup: React.FC<WorkoutSetupProps> = ({ onComplete }) => {
                                     border="1.5px solid"
                                     borderColor="#2e3040"
                                     borderRadius="16px"
-                                    opacity={0.5}
                                     cursor="not-allowed"
+                                    opacity={0.5}
+                                    position="relative"
                                 >
-                                    <Heading fontSize="18px" fontWeight="800" color="#E2E1EB" mb="2">
-                                        Weekly
-                                    </Heading>
+                                    <Flex justify="space-between" align="flex-start" mb="2">
+                                        <Heading fontSize="18px" fontWeight="800" color="#E2E1EB">
+                                            Weekly
+                                        </Heading>
+                                        <Box bg="#2e3040" px="2" py="0.5" borderRadius="4px">
+                                            <Text fontSize="9px" fontWeight="700" color="#8A8A93" textTransform="uppercase">Coming Soon</Text>
+                                        </Box>
+                                    </Flex>
                                     <Text fontSize="13px" color="#8A8A93">
-                                        Coming soon
+                                        Generate a personalized weekly plan aligned with your schedule.
                                     </Text>
                                 </Box>
                             </Grid>

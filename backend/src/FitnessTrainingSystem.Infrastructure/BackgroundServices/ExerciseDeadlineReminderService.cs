@@ -54,7 +54,9 @@ public class ExerciseDeadlineReminderService : BackgroundService
         // Get requests whose deadline is within 24 hours and not yet completed
         var approachingRequests = await context.PtUploadRequests
             .Where(r => (r.Status == "PENDING" || r.Status == "REJECTED") &&
-                        r.SubmittedAt != null)
+                        r.Deadline != null &&
+                        r.Deadline <= tomorrow &&
+                        r.Deadline > now)
             .ToListAsync();
 
         foreach (var req in approachingRequests)
@@ -73,7 +75,7 @@ public class ExerciseDeadlineReminderService : BackgroundService
                 await notificationService.SendNotificationAsync(
                     req.PtId,
                     "Exercise Deadline Approaching!",
-                    $"A pending exercise request is approaching review. (Request ID: {req.Id})",
+                    $"The deadline for creating the exercise for group '{req.MuscleGroup ?? "General"}' is approaching. (Request ID: {req.Id})",
                     "DEADLINE_APPROACHING"
                 );
             }

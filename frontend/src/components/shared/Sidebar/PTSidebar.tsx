@@ -13,16 +13,14 @@ import {
     FiUsers,
     FiActivity,
     FiFileText,
-    FiUploadCloud,
     FiUser,
 } from 'react-icons/fi'
 
 const navItems = [
-    { label: 'Dashboard', icon: FiGrid, path: '/pt/dashboard' },
-    { label: 'My Clients', icon: FiUsers, path: '/pt/clients' },
-    { label: 'My Content', icon: FiUploadCloud, path: '/pt/content-library' },
-    { label: 'Workouts', icon: FiActivity, path: '/pt/workouts' },
-    { label: 'Exercise Requests', icon: FiFileText, path: '/pt/exercise-requests' },
+    { label: 'Dashboard', icon: FiGrid, path: '/admin' },
+    { label: 'My Clients', icon: FiUsers, path: '/admin/users' },
+    { label: 'Workouts', icon: FiActivity, path: '/admin/workouts' },
+    { label: 'Exercise Requests', icon: FiFileText, path: '/admin/pt-requests' },
 ]
 
 const PTSidebar: React.FC = () => {
@@ -30,7 +28,7 @@ const PTSidebar: React.FC = () => {
     const location = useLocation()
 
     const isActivePath = (path: string) => {
-        if (path === '/pt/dashboard') return location.pathname === '/pt/dashboard'
+        if (path === '/admin') return location.pathname === '/admin'
         return location.pathname.startsWith(path)
     }
 
@@ -57,7 +55,7 @@ const PTSidebar: React.FC = () => {
                     color="white"
                     letterSpacing="-0.02em"
                     cursor="pointer"
-                    onClick={() => navigate('/pt/dashboard')}
+                    onClick={() => navigate('/')}
                 >
                     AISTHEA
                 </Heading>

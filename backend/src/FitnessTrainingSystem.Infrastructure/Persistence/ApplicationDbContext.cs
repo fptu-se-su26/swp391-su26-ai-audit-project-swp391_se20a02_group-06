@@ -15,31 +15,49 @@ public partial class ApplicationDbContext : DbContext
     }
 
     public virtual DbSet<AiRecommendation> AiRecommendations { get; set; }
-    public virtual DbSet<BodyMetric> BodyMetrics { get; set; }
-    public virtual DbSet<DailyNutritionLog> DailyNutritionLogs { get; set; }
     public virtual DbSet<EmailOTP> EmailOTPs { get; set; }
+
+    public virtual DbSet<BodyMetric> BodyMetrics { get; set; }
+
     public virtual DbSet<Exercise> Exercises { get; set; }
+
     public virtual DbSet<Food> Foods { get; set; }
+
     public virtual DbSet<MealSchedule> MealSchedules { get; set; }
+
     public virtual DbSet<MealScheduleItem> MealScheduleItems { get; set; }
+
     public virtual DbSet<MembershipSubscription> MembershipSubscriptions { get; set; }
+
     public virtual DbSet<MuscleGroup> MuscleGroups { get; set; }
+
     public virtual DbSet<Notification> Notifications { get; set; }
+
     public virtual DbSet<Order> Orders { get; set; }
+
     public virtual DbSet<Payment> Payments { get; set; }
+
     public virtual DbSet<ProductPackage> ProductPackages { get; set; }
+
     public virtual DbSet<PtProfile> PtProfiles { get; set; }
+
     public virtual DbSet<PtUploadRequest> PtUploadRequests { get; set; }
+
     public virtual DbSet<Role> Roles { get; set; }
+
     public virtual DbSet<Schedule> Schedules { get; set; }
+
     public virtual DbSet<User> Users { get; set; }
+
     public virtual DbSet<WorkoutPlan> WorkoutPlans { get; set; }
+
     public virtual DbSet<WorkoutPlanExercise> WorkoutPlanExercises { get; set; }
+
     public virtual DbSet<WorkoutSession> WorkoutSessions { get; set; }
+
     public virtual DbSet<WorkoutSessionDetail> WorkoutSessionDetails { get; set; }
-    public virtual DbSet<AIChatSession> AIChatSessions { get; set; }
-    public virtual DbSet<AIChatMessage> AIChatMessages { get; set; }
-    public virtual DbSet<AIDietHistory> AIDietHistories { get; set; }
+
+    public virtual DbSet<DailyNutritionLog> DailyNutritionLogs { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
@@ -51,14 +69,19 @@ public partial class ApplicationDbContext : DbContext
         configurationBuilder.Properties<FitnessTrainingSystem.Domain.Enums.ExerciseDifficulty>().HaveConversion<string>();
         configurationBuilder.Properties<FitnessTrainingSystem.Domain.Enums.PackageType>().HaveConversion<string>();
         configurationBuilder.Properties<FitnessTrainingSystem.Domain.Enums.ScheduleStatus>().HaveConversion<string>();
-        configurationBuilder.Properties<FitnessTrainingSystem.Domain.Enums.PaymentStatus>().HaveConversion<string>();
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        base.OnModelCreating(modelBuilder);
+        modelBuilder
+            .UseCollation("utf8mb4_unicode_ci")
+            .HasCharSet("utf8mb4");
 
-        modelBuilder.ApplyConfigurationsFromAssembly(typeof(ApplicationDbContext).Assembly);
+        modelBuilder.Entity<AiRecommendation>(entity =>
+        {
+            entity.ToTable("ai_recommendations");
+            entity.HasIndex(e => e.UserId, "user_id");
+        });
 
         modelBuilder.Entity<Schedule>()
             .HasOne(s => s.Pt)
@@ -107,9 +130,6 @@ public partial class ApplicationDbContext : DbContext
                 .WithMany()
                 .HasForeignKey(r => r.RequestedBy)
                 .OnDelete(DeleteBehavior.Restrict);
-
-            entity.Property(e => e.Difficulty)
-                .HasConversion<string>();
         });
 
         modelBuilder.Entity<Exercise>()
@@ -123,37 +143,15 @@ public partial class ApplicationDbContext : DbContext
             .HasForeignKey(e => e.MuscleGroupId);
 
         modelBuilder.Entity<Exercise>()
-            .HasOne(e => e.Package)
-            .WithMany(p => p.Exercises)
-            .HasForeignKey(e => e.PackageId)
-            .OnDelete(DeleteBehavior.SetNull);
+            .Property(e => e.DurationMinutes)
+            .HasColumnName("duration");
 
-        modelBuilder.Entity<MembershipSubscription>()
-            .HasOne(s => s.User)
-            .WithMany(u => u.MembershipSubscriptions)
-            .HasForeignKey(s => s.UserId);
-
-        modelBuilder.Entity<MembershipSubscription>()
-            .HasOne(s => s.Package)
-            .WithMany()
-            .HasForeignKey(s => s.PackageId);
-
-        modelBuilder.Entity<AIChatSession>()
-            .HasOne(x => x.User)
-            .WithMany(x => x.AIChatSessions)
-            .HasForeignKey(x => x.UserId)
-            .OnDelete(DeleteBehavior.Cascade);
-
-        modelBuilder.Entity<AIChatSession>()
-            .HasMany(x => x.Messages)
-            .WithOne(x => x.Session)
-            .HasForeignKey(x => x.SessionId)
-            .OnDelete(DeleteBehavior.Cascade);
-
-        modelBuilder.Entity<AIDietHistory>()
-            .HasOne(x => x.User)
-            .WithMany(x => x.AIDietHistories)
-            .HasForeignKey(x => x.UserId)
-            .OnDelete(DeleteBehavior.Cascade);
+        modelBuilder.Entity<Exercise>()
+            .Property(e => e.Difficulty)
+            .HasConversion(
+                v => v.ToString().ToUpper(),
+                v => (FitnessTrainingSystem.Domain.Enums.ExerciseDifficulty)System.Enum.Parse(typeof(FitnessTrainingSystem.Domain.Enums.ExerciseDifficulty), v, true)
+            );
     }
 }
+

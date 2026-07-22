@@ -3,6 +3,21 @@ using System.Collections.Generic;
 
 namespace FitnessTrainingSystem.Application.DTOs.Workouts;
 
+public class GenerateWorkoutPlanRequestDto
+{
+    public string MuscleGroup { get; set; } = null!;
+    public int TargetCalories { get; set; }
+    public int DurationMinutes { get; set; }
+}
+
+public class GenerateWeeklyWorkoutPlanRequestDto
+{
+    public string MuscleGroup { get; set; } = null!;
+    public int TargetCaloriesPerDay { get; set; }
+    public int DurationMinutesPerDay { get; set; }
+    public int Frequency { get; set; }
+}
+
 public class CreateWorkoutPlanDto
 {
     public string Title { get; set; } = null!;

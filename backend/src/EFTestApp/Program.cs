@@ -11,26 +11,69 @@ namespace EFTestApp
     {
         static void Main(string[] args)
         {
-            var entityTypes = typeof(User).Assembly.GetTypes()
-                .Where(t => t.Namespace == "FitnessTrainingSystem.Domain.Entities" && t.IsClass && !t.IsAbstract)
-                .ToList();
-
-            foreach (var type in entityTypes)
+            Console.WriteLine("Querying database...");
+            try
             {
-                Console.WriteLine($"Testing entity: {type.Name}...");
-                try
+                var connectionString = "Server=127.0.0.1;Port=3306;Database=FitnessProject;User=root;Password=Hung29022004;AllowPublicKeyRetrieval=True;CharSet=utf8mb4;ConvertZeroDateTime=True;";
+                
+                var optionsBuilder = new DbContextOptionsBuilder<ApplicationDbContext>();
+                optionsBuilder.UseMySql(connectionString, Microsoft.EntityFrameworkCore.ServerVersion.Parse("8.0.42-mysql"))
+                              .UseSnakeCaseNamingConvention();
+                
+                using var db = new ApplicationDbContext(optionsBuilder.Options);
+                
+                var muscleGroups = db.MuscleGroups.ToList();
+                Console.WriteLine($"Found {muscleGroups.Count} muscle groups:");
+                foreach (var mg in muscleGroups)
                 {
-                    using var context = new DynamicDbContext(type);
-                    var model = context.Model; // Forces model building
-                    Console.WriteLine($"  -> SUCCESS");
+                    var count = db.Exercises.Count(e => e.MuscleGroupId == mg.Id);
+                    Console.WriteLine($"- ID {mg.Id}: {mg.Name} ({count} exercises)");
                 }
-                catch (Exception ex)
+
+                Console.WriteLine("\nAll Exercises in DB:");
+                var exercises = db.Exercises.Include(e => e.MuscleGroup).ToList();
+                foreach (var ex in exercises)
                 {
-                    Console.WriteLine($"  -> CRASH: {ex.Message}");
-                    if (ex.InnerException != null)
-                        Console.WriteLine($"     Inner: {ex.InnerException.Message}");
+                    Console.WriteLine($"- ID {ex.Id}: {ex.Title} (Muscle Group: {ex.MuscleGroup?.Name ?? "None"}, Difficulty: {ex.Difficulty})");
                 }
             }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"CRASH: {ex.Message}");
+                if (ex.InnerException != null)
+                    Console.WriteLine($"   Inner: {ex.InnerException.Message}");
+            }
+        }
+    }
+
+    class DbContextForTest : DbContext
+    {
+        public DbContextForTest(DbContextOptions<DbContextForTest> options) : base(options) {}
+        public DbSet<MuscleGroup> MuscleGroups { get; set; }
+        public DbSet<Exercise> Exercises { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Schedule>()
+                .HasOne(s => s.Pt)
+                .WithMany(u => u.PtSchedules)
+                .HasForeignKey(s => s.PtId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Schedule>()
+                .HasOne(s => s.Member)
+                .WithMany(u => u.MemberSchedules)
+                .HasForeignKey(s => s.MemberId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<EmailOTP>(entity =>
+            {
+                entity.ToTable("EmailOTP");
+                entity.HasKey(e => e.Id);
+                entity.Property(e => e.Id).HasColumnType("char(36)");
+                entity.Property(e => e.Email).HasMaxLength(100);
+                entity.Property(e => e.Purpose).HasMaxLength(50);
+            });
         }
     }
 

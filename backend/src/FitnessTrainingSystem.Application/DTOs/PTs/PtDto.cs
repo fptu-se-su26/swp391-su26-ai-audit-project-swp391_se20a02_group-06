@@ -8,5 +8,4 @@ public class PtDto
     public decimal? Rating { get; set; }
     public string Experience { get; set; } = string.Empty;
     public string Status { get; set; } = string.Empty;
-    public string? AvatarUrl { get; set; }
 }

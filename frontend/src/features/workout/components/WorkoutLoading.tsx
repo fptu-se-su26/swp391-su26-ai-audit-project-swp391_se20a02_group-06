@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { Box, Flex, Heading, Text, Stack } from '@chakra-ui/react'
+import { useWorkoutStore } from '../../../store/useWorkoutStore.ts'
 
 interface WorkoutLoadingProps {
     onComplete: () => void
@@ -13,33 +14,46 @@ const loadingPhases = [
 ]
 
 const WorkoutLoading: React.FC<WorkoutLoadingProps> = ({ onComplete }) => {
+    const { exercises, weeklyPlans, formData } = useWorkoutStore()
     const [progress, setProgress] = useState(0)
     const [phase, setPhase] = useState(0)
 
+    const isDataLoaded = formData?.planType === 'weekly' 
+        ? weeklyPlans.length > 0 
+        : exercises.length > 0
+
     useEffect(() => {
-        // Increase progress from 0 to 100 in ~3 seconds
         const interval = setInterval(() => {
             setProgress((prev) => {
-                const next = prev + 1.4
-                if (next >= 100) {
-                    clearInterval(interval)
-                    setTimeout(onComplete, 400)
-                    return 100
+                if (!isDataLoaded) {
+                    // Cap at 90% until the API response is returned
+                    if (prev < 90) {
+                        return prev + 1.2
+                    }
+                    return prev
+                } else {
+                    // Accelerate to 100% once data is loaded
+                    const next = prev + 5.0
+                    if (next >= 100) {
+                        clearInterval(interval)
+                        setTimeout(onComplete, 400)
+                        return 100
+                    }
+                    return next
                 }
-                return next
             })
-        }, 40)
+        }, 50)
 
-        // Phase text cycling
+        return () => clearInterval(interval)
+    }, [onComplete, isDataLoaded])
+
+    useEffect(() => {
         const phaseInterval = setInterval(() => {
             setPhase((prev) => (prev + 1) % loadingPhases.length)
-        }, 900)
+        }, 1200)
 
-        return () => {
-            clearInterval(interval)
-            clearInterval(phaseInterval)
-        }
-    }, [onComplete])
+        return () => clearInterval(phaseInterval)
+    }, [])
 
     // Ring animation
     const r = 90

@@ -31,7 +31,7 @@ public class NutritionService : INutritionService
         var latestMetric = user.BodyMetrics.OrderByDescending(m => m.RecordedAt).FirstOrDefault();
         bool hasMetrics = latestMetric != null && latestMetric.Weight > 0;
 
-        var fitnessGoal = "MAINTAIN";
+        var fitnessGoal = user.FitnessGoal ?? "MAINTAIN";
 
         // Calculate targets
         int caloriesTarget = 2000; // default
@@ -101,7 +101,7 @@ public class NutritionService : INutritionService
         }
 
         // Get or Create DailyLog
-        var log = await _context.Set<DailyNutritionLog>()
+        var log = await _context.DailyNutritionLogs
             .FirstOrDefaultAsync(l => l.UserId == userId && l.LogDate == targetDate);
 
         // Get Calories Burned for the day
@@ -129,7 +129,7 @@ public class NutritionService : INutritionService
                 WaterConsumedGlasses = 0,
                 CaloriesBurned = caloriesBurned
             };
-            _context.Set<DailyNutritionLog>().Add(log);
+            _context.DailyNutritionLogs.Add(log);
             await _context.SaveChangesAsync();
         }
         else
@@ -151,7 +151,7 @@ public class NutritionService : INutritionService
     {
         var targetDate = date.Date;
 
-        var log = await _context.Set<DailyNutritionLog>()
+        var log = await _context.DailyNutritionLogs
             .FirstOrDefaultAsync(l => l.UserId == userId && l.LogDate == targetDate);
 
         if (log == null)
@@ -160,7 +160,7 @@ public class NutritionService : INutritionService
             var summary = await GetDailySummaryAsync(userId, date);
             
             // Re-fetch log
-            log = await _context.Set<DailyNutritionLog>()
+            log = await _context.DailyNutritionLogs
                 .FirstOrDefaultAsync(l => l.UserId == userId && l.LogDate == targetDate);
         }
 
@@ -174,7 +174,7 @@ public class NutritionService : INutritionService
 
         var user = await _context.Users.Include(u => u.BodyMetrics).FirstOrDefaultAsync(u => u.Id == userId);
         bool hasMetrics = user?.BodyMetrics.Any() ?? false;
-        string goal = "MAINTAIN";
+        string goal = user?.FitnessGoal ?? "MAINTAIN";
 
         return MapToSummaryDto(log!, hasMetrics, goal, user);
     }

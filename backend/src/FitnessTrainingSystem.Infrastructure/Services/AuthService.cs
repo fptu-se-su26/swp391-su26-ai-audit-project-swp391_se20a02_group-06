@@ -69,19 +69,6 @@ public class AuthService : IAuthService
             throw new Exception("Invalid email or password.");
         }
 
-        if (!string.IsNullOrEmpty(user.Status) && user.Status != "ACTIVE")
-        {
-            throw new UnauthorizedAccessException("Account has been disabled. Please contact admin.");
-        }
-
-        // Auto-fix null status for existing users
-        if (string.IsNullOrEmpty(user.Status))
-        {
-            user.Status = "ACTIVE";
-            _context.Users.Update(user);
-            await _context.SaveChangesAsync();
-        }
-
         if (string.IsNullOrEmpty(user.PasswordHash))
         {
             throw new Exception("This account is linked with Google. Please use Google Login.");

@@ -1,22 +1,83 @@
 import React, { useEffect } from 'react'
-import WorkoutIntro from '../../features/workout/components/WorkoutIntro'
-import WorkoutLoading from '../../features/workout/components/WorkoutLoading'
-import WorkoutResults from '../../features/workout/components/WorkoutResults'
-import WorkoutSetup from '../../features/workout/components/WorkoutSetup'
-import { generateExercises } from '../../features/workout/data/workoutExercises'
-import { useWorkoutStore } from '../../store/useWorkoutStore'
+import WorkoutIntro from '../../features/workout/components/WorkoutIntro.tsx'
+import WorkoutLoading from '../../features/workout/components/WorkoutLoading.tsx'
+import WorkoutResults from '../../features/workout/components/WorkoutResults.tsx'
+import WorkoutSetup from '../../features/workout/components/WorkoutSetup.tsx'
+import { generateExercises, generateWeeklyExercises } from '../../features/workout/data/workoutExercises.ts'
+import { useWorkoutStore } from '../../store/useWorkoutStore.ts'
+
+import { createWorkoutPlan } from '../../api/workouts.ts'
 
 const Workouts: React.FC = () => {
-    const { phase, formData, setPhase, setFormData, setExercises } = useWorkoutStore()
+    const { phase, formData, setPhase, setFormData, setExercises, setActivePlanId, setWeeklyPlans } = useWorkoutStore()
 
     useEffect(() => {
         if (phase === 'loading' && formData) {
-            // Start fetching when we enter loading phase
-            generateExercises(formData).then((exercises) => {
-                setExercises(exercises)
-            })
+            if (formData.planType === 'weekly') {
+                generateWeeklyExercises(formData).then(async (weeklyDays) => {
+                    const savedDays = []
+                    for (const day of weeklyDays) {
+                        try {
+                            const planTitle = `AI Plan: Weekly - ${day.title}`
+                            const planDto = {
+                                title: planTitle,
+                                goal: day.goal,
+                                targetCalories: day.targetCalories,
+                                targetDurationMinutes: day.targetDurationMinutes,
+                                exercises: day.exercises.map((ex, index) => ({
+                                    exerciseId: ex.id,
+                                    sets: ex.setsCount ?? 3,
+                                    reps: ex.repsCount ?? 12,
+                                    durationSeconds: ex.durationSeconds ?? 0,
+                                    restSeconds: ex.restSeconds ?? 60,
+                                    exerciseOrder: index + 1
+                                }))
+                            }
+
+                            const savedPlan = await createWorkoutPlan(planDto)
+                            savedDays.push({
+                                ...day,
+                                activePlanId: savedPlan.id
+                            })
+                        } catch (error) {
+                            console.error("Failed to save workout plan for day:", day.title, error)
+                            savedDays.push(day)
+                        }
+                    }
+                    setWeeklyPlans(savedDays)
+                })
+            } else {
+                // Start fetching when we enter loading phase
+                generateExercises(formData).then(async (exercises) => {
+                    setExercises(exercises)
+                    
+                    // Save the generated plan to the backend
+                    try {
+                        const planTitle = formData.goal ? `AI Plan: ${formData.goal}` : 'AI Generated Workout'
+                        const planDto = {
+                            title: planTitle,
+                            goal: formData.goal,
+                            targetCalories: formData.targetCalories,
+                            targetDurationMinutes: formData.duration,
+                            exercises: exercises.map((ex, index) => ({
+                                exerciseId: ex.id,
+                                sets: ex.setsCount ?? 3,
+                                reps: ex.repsCount ?? 12,
+                                durationSeconds: ex.durationSeconds ?? 0,
+                                restSeconds: ex.restSeconds ?? 60,
+                                exerciseOrder: index + 1
+                            }))
+                        }
+
+                        const savedPlan = await createWorkoutPlan(planDto)
+                        setActivePlanId(savedPlan.id)
+                    } catch (error) {
+                        console.error("Failed to save workout plan:", error)
+                    }
+                })
+            }
         }
-    }, [phase, formData, setExercises])
+    }, [phase, formData, setExercises, setActivePlanId, setWeeklyPlans])
 
     if (phase === 'intro') {
         return <WorkoutIntro onStart={() => setPhase('setup')} />

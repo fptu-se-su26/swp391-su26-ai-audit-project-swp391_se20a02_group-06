@@ -1,4 +1,3 @@
-using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using FitnessTrainingSystem.Application.DTOs.Auth;
 using FitnessTrainingSystem.Application.DTOs.User;
@@ -24,67 +23,26 @@ public class UserController : ControllerBase
     public async Task<IActionResult> GetUsers()
     {
         var users = await _context.Users
-            .Where(u => u.RoleId == 3)
-            .Include(u => u.MembershipSubscriptions)
-                .ThenInclude(ms => ms.Package)
-            .ToListAsync();
-
-        var now = DateTime.UtcNow;
-        var dtos = users.Select(u =>
-        {
-            var activeSub = u.MembershipSubscriptions
-                .Where(ms => ms.Status == "ACTIVE" && ms.EndDate >= now)
-                .OrderByDescending(ms => ms.StartDate)
-                .FirstOrDefault();
-
-            return new UserDto
+            .Where(u => u.RoleId == 3) // Only get Members (RoleId = 3)
+            .Select(u => new UserDto
             {
                 Id = u.Id,
                 Name = u.Fullname,
                 Email = u.Email,
-                Plan = activeSub?.Package?.Name ?? "Free",
-                PlanStartDate = activeSub?.StartDate.ToString("yyyy-MM-dd"),
-                PlanEndDate = activeSub?.EndDate.ToString("yyyy-MM-dd"),
+                Plan = "-", // Or map from User plans if applicable
                 JoinDate = u.CreatedAt.ToString("MMM dd, yyyy"),
-                Status = u.Status ?? "ACTIVE",
-                AvatarUrl = u.AvatarUrl
-            };
-        }).ToList();
+                Status = "Active" // Default to Active as there is no Status field yet
+            })
+            .ToListAsync();
 
-        return Ok(dtos);
-    }
-
-    [Authorize(Roles = "Admin")]
-    [HttpPut("{id}/activate")]
-    public async Task<IActionResult> Activate(int id)
-    {
-        var user = await _context.Users.FindAsync(id);
-        if (user == null) return NotFound(new { message = "User not found." });
-
-        user.Status = "ACTIVE";
-        await _context.SaveChangesAsync();
-
-        return Ok(new { message = "User activated successfully." });
-    }
-
-    [Authorize(Roles = "Admin")]
-    [HttpPut("{id}/deactivate")]
-    public async Task<IActionResult> Deactivate(int id)
-    {
-        var user = await _context.Users.FindAsync(id);
-        if (user == null) return NotFound(new { message = "User not found." });
-
-        user.Status = "Inactive";
-        await _context.SaveChangesAsync();
-
-        return Ok(new { message = "User deactivated successfully." });
+        return Ok(users);
     }
 
     [Authorize]
     [HttpGet("profile")]
     public async Task<IActionResult> GetProfile()
     {
-        var userIdString = User.FindFirstValue(JwtRegisteredClaimNames.Sub) ?? User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
         if (string.IsNullOrEmpty(userIdString) || !int.TryParse(userIdString, out var userId))
             return Unauthorized(new { message = "Invalid token." });
 
@@ -92,8 +50,6 @@ public class UserController : ControllerBase
             .Include(u => u.Role)
             .Include(u => u.WorkoutSessions)
             .Include(u => u.MemberSchedules)
-            .Include(u => u.MembershipSubscriptions)
-                .ThenInclude(ms => ms.Package)
             .FirstOrDefaultAsync(u => u.Id == userId);
 
         if (user == null) return NotFound(new { message = "User not found." });
@@ -128,26 +84,17 @@ public class UserController : ControllerBase
             }
         }
 
-        var now2 = DateTime.UtcNow;
         var profile = new UserProfileDto
         {
             Name = user.Fullname,
             Email = user.Email,
             AvatarUrl = user.AvatarUrl,
-            Tier = user.MembershipSubscriptions
-                .Where(ms => ms.Status == "ACTIVE" && ms.EndDate >= now2)
-                .OrderByDescending(ms => ms.StartDate)
-                .Select(ms => ms.Package != null ? ms.Package.Name : "Free")
-                .FirstOrDefault() ?? "Free",
+            Tier = user.Role?.RoleName ?? "Member",
             JoinDate = user.CreatedAt.ToString("MMM dd, yyyy"),
             PasswordChangedAt = user.PasswordChangedAt?.ToString("o"),
             WorkoutsCompleted = workoutsCompleted,
             CurrentStreak = currentStreak,
-            ActivePlan = user.MembershipSubscriptions
-                .Where(ms => ms.Status == "ACTIVE" && ms.EndDate >= now2)
-                .OrderByDescending(ms => ms.StartDate)
-                .Select(ms => ms.Package != null ? ms.Package.Name : "None")
-                .FirstOrDefault() ?? "None"
+            ActivePlan = "-" // Update later if plan entity is added
         };
 
         return Ok(profile);
@@ -157,7 +104,7 @@ public class UserController : ControllerBase
     [HttpPost("change-password")]
     public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordDto request)
     {
-        var userIdString = User.FindFirstValue(JwtRegisteredClaimNames.Sub) ?? User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
         if (string.IsNullOrEmpty(userIdString) || !int.TryParse(userIdString, out var userId))
             return Unauthorized(new { message = "Invalid token." });
 

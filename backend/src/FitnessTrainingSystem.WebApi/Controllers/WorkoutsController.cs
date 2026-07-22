@@ -1,4 +1,3 @@
-using System.IdentityModel.Tokens.Jwt;
 using FitnessTrainingSystem.Application.DTOs.Workouts;
 using FitnessTrainingSystem.Application.Interfaces;
 using Microsoft.AspNetCore.Authorization;
@@ -7,28 +6,98 @@ using System;
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using MediatR;
+using FitnessTrainingSystem.Application.Features.AiRecommendations.Commands.GenerateWorkoutPlan;
+using FitnessTrainingSystem.Application.Features.AiRecommendations.Commands.GenerateWeeklyWorkoutPlan;
 
 namespace FitnessTrainingSystem.WebApi.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
 [Authorize]
+
+
 public class WorkoutsController : ControllerBase
 {
     private readonly IWorkoutService _workoutService;
+    private readonly IMediator _mediator;
 
-    public WorkoutsController(IWorkoutService workoutService)
+    public WorkoutsController(IWorkoutService workoutService, IMediator mediator)
     {
         _workoutService = workoutService;
+        _mediator = mediator;
     }
 
     private int GetCurrentUserId()
     {
-        var userIdString = User.FindFirst(JwtRegisteredClaimNames.Sub)?.Value
-            ?? User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        var userIdString = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         if (int.TryParse(userIdString, out var userId))
             return userId;
         throw new UnauthorizedAccessException("User not authenticated.");
+    }
+    [AllowAnonymous]
+    [HttpPost("ai-generate")]
+    public async Task<ActionResult<AiWorkoutPlanResponseDto>> GenerateWorkoutPlan([FromBody] GenerateWorkoutPlanRequestDto dto)
+    {
+        try
+        {
+            int userId = 1;
+            try
+            {
+                userId = GetCurrentUserId();
+            }
+            catch (UnauthorizedAccessException)
+            {
+                // Fallback to mock user ID 1 for testing with [AllowAnonymous]
+            }
+
+            var command = new GenerateWorkoutPlanCommand
+            {
+                UserId = userId,
+                MuscleGroup = dto.MuscleGroup,
+                TargetCalories = dto.TargetCalories,
+                DurationMinutes = dto.DurationMinutes
+            };
+            var result = await _mediator.Send(command);
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
+    }
+
+    [AllowAnonymous]
+    [HttpPost("ai-generate-weekly")]
+    public async Task<ActionResult<AiWeeklyWorkoutPlanResponseDto>> GenerateWeeklyWorkoutPlan([FromBody] GenerateWeeklyWorkoutPlanRequestDto dto)
+    {
+        try
+        {
+            int userId = 1;
+            try
+            {
+                userId = GetCurrentUserId();
+            }
+            catch (UnauthorizedAccessException)
+            {
+                // Fallback to mock user ID 1 for testing with [AllowAnonymous]
+            }
+
+            var command = new GenerateWeeklyWorkoutPlanCommand
+            {
+                UserId = userId,
+                MuscleGroup = dto.MuscleGroup,
+                TargetCaloriesPerDay = dto.TargetCaloriesPerDay,
+                DurationMinutesPerDay = dto.DurationMinutesPerDay,
+                Frequency = dto.Frequency
+            };
+            var result = await _mediator.Send(command);
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
     }
 
     [HttpPost("plans")]
@@ -77,12 +146,12 @@ public class WorkoutsController : ControllerBase
     }
 
     [HttpGet("history")]
-    public async Task<ActionResult<IEnumerable<WorkoutSessionDto>>> GetHistory([FromQuery] string filter = "all")
+    public async Task<ActionResult<IEnumerable<WorkoutSessionDto>>> GetHistory()
     {
         try
         {
             var userId = GetCurrentUserId();
-            var history = await _workoutService.GetUserWorkoutHistoryAsync(userId, filter);
+            var history = await _workoutService.GetUserWorkoutHistoryAsync(userId);
             return Ok(history);
         }
         catch (Exception ex)

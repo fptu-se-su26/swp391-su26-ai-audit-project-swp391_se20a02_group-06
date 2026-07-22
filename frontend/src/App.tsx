@@ -5,6 +5,7 @@ import theme from './lib/chakra-theme.ts'
 import RouterContainer from './router/router-container'
 
 import { NotificationProvider } from './context/NotificationContext'
+import NotificationTestWidget from './components/shared/Header/NotificationTestWidget'
 
 const Router = import.meta.env.PROD ? HashRouter : BrowserRouter
 
@@ -21,6 +22,7 @@ function App() {
           <Router>
             <NotificationProvider>
               <RouterContainer />
+              <NotificationTestWidget />
             </NotificationProvider>
           </Router>
         </GoogleOAuthProvider>

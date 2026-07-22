@@ -13,8 +13,5 @@ public class ProductPackage : BaseEntity
     public bool IsActive { get; set; } = true;
     public bool IsPopular { get; set; } = false;
 
-    public int Tier { get; set; }
-
     public ICollection<Order> Orders { get; set; } = new List<Order>();
-    public ICollection<Exercise> Exercises { get; set; } = new List<Exercise>();
 }

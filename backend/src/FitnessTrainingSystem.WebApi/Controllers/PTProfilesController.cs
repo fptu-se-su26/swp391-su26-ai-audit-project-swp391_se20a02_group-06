@@ -1,4 +1,3 @@
-using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using FitnessTrainingSystem.Application.DTOs.PTs;
 using FitnessTrainingSystem.Application.Interfaces;
@@ -22,7 +21,7 @@ public class PTProfilesController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetProfile()
     {
-        var userIdString = User.FindFirstValue(JwtRegisteredClaimNames.Sub) ?? User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
         if (string.IsNullOrEmpty(userIdString) || !int.TryParse(userIdString, out var userId))
             return Unauthorized(new { message = "Invalid token." });
 
@@ -36,7 +35,7 @@ public class PTProfilesController : ControllerBase
     [HttpPut]
     public async Task<IActionResult> UpdateProfile([FromBody] UpdatePTProfileDto dto)
     {
-        var userIdString = User.FindFirstValue(JwtRegisteredClaimNames.Sub) ?? User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
         if (string.IsNullOrEmpty(userIdString) || !int.TryParse(userIdString, out var userId))
             return Unauthorized(new { message = "Invalid token." });
 

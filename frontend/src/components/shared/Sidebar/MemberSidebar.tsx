@@ -11,7 +11,6 @@ import { useNavigate, useLocation } from 'react-router-dom'
 import {
     FiGrid,
     FiActivity,
-    FiBookOpen,
     FiShoppingCart,
     FiBarChart2,
     FiCalendar,
@@ -22,7 +21,6 @@ import {
 const navItems = [
     { label: 'Dashboard', icon: FiGrid, path: '/dashboard' },
     { label: 'Workouts', icon: FiActivity, path: '/workouts' },
-    { label: 'Exercises', icon: FiBookOpen, path: '/exercises' },
     { label: 'Nutrition', icon: FiShoppingCart, path: '/nutrition' },
     { label: 'Progress', icon: FiBarChart2, path: '/progress' },
     { label: 'PT Booking', icon: FiCalendar, path: '/pt-booking' },

@@ -1,42 +1,28 @@
 import React from 'react'
-import { Box, Grid, Heading, Text } from '@chakra-ui/react'
+import { Box, Flex, Grid, Heading } from '@chakra-ui/react'
 import MemberLayout from '../../components/shared/Layout/MemberLayout.tsx'
-
+import HeaderActions from '../../components/shared/Header/HeaderActions.tsx'
 import PTBookingModal from '../../features/pt/components/PTBookingModal.tsx'
 import PTCalendar from '../../features/pt/components/PTCalendar.tsx'
 import PTCoachCard from '../../features/pt/components/PTCoachCard.tsx'
 import PTSessionPanel from '../../features/pt/components/PTSessionPanel.tsx'
-import { usePTBooking } from '../../features/pt/hooks/usePTBooking'
-import { MOCK_COACH } from '../../features/pt/types/pt'
+import { usePTBooking } from '../../features/pt/hooks/usePTBooking.ts'
+import { MOCK_COACH } from '../../features/pt/types/pt.ts'
+
 
 const PTBooking: React.FC = () => {
     const booking = usePTBooking()
 
     return (
         <MemberLayout>
-            <Box px={{ base: '5', md: '7' }} py="6" maxW="1200px" position="relative" minH="70vh">
-                <Box
-                    position="absolute"
-                    inset={0}
-                    bg="blackAlpha.600"
-                    display="flex"
-                    alignItems="center"
-                    justifyContent="center"
-                    zIndex={10}
-                    borderRadius="16px"
-                >
-                    <Box bg="#1a1d27" border="1px solid" borderColor="#E03030" borderRadius="12px" px="8" py="4" boxShadow="0 0 30px rgba(224,48,48,0.25)" pointerEvents="auto">
-                        <Text fontSize="28px" fontWeight="800" color="#E03030">
-                            Coming Soon
-                        </Text>
-                    </Box>
-                </Box>
-
-                <Box mb="9">
+            <Box px={{ base: '5', md: '7' }} py="6" maxW="1200px">
+                <Flex align="center" justify="space-between" gap="4" mb="9">
                     <Heading fontSize={{ base: '18px', md: '20px' }} fontWeight="800" color="#E2E1EB">
                         Elite Performance Coaching
                     </Heading>
-                </Box>
+
+                        <HeaderActions />
+                </Flex>
 
                 <Grid templateColumns={{ base: '1fr', xl: '390px minmax(0, 1fr)' }} gap={{ base: '6', xl: '8' }} alignItems="start">
                     <PTCoachCard coach={MOCK_COACH} />

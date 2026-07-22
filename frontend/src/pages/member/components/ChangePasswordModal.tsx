@@ -62,17 +62,11 @@ const ChangePasswordModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) =>
                 <ModalHeader color="white">Change Password</ModalHeader>
                 <ModalCloseButton color="white" />
                 <ModalBody>
-                    {/* Hidden inputs to trick browser autofill */}
-                    <input type="text" name="fake_email" style={{ position: 'absolute', left: '-9999px' }} tabIndex={-1} autoComplete="email" />
-                    <input type="password" name="fake_password" style={{ position: 'absolute', left: '-9999px' }} tabIndex={-1} autoComplete="current-password" />
                     <VStack spacing={4}>
                         <FormControl>
                             <FormLabel color="#8A8A93" fontSize="13px">Current Password</FormLabel>
                             <Input 
-                                type="password"
-                                autoComplete="off"
-                                readOnly
-                                onFocus={(e) => e.target.removeAttribute('readOnly')}
+                                type="password" 
                                 value={currentPassword} 
                                 onChange={(e) => setCurrentPassword(e.target.value)}
                                 bg="#0A0A0A"
@@ -91,8 +85,7 @@ const ChangePasswordModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) =>
                         <FormControl>
                             <FormLabel color="#8A8A93" fontSize="13px">New Password</FormLabel>
                             <Input 
-                                type="password"
-                                autoComplete="new-password"
+                                type="password" 
                                 value={newPassword} 
                                 onChange={(e) => setNewPassword(e.target.value)}
                                 bg="#0A0A0A"
@@ -111,8 +104,7 @@ const ChangePasswordModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) =>
                         <FormControl>
                             <FormLabel color="#8A8A93" fontSize="13px">Confirm New Password</FormLabel>
                             <Input 
-                                type="password"
-                                autoComplete="new-password"
+                                type="password" 
                                 value={confirmPassword} 
                                 onChange={(e) => setConfirmPassword(e.target.value)}
                                 bg="#0A0A0A"
