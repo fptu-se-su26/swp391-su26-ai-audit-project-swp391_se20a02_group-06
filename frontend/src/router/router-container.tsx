@@ -1,6 +1,5 @@
-﻿import { useEffect } from "react";
+import { useEffect } from "react";
 import { Route, Routes, Navigate } from "react-router-dom";
-import { useAuthStore } from "../store/useAuthStore";
 
 // Pages - Public
 import Landing from "../pages/public/Landing";
@@ -40,33 +39,24 @@ import PtExerciseRequests from "../pages/pt/PtExerciseRequests";
 import PTDashboard from "../pages/pt/PTDashboard";
 import PTClients from "../pages/pt/PTClients";
 import PTProfilePage from "../pages/pt/PTProfilePage";
+
 import PTContentLibrary from "../pages/pt/PTContentLibrary";
 
 const RouterContainer = () => {
-    const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
-
     useEffect(() => {
         window.history.scrollRestoration = "manual"; // Prevent browser from remembering scroll position
         window.scrollTo(0, 0);
     }, []);
-
-    // Wrapper: redirects authenticated users away from auth pages
-    const GuestRoute = ({ children }: { children: React.ReactNode }) => {
-        if (isAuthenticated) {
-            return <Navigate to="/dashboard" replace />;
-        }
-        return <>{children}</>;
-    };
 
     return (
         <Routes>
             {/* Public Homepage / Landing Page */}
             <Route path="/" element={<Landing />} />
 
-            {/* Auth Pages â€” redirect to dashboard if already logged in */}
-            <Route path="/login" element={<GuestRoute><Login /></GuestRoute>} />
-            <Route path="/register" element={<GuestRoute><Register /></GuestRoute>} />
-            <Route path="/forgot-password" element={<GuestRoute><ForgotPassword /></GuestRoute>} />
+            {/* Auth Pages */}
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
 
             {/* Public Marketing Pages */}
             <Route path="/pricing" element={<Pricing />} />
@@ -198,7 +188,7 @@ const RouterContainer = () => {
                 }
             />
 
-            {/* Member Area Routes â€” Protected */}
+            {/* Member Area Routes — Protected */}
             <Route path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
             <Route path="/workouts" element={<PrivateRoute><Workouts /></PrivateRoute>} />
             <Route path="/nutrition" element={<PrivateRoute><Nutrition /></PrivateRoute>} />

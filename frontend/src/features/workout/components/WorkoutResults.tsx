@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
     AspectRatio,
@@ -24,7 +24,6 @@ import AppButton from '../../../components/shared/Button/AppButton'
 import MemberLayout from '../../../components/shared/Layout/MemberLayout.tsx'
 import type { ExerciseCardData } from '../types/workout'
 import { useWorkoutStore } from '../../../store/useWorkoutStore.ts'
-import { startWorkoutSession, completeWorkoutSession } from '../../../api/workouts.ts'
 
 const MiniStat: React.FC<{ value: string; label: string }> = ({ value, label }) => (
     <Box bg="#141720" border="1px solid" borderColor="#1e2028" borderRadius="14px" p="4" flex="1" textAlign="center">
@@ -64,7 +63,6 @@ const ExerciseCard: React.FC<ExerciseCardProps> = ({
             transition="all 0.2s"
             _hover={!isLocked ? { borderColor: isActive ? '#E03030' : '#2e3040' } : {}}
         >
-
             <Box w="30px" h="30px" borderRadius="full" bg={statusColor} border="1px solid" borderColor={isActive ? '#E03030' : '#2e3040'} display="flex" alignItems="center" justifyContent="center" flexShrink={0}>
                 <Text fontSize="11px" fontWeight="700" color={isActive ? 'white' : '#8A8A93'}>{index}</Text>
             </Box>
@@ -117,7 +115,19 @@ const ExerciseCard: React.FC<ExerciseCardProps> = ({
 }
 
 const WorkoutResults: React.FC = () => {
-    const { formData: data, exercises, resetWorkout, markExerciseDone, skipExercise, activePlanId, activeSessionId, setActiveSessionId } = useWorkoutStore()
+    const { 
+        formData: data, 
+        exercises, 
+        resetWorkout, 
+        markExerciseDone, 
+        skipExercise,
+        activeSessionId,
+        activePlanId,
+        startWorkoutSession,
+        setActiveSessionId,
+        completeWorkoutSession
+    } = useWorkoutStore()
+    
     const [selectedExercise, setSelectedExercise] = useState<(ExerciseCardData & { arrayIndex: number }) | null>(null)
     const navigate = useNavigate()
 
@@ -138,10 +148,10 @@ const WorkoutResults: React.FC = () => {
     useEffect(() => {
         if (!activeSessionId && activePlanId) {
             startWorkoutSession({ workoutPlanId: activePlanId })
-                .then(session => setActiveSessionId(session.id))
+                .then((session: any) => setActiveSessionId(session.id)) // Đã gán kiểu dữ liệu tránh lỗi 'any'
                 .catch(console.error)
         }
-    }, [activeSessionId, activePlanId, setActiveSessionId])
+    }, [activeSessionId, activePlanId, startWorkoutSession, setActiveSessionId])
 
     // Timer tick
     useEffect(() => {
@@ -185,7 +195,6 @@ const WorkoutResults: React.FC = () => {
         const nextIdx = arrayIndex + 1
         const nextExercise = exercises[nextIdx]
         if (nextExercise && !nextExercise.isDone && !nextExercise.isSkipped) {
-            // Navigate to next exercise in modal and start break
             setSelectedExercise({ ...nextExercise, arrayIndex: nextIdx })
             const breakTime = nextExercise.breakTime || 30
             setBreakRemaining(breakTime)
@@ -256,7 +265,7 @@ const WorkoutResults: React.FC = () => {
             <Box minH="100vh" display="flex" flexDirection="column">
                 <Box flex="1" p="7" pb="28" maxW="900px">
                     <Flex align="center" gap="3" mb="1" flexWrap="wrap">
-                        <Heading fontSize="24px" fontWeight="800" color="white">Today â€” {goalNames[data.goal] ?? 'Custom Phase'}</Heading>
+                        <Heading fontSize="24px" fontWeight="800" color="white">Today — {goalNames[data.goal] ?? 'Custom Phase'}</Heading>
                         <Badge bg="rgba(224,48,48,0.15)" color="#E03030" border="1px solid" borderColor="rgba(224,48,48,0.3)" fontSize="10px" fontWeight="700" px="3" py="1" borderRadius="full" display="flex" alignItems="center" gap="1">AI Optimized</Badge>
                     </Flex>
                     <Text fontSize="11px" color="#8A8A93" mb="5" cursor="pointer" _hover={{ color: '#E03030' }} display="inline-block" onClick={resetWorkout}>Regenerate Workout</Text>
@@ -282,7 +291,7 @@ const WorkoutResults: React.FC = () => {
                     </Stack>
                 </Box>
 
-                {/* Bottom progress bar */}
+                {/* Bottom progress bar - ĐÃ FIX THẺ ĐÓNG BOX SAI CÚ PHÁP Ở ĐÂY */}
                 <Box position="fixed" bottom="0" left="190px" right="0" h="64px" bg="#111318" borderTop="1px solid" borderColor="#1e2028" px="7" display="flex" alignItems="center" justifyContent="space-between" zIndex={50}>
                     <Box flex="1" mr="8">
                         <Flex justify="space-between" mb="1">
@@ -293,6 +302,7 @@ const WorkoutResults: React.FC = () => {
                             <Box h="full" borderRadius="full" bg="#E03030" style={{ width: exercises.length > 0 ? `${(completedCount / exercises.length) * 100}%` : '0%' }} transition="width 0.5s ease" />
                         </Box>
                     </Box>
+                    
                     <Box onClick={completedCount === exercises.length ? handleCompleteWorkout : undefined} opacity={completedCount === exercises.length ? 1 : 0.5} cursor={completedCount === exercises.length ? 'pointer' : 'not-allowed'}>
                         <AppButton label={completedCount === exercises.length ? 'Complete Workout' : 'Finish All First'} variant="solid" h="40px" px="6" fontSize="13px" isDisabled={completedCount !== exercises.length} />
                     </Box>
@@ -321,7 +331,6 @@ const WorkoutResults: React.FC = () => {
                         </ModalHeader>
                         <ModalCloseButton color="white" top="4" right="4" />
                         <ModalBody pb="6">
-                            {/* Media + Info (blurred during break) */}
                             <Box opacity={modalBreak ? 0.15 : 1} transition="opacity 0.3s" pointerEvents={modalBreak ? 'none' : 'auto'}>
                                 {(() => {
                                     const url = selectedExercise?.videoUrl

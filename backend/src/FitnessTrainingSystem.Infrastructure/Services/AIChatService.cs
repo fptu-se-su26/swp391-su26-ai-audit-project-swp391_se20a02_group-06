@@ -20,21 +20,17 @@ public class AIChatService : IAIChatService
         _geminiService = geminiService;
     }
 
-    public async Task<AIChatResponse> SendMessageAsync(
-        int userId,
-        AIChatRequest request)
+    public async Task<AIChatResponse> SendMessageAsync(int userId, AIChatRequest request)
     {
         AIChatSession session;
 
-        // lấy session
+        // 1. Lấy hoặc tạo mới Session
         if (request.SessionId.HasValue)
         {
             session = await _context.AIChatSessions
                 .Include(x => x.Messages)
-                .FirstOrDefaultAsync(
-                    x => x.Id == request.SessionId.Value)
-                ?? throw new Exception(
-                    "Chat session not found.");
+                .FirstOrDefaultAsync(x => x.Id == request.SessionId.Value)
+                ?? throw new Exception("Chat session not found.");
         }
         else
         {
@@ -48,12 +44,10 @@ public class AIChatService : IAIChatService
             };
 
             _context.AIChatSessions.Add(session);
-
             await _context.SaveChangesAsync();
         }
 
-
-        // lưu user message
+        // 2. Lưu tin nhắn của User vào Database
         var userMessage = new AIChatMessage
         {
             SessionId = session.Id,
@@ -63,115 +57,112 @@ public class AIChatService : IAIChatService
         };
 
         _context.AIChatMessages.Add(userMessage);
-
         await _context.SaveChangesAsync();
 
-
-        // lấy toàn bộ history
+        // 3. Lấy toàn bộ lịch sử hội thoại hiện tại
         var history = await _context.AIChatMessages
             .Where(x => x.SessionId == session.Id)
             .OrderBy(x => x.CreatedAt)
             .ToListAsync();
 
+        var conversation = string.Join("\n", history.Select(x => $"{x.Role}: {x.Message}"));
 
-        var conversation = string.Join(
-            "\n",
-            history.Select(
-                x => $"{x.Role}: {x.Message}")
-        );
-
-
-        // lấy thông tin user
-        var user = await _context.Users
-            .FirstOrDefaultAsync(
-                x => x.Id == userId);
-
-
+        // 4. Lấy thông tin cơ bản của User
+        var user = await _context.Users.FirstOrDefaultAsync(x => x.Id == userId);
         var metric = await _context.BodyMetrics
             .Where(x => x.UserId == userId)
-            .OrderByDescending(
-                x => x.RecordedAt)
+            .OrderByDescending(x => x.RecordedAt)
             .FirstOrDefaultAsync();
 
+        // Tính tuổi chính xác hơn
+        int age = user?.DateOfBirth == null 
+            ? 25 
+            : (int)((DateTime.UtcNow - user.DateOfBirth.Value).TotalDays / 365.25);
 
-        // tạo user info gửi sang AI
         var userInfo = $@"
-FullName: {user?.Fullname}
-Gender: {user?.Gender}
-Age: {(user?.DateOfBirth == null ? 0 : DateTime.Now.Year - user.DateOfBirth.Value.Year)}
-Height: {metric?.Height}
-Weight: {metric?.Weight}
+FullName: {user?.Fullname ?? "Hội viên"}
+Gender: {user?.Gender ?? "Nam"}
+Age: {age}
+Height: {metric?.Height ?? 170}
+Weight: {metric?.Weight ?? 65}
 ";
 
-
-        // gọi Python Chat API
-        var aiReply = await _geminiService
-            .ChatAsync(
-                conversation,
-                userInfo);
-
-
-        // nếu đã đủ dữ liệu thì sinh thực đơn
-        if (aiReply.Trim() == "READY_TO_GENERATE")
+        // 5. Gọi sang dịch vụ Python xử lý chat
+        string aiReply;
+        try
         {
-            var dietPlan = await GenerateDietPlanAsync(
-                session.Id);
+            aiReply = await _geminiService.ChatAsync(conversation, userInfo);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("================ [PYTHON CHAT API CRASH] ================");
+            Console.WriteLine($"Lỗi kết nối hoặc xử lý từ API Python: {ex.Message}");
+            Console.WriteLine("=========================================================");
+            
+            aiReply = "Xin lỗi bạn, kết nối với trí tuệ nhân tạo đang bị gián đoạn một chút. Bạn có thể thử gửi lại tin nhắn vừa rồi không?";
+        }
+        
+        string finalReplyToSave = aiReply;
 
+        // 6. KIỂM TRA ĐIỀU KIỆN SINH THỰC ĐƠN
+        if (aiReply.Trim().Equals("READY_TO_GENERATE", StringComparison.OrdinalIgnoreCase))
+        {
+            var dietPlan = await GenerateDietPlanAsync(session.Id);
 
             if (dietPlan != null)
             {
-                await SaveDietPlanHistoryAsync(
-                    userId,
-                    session.Id,
-                    dietPlan);
+                await SaveDietPlanHistoryAsync(userId, session.Id, dietPlan);
 
+                finalReplyToSave = "Tôi đã thu thập đủ thông tin cần thiết. Thực đơn dinh dưỡng cá nhân hóa của bạn đã được tạo thành công!";
 
-                return new AIChatResponse{
+                var aiFinalMessage = new AIChatMessage
+                {
+                    SessionId = session.Id,
+                    Role = "ai",
+                    Message = finalReplyToSave,
+                    CreatedAt = DateTime.UtcNow
+                };
+                _context.AIChatMessages.Add(aiFinalMessage);
+                await _context.SaveChangesAsync();
 
-        SessionId=session.Id,
-
-        Message="Đang tạo thực đơn dành cho bạn ...",
-
-        Role="assistant",
-
-        DietPlan=dietPlan,
-
-        IsCompleted=true
-
-};
+                return new AIChatResponse
+                {
+                    SessionId = session.Id,
+                    Message = finalReplyToSave,
+                    Role = "ai",
+                    DietPlan = dietPlan,
+                    IsCompleted = true
+                };
+            }
+            else
+            {
+                finalReplyToSave = "Tôi đã có đủ thông tin của bạn, tuy nhiên hệ thống gặp sự cố khi trích xuất dữ liệu món ăn. Bạn vui lòng thử lại sau ít phút.";
             }
         }
 
-
-        // lưu assistant message
+        // 7. Lưu tin nhắn hội thoại bình thường của Assistant (Nếu không tạo thực đơn hoặc tạo thất bại)
         var aiMessage = new AIChatMessage
         {
             SessionId = session.Id,
-            Role = "assistant",
-            Message = aiReply,
+            Role = "ai",
+            Message = finalReplyToSave,
             CreatedAt = DateTime.UtcNow
         };
 
         _context.AIChatMessages.Add(aiMessage);
-
         await _context.SaveChangesAsync();
-
 
         return new AIChatResponse
         {
-        SessionId=session.Id,
-
-        Message=aiReply,
-
-        Role="assistant",
-
-        IsCompleted=false
+            SessionId = session.Id,
+            Message = finalReplyToSave,
+            Role = "ai",
+            IsCompleted = false
         };
     }
 
 
-    public async Task<List<AIChatResponse>>
-        GetMessagesAsync(int sessionId)
+    public async Task<List<AIChatResponse>> GetMessagesAsync(int sessionId)
     {
         var messages = await _context.AIChatMessages
             .Where(x => x.SessionId == sessionId)
@@ -218,66 +209,62 @@ Weight: {metric?.Weight}
     }
 
 
-    public async Task<DietPlanResponse?>
-        GenerateDietPlanAsync(int sessionId)
+    public async Task<DietPlanResponse?> GenerateDietPlanAsync(int sessionId)
     {
         var session = await _context.AIChatSessions
             .Include(x => x.Messages)
-            .FirstOrDefaultAsync(
-                x => x.Id == sessionId);
-
+            .FirstOrDefaultAsync(x => x.Id == sessionId);
 
         if (session == null)
             return null;
 
-
-        var user = await _context.Users
-            .FirstOrDefaultAsync(
-                x => x.Id == session.UserId);
-
-
+        var user = await _context.Users.FirstOrDefaultAsync(x => x.Id == session.UserId);
         var metric = await _context.BodyMetrics
             .Where(x => x.UserId == session.UserId)
-            .OrderByDescending(
-                x => x.RecordedAt)
+            .OrderByDescending(x => x.RecordedAt)
             .FirstOrDefaultAsync();
 
+        if (user == null) 
+        {
+            user = new User { Fullname = "Hội viên", Gender = "Nam" };
+        }
+        if (metric == null)
+        {
+            metric = new BodyMetric { Height = 170, Weight = 65 };
+        }
 
-        if (user == null || metric == null)
-            return null;
+        var foods = await _context.Foods.ToListAsync();
 
-
-        var foods = await _context.Foods
-            .ToListAsync();
-
-
-        var foodJson =
-            System.Text.Json.JsonSerializer.Serialize(
-
-            foods.Select(x => new
+        var foodObj = new
+        {
+            food_list = foods.Select(x => new
             {
                 food_id = x.Id,
                 food_name = x.Name,
                 calories = x.Calories,
-                protein = x.Protein,
-                carbs = x.Carbs,
-                fat = x.Fat
-            }));
+                protein = Convert.ToDouble(x.Protein),
+                carbs = Convert.ToDouble(x.Carbs),
+                fat = Convert.ToDouble(x.Fat)
+            }).ToList()
+        };
 
+        var foodJson = System.Text.Json.JsonSerializer.Serialize(foodObj);
 
         var history = string.Join(
             "\n",
             session.Messages
             .OrderBy(x => x.CreatedAt)
-            .Select(x =>
-                $"{x.Role}: {x.Message}")
+            .Select(x => $"{x.Role}: {x.Message}")
         );
 
+        int age = user.DateOfBirth == null 
+            ? 25 
+            : (int)((DateTime.UtcNow - user.DateOfBirth.Value).TotalDays / 365.25);
 
         var userInfo = $@"
 FullName: {user.Fullname}
 Gender: {user.Gender}
-Age: {(user.DateOfBirth == null ? 0 : DateTime.Now.Year - user.DateOfBirth.Value.Year)}
+Age: {age}
 Height: {metric.Height}
 Weight: {metric.Weight}
 
@@ -285,13 +272,30 @@ Conversation:
 {history}
 ";
 
-
-        return await _geminiService
-            .GenerateDietPlanAsync(
-                userInfo,
-                foodJson);
+        try 
+        {
+            var planResult = await _geminiService.GenerateDietPlanAsync(userInfo, foodJson);
+            if (planResult == null)
+            {
+                Console.WriteLine("================ [DIET PLAN LỖI] ================");
+                Console.WriteLine("Python tiếp nhận dữ liệu thành công nhưng trả về Object Null.");
+                Console.WriteLine("=================================================");
+            }
+            return planResult;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("================ [DIET PLAN CRASH] ================");
+            Console.WriteLine($"Message: {ex.Message}");
+            Console.WriteLine($"StackTrace: {ex.StackTrace}");
+            if (ex.InnerException != null) 
+            {
+                Console.WriteLine($"Inner Exception: {ex.InnerException.Message}");
+            }
+            Console.WriteLine("===================================================");
+            return null;
+        }
     }
-
 
     public async Task SaveDietPlanHistoryAsync(
         int userId,
@@ -307,17 +311,11 @@ Conversation:
             Protein = response.ProteinTargetG,
             Carbs = response.CarbsTargetG,
             Fat = response.FatTargetG,
-            DietJson =
-                System.Text.Json.JsonSerializer
-                .Serialize(response),
-
+            DietJson = System.Text.Json.JsonSerializer.Serialize(response),
             CreatedAt = DateTime.UtcNow
         };
 
-
-        _context.AIDietHistories
-            .Add(entity);
-
+        _context.AIDietHistories.Add(entity);
         await _context.SaveChangesAsync();
     }
 }

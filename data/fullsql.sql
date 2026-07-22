@@ -807,7 +807,6 @@
   /*!40000 ALTER TABLE `workout_sessions` ENABLE KEYS */;
   UNLOCK TABLES;
   /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
--- 1. Xóa các bảng cũ theo đúng thứ tự (Bảng chứa khóa ngoại xóa trước)
 DROP TABLE IF EXISTS ai_diet_histories;
 DROP TABLE IF EXISTS ai_chat_messages;
 DROP TABLE IF EXISTS ai_chat_sessions;

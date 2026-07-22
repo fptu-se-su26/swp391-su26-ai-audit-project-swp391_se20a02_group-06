@@ -37,9 +37,11 @@ public partial class ApplicationDbContext : DbContext
     public virtual DbSet<WorkoutPlanExercise> WorkoutPlanExercises { get; set; }
     public virtual DbSet<WorkoutSession> WorkoutSessions { get; set; }
     public virtual DbSet<WorkoutSessionDetail> WorkoutSessionDetails { get; set; }
-    public virtual DbSet<AIChatSession> AIChatSessions { get; set; }
-    public virtual DbSet<AIChatMessage> AIChatMessages { get; set; }
-    public virtual DbSet<AIDietHistory> AIDietHistories { get; set; }
+  public virtual DbSet<AIChatSession> AIChatSessions { get; set; }
+
+public virtual DbSet<AIChatMessage> AIChatMessages { get; set; }
+
+public virtual DbSet<AIDietHistory> AIDietHistories { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
@@ -107,9 +109,6 @@ public partial class ApplicationDbContext : DbContext
                 .WithMany()
                 .HasForeignKey(r => r.RequestedBy)
                 .OnDelete(DeleteBehavior.Restrict);
-
-            entity.Property(e => e.Difficulty)
-                .HasConversion<string>();
         });
 
         modelBuilder.Entity<Exercise>()
@@ -122,7 +121,6 @@ public partial class ApplicationDbContext : DbContext
             .WithMany(m => m.Exercises)
             .HasForeignKey(e => e.MuscleGroupId);
 
-<<<<<<< HEAD
         // AIChatSession table mapping
         modelBuilder.Entity<AIChatSession>(entity =>
         {
@@ -184,7 +182,11 @@ public partial class ApplicationDbContext : DbContext
                 .HasForeignKey(x => x.SessionId)
                 .OnDelete(DeleteBehavior.SetNull);
         });
-=======
+        modelBuilder.Entity<Exercise>()
+            .HasOne(e => e.MuscleGroup)
+            .WithMany(m => m.Exercises)
+            .HasForeignKey(e => e.MuscleGroupId);
+
         modelBuilder.Entity<Exercise>()
             .HasOne(e => e.Package)
             .WithMany(p => p.Exercises)
@@ -200,24 +202,5 @@ public partial class ApplicationDbContext : DbContext
             .HasOne(s => s.Package)
             .WithMany()
             .HasForeignKey(s => s.PackageId);
-
-        modelBuilder.Entity<AIChatSession>()
-            .HasOne(x => x.User)
-            .WithMany(x => x.AIChatSessions)
-            .HasForeignKey(x => x.UserId)
-            .OnDelete(DeleteBehavior.Cascade);
-
-        modelBuilder.Entity<AIChatSession>()
-            .HasMany(x => x.Messages)
-            .WithOne(x => x.Session)
-            .HasForeignKey(x => x.SessionId)
-            .OnDelete(DeleteBehavior.Cascade);
-
-        modelBuilder.Entity<AIDietHistory>()
-            .HasOne(x => x.User)
-            .WithMany(x => x.AIDietHistories)
-            .HasForeignKey(x => x.UserId)
-            .OnDelete(DeleteBehavior.Cascade);
->>>>>>> dev
     }
 }
