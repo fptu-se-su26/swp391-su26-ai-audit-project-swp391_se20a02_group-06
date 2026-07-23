@@ -1,3 +1,4 @@
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using FitnessTrainingSystem.Application.DTOs.Exercises;
 using FitnessTrainingSystem.Application.Interfaces;
@@ -21,14 +22,60 @@ public class ExercisesController : ControllerBase
     [AllowAnonymous]
     public async Task<IActionResult> GetAll()
     {
-        var exercises = await _exerciseService.GetAllAsync();
+        int? userId = null;
+        var userIdString = User.FindFirstValue(JwtRegisteredClaimNames.Sub) ?? User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (!string.IsNullOrEmpty(userIdString) && int.TryParse(userIdString, out var uid))
+        {
+            userId = uid;
+        }
+        var isAdmin = User.IsInRole("Admin") || User.IsInRole("ADMIN");
+        var exercises = await _exerciseService.GetAllAsync(userId, isAdmin);
         return Ok(exercises);
+    }
+
+    [HttpGet("my")]
+    [Authorize(Roles = "Admin,ADMIN,PT,PersonalTrainer")]
+    public async Task<IActionResult> GetMyExercises()
+    {
+        var userIdString = User.FindFirstValue(JwtRegisteredClaimNames.Sub) ?? User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (!int.TryParse(userIdString, out int userId))
+        {
+            return Unauthorized(new { message = "Invalid user identifier." });
+        }
+
+        var exercises = await _exerciseService.GetMyExercisesAsync(userId);
+        return Ok(exercises);
+    }
+
+    [HttpGet("catalog")]
+    [AllowAnonymous]
+    public async Task<IActionResult> GetCatalog()
+    {
+        int? userId = null;
+        var userIdString = User.FindFirstValue(JwtRegisteredClaimNames.Sub) ?? User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (!string.IsNullOrEmpty(userIdString) && int.TryParse(userIdString, out var uid))
+        {
+            userId = uid;
+        }
+        var catalog = await _exerciseService.GetCatalogAsync(userId);
+        return Ok(catalog);
     }
 
     [HttpGet("{id}")]
     [AllowAnonymous]
     public async Task<IActionResult> GetById(int id)
     {
+        int? userId = null;
+        var userIdString = User.FindFirstValue(JwtRegisteredClaimNames.Sub) ?? User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (!string.IsNullOrEmpty(userIdString) && int.TryParse(userIdString, out var uid))
+        {
+            userId = uid;
+        }
+
+        var hasAccess = await _exerciseService.HasAccessAsync(id, userId);
+        if (!hasAccess)
+            return StatusCode(403, new { message = "This exercise requires a higher plan. Please upgrade to access it." });
+
         var exercise = await _exerciseService.GetByIdAsync(id);
         if (exercise == null) return NotFound(new { message = "Exercise not found." });
 
@@ -41,8 +88,7 @@ public class ExercisesController : ControllerBase
     {
         if (!ModelState.IsValid) return BadRequest(ModelState);
 
-        // Get the ID of the user creating the exercise
-        var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var userIdString = User.FindFirstValue(JwtRegisteredClaimNames.Sub) ?? User.FindFirstValue(ClaimTypes.NameIdentifier);
         if (!int.TryParse(userIdString, out int userId))
         {
             return Unauthorized(new { message = "Invalid user identifier." });

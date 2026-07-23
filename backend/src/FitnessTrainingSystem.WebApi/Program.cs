@@ -1,6 +1,8 @@
 using System.Text;
 using FitnessTrainingSystem.Infrastructure;
+using FitnessTrainingSystem.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
 // Load environment variables from .env file in the backend root directory
@@ -90,6 +92,32 @@ builder.Services.AddCors(options =>
 });
 
 var app = builder.Build();
+
+// Auto-create missing tables in development
+if (app.Environment.IsDevelopment())
+{
+    using var scope = app.Services.CreateScope();
+    var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    db.Database.EnsureCreated();
+    // Ensure EmailOTP table exists (for OTP feature) - snake_case columns match EF Core naming convention
+    db.Database.ExecuteSqlRaw(@"
+        CREATE TABLE IF NOT EXISTS `EmailOTP` (
+            `id` VARCHAR(36) NOT NULL,
+            `email` VARCHAR(100) NOT NULL,
+            `otp_code` VARCHAR(10) NOT NULL,
+            `purpose` VARCHAR(50) NOT NULL,
+            `expired_at` DATETIME NOT NULL,
+            `is_used` TINYINT(1) NOT NULL DEFAULT 0,
+            `attempt_count` INT NOT NULL DEFAULT 0,
+            `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            PRIMARY KEY (`id`),
+            INDEX `IX_EmailOTP_Email` (`email`),
+            INDEX `IX_EmailOTP_Purpose` (`purpose`),
+            INDEX `IX_EmailOTP_ExpiredAt` (`expired_at`)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+    ");
+}
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

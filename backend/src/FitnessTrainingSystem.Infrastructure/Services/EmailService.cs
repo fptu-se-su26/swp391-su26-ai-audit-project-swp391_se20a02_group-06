@@ -22,12 +22,20 @@ public class EmailService : IEmailService
 
     public async Task SendEmailAsync(string toEmail, string subject, string body)
     {
+        var user = _configuration["SMTP_USER"];
+        var pass = _configuration["SMTP_PASS"];
+
+        // In development, just log the email content instead of sending
+        if (string.IsNullOrEmpty(user) || string.IsNullOrEmpty(pass))
+        {
+            _logger.LogInformation($"[DEV] Email to {toEmail}: Subject='{subject}', Body preview='{body[..Math.Min(body.Length, 200)]}'");
+            return;
+        }
+
         try
         {
             var host = _configuration["SMTP_HOST"] ?? "smtp.gmail.com";
             var port = int.TryParse(_configuration["SMTP_PORT"], out int p) ? p : 587;
-            var user = _configuration["SMTP_USER"];
-            var pass = _configuration["SMTP_PASS"];
             var from = _configuration["SMTP_FROM"] ?? "AISTHEA <ecodanarentcar@gmail.com>";
             var enableSsl = bool.TryParse(_configuration["SMTP_ENABLE_SSL"], out bool ssl) ? ssl : true;
 
@@ -78,7 +86,7 @@ public class EmailService : IEmailService
         catch (Exception ex)
         {
             _logger.LogError(ex, $"Failed to send email to {toEmail}");
-            throw; // Re-throw to handle it in higher layers (OTPService)
+            throw;
         }
     }
 }

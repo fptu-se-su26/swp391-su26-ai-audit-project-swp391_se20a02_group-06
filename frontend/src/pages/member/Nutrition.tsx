@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useCallback, useEffect } from 'react'
+import { useLocation } from 'react-router-dom'
 import {
     Box,
     Flex,
@@ -12,14 +13,6 @@ import {
     Spinner,
     Input,
     Badge,
-    Modal,
-    ModalOverlay,
-    ModalContent,
-    ModalHeader,
-    ModalBody,
-    ModalFooter,
-    Button,
-    Select,
     useToast,
 } from '@chakra-ui/react'
 import {
@@ -31,135 +24,79 @@ import {
     FiActivity,
     FiSearch,
 } from 'react-icons/fi'
-import useSWR from 'swr'
+import useSWR, { mutate as globalMutate } from 'swr'
 import apiClient from '../../lib/axios'
-import { getDailySummary, logWater, updateReminderSettings } from '../../api/nutrition'
-import type { DailyNutritionSummary } from '../../api/nutrition'
 import AppButton from '../../components/shared/Button/AppButton'
 import MemberLayout from '../../components/shared/Layout/MemberLayout.tsx'
 import {
     AIDinnerCard,
     DonutRing,
     FoodItem,
+    HydrationCountdown,
     HydrationTracker,
     MacroCard,
     MealSection,
 } from '../../features/nutrition/components/NutritionWidgets.tsx'
+import { logWater, updateReminderSettings } from '../../api/nutrition'
+import { triggerTestWaterReminder } from '../../api/notifications'
+import { useAuthStore } from '../../store/useAuthStore'
 
 const fetcher = (url: string) => apiClient.get(url).then((res) => res.data)
 
 /* ── Nutrition Page ─────────────────────────── */
 const Nutrition: React.FC = () => {
-    const toast = useToast()
-    const [selectedDate, setSelectedDate] = useState<Date>(new Date())
+    const today = new Date()
+    const todayStr = today.toISOString().split('T')[0]
+    const dateStr = today.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
     const [searchQuery, setSearchQuery] = useState('')
-
-    // Waking hours reminder settings state
-    const [showPreferenceModal, setShowPreferenceModal] = useState(false)
-    const [startTime, setStartTime] = useState('07:00')
-    const [endTime, setEndTime] = useState('22:00')
-    const [isSavingSettings, setIsSavingSettings] = useState(false)
-
-    const dateStr = selectedDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
-    const apiDateStr = selectedDate.toISOString().split('T')[0] // yyyy-MM-dd
-
-    // Fetch daily summary
-    const { data: summary, isLoading: isSummaryLoading, mutate: mutateSummary } = useSWR<DailyNutritionSummary>(
-        `/nutrition/daily?date=${apiDateStr}`,
-        () => getDailySummary(apiDateStr)
-    )
-
-    useEffect(() => {
-        if (summary) {
-            if (!summary.waterReminderStartTime || !summary.waterReminderEndTime) {
-                setShowPreferenceModal(true)
-            } else {
-                setStartTime(summary.waterReminderStartTime)
-                setEndTime(summary.waterReminderEndTime)
-            }
-        }
-    }, [summary])
-
-    const handleSaveReminderSettings = async () => {
-        setIsSavingSettings(true)
-        try {
-            await updateReminderSettings(startTime, endTime)
-            toast({
-                title: 'Reminder settings updated! 🥛',
-                description: `Chúng tôi sẽ nhắc bạn uống nước từ ${startTime} đến ${endTime}.`,
-                status: 'success',
-                duration: 3000,
-                isClosable: true,
-            })
-            mutateSummary()
-            setShowPreferenceModal(false)
-        } catch (error) {
-            console.error('Failed to save reminder settings:', error)
-            toast({
-                title: 'Lỗi cập nhật cấu hình',
-                status: 'error',
-                duration: 3000,
-                isClosable: true,
-            })
-        } finally {
-            setIsSavingSettings(false)
-        }
-    }
-
-    const calculateIntervalText = (start: string, end: string, target: number) => {
-        try {
-            const [startH, startM] = start.split(':').map(Number)
-            const [endH, endM] = end.split(':').map(Number)
-            
-            let startMins = startH * 60 + startM
-            let endMins = endH * 60 + endM
-            
-            if (endMins < startMins) {
-                endMins += 24 * 60
-            }
-            
-            const wakingMins = endMins - startMins
-            if (wakingMins <= 0 || target <= 0) return ""
-
-            const intervalMins = Math.round(wakingMins / target)
-            if (intervalMins < 60) {
-                return `Hệ thống nhắc nhở mỗi ${intervalMins} phút.`
-            } else {
-                const hrs = Math.floor(intervalMins / 60)
-                const mins = intervalMins % 60
-                return `Hệ thống nhắc nhở mỗi ${hrs}h${mins > 0 ? ` ${mins}m` : ''} một lần.`
-            }
-        } catch (e) {
-            return ""
-        }
-    }
-
-    const handleLogWater = async () => {
-        try {
-            await logWater(apiDateStr, 1)
-            mutateSummary() // Refresh summary
-        } catch (error) {
-            console.error("Failed to log water", error)
-        }
-    }
-
-    const goPrevDay = () => setSelectedDate(d => {
-        const newDate = new Date(d)
-        newDate.setDate(newDate.getDate() - 1)
-        return newDate
-    })
-    const goNextDay = () => setSelectedDate(d => {
-        const newDate = new Date(d)
-        newDate.setDate(newDate.getDate() + 1)
-        return newDate
-    })
+    const toast = useToast()
+    const sessionId = useAuthStore(state => state.sessionId)
 
     // Fetch foods from API
-    const { data: foods, isLoading, error } = useSWR('/foods', fetcher)
+    const { data: foods, isLoading, error } = useSWR(sessionId ? '/foods' : null, fetcher)
 
-    const filteredFoods = foods?.filter((food: any) =>
-        food.name.toLowerCase().includes(searchQuery.toLowerCase())
-    ) || []
+    // Fetch daily nutrition summary
+    const { data: summary } = useSWR(sessionId ? `/nutrition/daily?date=${todayStr}` : null, fetcher)
+
+    const handleLogWater = useCallback(async () => {
+        const key = `/nutrition/daily?date=${todayStr}`
+        try {
+            await logWater(todayStr, 1)
+            globalMutate(key)
+            toast({
+                title: 'Water logged!',
+                description: '1 glass of water added.',
+                status: 'success',
+                duration: 2000,
+                isClosable: true,
+            })
+        } catch {
+            globalMutate(key)
+            toast({
+                title: 'Failed to log water',
+                status: 'error',
+                duration: 2000,
+                isClosable: true,
+            })
+        }
+    }, [todayStr, toast])
+
+    const filteredFoods = foods?.filter((food: any) => {
+        const foodName = typeof food?.name === 'string' ? food.name : ''
+        return foodName.toLowerCase().includes(searchQuery.toLowerCase())
+    }) || []
+
+    // Pre-filled water count when navigated from notification
+    const location = useLocation()
+    const waterFromNotification = (location.state as { waterConsumedGlasses?: number } | null)?.waterConsumedGlasses
+    useEffect(() => {
+        if (waterFromNotification) {
+            globalMutate(`/nutrition/daily?date=${todayStr}`)
+        }
+    }, [waterFromNotification])
+
+    const waterCurrent = summary?.waterConsumedGlasses ?? 0
+    const waterTotal = summary?.waterTargetGlasses ?? 8
 
     return (
         <MemberLayout>
@@ -171,21 +108,27 @@ const Nutrition: React.FC = () => {
                             aria-label="Previous day"
                             icon={<Icon as={FiChevronLeft} />}
                             variant="ghost"
-                            color="white"
-                            _hover={{ bg: '#1e2028' }}
-                            onClick={goPrevDay}
+                            size="sm"
+                            color="#8A8A93"
+                            borderRadius="8px"
+                            _hover={{ bg: '#1e2028', color: '#E2E1EB' }}
                         />
-                        <Text fontSize="16px" fontWeight="700" color="white" minW="130px" textAlign="center">
-                            {dateStr}
-                        </Text>
+                        <Box>
+                            <Heading fontSize="22px" fontWeight="800" color="white">
+                                Today
+                            </Heading>
+                            <Text fontSize="12px" color="#8A8A93">
+                                {dateStr}
+                            </Text>
+                        </Box>
                         <IconButton
                             aria-label="Next day"
                             icon={<Icon as={FiChevronRight} />}
                             variant="ghost"
-                            color="white"
-                            _hover={{ bg: '#1e2028' }}
-                            onClick={goNextDay}
-                            isDisabled={new Date(new Date().setHours(0,0,0,0)).getTime() <= selectedDate.getTime()}
+                            size="sm"
+                            color="#8A8A93"
+                            borderRadius="8px"
+                            _hover={{ bg: '#1e2028', color: '#E2E1EB' }}
                         />
                     </HStack>
                     <AppButton
@@ -207,9 +150,6 @@ const Nutrition: React.FC = () => {
                     {/* LEFT */}
                     <Stack spacing="5">
                         {/* Calorie + Macros Row */}
-                        {isSummaryLoading ? (
-                            <Flex justify="center" py="10"><Spinner color="#E03030" /></Flex>
-                        ) : (
                         <Grid templateColumns={{ base: "repeat(2, 1fr)", md: "1fr 1fr 1fr 1fr" }} gap="3">
                             {/* Calories Donut */}
                             <Box
@@ -225,9 +165,9 @@ const Nutrition: React.FC = () => {
                                 <Text fontSize="13px" fontWeight="700" color="white" mb="3">
                                     Calories
                                 </Text>
-                                <DonutRing current={summary?.caloriesConsumed || 0} total={summary?.caloriesTarget || 2000} />
+                                <DonutRing current={1850} total={2400} />
                                 <Text fontSize="12px" color="#8A8A93" mt="3">
-                                    {summary?.caloriesRemaining || 0} kcal remaining
+                                    550 kcal remaining
                                 </Text>
                             </Box>
 
@@ -235,29 +175,28 @@ const Nutrition: React.FC = () => {
                             <MacroCard
                                 label="Protein"
                                 icon={FiZap}
-                                current={summary?.protein.currentGrams || 0}
-                                total={summary?.protein.targetGrams || 1}
+                                current={140}
+                                total={180}
                                 unit="g"
                                 color="#E03030"
                             />
                             <MacroCard
                                 label="Carbs"
                                 icon={FiActivity}
-                                current={summary?.carbs.currentGrams || 0}
-                                total={summary?.carbs.targetGrams || 1}
+                                current={120}
+                                total={250}
                                 unit="g"
                                 color="#3b82f6"
                             />
                             <MacroCard
                                 label="Fat"
                                 icon={FiDroplet}
-                                current={summary?.fat.currentGrams || 0}
-                                total={summary?.fat.targetGrams || 1}
+                                current={45}
+                                total={70}
                                 unit="g"
-                                color="#eab308"
+                                color="#f59e0b"
                             />
                         </Grid>
-                        )}
 
                         {/* Breakfast */}
                         <MealSection
@@ -357,71 +296,35 @@ const Nutrition: React.FC = () => {
 
                     {/* RIGHT panel */}
                     <Stack spacing="4">
-                        {!summary?.hasBodyMetrics && (
-                            <Box bg="#2e1414" p="4" borderRadius="14px" border="1px solid #E03030" color="white" fontSize="13px">
-                                <Text fontWeight="700" mb="1" color="#E03030">Update Body Metrics</Text>
-                                <Text color="#8A8A93">Your daily targets are using default values. Go to Profile to update your height and weight for accurate calculations.</Text>
-                            </Box>
-                        )}
-
                         {/* Hydration */}
-                        <HydrationTracker 
-                            current={summary?.waterConsumedGlasses || 0} 
-                            total={summary?.waterTargetGlasses || 8} 
-                            onLogWater={handleLogWater}
+                        <HydrationTracker current={waterCurrent} total={waterTotal} onLogWater={handleLogWater} />
+
+                        {/* Hydration Countdown */}
+                        <HydrationCountdown
+                            current={waterCurrent}
+                            target={waterTotal}
+                            startTime={summary?.waterReminderStartTime}
+                            endTime={summary?.waterReminderEndTime}
+                            onRemind={() => {
+                                toast({
+                                    title: 'Time to drink water! 🥛',
+                                    description: `Còn ${Math.max(0, waterTotal - waterCurrent)} cốc nước cần uống.`,
+                                    status: 'success',
+                                    duration: 5000,
+                                    isClosable: true,
+                                })
+                                triggerTestWaterReminder()
+                            }}
                         />
 
-                        {/* Water Reminder Schedule Panel */}
-                        {summary && (
-                            <Box
-                                bg="#141720"
-                                border="1px solid"
-                                borderColor="#1e2028"
-                                borderRadius="14px"
-                                p="5"
-                                boxShadow="0 4px 20px rgba(0, 0, 0, 0.2)"
-                            >
-                                <Flex align="center" justify="space-between" mb="3">
-                                    <Text fontSize="13px" fontWeight="700" color="white">
-                                        Water Reminder Schedule
-                                    </Text>
-                                    <Badge bg="rgba(0, 168, 150, 0.1)" color="teal.300">Active</Badge>
-                                </Flex>
-                                {summary.waterReminderStartTime && summary.waterReminderEndTime ? (
-                                    <Stack spacing="3">
-                                        <HStack justify="space-between">
-                                            <Text fontSize="12px" color="#8A8A93">Waking Hours</Text>
-                                            <Text fontSize="12px" color="white" fontWeight="600">
-                                                {summary.waterReminderStartTime} - {summary.waterReminderEndTime}
-                                            </Text>
-                                        </HStack>
-                                        <Text fontSize="11px" color="teal.300" fontStyle="italic">
-                                            {calculateIntervalText(summary.waterReminderStartTime, summary.waterReminderEndTime, summary.waterTargetGlasses)}
-                                        </Text>
-                                        <Button
-                                            size="xs"
-                                            colorScheme="teal"
-                                            variant="outline"
-                                            w="full"
-                                            borderRadius="8px"
-                                            onClick={() => setShowPreferenceModal(true)}
-                                        >
-                                            Change Settings
-                                        </Button>
-                                    </Stack>
-                                ) : (
-                                    <Button
-                                        size="sm"
-                                        colorScheme="teal"
-                                        w="full"
-                                        borderRadius="8px"
-                                        onClick={() => setShowPreferenceModal(true)}
-                                    >
-                                        Configure Reminders
-                                    </Button>
-                                )}
-                            </Box>
-                        )}
+                        {/* Water Reminder Schedule */}
+                        <WaterReminderSettings
+                            startTime={summary?.waterReminderStartTime || '07:00'}
+                            endTime={summary?.waterReminderEndTime || '22:00'}
+                        />
+
+                        {/* Test Water Reminder Button */}
+                        <TestWaterReminderButton />
 
                         {/* AI Recommendation */}
                         <AIDinnerCard />
@@ -434,20 +337,14 @@ const Nutrition: React.FC = () => {
                             borderRadius="14px"
                             p="4"
                         >
-                            <Flex justify="space-between" align="center" mb="3">
-                                <Text fontSize="11px" fontWeight="700" color="#8A8A93" textTransform="uppercase" letterSpacing="wider">
-                                    Daily Summary
-                                </Text>
-                                {summary?.fitnessGoal && (
-                                    <Badge bg="#1e2028" color="white" fontSize="10px">{summary.fitnessGoal.replace('_', ' ')}</Badge>
-                                )}
-                            </Flex>
-                            <Stack spacing="3">
+                            <Text fontSize="11px" fontWeight="700" color="#8A8A93" textTransform="uppercase" letterSpacing="wider" mb="3">
+                                Daily Summary
+                            </Text>
+                            <Stack spacing="2">
                                 {[
-                                    { label: 'Total Calories', val: `${summary?.caloriesConsumed || 0} / ${summary?.caloriesTarget || 0}`, pct: ((summary?.caloriesConsumed || 0) / (summary?.caloriesTarget || 1)) * 100 },
-                                    { label: 'Net Calories (in - out)', val: `${summary?.netCalories || 0} kcal`, pct: summary?.caloriesTarget ? Math.abs((summary?.netCalories || 0)) / summary.caloriesTarget * 100 : 0 },
-                                    { label: 'Protein', val: `${summary?.protein.currentGrams || 0} / ${summary?.protein.targetGrams || 0}g`, pct: summary?.protein.percentage || 0 },
-                                    { label: 'Water', val: `${summary?.waterConsumedGlasses || 0} / ${summary?.waterTargetGlasses || 0} Glasses`, pct: ((summary?.waterConsumedGlasses || 0) / (summary?.waterTargetGlasses || 1)) * 100 },
+                                    { label: 'Total Calories', val: '1,850 / 2,400', pct: 77 },
+                                    { label: 'Protein', val: '140 / 180g', pct: 78 },
+                                    { label: 'Water', val: `${waterCurrent} / ${waterTotal} Glasses`, pct: waterTotal > 0 ? Math.round((waterCurrent / waterTotal) * 100) : 0 },
                                 ].map((s, i) => (
                                     <Box key={i}>
                                         <Flex justify="space-between" mb="1">
@@ -459,7 +356,7 @@ const Nutrition: React.FC = () => {
                                                 h="full"
                                                 borderRadius="full"
                                                 bg="#E03030"
-                                                style={{ width: `${Math.min(s.pct, 100)}%` }}
+                                                style={{ width: `${s.pct}%` }}
                                             />
                                         </Box>
                                     </Box>
@@ -469,109 +366,124 @@ const Nutrition: React.FC = () => {
                     </Stack>
                 </Grid>
             </Box>
-
-            {/* Water Reminder Preferences Modal */}
-            <Modal isOpen={showPreferenceModal} onClose={() => {
-                if (summary?.waterReminderStartTime && summary?.waterReminderEndTime) {
-                    setShowPreferenceModal(false)
-                }
-            }} isCentered size="md">
-                <ModalOverlay bg="blackAlpha.800" backdropFilter="blur(6px)" />
-                <ModalContent
-                    bg="#141720"
-                    border="1px solid"
-                    borderColor="#1e2028"
-                    borderRadius="16px"
-                    color="white"
-                    p="4"
-                    boxShadow="0 10px 30px rgba(0, 0, 0, 0.5)"
-                >
-                    <ModalHeader fontSize="20px" fontWeight="800" color="white" textAlign="center" pb="0">
-                        🥛 Cấu hình giờ nhắc uống nước
-                    </ModalHeader>
-                    {(!summary?.waterReminderStartTime || !summary?.waterReminderEndTime) && (
-                        <Text fontSize="12px" color="#8A8A93" textAlign="center" mt="2" px="4">
-                            Chào mừng bạn! Vui lòng cài đặt thời gian thức dậy và đi ngủ để hệ thống tự động tính toán tần suất nhắc uống nước phù hợp trong ngày.
-                        </Text>
-                    )}
-                    <ModalBody py="6">
-                        <Stack spacing="5">
-                            <Box>
-                                <Text fontSize="13px" fontWeight="700" color="#8A8A93" mb="2">
-                                    Thời gian thức dậy (Bắt đầu nhắc)
-                                </Text>
-                                <Select
-                                    bg="#0A0C10"
-                                    borderColor="#1e2028"
-                                    color="white"
-                                    value={startTime}
-                                    onChange={(e) => setStartTime(e.target.value)}
-                                    _focus={{ borderColor: 'teal.500' }}
-                                >
-                                    {Array.from({ length: 10 }).map((_, i) => {
-                                        const h = i + 5; // 05:00 to 14:00
-                                        const timeVal = `${h < 10 ? '0' : ''}${h}:00`;
-                                        return <option key={timeVal} value={timeVal} style={{ background: '#141720' }}>{timeVal}</option>
-                                    })}
-                                </Select>
-                            </Box>
-
-                            <Box>
-                                <Text fontSize="13px" fontWeight="700" color="#8A8A93" mb="2">
-                                    Thời gian đi ngủ (Dừng nhắc)
-                                </Text>
-                                <Select
-                                    bg="#0A0C10"
-                                    borderColor="#1e2028"
-                                    color="white"
-                                    value={endTime}
-                                    onChange={(e) => setEndTime(e.target.value)}
-                                    _focus={{ borderColor: 'teal.500' }}
-                                >
-                                    {Array.from({ length: 8 }).map((_, i) => {
-                                        const h = i + 20; // 20:00 to 03:00 (of next day)
-                                        const actualH = h >= 24 ? h - 24 : h;
-                                        const timeVal = `${actualH < 10 ? '0' : ''}${actualH}:00`;
-                                        return <option key={timeVal} value={timeVal} style={{ background: '#141720' }}>{timeVal}</option>
-                                    })}
-                                </Select>
-                            </Box>
-
-                            {summary && (
-                                <Box bg="#0A0C10" p="4" borderRadius="12px" border="1px solid" borderColor="#1e2028">
-                                    <Text fontSize="12px" color="teal.300" textAlign="center" fontWeight="500">
-                                        {calculateIntervalText(startTime, endTime, summary.waterTargetGlasses)}
-                                    </Text>
-                                </Box>
-                            )}
-                        </Stack>
-                    </ModalBody>
-                    <ModalFooter justifyContent="center" gap="3" pt="0">
-                        {summary?.waterReminderStartTime && summary?.waterReminderEndTime && (
-                            <Button
-                                variant="outline"
-                                colorScheme="gray"
-                                color="white"
-                                borderRadius="10px"
-                                onClick={() => setShowPreferenceModal(false)}
-                                isDisabled={isSavingSettings}
-                            >
-                                Hủy bỏ
-                            </Button>
-                        )}
-                        <Button
-                            colorScheme="teal"
-                            w="160px"
-                            borderRadius="10px"
-                            onClick={handleSaveReminderSettings}
-                            isLoading={isSavingSettings}
-                        >
-                            Lưu cấu hình
-                        </Button>
-                    </ModalFooter>
-                </ModalContent>
-            </Modal>
         </MemberLayout>
+    )
+}
+
+/* ── Water Reminder Settings ─────────────────── */
+const WaterReminderSettings: React.FC<{ startTime: string; endTime: string }> = ({ startTime, endTime }) => {
+    const [start, setStart] = useState(startTime)
+    const [end, setEnd] = useState(endTime)
+    const [saving, setSaving] = useState(false)
+    const toast = useToast()
+
+    const handleSave = async () => {
+        setSaving(true)
+        try {
+            await updateReminderSettings(start, end)
+            toast({ title: 'Reminder schedule saved', status: 'success', duration: 2000, isClosable: true })
+        } catch {
+            toast({ title: 'Failed to save', status: 'error', duration: 2000, isClosable: true })
+        } finally {
+            setSaving(false)
+        }
+    }
+
+    return (
+        <Box bg="#141720" border="1px solid" borderColor="#1e2028" borderRadius="14px" p="4">
+            <Flex justify="space-between" align="center" mb="3">
+                <Text fontSize="11px" fontWeight="700" color="#8A8A93" textTransform="uppercase" letterSpacing="wider">
+                    Water Reminder
+                </Text>
+                <Box
+                    as="button"
+                    fontSize="11px" fontWeight="600"
+                    color="#E03030"
+                    _hover={{ color: '#ff6b6b' }}
+                    onClick={handleSave}
+                >
+                    {saving ? 'Saving...' : 'Save'}
+                </Box>
+            </Flex>
+            <Flex gap="2" align="center">
+                <Box flex="1">
+                    <Text fontSize="10px" color="#8A8A93" mb="1">From</Text>
+                    <Box
+                        as="input"
+                        type="time"
+                        value={start}
+                        onChange={(e: any) => setStart(e.target.value)}
+                        bg="#0A0C10" border="1px solid" borderColor="#1e2028"
+                        borderRadius="8px" color="white" fontSize="13px"
+                        p="2" w="full"
+                        _focus={{ borderColor: '#E03030', outline: 'none' }}
+                    />
+                </Box>
+                <Box flex="1">
+                    <Text fontSize="10px" color="#8A8A93" mb="1">To</Text>
+                    <Box
+                        as="input"
+                        type="time"
+                        value={end}
+                        onChange={(e: any) => setEnd(e.target.value)}
+                        bg="#0A0C10" border="1px solid" borderColor="#1e2028"
+                        borderRadius="8px" color="white" fontSize="13px"
+                        p="2" w="full"
+                        _focus={{ borderColor: '#E03030', outline: 'none' }}
+                    />
+                </Box>
+            </Flex>
+        </Box>
+    )
+}
+
+/* ── Test Water Reminder Button ─────────────── */
+const TestWaterReminderButton: React.FC = () => {
+    const toast = useToast()
+    const [loading, setLoading] = useState(false)
+
+    const handleClick = async () => {
+        setLoading(true)
+        try {
+            await triggerTestWaterReminder()
+            toast({
+                title: 'Water Reminder Sent! 🥛',
+                description: 'Check your notifications to log water.',
+                status: 'success',
+                duration: 3000,
+                isClosable: true,
+            })
+        } catch {
+            toast({
+                title: 'Failed to send reminder',
+                status: 'error',
+                duration: 2000,
+                isClosable: true,
+            })
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    return (
+        <Box
+            as="button"
+            w="full"
+            bg="#141720"
+            border="1px dashed"
+            borderColor="#2e3040"
+            borderRadius="14px"
+            p="3"
+            textAlign="center"
+            cursor="pointer"
+            _hover={{ borderColor: '#E03030', bg: '#1a1c24' }}
+            transition="all 0.2s"
+            onClick={handleClick}
+        >
+            <Text fontSize="12px" fontWeight="600" color={loading ? '#E03030' : '#8A8A93'}>
+                {loading ? 'Sending...' : '🔔 Test Water Reminder Notification'}
+            </Text>
+        </Box>
     )
 }
 
