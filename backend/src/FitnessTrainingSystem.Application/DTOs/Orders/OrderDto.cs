@@ -5,6 +5,7 @@ namespace FitnessTrainingSystem.Application.DTOs.Orders;
 public class OrderDto
 {
     public int Id { get; set; }
+    public long OrderCode { get; set; }
     public int? UserId { get; set; }
     public int? PackageId { get; set; }
     public decimal PricePaid { get; set; }

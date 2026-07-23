@@ -62,9 +62,11 @@ const Pricing: React.FC = () => {
         })
       }
     } catch (error: any) {
+      console.error('[Purchase] Error:', error)
+      const msg = error.response?.data?.message || error.message || 'Something went wrong. Please try again.'
       toast({
         title: 'Purchase Failed',
-        description: error.response?.data?.message || 'Something went wrong.',
+        description: msg,
         status: 'error',
         duration: 5000,
         isClosable: true,
