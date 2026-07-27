@@ -68,6 +68,10 @@ class AIChatRequest(BaseModel):
 # API
 # =============================
 
+@app.get("/")
+async def root():
+    return {"status": "healthy", "message": "Fitness AI Agent - Nutrition Expert is running"}
+
 @app.post("/api/ai/generate-diet-plan")
 async def generate_diet_plan(request: DietPlanRequest):
 
