@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useEffect } from 'react'
-import { useLocation } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import {
     Box,
     Flex,
@@ -29,7 +29,7 @@ import apiClient from '../../lib/axios'
 import AppButton from '../../components/shared/Button/AppButton'
 import MemberLayout from '../../components/shared/Layout/MemberLayout.tsx'
 import {
-    AIDinnerCard,
+    AIDietPlanCard,
     DonutRing,
     FoodItem,
     HydrationCountdown,
@@ -57,6 +57,12 @@ const Nutrition: React.FC = () => {
 
     // Fetch daily nutrition summary
     const { data: summary } = useSWR(sessionId ? `/nutrition/daily?date=${todayStr}` : null, fetcher)
+
+    // Fetch AI Diet Histories
+    const { data: dietHistories } = useSWR(sessionId ? '/AIChat/diet-history' : null, fetcher)
+    const latestDiet = dietHistories && dietHistories.length > 0 ? dietHistories[0] : null
+
+    const navigate = useNavigate()
 
     const handleLogWater = useCallback(async () => {
         const key = `/nutrition/daily?date=${todayStr}`
@@ -327,7 +333,10 @@ const Nutrition: React.FC = () => {
                         <TestWaterReminderButton />
 
                         {/* AI Recommendation */}
-                        <AIDinnerCard />
+                        <AIDietPlanCard 
+                            dietPlan={latestDiet?.dietPlan}
+                            onNavigateToAI={() => navigate('/ai-chat')}
+                        />
 
                         {/* Quick Macros Summary */}
                         <Box

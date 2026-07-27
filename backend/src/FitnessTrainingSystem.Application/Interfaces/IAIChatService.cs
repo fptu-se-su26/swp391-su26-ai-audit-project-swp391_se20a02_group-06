@@ -22,6 +22,6 @@ public interface IAIChatService
         int sessionId,
         DietPlanResponse response);
 
-
+    Task<List<AIDietHistoryDto>> GetDietHistoriesAsync(int userId);
     
 }
