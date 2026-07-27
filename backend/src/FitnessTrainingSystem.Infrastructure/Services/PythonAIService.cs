@@ -3,15 +3,19 @@ using System.Text.Json;
 using FitnessTrainingSystem.Application.Common.Interfaces;
 using FitnessTrainingSystem.Application.DTOs.Nutrition;
 
+using Microsoft.Extensions.Configuration;
+
 namespace FitnessTrainingSystem.Infrastructure.Services;
 
 public class PythonAiService : IGeminiAiService
 {
     private readonly HttpClient _httpClient;
+    private readonly string _baseUrl;
 
-    public PythonAiService(HttpClient httpClient)
+    public PythonAiService(HttpClient httpClient, IConfiguration configuration)
     {
         _httpClient = httpClient;
+        _baseUrl = configuration["AiService:BaseUrl"]?.TrimEnd('/') ?? "http://localhost:8000";
     }
 
     public async Task<DietPlanResponse> GenerateDietPlanAsync(
@@ -32,7 +36,7 @@ public class PythonAiService : IGeminiAiService
             "application/json");
 
         var response = await _httpClient.PostAsync(
-            "http://localhost:8000/api/ai/generate-diet-plan",
+            $"{_baseUrl}/api/ai/generate-diet-plan",
             content);
 
         response.EnsureSuccessStatusCode();
@@ -98,7 +102,7 @@ public class PythonAiService : IGeminiAiService
         "application/json");
 
     var response = await _httpClient.PostAsync(
-        "http://localhost:8000/api/ai/chat",
+        $"{_baseUrl}/api/ai/chat",
         content);
 
     response.EnsureSuccessStatusCode();
