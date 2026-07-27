@@ -16,17 +16,25 @@ public class GenerateWeeklyWorkoutPlanCommandHandler : IRequestHandler<GenerateW
 {
     private readonly HttpClient _httpClient;
     private readonly IExerciseService _exerciseService;
+    private readonly IProductPackageService _packageService;
 
-    public GenerateWeeklyWorkoutPlanCommandHandler(IHttpClientFactory httpClientFactory, IExerciseService exerciseService, IConfiguration configuration)
+    public GenerateWeeklyWorkoutPlanCommandHandler(IHttpClientFactory httpClientFactory, IExerciseService exerciseService, IConfiguration configuration, IProductPackageService packageService)
     {
         _httpClient = httpClientFactory.CreateClient();
         var baseUrl = configuration["AiServiceSettings:BaseUrl"] ?? "http://localhost:5007";
         _httpClient.BaseAddress = new Uri(baseUrl);
         _exerciseService = exerciseService;
+        _packageService = packageService;
     }
 
     public async Task<AiWeeklyWorkoutPlanResponseDto> Handle(GenerateWeeklyWorkoutPlanCommand request, CancellationToken cancellationToken)
     {
+        var hasHighestTier = await _packageService.HasHighestTierPackageAsync(request.UserId);
+        if (!hasHighestTier)
+        {
+            throw new UnauthorizedAccessException("Bạn cần đăng ký gói thành viên cao cấp nhất để sử dụng tính năng tư vấn bài tập nguyên tuần.");
+        }
+
         List<AvailableExerciseDto> availableExercises;
         try
         {

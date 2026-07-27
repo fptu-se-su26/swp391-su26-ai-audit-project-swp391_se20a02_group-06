@@ -9,4 +9,5 @@ public interface IProductPackageService
     Task<ProductPackageDto> CreateAsync(CreateProductPackageDto dto);
     Task<bool> UpdateAsync(int id, UpdateProductPackageDto dto);
     Task<bool> DeleteAsync(int id);
+    Task<bool> HasHighestTierPackageAsync(int userId);
 }

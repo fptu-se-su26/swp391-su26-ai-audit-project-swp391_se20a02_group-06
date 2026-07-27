@@ -120,7 +120,8 @@ public class JobsController : ControllerBase
         var user = await _context.Users.FindAsync(order.UserId);
         if (user != null)
         {
-            var subject = $"Invoice for your purchase: {order.Package.Name}";
+            var packageName = order.Package?.Name ?? "Membership Package";
+            var subject = $"Invoice for your purchase: {packageName}";
             var body = $"<html><body><h2>Thank you for your purchase!</h2><p><strong>Order Code:</strong> {orderCode}</p><p><strong>Amount Paid:</strong> {order.PricePaid} VND</p></body></html>";
             await _emailService.SendEmailAsync(user.Email, subject, body);
         }

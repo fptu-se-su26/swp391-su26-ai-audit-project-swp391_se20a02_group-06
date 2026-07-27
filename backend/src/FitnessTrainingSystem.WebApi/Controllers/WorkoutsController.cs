@@ -35,21 +35,12 @@ public class WorkoutsController : ControllerBase
             return userId;
         throw new UnauthorizedAccessException("User not authenticated.");
     }
-    [AllowAnonymous]
     [HttpPost("ai-generate")]
     public async Task<ActionResult<AiWorkoutPlanResponseDto>> GenerateWorkoutPlan([FromBody] GenerateWorkoutPlanRequestDto dto)
     {
         try
         {
-            int userId = 1;
-            try
-            {
-                userId = GetCurrentUserId();
-            }
-            catch (UnauthorizedAccessException)
-            {
-                // Fallback to mock user ID 1 for testing with [AllowAnonymous]
-            }
+            int userId = GetCurrentUserId();
 
             var command = new GenerateWorkoutPlanCommand
             {
@@ -67,21 +58,12 @@ public class WorkoutsController : ControllerBase
         }
     }
 
-    [AllowAnonymous]
     [HttpPost("ai-generate-weekly")]
     public async Task<ActionResult<AiWeeklyWorkoutPlanResponseDto>> GenerateWeeklyWorkoutPlan([FromBody] GenerateWeeklyWorkoutPlanRequestDto dto)
     {
         try
         {
-            int userId = 1;
-            try
-            {
-                userId = GetCurrentUserId();
-            }
-            catch (UnauthorizedAccessException)
-            {
-                // Fallback to mock user ID 1 for testing with [AllowAnonymous]
-            }
+            int userId = GetCurrentUserId();
 
             var command = new GenerateWeeklyWorkoutPlanCommand
             {
@@ -93,6 +75,10 @@ public class WorkoutsController : ControllerBase
             };
             var result = await _mediator.Send(command);
             return Ok(result);
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            return StatusCode(StatusCodes.Status403Forbidden, new { message = ex.Message });
         }
         catch (Exception ex)
         {

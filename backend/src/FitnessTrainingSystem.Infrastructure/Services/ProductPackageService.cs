@@ -62,4 +62,19 @@ public class ProductPackageService : IProductPackageService
         
         return true;
     }
+        
+    public async Task<bool> HasHighestTierPackageAsync(int userId)
+    {
+        var maxTier = await _context.ProductPackages.MaxAsync(p => (int?)p.Tier) ?? 0;
+        
+        var userActiveSub = await _context.MembershipSubscriptions
+            .Include(s => s.Package)
+            .Where(s => s.UserId == userId && s.Status == "ACTIVE" && s.EndDate > DateTime.UtcNow)
+            .OrderByDescending(s => s.StartDate)
+            .FirstOrDefaultAsync();
+
+        if (userActiveSub?.Package == null) return false;
+
+        return userActiveSub.Package.Tier >= maxTier;
+    }
 }

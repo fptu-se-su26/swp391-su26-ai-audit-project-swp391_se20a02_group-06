@@ -346,3 +346,19 @@ export const AIDinnerCard: React.FC = () => {
         </Box>
     )
 }
+
+export const HydrationCountdown: React.FC<{
+    current: number;
+    target: number;
+    startTime?: string;
+    endTime?: string;
+    onRemind?: () => void;
+}> = ({ current, target, onRemind }) => (
+    <Box bg="#141720" border="1px solid" borderColor="#1e2028" borderRadius="14px" p="4">
+        <Flex justify="space-between" align="center" mb="3">
+            <Heading fontSize="14px" fontWeight="700" color="white">Next Drink Reminder</Heading>
+            <Text fontSize="11px" color="#8A8A93">{current}/{target} Glasses</Text>
+        </Flex>
+        <AppButton label="Trigger Reminder" variant="outline" size="sm" w="full" h="32px" fontSize="11px" onClick={onRemind} />
+    </Box>
+)

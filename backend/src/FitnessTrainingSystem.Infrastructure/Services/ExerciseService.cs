@@ -1,4 +1,5 @@
-﻿using FitnessTrainingSystem.Application.DTOs.Exercises;
+using FitnessTrainingSystem.Application.DTOs.Exercises;
+using FitnessTrainingSystem.Application.DTOs.Workouts;
 using FitnessTrainingSystem.Application.Interfaces;
 using FitnessTrainingSystem.Domain.Entities;
 using FitnessTrainingSystem.Infrastructure.Persistence;
@@ -303,5 +304,30 @@ public class ExerciseService : IExerciseService
         await _context.SaveChangesAsync();
 
         return true;
+    }
+
+    public async Task<List<AvailableExerciseDto>> GetAvailableExercisesByMuscleGroupAsync(string muscleGroup, CancellationToken cancellationToken = default)
+    {
+        var targetMuscles = muscleGroup.Split(',')
+            .Select(m => m.Trim().ToLower())
+            .Where(m => !string.IsNullOrEmpty(m))
+            .ToList();
+
+        return await _context.Exercises
+            .Include(e => e.MuscleGroup)
+            .Where(e => e.MuscleGroup != null 
+                && targetMuscles.Contains(e.MuscleGroup.Name.ToLower()))
+            .Select(e => new AvailableExerciseDto
+            {
+                Id = e.Id,
+                Title = e.Title,
+                Description = e.Description,
+                MuscleGroupId = e.MuscleGroupId,
+                Equipment = "None",
+                DurationMinutes = e.DurationMinutes,
+                CaloriesBurnPerMin = 5.0,
+                Difficulty = e.Difficulty.ToString()
+            })
+            .ToListAsync(cancellationToken);
     }
 }

@@ -63,7 +63,6 @@ const ExerciseCard: React.FC<ExerciseCardProps> = ({
     isDone,
     isSkipped,
     imageUrl,
-    videoUrl,
     onStart,
     onSkip,
     onMarkDone
