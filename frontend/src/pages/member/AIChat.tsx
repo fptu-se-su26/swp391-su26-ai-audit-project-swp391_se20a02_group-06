@@ -48,9 +48,65 @@ interface LocalMessage {
     dietPlan?: DietPlanResponse | null
 }
 
+const ChatInputArea = ({ onSend, sending, loadingHistory }: { onSend: (text: string) => void, sending: boolean, loadingHistory: boolean }) => {
+    const [localText, setLocalText] = useState('')
+
+    const handleSend = () => {
+        if (!localText.trim()) return
+        onSend(localText)
+        setLocalText('')
+    }
+
+    return (
+        <Box p="4" bg="#0B0D14">
+            <HStack align="flex-end" spacing="3">
+                <Textarea
+                    value={localText}
+                    onChange={(e) => setLocalText(e.target.value)}
+                    onKeyDown={(e) => {
+                        if (e.key === 'Enter' && !e.shiftKey) {
+                            e.preventDefault()
+                            handleSend()
+                        }
+                    }}
+                    placeholder="Nhập tin nhắn trả lời trợ lý AI..."
+                    rows={1}
+                    minH="44px"
+                    maxH="100px"
+                    bg="#141720"
+                    borderColor="#1e2028"
+                    color="white"
+                    _placeholder={{ color: '#52525B' }}
+                    _focus={{
+                        borderColor: '#E03030',
+                        boxShadow: '0 0 0 1px #E03030'
+                    }}
+                    py="3"
+                    px="4"
+                    borderRadius="14px"
+                    resize="none"
+                    disabled={sending || loadingHistory}
+                />
+                <IconButton
+                    aria-label="Send message"
+                    icon={<Icon as={FiSend} />}
+                    colorScheme="red"
+                    bg="#E03030"
+                    _hover={{ bg: '#C52828' }}
+                    borderRadius="14px"
+                    w="44px"
+                    h="44px"
+                    onClick={handleSend}
+                    isLoading={sending}
+                    disabled={!localText.trim() || loadingHistory}
+                />
+            </HStack>
+        </Box>
+    )
+}
+
 const AIChat: React.FC = () => {
     const [messages, setMessages] = useState<LocalMessage[]>([])
-    const [inputText, setInputText] = useState('')
     const [sessionId, setSessionId] = useState<number | undefined>(undefined)
     const [activeDietPlan, setActiveDietPlan] = useState<DietPlanResponse | null>(null)
     const [loadingHistory, setLoadingHistory] = useState(false)
@@ -152,13 +208,9 @@ const AIChat: React.FC = () => {
         onClose()
     }
 
-    const handleSendMessage = async (textToSend?: string) => {
-        const messageText = (textToSend || inputText).trim()
+    const handleSendMessage = async (textToSend: string) => {
+        const messageText = textToSend.trim()
         if (!messageText) return
-
-        if (!textToSend) {
-            setInputText('')
-        }
 
         // Add user message to UI
         const newUserMsg: LocalMessage = {
@@ -222,7 +274,6 @@ const AIChat: React.FC = () => {
             setSessionId(undefined)
             setMessages([initialGreeting])
             setActiveDietPlan(null)
-            setInputText('')
             toast({
                 title: 'Đã bắt đầu cuộc trò chuyện mới.',
                 status: 'info',
@@ -522,50 +573,7 @@ const AIChat: React.FC = () => {
                         <Divider borderColor="#1e2028" />
 
                         {/* Input bottom area */}
-                        <Box p="4" bg="#0B0D14">
-                            <HStack align="flex-end" spacing="3">
-                                <Textarea
-                                    value={inputText}
-                                    onChange={(e) => setInputText(e.target.value)}
-                                    onKeyDown={(e) => {
-                                        if (e.key === 'Enter' && !e.shiftKey) {
-                                            e.preventDefault()
-                                            handleSendMessage()
-                                        }
-                                    }}
-                                    placeholder="Nhập tin nhắn trả lời trợ lý AI..."
-                                    rows={1}
-                                    minH="44px"
-                                    maxH="100px"
-                                    bg="#141720"
-                                    borderColor="#1e2028"
-                                    color="white"
-                                    _placeholder={{ color: '#52525B' }}
-                                    _focus={{
-                                        borderColor: '#E03030',
-                                        boxShadow: '0 0 0 1px #E03030'
-                                    }}
-                                    py="3"
-                                    px="4"
-                                    borderRadius="14px"
-                                    resize="none"
-                                    disabled={sending || loadingHistory}
-                                />
-                                <IconButton
-                                    aria-label="Send message"
-                                    icon={<Icon as={FiSend} />}
-                                    colorScheme="red"
-                                    bg="#E03030"
-                                    _hover={{ bg: '#C52828' }}
-                                    borderRadius="14px"
-                                    w="44px"
-                                    h="44px"
-                                    onClick={() => handleSendMessage()}
-                                    isLoading={sending}
-                                    disabled={!inputText.trim() || loadingHistory}
-                                />
-                            </HStack>
-                        </Box>
+                        <ChatInputArea onSend={handleSendMessage} sending={sending} loadingHistory={loadingHistory} />
                     </Box>
 
                     {/* Right Column: Generated Diet Plan Panel */}

@@ -58,6 +58,24 @@ public class AuthController : ControllerBase
         }
     }
 
+    [HttpPost("refresh-token")]
+    public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenRequestDto request)
+    {
+        try
+        {
+            var response = await _authService.RefreshTokenAsync(request);
+            return Ok(response);
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            return Unauthorized(new { message = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { message = ex.Message, stack = ex.StackTrace });
+        }
+    }
+
     [HttpPost("google")]
     public async Task<IActionResult> GoogleLogin([FromBody] GoogleLoginRequestDto request)
     {
