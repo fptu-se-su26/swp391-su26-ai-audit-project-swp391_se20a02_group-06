@@ -37,8 +37,15 @@ public class ExerciseDeadlineReminderService : BackgroundService
                 _logger.LogError(ex, "Error occurred while checking exercise deadlines.");
             }
 
-            // Check every 1 hour
-            await Task.Delay(TimeSpan.FromHours(1), stoppingToken);
+            try
+            {
+                // Check every 1 hour
+                await Task.Delay(TimeSpan.FromHours(1), stoppingToken);
+            }
+            catch (OperationCanceledException)
+            {
+                // Ignore, application is shutting down
+            }
         }
     }
 
