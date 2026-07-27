@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from 'react'
+import React from 'react'
+import useSWR from 'swr'
 import { HStack, IconButton, Icon, Avatar, Menu, MenuButton, MenuList, MenuItem, useDisclosure } from '@chakra-ui/react'
 import { FiSettings, FiLock } from 'react-icons/fi'
 import { useNavigate } from 'react-router-dom'
@@ -8,20 +9,8 @@ import ChangePasswordModal from '../../../pages/member/components/ChangePassword
 
 const HeaderActions: React.FC = () => {
     const navigate = useNavigate()
-    const [profile, setProfile] = useState<UserProfile | null>(null)
     const { isOpen: isPwOpen, onOpen: onPwOpen, onClose: onPwClose } = useDisclosure()
-
-    useEffect(() => {
-        const fetchProfile = async () => {
-            try {
-                const data = await getProfile()
-                setProfile(data)
-            } catch (error) {
-                console.error("Failed to fetch profile for header", error)
-            }
-        }
-        fetchProfile()
-    }, [])
+    const { data: profile } = useSWR('profile', () => getProfile())
 
     return (
         <>

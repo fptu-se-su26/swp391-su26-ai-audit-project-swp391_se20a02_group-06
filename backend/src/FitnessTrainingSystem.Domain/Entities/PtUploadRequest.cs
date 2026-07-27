@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 
 namespace FitnessTrainingSystem.Domain.Entities;
@@ -31,7 +31,7 @@ public partial class PtUploadRequest
 
     public string? MuscleGroup { get; set; }
 
-    public int? Difficulty { get; set; }
+    public string? Difficulty { get; set; }
 
     public int? Duration { get; set; }
 
