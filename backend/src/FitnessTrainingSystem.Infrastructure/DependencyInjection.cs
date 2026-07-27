@@ -60,6 +60,8 @@ public static class DependencyInjection
 
         services.AddHttpClient<IGeminiAiService, PythonAiService>(client =>
         {
+            var baseUrl = configuration["AiService:BaseUrl"] ?? "http://localhost:8000";
+            client.BaseAddress = new Uri(baseUrl);
             client.Timeout = TimeSpan.FromMinutes(5);
         });
         services.AddScoped<IAIChatService, AIChatService>();
