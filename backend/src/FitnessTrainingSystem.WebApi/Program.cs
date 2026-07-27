@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Scalar.AspNetCore;
-
+using FitnessTrainingSystem.Infrastructure.Hubs;
 // Load environment variables from .env file in the backend root directory
 var envPath = Path.Combine(Directory.GetCurrentDirectory(), "..", "..", ".env");
 if (File.Exists(envPath))
@@ -32,7 +32,6 @@ builder.Services.AddAutoMapper(cfg => cfg.AddMaps(typeof(FitnessTrainingSystem.A
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
-// 🟢 Đã tối ưu hóa định dạng JSON ở đây
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
     {
@@ -43,7 +42,6 @@ builder.Services.AddControllers()
         options.JsonSerializerOptions.Converters.Add(new FitnessTrainingSystem.WebApi.Converters.NullableDecimalRoundingJsonConverter());
     });
 
-// 🟢 Đã bổ sung MediatR để kích hoạt Command Handler xử lý AI
 builder.Services.AddMediatR(cfg => {
     cfg.RegisterServicesFromAssemblies(AppDomain.CurrentDomain.GetAssemblies());
 });
@@ -79,8 +77,10 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 return Task.CompletedTask;
             }
         };
-    });
 
+
+    
+    });
 builder.Services.AddSignalR();
 builder.Services.AddSingleton<Microsoft.AspNetCore.SignalR.IUserIdProvider, FitnessTrainingSystem.Infrastructure.Hubs.SubClaimUserIdProvider>();
 
@@ -136,8 +136,7 @@ app.UseCors("AllowFrontend");
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
-app.MapHub<FitnessTrainingSystem.Infrastructure.Hubs.NotificationHub>("/r/notifications");
-
+app.MapHub<NotificationHub>("/r/notifications");
 // (Bạn có thể giữ hoặc xóa đoạn code WeatherForecast mặc định này tùy ý)
 var summaries = new[]
 {

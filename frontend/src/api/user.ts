@@ -1,16 +1,4 @@
-import axios from 'axios';
-import { useAuthStore } from '../store/useAuthStore';
-
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5007/api';
-
-const getAuthHeaders = () => {
-    const token = useAuthStore.getState().accessToken;
-    return {
-        headers: {
-            Authorization: `Bearer ${token}`
-        }
-    };
-};
+import apiClient from '../lib/axios';
 
 export interface UserProfile {
     name: string;
@@ -26,7 +14,7 @@ export interface UserProfile {
 
 export const getProfile = async (): Promise<UserProfile | null> => {
     try {
-        const response = await axios.get(`${API_URL}/user/profile`, getAuthHeaders());
+        const response = await apiClient.get<UserProfile>('/user/profile');
         return response.data;
     } catch (error) {
         console.error("Error fetching profile", error);
@@ -36,7 +24,7 @@ export const getProfile = async (): Promise<UserProfile | null> => {
 
 export const changePassword = async (currentPassword: string, newPassword: string): Promise<boolean> => {
     try {
-        await axios.post(`${API_URL}/user/change-password`, { currentPassword, newPassword }, getAuthHeaders());
+        await apiClient.post('/user/change-password', { currentPassword, newPassword });
         return true;
     } catch (error) {
         console.error("Error changing password", error);

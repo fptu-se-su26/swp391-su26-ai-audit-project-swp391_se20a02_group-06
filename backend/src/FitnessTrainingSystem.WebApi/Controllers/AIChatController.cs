@@ -35,9 +35,20 @@ public class AIChatController : ControllerBase
         return Ok(result);
     }
     [HttpGet("{sessionId}")]
-public async Task<IActionResult> GetMessages(int sessionId)
-{
-    var result = await _chatService.GetMessagesAsync(sessionId);
-    return Ok(result);
-}
+    public async Task<IActionResult> GetMessages(int sessionId)
+    {
+        var result = await _chatService.GetMessagesAsync(sessionId);
+        return Ok(result);
+    }
+
+    [HttpGet("diet-history")]
+    public async Task<IActionResult> GetDietHistory()
+    {
+        var userIdString = User.FindFirstValue(JwtRegisteredClaimNames.Sub) ?? User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (!int.TryParse(userIdString, out var userId))
+            return Unauthorized(new { message = "Invalid user identifier." });
+
+        var result = await _chatService.GetDietHistoriesAsync(userId);
+        return Ok(result);
+    }
 }
