@@ -89,7 +89,7 @@ DANH SÁCH MÓN ĂN DATABASE
 {foodListJson}
 """;
 
-        var resultJson = await CallGeminiWithRetryAsync(systemInstruction, userPrompt);
+        var resultJson = await CallGeminiWithRetryAsync(systemInstruction, userPrompt, isJsonMode: true);
         
         // Clean up markdown block if API returns it
         if (resultJson.StartsWith("```json")) resultJson = resultJson.Substring(7);
@@ -128,17 +128,17 @@ LỊCH SỬ CHAT
 {conversation}
 """;
 
-        var reply = await CallGeminiWithRetryAsync(systemInstruction, prompt);
+        var reply = await CallGeminiWithRetryAsync(systemInstruction, prompt, isJsonMode: false);
         return reply.Trim().Trim('"', '\'');
     }
 
-    private async Task<string> CallGeminiWithRetryAsync(string systemInstruction, string userPrompt, int maxRetries = 3)
+    private async Task<string> CallGeminiWithRetryAsync(string systemInstruction, string userPrompt, bool isJsonMode = false, int maxRetries = 3)
     {
         for (int attempt = 1; attempt <= maxRetries; attempt++)
         {
             try
             {
-                return await CallGeminiAsync(systemInstruction, userPrompt);
+                return await CallGeminiAsync(systemInstruction, userPrompt, isJsonMode);
             }
             catch (HttpRequestException ex) when (attempt < maxRetries && IsTransientError(ex))
             {
@@ -148,7 +148,7 @@ LỊCH SỬ CHAT
             }
         }
 
-        return await CallGeminiAsync(systemInstruction, userPrompt);
+        return await CallGeminiAsync(systemInstruction, userPrompt, isJsonMode);
     }
 
     private static bool IsTransientError(HttpRequestException ex)
@@ -163,8 +163,12 @@ LỊCH SỬ CHAT
         };
     }
 
-    private async Task<string> CallGeminiAsync(string systemInstruction, string userPrompt)
+    private async Task<string> CallGeminiAsync(string systemInstruction, string userPrompt, bool isJsonMode)
     {
+        object config = isJsonMode 
+            ? new { responseMimeType = "application/json", temperature = 0.2 }
+            : new { temperature = 0.7 };
+
         var requestBody = new
         {
             contents = new[]
@@ -172,7 +176,7 @@ LỊCH SỬ CHAT
                 new { role = "user", parts = new[] { new { text = userPrompt } } }
             },
             systemInstruction = new { parts = new[] { new { text = systemInstruction } } },
-            generationConfig = new { responseMimeType = "application/json", temperature = 0.2 }
+            generationConfig = config
         };
 
         var json = JsonSerializer.Serialize(requestBody);
