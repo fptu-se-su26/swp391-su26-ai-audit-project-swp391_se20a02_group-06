@@ -132,10 +132,6 @@ DANH SÁCH MÓN ĂN DATABASE
         if not raw_json:
              raise Exception("AI returned empty text.")
 
-        print("\n========== GEMINI RESPONSE ==========")
-        print(raw_json)
-        print("=====================================\n")
-
         # Clean markdown formatting if present
         if raw_json.startswith("```json"):
             raw_json = raw_json[7:]
