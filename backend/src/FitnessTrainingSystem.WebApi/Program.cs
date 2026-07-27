@@ -37,6 +37,10 @@ builder.Services.AddControllers()
     .AddJsonOptions(options =>
     {
         options.JsonSerializerOptions.PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase;
+        options.JsonSerializerOptions.Converters.Add(new FitnessTrainingSystem.WebApi.Converters.DoubleRoundingJsonConverter());
+        options.JsonSerializerOptions.Converters.Add(new FitnessTrainingSystem.WebApi.Converters.NullableDoubleRoundingJsonConverter());
+        options.JsonSerializerOptions.Converters.Add(new FitnessTrainingSystem.WebApi.Converters.DecimalRoundingJsonConverter());
+        options.JsonSerializerOptions.Converters.Add(new FitnessTrainingSystem.WebApi.Converters.NullableDecimalRoundingJsonConverter());
     });
 
 // 🟢 Đã bổ sung MediatR để kích hoạt Command Handler xử lý AI

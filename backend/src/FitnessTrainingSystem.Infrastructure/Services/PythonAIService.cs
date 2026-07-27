@@ -51,7 +51,8 @@ public class PythonAiService : IGeminiAiService
 
         var options = new JsonSerializerOptions
         {
-            PropertyNameCaseInsensitive = true
+            PropertyNameCaseInsensitive = true,
+            NumberHandling = System.Text.Json.Serialization.JsonNumberHandling.AllowReadingFromString | System.Text.Json.Serialization.JsonNumberHandling.AllowNamedFloatingPointLiterals
         };
 
         var plan = JsonSerializer.Deserialize<DietPlanResponse>(
