@@ -28,17 +28,32 @@ public class AIChatController : ControllerBase
         if (!int.TryParse(userIdString, out var userId))
             return Unauthorized(new { message = "Invalid user identifier." });
 
-        var result = await _chatService.SendMessageAsync(
-            userId,
-            request);
-
-        return Ok(result);
+        try
+        {
+            var result = await _chatService.SendMessageAsync(userId, request);
+            return Ok(result);
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            return Unauthorized(new { message = ex.Message });
+        }
     }
     [HttpGet("{sessionId}")]
     public async Task<IActionResult> GetMessages(int sessionId)
     {
-        var result = await _chatService.GetMessagesAsync(sessionId);
-        return Ok(result);
+        var userIdString = User.FindFirstValue(JwtRegisteredClaimNames.Sub) ?? User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (!int.TryParse(userIdString, out var userId))
+            return Unauthorized(new { message = "Invalid user identifier." });
+
+        try
+        {
+            var result = await _chatService.GetMessagesAsync(userId, sessionId);
+            return Ok(result);
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            return Unauthorized(new { message = ex.Message });
+        }
     }
 
     [HttpGet("diet-history")]
