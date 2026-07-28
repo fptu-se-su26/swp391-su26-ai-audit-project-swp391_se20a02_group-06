@@ -665,7 +665,7 @@ Bổ sung mục 5.6 : quản lý trạng thái bất đồng bộ:
 Sinh viên/nhóm học được gì sau lần sử dụng AI này?
 
 ```text
-Giải thích khá chi tiết và giúp tôi hình dung bao quát về các tạo con AI và logic code của nó.
+Giải thích khá chi tiết và giúp tôi hình dung bao quát về cách tạo con AI và logic code của nó.
 ```
 
 ---
@@ -674,28 +674,57 @@ Giải thích khá chi tiết và giúp tôi hình dung bao quát về các tạ
 
 | Nội dung | Thông tin |
 |---|---|
-| Ngày sử dụng |  |
-| Công cụ AI | ChatGPT / Gemini / Claude / GitHub Copilot / Cursor / Antigravity / Khác |
-| Mục đích sử dụng |  |
-| Phần việc liên quan | Requirement / Design / Database / Frontend / Backend / Testing / Debug / Report / Presentation / Other |
-| Mức độ sử dụng | Hỗ trợ ý tưởng / Hỗ trợ một phần / Hỗ trợ nhiều / Sinh chính nội dung |
+| Ngày sử dụng | 25/6/2004  |
+| Công cụ AI |  Antigravity  |
+| Mục đích sử dụng | Hỏi về luồng xử lý của code dành cho AI tư vấn bài tập cho users  |
+| Phần việc liên quan |  Other |
+| Mức độ sử dụng |  Hỗ trợ nhiều  |
 
 #### 4.1. Prompt đã sử dụng
 
 ```text
-Dán nguyên văn prompt đã hỏi AI tại đây.
+Hãy giúp tôi hình dung ra luồng xử lý code đầy đủ nhắt về AI tạo bài tậpDán nguyên văn prompt đã hỏi AI tại đây.
 ```
 
 #### 4.2. Kết quả AI gợi ý
 
 ```text
-Viết tại đây...
+1. Người dùng (Frontend / UI)
+Người dùng chọn thông số (nhóm cơ, mục tiêu calo, thời gian tập) và nhấn nút "Tạo lịch tập AI".
+
+Giao diện gửi yêu cầu (HTTP Request) chứa các thông số này lên Backend C#.
+
+2. Hệ thống C# (.NET 9 Backend)
+Nhận Yêu Cầu: C# tiếp nhận yêu cầu từ Frontend.
+
+Đọc Database: C# truy vấn Database MySQL để lọc ra danh sách các bài tập thực tế tương ứng (đã được duyệt) đang có trong hệ thống.
+
+Đóng Gói: C# gom thông số của người dùng cùng danh sách bài tập thực tế từ Database lại thành một gói dữ liệu.
+
+Chuyển Tiếp: C# gửi gói dữ liệu này sang dịch vụ Python.
+
+3. Dịch vụ AI (Python FastAPI Microservice)
+Tiếp Nhận: Python nhận gói dữ liệu từ C#.
+
+Gửi tới AI: Python xây dựng câu lệnh (Prompt) kèm kho bài tập thực tế và gửi sang Gemini API.
+
+Ép Khuôn Data: Nhờ cơ chế Định dạng Đầu ra (Structured Output), Gemini buộc phải sắp xếp lịch tập bằng chính các bài tập có trong kho, tính toán số set/rep/thời gian nghỉ và trả về kết quả đúng cấu trúc JSON quy định.
+
+4. Xử lý phản hồi (Python ➔ C#)
+Python nhận kết quả từ Gemini, kiểm tra tính hợp lệ rồi gửi ngược về cho C#.
+
+C# nhận kết quả, lưu lịch sử tạo (Audit Log) để phục vụ kiểm tra/báo cáo, sau đó chuyển kết quả về lại cho Frontend.
+
+5. Hiển thị & Lưu trữ (Frontend & Database)
+Hiển Thị: Giao diện Frontend nhận dữ liệu và vẽ ra lịch luyện tập chi tiết cho người dùng xem.
+
+Lưu Bảng: Khi người dùng bấm "Lưu lịch tập", Frontend gửi xác nhận để C# lưu chính thức kế hoạch tập luyện này vào các bảng lưu trữ trong MySQL.Viết tại đây...
 ```
 
 #### 4.3. Phần sinh viên/nhóm đã sử dụng từ AI
 
 ```text
-Viết tại đây...
+Khi người dùng chọn mục tiêu trên Frontend, yêu cầu được gửi tới Backend C# . Tại đây, C# sẽ truy vấn Database MySQL để lấy danh sách các bài tập hợp lệ, đóng gói cùng thông tin người dùng rồi gửi sang (FastAPI). Python chuyển dữ liệu này tới Gemini AI để tính toán set, rep và thời gian nghỉ dựa trên đúng kho bài tập thực tế. Sau khi Gemini trả về kết quả chuẩn khung, Python chuyển ngược lại cho C# lưu lịch sử (Audit Log), rồi trả về Frontend để hiển thị lịch tập hoàn chỉnh cho người dùng lưu vào hệ thống.
 ```
 
 #### 4.4. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
@@ -710,7 +739,8 @@ Viết tại đây...
 |---|---|
 | Link commit |  |
 | File liên quan |  |
-| Screenshot |  |
+| Screenshot | <img width="1091" height="302" alt="image" src="https://github.com/user-attachments/assets/c2ac414a-cbb2-4fc8-88a7-ec26563c5222" />
+  |
 | Kết quả chạy/test |  |
 | Link video demo |  |
 | Ghi chú khác |  |
@@ -718,7 +748,7 @@ Viết tại đây...
 #### 4.6. Nhận xét cá nhân/nhóm
 
 ```text
-Viết tại đây...
+Giúp hình dung rõ luồng xử lý của AI tư vấn bài tập cho users,từ đó dễ test và tìm kiếm bug khi có sai sót.
 ```
 
 ---
@@ -727,34 +757,34 @@ Viết tại đây...
 
 | Nội dung | Thông tin |
 |---|---|
-| Ngày sử dụng |  |
-| Công cụ AI | ChatGPT / Gemini / Claude / GitHub Copilot / Cursor / Antigravity / Khác |
+| Ngày sử dụng | 6/7/2026 |
+| Công cụ AI | Gemini  |
 | Mục đích sử dụng |  |
-| Phần việc liên quan | Requirement / Design / Database / Frontend / Backend / Testing / Debug / Report / Presentation / Other |
-| Mức độ sử dụng | Hỗ trợ ý tưởng / Hỗ trợ một phần / Hỗ trợ nhiều / Sinh chính nội dung |
+| Phần việc liên quan |  Backend  |
+| Mức độ sử dụng | Hỗ trợ một phần  |
 
 #### 4.1. Prompt đã sử dụng
 
 ```text
-Dán nguyên văn prompt đã hỏi AI tại đây.
+Làm sao để đảm bảo AI Gemini không bao giờ tự bịa ra bài tập không có trong Database?Dán nguyên văn prompt đã hỏi AI tại đây.
 ```
 
 #### 4.2. Kết quả AI gợi ý
 
 ```text
-Viết tại đây...
+Dùng kỹ thuật RAG (Retrieval-Augmented Generation) đơn giản bằng cách lọc danh sách bài tập từ MySQL trước rồi mới gửi sang Python, kết hợp với tính năng Structured Output (Pydantic Schema) của Gemini để khóa chặt đầu ra.
 ```
 
 #### 4.3. Phần sinh viên/nhóm đã sử dụng từ AI
 
 ```text
-Viết tại đây...
+để triệt tiêu hoàn toàn hiện tượng bị ảo (Hallucination) của AI, nhóm không cho phép Gemini tự do sáng tạo bài tập. Thay vào đó, nhóm áp dụng mô hình RAG thu nhỏ.Trước khi gửi yêu cầu sang AI, Backend C# (.NET 9) sẽ truy vấn MySQL để lọc ra danh sách các bài tập hợp lệ (Status = Approved) thuộc đúng nhóm cơ người dùng yêu cầu. Danh sách này được đóng gói và ném sang cho AI làm ngữ cảnh cố định (Context Boundary). AI chỉ được phép lựa chọn và sắp xếp dựa trên tập dữ liệu thực tế.
 ```
 
 #### 4.4. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
 
 ```text
-Viết tại đây...
+Để triệt tiêu hoàn toàn hiện tượng AI tự bịa ra bài tập (Hallucination), hệ thống áp dụng mô hình RAG thu nhỏ kết hợp kiểm soát dữ liệu hai lớp: Đầu tiên, Backend C# sẽ truy vấn MySQL để lọc ra danh sách bài tập hợp lệ và truyền sang cho Python làm ngữ cảnh cố định; tại Microservice Python, nhóm sử dụng tính năng Structured Output của Gemini kết hợp Pydantic Schema để ép AI bắt buộc phải trả về JSON chuẩn chứa đúng các ID bài tập có trong danh sách. Nhờ đó, AI chỉ đóng vai trò tính toán số Set, Rep và thời gian nghỉ tối ưu chứ không thể tự sáng tạo bài tập nằm ngoài Database
 ```
 
 #### 4.5. Minh chứng
@@ -763,7 +793,8 @@ Viết tại đây...
 |---|---|
 | Link commit |  |
 | File liên quan |  |
-| Screenshot |  |
+| Screenshot | <img width="1197" height="652" alt="image" src="https://github.com/user-attachments/assets/fb46d2cb-6528-4ea6-bf30-86a23e204319" />
+ |
 | Kết quả chạy/test |  |
 | Link video demo |  |
 | Ghi chú khác |  |
