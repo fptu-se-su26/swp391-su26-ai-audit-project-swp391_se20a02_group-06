@@ -1141,3 +1141,121 @@ Chỉ đạo trực tiếp cho AI xử lý luôn phần lưu vết lịch sử t
 | Kết quả chạy/test | Build pass |
 | Link tài liệu/báo cáo | N/A |
 | Ghi chú khác | N/A |
+
+---
+
+### Prompt số 16
+
+| Nội dung | Thông tin |
+|---|---|
+| Ngày sử dụng | 28/07/2026 |
+| Công cụ AI | Antigravity |
+| Mục đích | Sửa lỗi Water Race Condition và AI Session Ownership |
+| Phần việc liên quan | Coding / Debug |
+| Mức độ sử dụng | Hỏi debug / code |
+
+#### 5.1. Prompt nguyên văn
+
+```text
+đây là test của member team tôi, hãy check và test lại 1 lần nưã nếu có lỗi hãy tổng hợp và cho tôi 1 plan của bạn fix những lỗi đó tôi sẽ duyệt
+```
+
+#### 5.2. Bối cảnh khi viết prompt
+
+```text
+Team vừa test xong có report một số bug liên quan đến bảo mật session của AI chat và lỗi race condition ở API log water. Cần AI đọc report và fix code.
+```
+
+#### 5.3. Kết quả AI trả về
+
+```text
+Xác nhận bug có thật và đưa ra Kế hoạch. Sau khi được duyệt, đã bọc transaction DB cho hàm LogWater, và thêm xác thực Session.UserId vào API Chat.
+```
+
+#### 5.4. Kết quả đã áp dụng vào bài
+
+```text
+Giữ nguyên toàn bộ code backend từ AI vì đã build pass.
+```
+
+#### 5.5. Phần sinh viên/nhóm đã chỉnh sửa hoặc cải tiến
+
+```text
+Duyệt plan.
+```
+
+#### 5.6. Đánh giá chất lượng prompt
+
+- [x] Prompt rõ ràng
+- [x] Prompt có đủ bối cảnh
+- [x] Prompt tạo ra kết quả tốt
+
+#### 5.7. Minh chứng liên quan
+
+| Loại minh chứng | Nội dung |
+|---|---|
+| Link commit | 1d23144 |
+| File liên quan | Backend Services/Controllers |
+| Screenshot | N/A |
+| Kết quả chạy/test | Build pass |
+| Link tài liệu/báo cáo | N/A |
+| Ghi chú khác | N/A |
+
+---
+
+### Prompt số 17
+
+| Nội dung | Thông tin |
+|---|---|
+| Ngày sử dụng | 28/07/2026 |
+| Công cụ AI | Antigravity |
+| Mục đích | Dọn dẹp code thừa ở giao diện MemberLayout |
+| Phần việc liên quan | Coding |
+| Mức độ sử dụng | Hỏi sinh code / xóa code |
+
+#### 5.1. Prompt nguyên văn
+
+```text
+cái này không dùng xoá đi vì không cần phần này... file này luôn... commit and push lại cho tôi
+```
+
+#### 5.2. Bối cảnh khi viết prompt
+
+```text
+Sau khi hoàn thiện code, thấy dư thừa một số chức năng (PT Booking) và Tabs trong Member Layout nên cần xóa đi cho sạch sẽ.
+```
+
+#### 5.3. Kết quả AI trả về
+
+```text
+AI đã xóa phần code tương ứng ở file MemberLayout.tsx.
+```
+
+#### 5.4. Kết quả đã áp dụng vào bài
+
+```text
+Giữ nguyên toàn bộ chỉnh sửa.
+```
+
+#### 5.5. Phần sinh viên/nhóm đã chỉnh sửa hoặc cải tiến
+
+```text
+N/A
+```
+
+#### 5.6. Đánh giá chất lượng prompt
+
+- [x] Prompt rõ ràng
+- [x] Prompt có đủ bối cảnh
+- [x] Prompt tạo ra kết quả tốt
+
+#### 5.7. Minh chứng liên quan
+
+| Loại minh chứng | Nội dung |
+|---|---|
+| Link commit | 16ce2d8 |
+| File liên quan | MemberLayout.tsx |
+| Screenshot | N/A |
+| Kết quả chạy/test | Build pass |
+| Link tài liệu/báo cáo | N/A |
+| Ghi chú khác | N/A |
