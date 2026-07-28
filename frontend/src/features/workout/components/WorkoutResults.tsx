@@ -145,8 +145,11 @@ const WorkoutResults: React.FC = () => {
     const totalSeconds = totalDuration * 60
     const remainingSeconds = Math.max(0, totalSeconds - elapsedSeconds)
 
+    const hasStartedRef = useRef(false)
+
     useEffect(() => {
-        if (!activeSessionId && activePlanId) {
+        if (!activeSessionId && activePlanId && !hasStartedRef.current) {
+            hasStartedRef.current = true
             startWorkoutSession({ workoutPlanId: activePlanId })
                 .then((session: any) => setActiveSessionId(session.id))
                 .catch(console.error)
