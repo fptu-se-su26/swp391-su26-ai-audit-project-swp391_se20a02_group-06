@@ -1377,3 +1377,62 @@ AI cung cấp 1 file Dockerfile 2-stage cho .NET 9 và file ignore chuẩn xác.
 | Kết quả chạy/test | N/A |
 | Link tài liệu/báo cáo | N/A |
 | Ghi chú khác | N/A |
+
+---
+
+### Prompt số 20
+
+| Nội dung | Thông tin |
+|---|---|
+| Ngày sử dụng | 28/07/2026 |
+| Công cụ AI | Antigravity |
+| Mục đích | Sửa Github workflow để deploy trang Github Pages |
+| Phần việc liên quan | DevOps |
+| Mức độ sử dụng | Hỏi cách xử lý tiếp theo |
+
+#### 5.1. Prompt nguyên văn
+
+```text
+còn phần ở phần gitpage làm sao nữa
+```
+
+#### 5.2. Bối cảnh khi viết prompt
+
+```text
+Sau khi cấu hình Render, cần setup tiếp Github Pages để gọi qua Render.
+```
+
+#### 5.3. Kết quả AI trả về
+
+```text
+AI đề xuất đổi file deploy-pages.yml để nhúng biến môi trường.
+```
+
+#### 5.4. Kết quả đã áp dụng vào bài
+
+```text
+- Tích hợp trực tiếp step bash script giải mã base64 của AI.
+```
+
+#### 5.5. Phần sinh viên/nhóm đã chỉnh sửa hoặc cải tiến
+
+```text
+- Không có.
+```
+
+#### 5.6. Đánh giá chất lượng prompt
+
+- [x] Prompt rõ ràng
+- [x] Prompt có đủ bối cảnh
+- [x] Prompt tạo ra kết quả tốt
+
+#### 5.7. Minh chứng liên quan
+
+| Loại minh chứng | Nội dung |
+|---|---|
+| Link commit | N/A |
+| File liên quan | deploy-pages.yml |
+| Screenshot | N/A |
+| Kết quả chạy/test | N/A |
+| Link tài liệu/báo cáo | N/A |
+| Ghi chú khác | N/A |

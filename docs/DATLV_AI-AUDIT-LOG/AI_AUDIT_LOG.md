@@ -1926,3 +1926,56 @@ chưa có docker file đúng không deploy BE lên đi
 ```text
 - AI nắm bắt luồng cấu trúc C# và viết Dockerfile rất chuẩn xác.
 ```
+
+---
+
+### Lần sử dụng AI số 23
+
+| Nội dung | Thông tin |
+|---|---|
+| Ngày sử dụng | 28/07/2026 |
+| Công cụ AI | Antigravity |
+| Mục đích sử dụng | Cấu hình Github Actions deploy Frontend |
+| Phần việc liên quan | DevOps / Frontend |
+| Mức độ sử dụng | Sinh chính nội dung |
+
+#### 4.1. Prompt đã sử dụng
+
+```text
+còn phần ở phần gitpage làm sao nữa
+```
+
+#### 4.2. Kết quả AI gợi ý
+
+```text
+- Thêm bước giải mã Secret ENV_FILE_BASE64 ra thành file .env trong deploy-pages.yml.
+```
+
+#### 4.3. Phần sinh viên/nhóm đã sử dụng từ AI
+
+```text
+- Chấp nhận 100% code AI sửa đổi file YAML.
+```
+
+#### 4.4. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
+
+```text
+- Tự chuẩn bị mã Base64 của link Render và cấu hình Secret trên Github Settings.
+```
+
+#### 4.5. Minh chứng
+
+| Loại minh chứng | Nội dung |
+|---|---|
+| Link commit | (will be updated) |
+| File liên quan | .github/workflows/deploy-pages.yml |
+| Screenshot | N/A |
+| Kết quả chạy/test | Build Frontend thành công lấy được link Render |
+| Link video demo | N/A |
+| Ghi chú khác | N/A |
+
+#### 4.6. Nhận xét cá nhân/nhóm
+
+```text
+- AI hiểu rất rõ luồng của Github Actions và cách bảo mật biến môi trường.
+```
