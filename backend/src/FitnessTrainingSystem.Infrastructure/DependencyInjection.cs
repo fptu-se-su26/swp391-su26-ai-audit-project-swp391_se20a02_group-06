@@ -42,8 +42,8 @@ public static class DependencyInjection
         services.AddScoped<IFoodService, FoodService>();
         services.AddScoped<IBodyMetricService, BodyMetricService>();
         services.AddScoped<IEmailOTPRepository, FitnessTrainingSystem.Infrastructure.Repositories.EmailOTPRepository>();
-        services.AddScoped<FitnessTrainingSystem.Application.Interfaces.IEmailService, FitnessTrainingSystem.Infrastructure.Services.EmailService>();
-        services.AddScoped<FitnessTrainingSystem.Application.Interfaces.IOTPService, FitnessTrainingSystem.Infrastructure.Services.OTPService>();
+        services.AddScoped<IEmailService, EmailService>();
+        services.AddScoped<IOTPService, OTPService>();
         services.AddScoped<IMuscleGroupService, MuscleGroupService>();
         services.AddScoped<IWorkoutService, WorkoutService>();
         services.AddScoped<INutritionService, NutritionService>();
@@ -58,7 +58,7 @@ public static class DependencyInjection
 
         services.AddScoped<ICloudinaryService, CloudinaryService>();
 
-        services.AddHttpClient<IGeminiAiService, PythonAiService>(client =>
+        services.AddHttpClient<IGeminiAiService, DirectGeminiService>(client =>
         {
             var baseUrl = configuration["AiService:BaseUrl"] ?? "http://localhost:8000";
             client.BaseAddress = new Uri(baseUrl);

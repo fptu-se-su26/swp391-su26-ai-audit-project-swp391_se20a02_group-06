@@ -43,6 +43,7 @@ import useSWR from 'swr'
 import apiClient from '../../lib/axios'
 import AdminLayout from '../../components/shared/Layout/AdminLayout.tsx'
 import { submitExercise, type ExerciseRequestDto } from '../../api/exerciseRequests'
+import { uploadVideo } from '../../api/upload'
 
 const difficultyLabels: Record<number, string> = {
     0: 'Beginner',
@@ -80,6 +81,7 @@ const PtExerciseRequests: React.FC = () => {
     const [videoUrl, setVideoUrl] = useState('')
     const [duration, setDuration] = useState('')
     const [isSubmitting, setIsSubmitting] = useState(false)
+    const [isUploadingVideo, setIsUploadingVideo] = useState(false)
 
     const filteredRequests = useMemo(() => {
         if (!requests) return []
@@ -98,8 +100,28 @@ const PtExerciseRequests: React.FC = () => {
         setTitle(req.title || '')
         setDescription(req.description || '')
         setVideoUrl(req.videoUrl || '')
-        setDuration(req.duration ? req.duration.toString() : '')
+        setDuration(req.duration?.toString() || '')
         onOpen()
+    }
+
+    const handleVideoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0]
+        if (!file) return
+
+        setIsUploadingVideo(true)
+        try {
+            const { url } = await uploadVideo(file)
+            setVideoUrl(url)
+            toast({ title: 'Video uploaded', status: 'success', duration: 3000, isClosable: true })
+        } catch (error: any) {
+            toast({
+                title: 'Failed to upload video',
+                description: error.response?.data?.message || 'Something went wrong.',
+                status: 'error', duration: 3000, isClosable: true,
+            })
+        } finally {
+            setIsUploadingVideo(false)
+        }
     }
 
     const handleFormSubmit = async () => {
@@ -432,6 +454,7 @@ const PtExerciseRequests: React.FC = () => {
                                         bg="#0A0C10"
                                         borderColor="#1e2028"
                                         color="white"
+                                        h="44px"
                                         _hover={{ borderColor: "#E03030" }}
                                         _focus={{ borderColor: "#E03030", boxShadow: "none" }}
                                     />
@@ -439,16 +462,33 @@ const PtExerciseRequests: React.FC = () => {
 
                                 <FormControl isRequired>
                                     <FormLabel color="#8A8A93" fontSize="13px">VIDEO DEMONSTRATION URL</FormLabel>
-                                    <Input
-                                        value={videoUrl}
-                                        onChange={(e) => setVideoUrl(e.target.value)}
-                                        placeholder="e.g. https://www.youtube.com/watch?v=..."
-                                        bg="#0A0C10"
-                                        borderColor="#1e2028"
-                                        color="white"
-                                        _hover={{ borderColor: "#E03030" }}
-                                        _focus={{ borderColor: "#E03030", boxShadow: "none" }}
-                                    />
+                                    <Flex gap={3} align="center">
+                                        <Input
+                                            value={videoUrl}
+                                            onChange={(e) => setVideoUrl(e.target.value)}
+                                            placeholder="e.g. https://www.youtube.com/watch?v=..."
+                                            bg="#0A0C10"
+                                            borderColor="#1e2028"
+                                            color="white"
+                                            h="44px"
+                                            _hover={{ borderColor: "#E03030" }}
+                                            _focus={{ borderColor: "#E03030", boxShadow: "none" }}
+                                        />
+                                        <Button
+                                            as="label" htmlFor="video-upload"
+                                            bg="#333" color="white" h="44px" borderRadius="md"
+                                            _hover={{ bg: "#444" }} isLoading={isUploadingVideo} cursor="pointer" px={6}
+                                        >
+                                            Upload
+                                        </Button>
+                                        <Input
+                                            id="video-upload"
+                                            type="file"
+                                            accept="video/mp4,video/mpeg,video/quicktime,video/x-msvideo,video/webm,image/gif"
+                                            display="none"
+                                            onChange={handleVideoUpload}
+                                        />
+                                    </Flex>
                                 </FormControl>
 
                                 <Grid templateColumns="1fr" gap="4">
@@ -462,6 +502,7 @@ const PtExerciseRequests: React.FC = () => {
                                             bg="#0A0C10"
                                             borderColor="#1e2028"
                                             color="white"
+                                            h="44px"
                                             _hover={{ borderColor: "#E03030" }}
                                             _focus={{ borderColor: "#E03030", boxShadow: "none" }}
                                         />

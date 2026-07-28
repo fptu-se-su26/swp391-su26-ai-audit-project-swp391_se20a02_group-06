@@ -24,13 +24,15 @@ public class AIChatService : IAIChatService
     {
         AIChatSession session;
 
-        // 1. Lấy hoặc tạo mới Session
         if (request.SessionId.HasValue)
         {
             session = await _context.AIChatSessions
                 .Include(x => x.Messages)
                 .FirstOrDefaultAsync(x => x.Id == request.SessionId.Value)
                 ?? throw new Exception("Chat session not found.");
+                
+            if (session.UserId != userId) 
+                throw new UnauthorizedAccessException("Not your session.");
         }
         else
         {
@@ -59,11 +61,14 @@ public class AIChatService : IAIChatService
         _context.AIChatMessages.Add(userMessage);
         await _context.SaveChangesAsync();
 
-        // 3. Lấy toàn bộ lịch sử hội thoại hiện tại
+        // 3. Lấy tối đa 6 tin nhắn gần nhất để làm ngữ cảnh (giảm token)
         var history = await _context.AIChatMessages
             .Where(x => x.SessionId == session.Id)
-            .OrderBy(x => x.CreatedAt)
+            .OrderByDescending(x => x.CreatedAt)
+            .Take(6)
             .ToListAsync();
+
+        history.Reverse(); // Đảo lại thứ tự thời gian tăng dần
 
         var conversation = string.Join("\n", history.Select(x => $"{x.Role}: {x.Message}"));
 
@@ -105,7 +110,7 @@ Weight: {metric?.Weight ?? 65}
         string finalReplyToSave = aiReply;
 
         // 6. KIỂM TRA ĐIỀU KIỆN SINH THỰC ĐƠN
-        if (aiReply.Trim().Equals("READY_TO_GENERATE", StringComparison.OrdinalIgnoreCase))
+        if (aiReply.Contains("READY_TO_GENERATE", StringComparison.OrdinalIgnoreCase))
         {
             var dietPlan = await GenerateDietPlanAsync(session.Id);
 
@@ -162,8 +167,12 @@ Weight: {metric?.Weight ?? 65}
     }
 
 
-    public async Task<List<AIChatResponse>> GetMessagesAsync(int sessionId)
+    public async Task<List<AIChatResponse>> GetMessagesAsync(int userId, int sessionId)
     {
+        var session = await _context.AIChatSessions.FirstOrDefaultAsync(x => x.Id == sessionId);
+        if (session == null || session.UserId != userId)
+            throw new UnauthorizedAccessException("Not your session.");
+
         var messages = await _context.AIChatMessages
             .Where(x => x.SessionId == sessionId)
             .OrderBy(x => x.CreatedAt)
@@ -250,11 +259,15 @@ Weight: {metric?.Weight ?? 65}
 
         var foodJson = System.Text.Json.JsonSerializer.Serialize(foodObj);
 
+        var historyMessages = session.Messages
+            .OrderByDescending(x => x.CreatedAt)
+            .Take(10)
+            .Reverse()
+            .ToList();
+
         var history = string.Join(
             "\n",
-            session.Messages
-            .OrderBy(x => x.CreatedAt)
-            .Select(x => $"{x.Role}: {x.Message}")
+            historyMessages.Select(x => $"{x.Role}: {x.Message}")
         );
 
         int age = user.DateOfBirth == null 
@@ -316,6 +329,40 @@ Conversation:
         };
 
         _context.AIDietHistories.Add(entity);
+        await _context.SaveChangesAsync(); // Save to ensure transaction ordering
+
+        // TÍCH HỢP VÀO MEAL SCHEDULE (DATABASE CÓ SẴN)
+        var mealSchedule = new MealSchedule
+        {
+            UserId = userId,
+            ScheduleName = response.DietTitle ?? "AI Diet Plan",
+            TotalCaloriesTarget = response.DailyCalories,
+            CreatedAt = DateTime.UtcNow
+        };
+
+        _context.MealSchedules.Add(mealSchedule);
+        await _context.SaveChangesAsync(); // Get the new MealSchedule.Id
+
+        var mealScheduleItems = new List<MealScheduleItem>();
+        
+        foreach (var meal in response.Meals)
+        {
+            foreach (var food in meal.Foods)
+            {
+                var item = new MealScheduleItem
+                {
+                    MealScheduleId = mealSchedule.Id,
+                    FoodId = food.FoodId,
+                    // Kết hợp Tên Bữa Ăn và Khối lượng để UI dễ hiển thị sau này (ví dụ: "Breakfast: 100g")
+                    Amount = $"{meal.Name} - {food.Amount}",
+                    IsEaten = false,
+                    CreatedAt = DateTime.UtcNow
+                };
+                mealScheduleItems.Add(item);
+            }
+        }
+
+        _context.MealScheduleItems.AddRange(mealScheduleItems);
         await _context.SaveChangesAsync();
     }
 

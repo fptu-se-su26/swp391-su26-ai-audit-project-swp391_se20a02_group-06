@@ -1,4 +1,4 @@
-﻿using FitnessTrainingSystem.Application.DTOs.Exercises;
+using FitnessTrainingSystem.Application.DTOs.Exercises;
 using FitnessTrainingSystem.Application.Interfaces;
 using FitnessTrainingSystem.Domain.Entities;
 using FitnessTrainingSystem.Infrastructure.Persistence;
@@ -15,13 +15,34 @@ public class ExerciseService : IExerciseService
         _context = context;
     }
 
-    public async Task<IEnumerable<ExerciseDto>> GetAllAsync(int? userId = null)
+    public async Task<IEnumerable<ExerciseDto>> GetAllAsync(int? userId = null, bool? isAdmin = false)
     {
         var query = _context.Exercises
             .Include(e => e.Creator)
             .Include(e => e.MuscleGroup)
             .Include(e => e.Package)
             .AsQueryable();
+
+        // Admin sees all exercises
+        if (isAdmin == true)
+        {
+            return await query
+                .Select(e => new ExerciseDto
+                {
+                    Id = e.Id,
+                    Title = e.Title,
+                    Description = e.Description,
+                    VideoUrl = e.VideoUrl,
+                    MuscleGroup = e.MuscleGroup != null ? e.MuscleGroup.Name : null,
+                    MuscleGroupId = e.MuscleGroupId,
+                    Difficulty = e.Difficulty,
+                    Duration = e.DurationMinutes,
+                    CreatedBy = e.CreatedBy,
+                    CreatorName = e.Creator != null ? e.Creator.Fullname : null,
+                    PackageId = e.PackageId
+                })
+                .ToListAsync();
+        }
 
         // If user is logged in, check their subscription to determine which exercises they can see
         if (userId.HasValue)
@@ -66,6 +87,77 @@ public class ExerciseService : IExerciseService
                 PackageId = e.PackageId
             })
             .ToListAsync();
+    }
+
+    public async Task<IEnumerable<ExerciseCatalogDto>> GetCatalogAsync(int? userId = null)
+    {
+        var query = _context.Exercises
+            .Include(e => e.MuscleGroup)
+            .Include(e => e.Package)
+            .AsQueryable();
+
+        int? userTier = null;
+
+        if (userId.HasValue)
+        {
+            var activeSub = await _context.MembershipSubscriptions
+                .Include(s => s.Package)
+                .Where(s => s.UserId == userId.Value && s.Status == "ACTIVE" && s.EndDate > DateTime.UtcNow)
+                .OrderByDescending(s => s.StartDate)
+                .FirstOrDefaultAsync();
+
+            if (activeSub != null)
+            {
+                userTier = activeSub.Package?.Tier;
+            }
+        }
+
+        var exercises = await query.ToListAsync();
+
+        return exercises.Select(e =>
+        {
+            var isLocked = e.Package != null && (userTier == null || e.Package.Tier > userTier);
+
+            string? thumbUrl = null;
+            if (!isLocked && !string.IsNullOrEmpty(e.VideoUrl))
+            {
+                thumbUrl = ExtractThumbnailUrl(e.VideoUrl);
+            }
+
+            return new ExerciseCatalogDto
+            {
+                Id = e.Id,
+                Title = e.Title,
+                MuscleGroup = e.MuscleGroup?.Name,
+                MuscleGroupId = e.MuscleGroupId,
+                Difficulty = (int)e.Difficulty,
+                Description = e.Description,
+                VideoUrl = isLocked ? null : e.VideoUrl,
+                DurationMinutes = e.DurationMinutes,
+                PackageId = e.PackageId,
+                PackageName = e.Package?.Name,
+                IsLocked = isLocked,
+                ThumbnailUrl = thumbUrl,
+            };
+        }).ToList();
+    }
+
+    private static string? ExtractThumbnailUrl(string videoUrl)
+    {
+        var youtubeMatch = System.Text.RegularExpressions.Regex.Match(videoUrl,
+            @"(?:youtube\.com/watch\?v=|youtu\.be/|youtube\.com/embed/)([a-zA-Z0-9_-]{11})");
+        if (youtubeMatch.Success)
+            return $"https://img.youtube.com/vi/{youtubeMatch.Groups[1].Value}/mqdefault.jpg";
+
+        var cloudinaryMatch = System.Text.RegularExpressions.Regex.Match(videoUrl,
+            @"^(https?://res\.cloudinary\.com/[^/]+/video/upload/)(.+)$");
+        if (cloudinaryMatch.Success)
+            return $"{cloudinaryMatch.Groups[1].Value}so_0/{System.Text.RegularExpressions.Regex.Replace(cloudinaryMatch.Groups[2].Value, @"\.\w+$", ".jpg")}";
+
+        if (System.Text.RegularExpressions.Regex.IsMatch(videoUrl, @"\.(gif|jpg|jpeg|png|webp)(\?|$)"))
+            return videoUrl;
+
+        return null;
     }
 
     public async Task<IEnumerable<ExerciseDto>> GetMyExercisesAsync(int creatorId)
@@ -118,6 +210,28 @@ public class ExerciseService : IExerciseService
         };
     }
 
+    public async Task<bool> HasAccessAsync(int id, int? userId)
+    {
+        var exercise = await _context.Exercises
+            .Include(e => e.Package)
+            .FirstOrDefaultAsync(e => e.Id == id);
+
+        if (exercise == null) return false;
+        if (exercise.Package == null) return true;
+
+        if (userId == null) return false;
+
+        var activeSub = await _context.MembershipSubscriptions
+            .Include(s => s.Package)
+            .Where(s => s.UserId == userId.Value && s.Status == "ACTIVE" && s.EndDate > DateTime.UtcNow)
+            .OrderByDescending(s => s.StartDate)
+            .FirstOrDefaultAsync();
+
+        if (activeSub == null) return false;
+
+        return activeSub.Package?.Tier >= exercise.Package.Tier;
+    }
+
     public async Task<ExerciseDto> CreateAsync(CreateExerciseDto dto, int createdByUserId)
     {
         int? muscleGroupId = null;
@@ -164,6 +278,8 @@ public class ExerciseService : IExerciseService
         exercise.Difficulty = dto.Difficulty;
         exercise.DurationMinutes = dto.Duration;
         exercise.PackageId = dto.PackageId;
+        if (dto.CreatedBy.HasValue)
+            exercise.CreatedBy = dto.CreatedBy.Value;
 
         _context.Exercises.Update(exercise);
         await _context.SaveChangesAsync();

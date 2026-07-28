@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import useSWR from 'swr'
 import {
     Box,
     Flex,
@@ -21,8 +22,8 @@ import { useAuthStore } from '../../store/useAuthStore'
 import MemberLayout from '../../components/shared/Layout/MemberLayout'
 import BodyMetricsModal from './components/BodyMetricsModal'
 import ChangePasswordModal from './components/ChangePasswordModal'
-import { getLatestBodyMetric, addBodyMetric, type BodyMetric } from '../../api/bodyMetrics'
-import { getProfile, type UserProfile } from '../../api/user'
+import { getLatestBodyMetric, addBodyMetric } from '../../api/bodyMetrics'
+import { getProfile } from '../../api/user'
 
 const formatTimeAgo = (dateString: string | null) => {
     if (!dateString) return 'Never changed';
@@ -40,9 +41,10 @@ const formatTimeAgo = (dateString: string | null) => {
 }
 
 const Profile: React.FC = () => {
-    const [metric, setMetric] = useState<BodyMetric | null>(null)
-    const [profile, setProfile] = useState<UserProfile | null>(null)
-    const [loading, setLoading] = useState(true)
+    const { data: profile, isLoading: isProfileLoading, mutate: mutateProfile } = useSWR('profile', () => getProfile())
+    const { data: metric, isLoading: isMetricLoading, mutate: mutateMetric } = useSWR('latest-metric', () => getLatestBodyMetric())
+    const loading = isProfileLoading || isMetricLoading
+
     const [isMetricModalOpen, setIsMetricModalOpen] = useState(false)
     const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false)
     const toast = useToast()
@@ -54,42 +56,21 @@ const Profile: React.FC = () => {
         navigate('/login')
     }
 
-    const loadData = async () => {
-        try {
-            setLoading(true)
-            const [metricData, profileData] = await Promise.all([
-                getLatestBodyMetric(),
-                getProfile()
-            ])
-
-            if (metricData) {
-                setMetric(metricData)
-            } else {
-                setIsMetricModalOpen(true)
-            }
-
-            if (profileData) {
-                setProfile(profileData)
-            }
-        } catch (error) {
-            console.error("Failed to fetch data", error)
-        } finally {
-            setLoading(false)
-        }
-    }
-
+    // Automatically open metric modal if no metric exists
     useEffect(() => {
-        loadData()
-    }, [])
+        if (!isMetricLoading && metric === null) {
+            setIsMetricModalOpen(true)
+        }
+    }, [isMetricLoading, metric])
 
     const handleSaveMetrics = async (data: { age: number; gender: string; height: number; weight: number }) => {
-        const newMetric = await addBodyMetric(data)
-        setMetric(newMetric)
+        await addBodyMetric(data)
+        mutateMetric()
         toast({ title: 'Body Metrics saved successfully', status: 'success', duration: 3000 })
     }
 
     const handlePasswordSuccess = () => {
-        loadData() // Reload to get updated passwordChangedAt
+        mutateProfile() // Reload to get updated passwordChangedAt
     }
 
     return (

@@ -25,7 +25,7 @@ import {
 import useSWR from 'swr'
 import apiClient from '../../lib/axios'
 import AdminLayout from '../../components/shared/Layout/AdminLayout.tsx'
-import AppButton from '../../components/shared/Button/AppButton'
+
 import { uploadVideo } from '../../api/upload'
 import { useAuthStore } from '../../store/useAuthStore'
 import ExerciseFilters from '../../features/admin/components/ExerciseFilters'
@@ -55,6 +55,13 @@ interface ProductPackageDto {
     tier: number
 }
 
+interface CreatorDto {
+    id: number
+    fullname: string
+    email: string
+    roleName: string
+}
+
 const difficultyLabels: Record<number, string> = {
     0: 'Beginner',
     1: 'Intermediate',
@@ -69,6 +76,7 @@ const AdminWorkouts: React.FC = () => {
     const toast = useToast()
     const { data: exercises, error, isLoading, mutate } = useSWR<ExerciseDto[]>('/exercises', fetcher)
     const { data: packages } = useSWR<ProductPackageDto[]>('/product-packages', fetcher)
+    const { data: creators } = useSWR<CreatorDto[]>('/user/creators', fetcher)
     const roleId = useAuthStore(state => state.roleId)
     const [isSubmitting, setIsSubmitting] = useState(false)
     const [isUploadingVideo, setIsUploadingVideo] = useState(false)
@@ -78,6 +86,7 @@ const AdminWorkouts: React.FC = () => {
     const [categoryFilter, setCategoryFilter] = useState('All')
     const [difficultyFilter, setDifficultyFilter] = useState('all')
     const [muscleTargetFilter, setMuscleTargetFilter] = useState('all')
+    const [packageFilter, setPackageFilter] = useState('all')
     const [currentPage, setCurrentPage] = useState(1)
     const pageSize = 10
 
@@ -89,6 +98,7 @@ const AdminWorkouts: React.FC = () => {
         videoUrl: '',
         duration: '',
         packageId: '',
+        createdBy: '',
     })
 
     const filteredExercises = useMemo(() => {
@@ -101,9 +111,12 @@ const AdminWorkouts: React.FC = () => {
             const matchesDifficulty = difficultyFilter === 'all' || ex.difficulty.toString() === difficultyFilter
             const mt = ex.muscleTarget || ex.muscleGroup || ''
             const matchesMuscle = muscleTargetFilter === 'all' || mt === muscleTargetFilter
-            return matchesSearch && matchesCategory && matchesDifficulty && matchesMuscle
+            const matchesPackage = packageFilter === 'all'
+                || (packageFilter === 'free' && ex.packageId == null)
+                || ex.packageId?.toString() === packageFilter
+            return matchesSearch && matchesCategory && matchesDifficulty && matchesMuscle && matchesPackage
         })
-    }, [exercises, searchQuery, categoryFilter, difficultyFilter, muscleTargetFilter])
+    }, [exercises, searchQuery, categoryFilter, difficultyFilter, muscleTargetFilter, packageFilter])
 
     const uniqueCategories = useMemo(() => {
         if (!exercises) return []
@@ -115,6 +128,11 @@ const AdminWorkouts: React.FC = () => {
         return Array.from(new Set(exercises.map(e => e.muscleTarget || e.muscleGroup || '').filter(Boolean))).sort()
     }, [exercises])
 
+    const packageOptions = useMemo(() => {
+        if (!packages) return []
+        return packages.filter(p => p.tier > 0).map(p => ({ id: p.id, name: p.name }))
+    }, [packages])
+
     const totalPages = Math.max(1, Math.ceil((filteredExercises.length || 0) / pageSize))
     const safePage = Math.min(currentPage, totalPages)
     const paginatedExercises = filteredExercises.slice((safePage - 1) * pageSize, safePage * pageSize)
@@ -125,7 +143,7 @@ const AdminWorkouts: React.FC = () => {
     }
 
     const resetForm = () => {
-        setFormData({ title: '', muscleGroup: '', difficulty: '', description: '', videoUrl: '', duration: '', packageId: '' })
+        setFormData({ title: '', muscleGroup: '', difficulty: '', description: '', videoUrl: '', duration: '', packageId: '', createdBy: '' })
         setEditingExercise(null)
     }
 
@@ -139,6 +157,7 @@ const AdminWorkouts: React.FC = () => {
             videoUrl: ex.videoUrl || '',
             duration: ex.duration?.toString() || '',
             packageId: ex.packageId?.toString() || '',
+            createdBy: ex.createdBy?.toString() || '',
         })
         onEditOpen()
     }
@@ -205,6 +224,7 @@ const AdminWorkouts: React.FC = () => {
                 videoUrl: formData.videoUrl || null,
                 duration: formData.duration ? parseInt(formData.duration) : null,
                 packageId: formData.packageId ? parseInt(formData.packageId) : null,
+                createdBy: formData.createdBy ? parseInt(formData.createdBy) : null,
             })
             toast({ title: 'Exercise updated', status: 'success', duration: 3000, isClosable: true })
             resetForm()
@@ -372,6 +392,31 @@ const AdminWorkouts: React.FC = () => {
                     ))}
                 </Select>
             </FormControl>
+            {isEdit && (
+                <FormControl>
+                    <FormLabel color="#8A8A93">Creator</FormLabel>
+                    {editingExercise?.creatorName && (
+                        <Text fontSize="13px" color="#6A6A73" mb={1}>
+                            Current: {editingExercise.creatorName}
+                        </Text>
+                    )}
+                    <Select
+                        name="createdBy"
+                        value={formData.createdBy}
+                        onChange={handleInputChange}
+                        bg="#0A0C10" border="1px solid #1e2028" h="44px" borderRadius="md"
+                        _hover={{ borderColor: "#E03030" }}
+                        _focus={{ borderColor: "#E03030", boxShadow: "none" }}
+                    >
+                        <option value="" style={{ color: "black" }}>No change</option>
+                        {creators?.map(c => (
+                            <option key={c.id} value={c.id.toString()} style={{ color: "black" }}>
+                                {c.fullname} ({c.roleName})
+                            </option>
+                        ))}
+                    </Select>
+                </FormControl>
+            )}
         </VStack>
     )
 
@@ -392,8 +437,11 @@ const AdminWorkouts: React.FC = () => {
                         onDifficultyChange={(val) => { setDifficultyFilter(val); setCurrentPage(1); }}
                         muscleTargetFilter={muscleTargetFilter}
                         onMuscleTargetChange={(val) => { setMuscleTargetFilter(val); setCurrentPage(1); }}
+                        packageFilter={packageFilter}
+                        onPackageChange={(val) => { setPackageFilter(val); setCurrentPage(1); }}
                         categories={uniqueCategories}
                         muscleTargets={uniqueMuscleTargets}
+                        packages={packageOptions}
                         onAddExercise={() => { resetForm(); onCreateOpen(); }}
                         showAddButton={roleId === 1}
                     />

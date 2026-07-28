@@ -1,6 +1,8 @@
 using System.Text;
 using FitnessTrainingSystem.Infrastructure;
+using FitnessTrainingSystem.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Scalar.AspNetCore;
 using FitnessTrainingSystem.Infrastructure.Hubs;
@@ -34,6 +36,10 @@ builder.Services.AddControllers()
     .AddJsonOptions(options =>
     {
         options.JsonSerializerOptions.PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase;
+        options.JsonSerializerOptions.Converters.Add(new FitnessTrainingSystem.WebApi.Converters.DoubleRoundingJsonConverter());
+        options.JsonSerializerOptions.Converters.Add(new FitnessTrainingSystem.WebApi.Converters.NullableDoubleRoundingJsonConverter());
+        options.JsonSerializerOptions.Converters.Add(new FitnessTrainingSystem.WebApi.Converters.DecimalRoundingJsonConverter());
+        options.JsonSerializerOptions.Converters.Add(new FitnessTrainingSystem.WebApi.Converters.NullableDecimalRoundingJsonConverter());
     });
 
 builder.Services.AddMediatR(cfg => {
@@ -76,6 +82,8 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     
     });
 builder.Services.AddSignalR();
+builder.Services.AddSingleton<Microsoft.AspNetCore.SignalR.IUserIdProvider, FitnessTrainingSystem.Infrastructure.Hubs.SubClaimUserIdProvider>();
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", policy =>
@@ -87,6 +95,73 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
+// Auto-create missing tables in development
+if (app.Environment.IsDevelopment())
+{
+    using var scope = app.Services.CreateScope();
+    var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    db.Database.EnsureCreated();
+    // Ensure EmailOTP table exists (for OTP feature) - snake_case columns match EF Core naming convention
+    db.Database.ExecuteSqlRaw(@"
+        CREATE TABLE IF NOT EXISTS `EmailOTP` (
+            `id` VARCHAR(36) NOT NULL,
+            `email` VARCHAR(100) NOT NULL,
+            `otp_code` VARCHAR(10) NOT NULL,
+            `purpose` VARCHAR(50) NOT NULL,
+            `expired_at` DATETIME NOT NULL,
+            `is_used` TINYINT(1) NOT NULL DEFAULT 0,
+            `attempt_count` INT NOT NULL DEFAULT 0,
+            `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            PRIMARY KEY (`id`),
+            INDEX `IX_EmailOTP_Email` (`email`),
+            INDEX `IX_EmailOTP_Purpose` (`purpose`),
+            INDEX `IX_EmailOTP_ExpiredAt` (`expired_at`)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+        CREATE TABLE IF NOT EXISTS `ai_chat_sessions` (
+            `id` INT NOT NULL AUTO_INCREMENT,
+            `user_id` INT NOT NULL,
+            `title` VARCHAR(255) NOT NULL DEFAULT 'Nutrition AI Chat',
+            `status` VARCHAR(50) NOT NULL DEFAULT 'active',
+            `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            PRIMARY KEY (`id`),
+            INDEX `IX_ai_chat_sessions_user_id` (`user_id`),
+            CONSTRAINT `FK_ai_chat_sessions_users_user_id` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+        CREATE TABLE IF NOT EXISTS `ai_chat_messages` (
+            `id` INT NOT NULL AUTO_INCREMENT,
+            `session_id` INT NOT NULL,
+            `sender` VARCHAR(50) NOT NULL,
+            `message` LONGTEXT NOT NULL,
+            `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            PRIMARY KEY (`id`),
+            INDEX `IX_ai_chat_messages_session_id` (`session_id`),
+            CONSTRAINT `FK_ai_chat_messages_sessions_session_id` FOREIGN KEY (`session_id`) REFERENCES `ai_chat_sessions` (`id`) ON DELETE CASCADE
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+        CREATE TABLE IF NOT EXISTS `ai_diet_histories` (
+            `id` INT NOT NULL AUTO_INCREMENT,
+            `user_id` INT NOT NULL,
+            `session_id` INT NULL,
+            `diet_title` VARCHAR(255) NOT NULL,
+            `total_calories` INT NOT NULL,
+            `protein` INT NOT NULL,
+            `carbs` INT NOT NULL,
+            `fat` INT NOT NULL,
+            `raw_json` LONGTEXT NOT NULL,
+            `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            PRIMARY KEY (`id`),
+            INDEX `IX_ai_diet_histories_user_id` (`user_id`),
+            INDEX `IX_ai_diet_histories_session_id` (`session_id`),
+            CONSTRAINT `FK_ai_diet_histories_users_user_id` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
+            CONSTRAINT `FK_ai_diet_histories_sessions_session_id` FOREIGN KEY (`session_id`) REFERENCES `ai_chat_sessions` (`id`) ON DELETE SET NULL
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+    ");
+    }
+    
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -121,6 +196,15 @@ app.MapGet("/weatherforecast", () =>
     return forecast;
 })
 .WithName("GetWeatherForecast");
+
+try
+{
+    using var scope = app.Services.CreateScope();
+    var dbContext = scope.ServiceProvider.GetRequiredService<FitnessTrainingSystem.Infrastructure.Persistence.ApplicationDbContext>();
+    dbContext.Database.ExecuteSqlRaw("ALTER TABLE users ADD COLUMN refresh_token longtext;");
+    dbContext.Database.ExecuteSqlRaw("ALTER TABLE users ADD COLUMN refresh_token_expiry_time datetime(6);");
+}
+catch { }
 
 app.Run();
 

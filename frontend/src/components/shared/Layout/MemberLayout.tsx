@@ -53,7 +53,11 @@ const MemberLayout: React.FC<MemberLayoutProps> = ({ children }) => {
                     <HeaderActions />
                 </Flex>
 
-                <Box as="main" pt="80px" pb="32px" minH="100vh">
+                <Box maxW="1200px" mx="auto" px="4">
+
+                </Box>
+                <Box as="main" pt={['80px', '120px']} pb="32px" minH="100vh">
+
                     {children}
                 </Box>
             </Box>

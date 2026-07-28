@@ -3,12 +3,23 @@ import { Flex, Text, Button, HStack, Icon } from '@chakra-ui/react'
 import { FiChevronLeft, FiChevronRight } from 'react-icons/fi'
 import { adminColors } from '../../../pages/admin/AdminPrimitives'
 
+interface PaginationFooterColors {
+    dim?: string
+    text?: string
+    primary?: string
+    surfaceVariant?: string
+}
+
 interface PaginationFooterProps {
     currentPage: number
     totalPages: number
     totalItems: number
     pageSize: number
     onPageChange: (page: number) => void
+    /** Hide the "Showing X–Y of Z" text */
+    hideItemCount?: boolean
+    /** Override default admin color tokens */
+    colors?: PaginationFooterColors
 }
 
 const PaginationFooter: React.FC<PaginationFooterProps> = ({
@@ -17,7 +28,10 @@ const PaginationFooter: React.FC<PaginationFooterProps> = ({
     totalItems,
     pageSize,
     onPageChange,
+    hideItemCount = false,
+    colors: colorOverrides,
 }) => {
+    const c = { ...adminColors, ...colorOverrides }
     const startItem = (currentPage - 1) * pageSize + 1
     const endItem = Math.min(currentPage * pageSize, totalItems)
 
@@ -34,16 +48,18 @@ const PaginationFooter: React.FC<PaginationFooterProps> = ({
 
     return (
         <Flex
-            justify="space-between"
+            justify={hideItemCount ? 'center' : 'space-between'}
             align="center"
             px={6}
             py={4}
             borderTop="1px solid"
-            borderColor={adminColors.surfaceVariant}
+            borderColor={c.surfaceVariant}
         >
-            <Text color={adminColors.dim} fontSize="12px">
-                Showing {startItem}–{endItem} of {totalItems}
-            </Text>
+            {!hideItemCount && (
+                <Text color={c.dim} fontSize="12px">
+                    Showing {startItem}–{endItem} of {totalItems}
+                </Text>
+            )}
             <HStack spacing={1}>
                 <Button
                     size="sm"
@@ -51,9 +67,9 @@ const PaginationFooter: React.FC<PaginationFooterProps> = ({
                     h="32px"
                     minW="32px"
                     p={0}
-                    color={adminColors.dim}
+                    color={c.dim}
                     isDisabled={currentPage <= 1}
-                    _hover={{ color: adminColors.text }}
+                    _hover={{ color: c.text }}
                     onClick={() => onPageChange(currentPage - 1)}
                 >
                     <Icon as={FiChevronLeft} boxSize="16px" />
@@ -66,12 +82,12 @@ const PaginationFooter: React.FC<PaginationFooterProps> = ({
                         minW="32px"
                         p={0}
                         borderRadius="8px"
-                        bg={p === currentPage ? adminColors.primary : 'transparent'}
-                        color={p === currentPage ? 'white' : adminColors.dim}
+                        bg={p === currentPage ? c.primary : 'transparent'}
+                        color={p === currentPage ? 'white' : c.dim}
                         fontSize="13px"
                         fontWeight={p === currentPage ? '700' : '500'}
                         _hover={{
-                            bg: p === currentPage ? adminColors.primary : adminColors.surfaceVariant,
+                            bg: p === currentPage ? c.primary : c.surfaceVariant,
                         }}
                         onClick={() => onPageChange(p)}
                     >
@@ -84,9 +100,9 @@ const PaginationFooter: React.FC<PaginationFooterProps> = ({
                     h="32px"
                     minW="32px"
                     p={0}
-                    color={adminColors.dim}
+                    color={c.dim}
                     isDisabled={currentPage >= totalPages}
-                    _hover={{ color: adminColors.text }}
+                    _hover={{ color: c.text }}
                     onClick={() => onPageChange(currentPage + 1)}
                 >
                     <Icon as={FiChevronRight} boxSize="16px" />

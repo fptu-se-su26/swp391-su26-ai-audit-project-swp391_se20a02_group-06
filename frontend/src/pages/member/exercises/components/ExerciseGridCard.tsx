@@ -4,75 +4,16 @@ import {
 } from '@chakra-ui/react'
 import { FiPlay, FiLock, FiStar, FiClock } from 'react-icons/fi'
 
-const ThumbnailMedia: React.FC<{ url: string; locked: boolean }> = ({ url, locked }) => {
-    const imageFilter = locked ? 'grayscale(1) blur(2px)' : undefined
-    const imageOpacity = locked ? 0.5 : 0.8
-
-    const youtubeMatch = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([a-zA-Z0-9_-]{11})/)
-    if (youtubeMatch) {
-        return (
-            <Box
-                as="img"
-                src={`https://img.youtube.com/vi/${youtubeMatch[1]}/mqdefault.jpg`}
-                alt=""
-                w="full" h="full" objectFit="cover"
-                opacity={imageOpacity}
-                filter={imageFilter}
-            />
-        )
-    }
-
-    const cloudinaryMatch = url.match(/^(https?:\/\/res\.cloudinary\.com\/[^/]+\/video\/upload\/)(.+)$/)
-    if (cloudinaryMatch) {
-        return (
-            <Box
-                as="img"
-                src={`${cloudinaryMatch[1]}so_0/${cloudinaryMatch[2].replace(/\.\w+$/, '.jpg')}`}
-                alt=""
-                w="full" h="full" objectFit="cover"
-                opacity={imageOpacity}
-                filter={imageFilter}
-            />
-        )
-    }
-
-    if (/\.(gif|jpg|jpeg|png|webp)(\?|$)/i.test(url)) {
-        return (
-            <Box
-                as="img"
-                src={url}
-                alt=""
-                w="full" h="full" objectFit="cover"
-                opacity={imageOpacity}
-                filter={imageFilter}
-            />
-        )
-    }
-
-    return (
-        <Box
-            as="video"
-            src={url}
-            preload="metadata"
-            playsInline
-            muted
-            w="full" h="full" objectFit="cover"
-            opacity={imageOpacity}
-            filter={imageFilter}
-        />
-    )
-}
-
 export interface ExerciseGridItem {
     id: number
     title: string
     muscleGroup: string
     difficulty: string
     duration: string
-    thumbnail?: string
     packageBadge: { label: string; color: string; bg: string }
     isLocked: boolean
     requiredPlan?: string
+    thumbnailUrl?: string
 }
 
 interface ExerciseGridCardProps {
@@ -82,7 +23,7 @@ interface ExerciseGridCardProps {
 }
 
 const ExerciseGridCard: React.FC<ExerciseGridCardProps> = ({ exercise, onPlay, onUpgrade }) => {
-    const { id, title, muscleGroup, difficulty, duration, thumbnail, packageBadge, isLocked, requiredPlan } = exercise
+    const { id, title, muscleGroup, difficulty, duration, packageBadge, isLocked, requiredPlan, thumbnailUrl } = exercise
 
     return (
         <Box
@@ -101,16 +42,25 @@ const ExerciseGridCard: React.FC<ExerciseGridCardProps> = ({ exercise, onPlay, o
         >
             {/* Thumbnail */}
             <Box position="relative" w="full" aspectRatio={16 / 9} bg="#1E1E1E" overflow="hidden">
-                {thumbnail ? (
+                {thumbnailUrl && !isLocked ? (
                     <Box
-                        _groupHover={!isLocked ? { transform: 'scale(1.05)' } : undefined}
-                        transition="transform 0.5s"
+                        overflow="hidden"
                         w="full" h="full"
                     >
-                        <ThumbnailMedia url={thumbnail} locked={isLocked} />
+                        <Box
+                            as="img"
+                            src={thumbnailUrl}
+                            alt=""
+                            w="full" h="full" objectFit="cover"
+                            opacity={0.8}
+                            _groupHover={{ transform: 'scale(1.05)' }}
+                            transition="transform 0.5s"
+                        />
                     </Box>
                 ) : (
-                    <Flex w="full" h="full" align="center" justify="center" bg="#1E1E1E" />
+                    <Flex w="full" h="full" align="center" justify="center" bg="#1E1E1E">
+                        <Icon as={FiLock} color="#333" boxSize="32px" />
+                    </Flex>
                 )}
 
                 {/* Package Badge - Top Left */}

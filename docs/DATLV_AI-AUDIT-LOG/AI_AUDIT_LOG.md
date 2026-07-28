@@ -973,6 +973,72 @@ Cung cấp screenshot giao diện lỗi cho AI để khoanh vùng và xác nhậ
 - Scalar có giao diện hiện đại hơn Swagger UI và tích hợp tốt hơn với MapOpenApi() của .NET 9.
 ```
 
+---
+
+### Lần sử dụng AI số 23
+
+| Nội dung | Thông tin |
+|---|---|
+| Ngày sử dụng | 27/07/2026 |
+| Công cụ AI | Antigravity |
+| Mục đích sử dụng | Sửa lỗi luồng Workout Suggestion trên Dashboard hiển thị sai video và cấu hình Global Decimal Rounding |
+| Phần việc liên quan | Fullstack |
+| Mức độ sử dụng | Hỗ trợ nhiều |
+
+#### 4.1. Prompt đã sử dụng
+
+```text
+1. tôi muốn những chữ số thập phân hiển thị trên UI thì phải được làm tròn đến chữ số thập phân thứ 2 chứ khong in nhiều ra làm xấu và mất format UI
+2. không phải ở phần AIChat mà ở tất cả UI luôn toàn hệ thống luôn
+3. ở dashboard phần thẻ thứ 2 sẽ hiển thị gợi ý các bài tập trong list danh sách của người dung ra để toạ cảm hứng tập, bấm start wokout thì sẽ nhảy đến bài tập đó
+4. nếu như bại đã tạo như vậy thì nhảy đến tab workout mà có luôn 4 bài tập đó kèm theo bài khỏi động luôn. 
+5. bài đàu tiên bị sai, bài đầu tiên phỉa là bìa khời động mặc định như tôi để ngừoi dụng chọn ở workout á, và ở trong popup dadng không lấy được.
+6. đây tôi chuyển bài rôif nhưng nó mãi ở bài đầu tiên là sao. phần nội dung
+7. /commit
+```
+
+#### 4.2. Kết quả AI gợi ý
+
+```text
+- Tạo `DoubleRoundingJsonConverter` và `DecimalRoundingJsonConverter` cho JSON Serializer ở Backend để làm tròn 2 chữ số toàn cầu.
+- Import các hàm cốt lõi `calcSetsReps` và `buildExerciseCard` từ luồng Workout chính để tái sử dụng trên Dashboard (Gợi ý Workout).
+- Cập nhật backend (`ExerciseCatalogDto`, `ExerciseService.cs`) để trả về thêm `VideoUrl` và `Description` cho catalog API.
+- Cập nhật giao diện Dashboard để lấy danh sách bài tập, nối bài khởi động và truyền thẳng vào Zustand store.
+```
+
+#### 4.3. Phần sinh viên/nhóm đã sử dụng từ AI
+
+```text
+- Giữ nguyên toàn bộ logic đồng bộ hoá từ luồng bài tập chính.
+- Sử dụng các lớp JSON Converter AI viết ra.
+- Dùng logic lấy VideoUrl có check phân quyền gói cước.
+```
+
+#### 4.4. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
+
+```text
+- User review liên tục (ping pong) để yêu cầu AI chỉnh sửa luồng nhảy trang sao cho bypass được Setup Screen, đảm bảo bài khởi động luôn ở vị trí số 1.
+- Gửi screenshot cho AI để debug nhanh lỗi lặp video thay vì tự dò log.
+```
+
+#### 4.5. Minh chứng
+
+| Loại minh chứng | Nội dung |
+|---|---|
+| Link commit | 4fd1dce |
+| File liên quan | ExerciseCatalogDto.cs, ExerciseService.cs, Dashboard.tsx, workoutExercises.ts, DoubleRoundingJsonConverter.cs |
+| Screenshot | Đã cung cấp trong phiên |
+| Kết quả chạy/test | Frontend/Backend build pass, chức năng hiển thị đúng video/thông số. |
+| Link video demo | N/A |
+| Ghi chú khác | N/A |
+
+#### 4.6. Nhận xét cá nhân/nhóm
+
+```text
+Bài học lớn nhất là khi build API phục vụ UI, cần phải lường trước các state (VD: `VideoUrl` bị thiếu làm React app fallback về default state).
+JSON Converter cấp độ Global rất mạnh để xử lý vấn đề format data chung toàn hệ thống thay vì phải fix từng màn hình FE.
+```
+
 ## 5. Bảng tổng hợp mức độ sử dụng AI
 
 Đánh dấu mức độ AI hỗ trợ ở từng hạng mục.
@@ -1217,4 +1283,531 @@ Yêu cầu AI cập nhật thêm luồng lọc bài tập theo chính xác nhóm
 ```text
 Cấu trúc Database do EF Core sinh ra cần phải theo dõi cẩn thận vì có thể phát sinh cột phụ nếu cấu hình Fluent API và Attributes không thống nhất.
 Trải nghiệm UX/UI trên các luồng luyện tập cần được tối ưu hóa số lượng thao tác click cho người dùng.
+```
+
+---
+
+### Lần sử dụng AI số 12
+
+| Nội dung | Thông tin |
+|---|---|
+| Ngày sử dụng | 18/07/2026 |
+| Công cụ AI | Antigravity |
+| Mục đích sử dụng | Xử lý lỗi API 500, ánh xạ JWT Claim (`sub`), tích hợp cơ chế Retry Gemini AI Service và định dạng giá tiền PayOS |
+| Phần việc liên quan | Fullstack (.NET Core BE + React FE + Gemini AI) |
+| Mức độ sử dụng | Hỗ trợ nhiều |
+
+#### 4.1. Prompt đã sử dụng
+
+```text
+- "khắc phục lỗi 500 API và kiểm tra claim JWT khi MapInboundClaims = false"
+- "tích hợp retry logic và xử lý ngoại lệ cho các cuộc gọi Gemini API"
+- "sửa hiển thị định dạng tiền tệ VNĐ trong PlanSidebar và hiển thị thông báo lỗi Backend từ PayOS"
+```
+
+#### 4.2. Kết quả AI gợi ý
+
+```text
+- Sửa cấu hình JWT authentication trong Program.cs và bổ sung claim mapper `sub`.
+- Bổ sung Try-catch và Exponential Backoff Retry trong `DirectGeminiService.cs`.
+- Cập nhật UI `PlanSidebar.tsx` sử dụng `toLocaleString('vi-VN')` hiển thị ký hiệu đồng (đ).
+- Bổ sung hiển thị thông báo lỗi từ server khi thanh toán PayOS bị gián đoạn.
+```
+
+#### 4.3. Phần sinh viên/nhóm đã sử dụng từ AI
+
+```text
+Toàn bộ code xử lý JWT claim, retry logic cho Gemini AI service và định dạng tiền tệ trên Frontend.
+```
+
+#### 4.4. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
+
+```text
+Yêu cầu AI kiểm tra cẩn thận chuỗi kết nối PayOS và kiểm thử với các gói dịch vụ thực tế.
+```
+
+#### 4.5. Minh chứng
+
+| Loại minh chứng | Nội dung |
+|---|---|
+| Link commit | a3e7084c6e9464ef72d7eeecdf30bb402120e3a4 |
+| File liên quan | Program.cs, DirectGeminiService.cs, PlanSidebar.tsx, simulate-payment.ts |
+| Screenshot | Đã kiểm tra UI thanh toán và kết nối API |
+| Kết quả chạy/test | Build FE (`npm run build`) và BE (`dotnet build`) pass 100% |
+| Link video demo | N/A |
+| Ghi chú khác | N/A |
+
+#### 4.6. Nhận xét cá nhân/nhóm
+
+```text
+Cần đảm bảo việc map Claims giữa JWT Token và Entity Framework Core đồng bộ để tránh các lỗi NullReference hoặc 401 Unauthorized rải rác.
+```
+
+---
+
+### Lần sử dụng AI số 13
+
+| Nội dung | Thông tin |
+|---|---|
+| Ngày sử dụng | 20/07/2026 |
+| Công cụ AI | Antigravity |
+| Mục đích sử dụng | Đồng bộ Topbar layout toàn ứng dụng, phát triển trang Progress với Timeline UI & Muscle Filter, thêm Coming Soon Overlay cho trang Mock |
+| Phần việc liên quan | Frontend (React UI/UX + Chakra UI) |
+| Mức độ sử dụng | Hỗ trợ nhiều |
+
+#### 4.1. Prompt đã sử dụng
+
+```text
+- "đồng nhất thanh Topbar trên tất cả Layout, ẩn thanh tìm kiếm không cần thiết, thêm nút Đổi mật khẩu"
+- "thiết kế lại trang Progress theo giao diện Timeline UI, thêm bộ lọc theo nhóm cơ và popup Xem/Thử lại"
+- "tạo lớp phủ Coming Soon tối màu nổi bật cho các trang mới dùng dữ liệu giả"
+```
+
+#### 4.2. Kết quả AI gợi ý
+
+```text
+- Tách và chuẩn hóa Topbar component cho MemberLayout, AdminLayout và PTLayout.
+- Xây dựng component Timeline Progress với bộ lọc bài tập theo nhóm cơ trong `Progress.tsx`.
+- Tạo `ComingSoonOverlay.tsx` với hiệu ứng kính mờ và viền đỏ tương phản cao.
+```
+
+#### 4.3. Phần sinh viên/nhóm đã sử dụng từ AI
+
+```text
+Giao diện Timeline UI, cấu trúc Topbar dùng chung và component `ComingSoonOverlay`.
+```
+
+#### 4.4. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
+
+```text
+Tự thiết kế lại độ mờ của Background Overlay (`blackAlpha.600`) để người dùng vẫn nhìn thấy mờ mờ nội dung phía dưới.
+```
+
+#### 4.5. Minh chứng
+
+| Loại minh chứng | Nội dung |
+|---|---|
+| Link commit | 787a4e69b22e1c9e88a0110352ef2e557b4ca2f3 |
+| File liên quan | MemberLayout.tsx, AdminLayout.tsx, Progress.tsx, ComingSoonOverlay.tsx |
+| Screenshot | Đã giao diện hiển thị mượt mà trên browser |
+| Kết quả chạy/test | FE build pass (`npm run build`) |
+| Link video demo | N/A |
+| Ghi chú khác | N/A |
+
+#### 4.6. Nhận xét cá nhân/nhóm
+
+```text
+Việc thống nhất các thành phần Layout chung (Topbar/Sidebar) giúp mã nguồn sạch hơn và giảm thiểu việc duplicate code.
+```
+
+---
+
+### Lần sử dụng AI số 14
+
+| Nội dung | Thông tin |
+|---|---|
+| Ngày sử dụng | 21/07/2026 |
+| Công cụ AI | Antigravity |
+| Mục đích sử dụng | Xây dựng và sửa lỗi tính năng Nhắc nhở Uống nước Realtime qua SignalR (UserProvider, HydrationCountdown timer, auto-clear notification) |
+| Phần việc liên quan | Fullstack (SignalR WebSockets + React SWR + Background Service) |
+| Mức độ sử dụng | Hỗ trợ nhiều |
+
+#### 4.1. Prompt đã sử dụng
+
+```text
+- "thêm đếm ngược HydrationCountdown thời gian thực và tự động nhắc nhở uống nước"
+- "fix lỗi SignalR không nhận diện được User ID sau khi tắt MapInboundClaims"
+- "thêm nút Clear All thông báo và tự động ẩn thông báo sau khi chọn Đã uống"
+```
+
+#### 4.2. Kết quả AI gợi ý
+
+```text
+- Tạo `SubClaimUserIdProvider.cs` giúp SignalR map đúng User ID từ JWT `sub` claim.
+- Xây dựng component `HydrationCountdown.tsx` đếm ngược theo số giây sinh động.
+- Cập nhật `NotificationContext.tsx` tự dọn dẹp thông báo nước sau khi bấm hành động "Đã uống".
+```
+
+#### 4.3. Phần sinh viên/nhóm đã sử dụng từ AI
+
+```text
+Class `SubClaimUserIdProvider`, custom hook đếm ngược thời gian và logic SignalR Realtime connection.
+```
+
+#### 4.4. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
+
+```text
+Yêu cầu AI bổ sung Toast thông báo số ly nước còn lại cần uống trong ngày để tăng trải nghiệm người dùng.
+```
+
+#### 4.5. Minh chứng
+
+| Loại minh chứng | Nội dung |
+|---|---|
+| Link commit | 78ae5ed9846b14d2e825e6f6630f989f5bc39e1a |
+| File liên quan | SubClaimUserIdProvider.cs, HydrationCountdown.tsx, NotificationContext.tsx, WaterReminderBackgroundService.cs |
+| Screenshot | Đã kiểm thử gửi nhận thông báo Realtime trên local |
+| Kết quả chạy/test | Build pass 100% FE & BE |
+| Link video demo | N/A |
+| Ghi chú khác | N/A |
+
+#### 4.6. Nhận xét cá nhân/nhóm
+
+```text
+Realtime SignalR đòi hỏi việc đồng bộ User ID kỹ càng giữa Authentication Middleware và Hub Connection Context.
+```
+
+---
+
+### Lần sử dụng AI số 15
+
+| Nội dung | Thông tin |
+|---|---|
+| Ngày sử dụng | 22/07/2026 |
+| Công cụ AI | Antigravity |
+| Mục đích sử dụng | Sửa lỗi OTP 400 Bad Request, đồng bộ toàn bộ Schema & Data SQL mới nhất, sửa lỗi bảng `emailotp` và gom cấu hình SMTP & Gemini vào `appsettings.json` |
+| Phần việc liên quan | Fullstack (Database MySQL + .NET Core BE + Gemini Python Service) |
+| Mức độ sử dụng | Hỗ trợ nhiều |
+
+#### 4.1. Prompt đã sử dụng
+
+```text
+- "fix và chạy dự án cho tôi đi"
+- "đây là sql full mới và data mới hãy chạy chuẩn cái này cho tôi"
+- "sao không gửi otp được là sao"
+- "tắt dev mode này kiểm tra kỹ vì đây sẽ đưa lên production"
+- "AxiosError: Request failed with status code 502 ở generateDietPlan"
+- "ở dotnet thì env sẽ để trong appsettings luôn đúng không, hãy tổng hợp và để vào cho tôi"
+```
+
+#### 4.2. Kết quả AI gợi ý
+
+```text
+- Cài đặt đầy đủ gói phụ thuộc npm bị thiếu (`@base-ui/react`, `@tailwindcss/vite`, `clsx`, `recharts`,...).
+- Import lại toàn bộ 24 bảng trong `fullsql.sql` và dữ liệu mẫu trong `data.sql` vào MySQL `fitnessproject`.
+- Tạo lại bảng `emailotp` chứa đầy đủ cột `attempt_count`.
+- Cấu hình file `.env` cho `fitness-ai-service` để giải quyết lỗi 502 Bad Gateway.
+- Tổng hợp toàn bộ biến môi trường (Database, JWT, Google, PayOS, SMTP, OTP, Gemini Key) vào `appsettings.json` & `appsettings.Development.json`.
+- Bảo mật API `send-forgot-password-otp` bằng cách xóa `otpCode` trong HTTP response để sẵn sàng Production.
+```
+
+#### 4.3. Phần sinh viên/nhóm đã sử dụng từ AI
+
+```text
+Toàn bộ file cấu hình `appsettings.json`, DDL sửa bảng `emailotp`, code bảo mật AuthController và các câu lệnh import Database.
+```
+
+#### 4.4. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
+
+```text
+Cung cấp file SQL chuẩn (`fullsql.sql` + `data.sql`), thông tin mật khẩu MySQL local (`Levandat2004^`) và kiểm thử trực tiếp luồng gửi OTP qua Gmail thực tế.
+```
+
+#### 4.5. Minh chứng
+
+| Loại minh chứng | Nội dung |
+|---|---|
+| Link commit | 2047286c51521fee9a26034300394b326b836d97 |
+| File liên quan | appsettings.json, appsettings.Development.json, AuthController.cs, DependencyInjection.cs, fitness-ai-service/.env |
+| Screenshot | Đã kiểm thử gửi OTP thực tế và tạo thực đơn AI thành công |
+| Kết quả chạy/test | Build pass 100% FE & BE (`npm run build` pass, `dotnet build` pass) |
+| Link video demo | N/A |
+| Ghi chú khác | DB đã được đồng bộ với 354 bài tập và 30 món ăn. |
+
+#### 4.6. Nhận xét cá nhân/nhóm
+
+```text
+Việc tập trung cấu hình môi trường vào `appsettings.json` giúp ứng dụng .NET quản lý biến môi trường nhất quán, dễ triển khai Production và hạn chế lỗi thiếu cấu hình cục bộ.
+```
+
+---
+
+### Lần sử dụng AI số 16
+
+| Nội dung | Thông tin |
+|---|---|
+| Ngày sử dụng | 23/07/2026 |
+| Công cụ AI | Antigravity |
+| Mục đích sử dụng | Khắc phục lỗi CI/CD `ERR_PNPM_OUTDATED_LOCKFILE` trên GitHub Actions do lệch `pnpm-lock.yaml` và `package.json` |
+| Phần việc liên quan | Frontend / CI/CD Deployment |
+| Mức độ sử dụng | Hỗ trợ nhiều |
+
+#### 4.1. Prompt đã sử dụng
+
+```text
+- "[Image of GitHub Actions ERR_PNPM_OUTDATED_LOCKFILE error]"
+- "oke push lên cho tôi"
+```
+
+#### 4.2. Kết quả AI gợi ý
+
+```text
+- Phân tích nguyên nhân lỗi CI/CD do `pnpm-lock.yaml` chưa đồng bộ với `@tailwindcss/vite` trong `package.json`.
+- Chạy `pnpm install --lockfile-only` tại thư mục frontend để tái tạo và cập nhật chuẩn xác `pnpm-lock.yaml`.
+- Kiểm thử build thành công bằng `pnpm build` (`tsc -b && vite build`).
+- Thực hiện commit chuẩn Conventional Commits `fix(ci): update pnpm-lock.yaml to sync with package.json` và push lên nhánh `feature/dat/fe`.
+```
+
+#### 4.3. Phần sinh viên/nhóm đã sử dụng từ AI
+
+```text
+Toàn bộ file `pnpm-lock.yaml` được AI cập nhật chuẩn xác và quy trình pre-commit audit check.
+```
+
+#### 4.4. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
+
+```text
+Cung cấp screenshot lỗi CI từ GitHub Actions và xác nhận đồng ý commit & push code.
+```
+
+#### 4.5. Minh chứng
+
+| Loại minh chứng | Nội dung |
+|---|---|
+| Link commit | 9f17f8e81552300b95fae223bdfedffc7b51b72a |
+| File liên quan | frontend/pnpm-lock.yaml |
+| Screenshot | Đã phân tích đúng lỗi từ screenshot GitHub Actions |
+| Kết quả chạy/test | Build FE pass 100% (`pnpm build` pass) |
+| Link video demo | N/A |
+| Ghi chú khác | N/A |
+
+#### 4.6. Nhận xét cá nhân/nhóm
+
+```text
+Hiểu rõ cơ chế `frozen-lockfile` trong CI/CD giúp đảm bảo tất cả các lần build sản phẩm đều nhất quán phiên bản thư viện, tránh lỗi chênh lệch phiên bản giữa máy dev và máy chủ CI.
+```
+
+
+
+---
+
+### Lần sử dụng AI số 17
+
+| Nội dung | Thông tin |
+|---|---|
+| Ngày sử dụng | 28/07/2026 |
+| Công cụ AI | Antigravity |
+| Mục đích sử dụng | Khắc phục lỗi cấu hình ghi đè biến môi trường (Gemini API Key) trong appsettings.json |
+| Phần việc liên quan | Backend |
+| Mức độ sử dụng | Hỗ trợ nhiều |
+
+#### 4.1. Prompt đã sử dụng
+
+```text
+- "nguyên nhân tại sao chat không dùng được vậy, nó trả lừoi xin lỗi là sao"
+- "gắn log vào để tooi xem lỗi AI trả lời như thế này là vì sao là do hết limit hay sao. check lại cho toi"
+- "/commit , và push lên để các member khác trong team tôi dùng được."
+```
+
+#### 4.2. Kết quả AI gợi ý
+
+```text
+- Tìm ra nguyên nhân lỗi `400 API_KEY_INVALID` do `appsettings.json` ghi đè giá trị `Gemini:ApiKey` bằng placeholder, bỏ qua `GEMINI_API_KEY` ở cấp độ root.
+- Chỉnh sửa `appsettings.json` và `appsettings.Development.json` để xoá cấu hình ghi đè cứng.
+- Sử dụng cơ chế fallback tự động của .NET để load API Key từ `.env` mà không làm lộ key khi commit.
+```
+
+#### 4.3. Phần sinh viên/nhóm đã sử dụng từ AI
+
+```text
+Sử dụng cấu hình sửa đổi trong `appsettings.json` và `appsettings.Development.json`.
+```
+
+#### 4.4. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
+
+```text
+Yêu cầu Agent chạy lệnh commit để đồng bộ hóa cho team.
+```
+
+#### 4.5. Minh chứng
+
+| Loại minh chứng | Nội dung |
+|---|---|
+| Link commit | 6213363 |
+| File liên quan | appsettings.json, appsettings.Development.json |
+| Screenshot | Đã kiểm thử lại luồng chat AI sau khi fix |
+| Kết quả chạy/test | Build pass 100%, kết nối Gemini API thành công |
+| Link video demo | N/A |
+| Ghi chú khác | Fix thành công mà không để lộ secret lên git |
+
+#### 4.6. Nhận xét cá nhân/nhóm
+
+```text
+Học được cách .NET ưu tiên và ghi đè cấu hình (Configuration Provider), từ đó sửa lỗi không mong muốn khi triển khai biến môi trường an toàn.
+```
+
+
+---
+
+### Lần sử dụng AI số 18
+
+| Nội dung | Thông tin |
+|---|---|
+| Ngày sử dụng | 28/07/2026 |
+| Công cụ AI | Antigravity |
+| Mục đích sử dụng | Sửa lỗi Build Frontend (Lỗi khai báo biến nhưng không sử dụng - Unused Variables) khiến GitHub Pages deploy thất bại |
+| Phần việc liên quan | Frontend / CI/CD Deployment |
+| Mức độ sử dụng | Hỗ trợ nhiều |
+
+#### 4.1. Prompt đã sử dụng
+
+```text
+- "Error: src/components/shared/Header/HeaderActions.tsx(6,27): error TS6133: 'UserProfile' is declared but its value is never read..."
+- "github page deploy lên trả lỗi này"
+- "commit and push lên cho ôi"
+```
+
+#### 4.2. Kết quả AI gợi ý
+
+```text
+- Giải thích nguyên nhân do TypeScript ở cấu hình strict mode ném lỗi exit code 2 khi phát hiện các biến dư thừa không được sử dụng tới trong code.
+- Tiến hành xoá các type/component import thừa ở `HeaderActions.tsx`, `AdminWorkouts.tsx`, `AIChat.tsx`, `Profile.tsx`.
+- Sửa lại hàm `setMetric` chưa được định nghĩa bằng hàm chuẩn `mutateMetric()` từ cấu trúc SWR.
+- Chạy lại build nội bộ (npm run build) đảm bảo Frontend build thành công.
+```
+
+#### 4.3. Phần sinh viên/nhóm đã sử dụng từ AI
+
+```text
+Chấp nhận sửa đổi toàn bộ các file được AI thông báo.
+```
+
+#### 4.4. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
+
+```text
+Yêu cầu lưu trữ lại quy trình commit và đẩy lên repo chung (commit & push).
+```
+
+#### 4.5. Minh chứng
+
+| Loại minh chứng | Nội dung |
+|---|---|
+| Link commit | 15cbfba |
+| File liên quan | HeaderActions.tsx, AdminWorkouts.tsx, AIChat.tsx, Profile.tsx |
+| Screenshot | Lỗi build trên GitHub Pages trước khi sửa |
+| Kết quả chạy/test | Local build pass 100%, thời gian build: 984ms |
+| Link video demo | N/A |
+| Ghi chú khác | N/A |
+
+#### 4.6. Nhận xét cá nhân/nhóm
+
+```text
+Học được rằng mã nguồn TypeScript nếu có khai báo không sử dụng (unused imports/variables) sẽ cản trở quá trình CI/CD build production. Khắc phục triệt để lỗi này bằng cách dọn dẹp mã nguồn thường xuyên.
+```
+
+---
+
+### Lần sử dụng AI số 19
+
+| Nội dung | Thông tin |
+|---|---|
+| Ngày sử dụng | 28/07/2026 |
+| Công cụ AI | Antigravity |
+| Mục đích sử dụng | Sửa lỗi Water Race Condition (BUG-04) và AI Session Ownership (BUG-05) theo test report |
+| Phần việc liên quan | Backend |
+| Mức độ sử dụng | Sinh chính nội dung |
+
+#### 4.1. Prompt đã sử dụng
+
+```text
+- "đây là test của member team tôi, hãy check và test lại 1 lần nưã nếu có lỗi hãy tổng hợp và cho tôi 1 plan của bạn fix những lỗi đó tôi sẽ duyệt"
+- "chạy dự án để tôi test nào và hướng dẫn cách test cho tôi"
+- "/commit"
+```
+
+#### 4.2. Kết quả AI gợi ý
+
+```text
+- Check test report, tìm ra nguyên nhân 2 bug.
+- BUG-04: Thiếu DB transaction ở hàm LogWaterAsync trong NutritionService. 
+- BUG-05: Thiếu kiểm tra UserId trong get session tại AIChatService và AIChatController.
+- AI lên kế hoạch, sau đó bọc transaction với mức Isolation Serializable, thêm logic kiểm tra quyền vào API Chat, xoá reference dư thừa.
+- AI start server test và hướng dẫn cách test.
+```
+
+#### 4.3. Phần sinh viên/nhóm đã sử dụng từ AI
+
+```text
+Sử dụng toàn bộ logic fix backend bao gồm transaction xử lý race condition.
+```
+
+#### 4.4. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
+
+```text
+Tự động duyệt kế hoạch (auto approve) thông qua review policy, yêu cầu AI chạy test server.
+```
+
+#### 4.5. Minh chứng
+
+| Loại minh chứng | Nội dung |
+|---|---|
+| Link commit | 1d23144 |
+| File liên quan | NutritionService.cs, AIChatService.cs, IAIChatService.cs, AIChatController.cs |
+| Screenshot | N/A |
+| Kết quả chạy/test | Build backend (dotnet build) pass 100% |
+| Link video demo | N/A |
+| Ghi chú khác | N/A |
+
+#### 4.6. Nhận xét cá nhân/nhóm
+
+```text
+Việc áp dụng Serializable Transaction giải quyết triệt để lỗi ghi đè dữ liệu khi submit nhiều request đồng thời, đồng thời bảo mật API Chat tốt hơn.
+```
+
+---
+
+### Lần sử dụng AI số 20
+
+| Nội dung | Thông tin |
+|---|---|
+| Ngày sử dụng | 28/07/2026 |
+| Công cụ AI | Antigravity |
+| Mục đích sử dụng | Dọn dẹp code thừa ở giao diện MemberLayout |
+| Phần việc liên quan | Frontend |
+| Mức độ sử dụng | Hỗ trợ ít |
+
+#### 4.1. Prompt đã sử dụng
+
+```text
+- "@[/Users/mac/Subject/SWP-projectFitness/swp391-su26-ai-audit-project-swp391_se20a02_group-06/frontend/src/components/shared/Layout/MemberLayout.tsx] cái này không dùng xoá đi vì không cần phần này"
+- "@[/Users/mac/Subject/SWP-projectFitness/swp391-su26-ai-audit-project-swp391_se20a02_group-06/frontend/src/components/shared/Layout/MemberLayout.tsx] file này luôn"
+- "commit and push lại cho tôi."
+```
+
+#### 4.2. Kết quả AI gợi ý
+
+```text
+- Xoá comment code thừa `PT Booking` trong danh sách `memberTabs`
+- Xoá Component `ResponsiveTabs` khỏi file `MemberLayout.tsx` để dọn dẹp theo yêu cầu
+- Xoá biến `memberTabs` dư thừa
+- Thực hiện build frontend và commit push.
+```
+
+#### 4.3. Phần sinh viên/nhóm đã sử dụng từ AI
+
+```text
+Áp dụng toàn bộ sự thay đổi ở file MemberLayout.tsx.
+```
+
+#### 4.4. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
+
+```text
+Chỉ đạo trực tiếp thông qua workflow `/commit` để AI commit và push lên repo.
+```
+
+#### 4.5. Minh chứng
+
+| Loại minh chứng | Nội dung |
+|---|---|
+| Link commit | 16ce2d8 |
+| File liên quan | MemberLayout.tsx |
+| Screenshot | N/A |
+| Kết quả chạy/test | Build pass |
+| Link video demo | N/A |
+| Ghi chú khác | N/A |
+
+#### 4.6. Nhận xét cá nhân/nhóm
+
+```text
+Giữ code gọn gàng, loại bỏ các dòng code bị comment không cần thiết giúp giảm technical debt và làm code dễ bảo trì hơn.
 ```

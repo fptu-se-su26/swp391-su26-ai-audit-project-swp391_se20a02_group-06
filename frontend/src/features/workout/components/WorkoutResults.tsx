@@ -148,7 +148,7 @@ const WorkoutResults: React.FC = () => {
     useEffect(() => {
         if (!activeSessionId && activePlanId) {
             startWorkoutSession({ workoutPlanId: activePlanId })
-                .then((session: any) => setActiveSessionId(session.id)) // Đã gán kiểu dữ liệu tránh lỗi 'any'
+                .then((session: any) => setActiveSessionId(session.id))
                 .catch(console.error)
         }
     }, [activeSessionId, activePlanId, startWorkoutSession, setActiveSessionId])
@@ -215,7 +215,7 @@ const WorkoutResults: React.FC = () => {
             navigate('/nutrition')
             return
         }
-        const doneExercises = exercises.filter(e => e.isDone)
+        const doneExercises = exercises.filter(e => e.isDone && e.id > 0)
         const totalCalories = data?.targetCalories || (doneExercises.length * 30)
         try {
             await completeWorkoutSession(activeSessionId, {
