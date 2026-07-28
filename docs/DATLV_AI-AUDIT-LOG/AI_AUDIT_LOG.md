@@ -1872,3 +1872,57 @@ Giữ code gọn gàng, loại bỏ các dòng code bị comment không cần th
 - Lỗi AI trả về plain text nhưng set MIME là JSON rất phổ biến, nhờ AI đọc log và tìm ra ngay.
 - Việc đồng nhất ngôn ngữ giúp UI chuyên nghiệp hơn, kết hợp Regex và Replace giúp fix hàng loạt chữ.
 ```
+
+---
+
+### Lần sử dụng AI số 22
+
+| Nội dung | Thông tin |
+|---|---|
+| Ngày sử dụng | 28/07/2026 |
+| Công cụ AI | Antigravity |
+| Mục đích sử dụng | Khởi tạo cấu hình Docker deploy Backend lên Render |
+| Phần việc liên quan | DevOps / Backend |
+| Mức độ sử dụng | Sinh chính nội dung |
+
+#### 4.1. Prompt đã sử dụng
+
+```text
+chưa có docker file đúng không deploy BE lên đi
+```
+
+#### 4.2. Kết quả AI gợi ý
+
+```text
+- Viết file `Dockerfile` chuẩn .NET 9.0 build multi-stage cho Backend.
+- Viết file `.dockerignore` để loại bỏ bin/, obj/ và các file rác.
+```
+
+#### 4.3. Phần sinh viên/nhóm đã sử dụng từ AI
+
+```text
+- Giữ nguyên 100% cấu hình Dockerfile và .dockerignore của AI sinh ra.
+```
+
+#### 4.4. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
+
+```text
+- Tự cấu hình Root Directory trên Render Dashboard trỏ vào thư mục backend/.
+```
+
+#### 4.5. Minh chứng
+
+| Loại minh chứng | Nội dung |
+|---|---|
+| Link commit | (will be updated) |
+| File liên quan | backend/Dockerfile, backend/.dockerignore |
+| Screenshot | N/A |
+| Kết quả chạy/test | Build Docker thành công |
+| Link video demo | N/A |
+| Ghi chú khác | N/A |
+
+#### 4.6. Nhận xét cá nhân/nhóm
+
+```text
+- AI nắm bắt luồng cấu trúc C# và viết Dockerfile rất chuẩn xác.
+```
