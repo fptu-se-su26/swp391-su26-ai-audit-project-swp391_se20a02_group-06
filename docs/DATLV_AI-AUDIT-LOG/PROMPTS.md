@@ -1079,3 +1079,65 @@ Chủ động yêu cầu AI đóng gói commit mà không bao gồm key thật n
 | Kết quả chạy/test | Fix lỗi chat thành công |
 | Link tài liệu/báo cáo | N/A |
 | Ghi chú khác | N/A |
+
+
+---
+
+### Prompt số 14
+
+| Nội dung | Thông tin |
+|---|---|
+| Ngày sử dụng | 28/07/2026 |
+| Công cụ AI | Antigravity |
+| Mục đích | Khắc phục lỗi GitHub Pages (Exit Code 2) khi Deploy |
+| Phần việc liên quan | Debug |
+| Mức độ sử dụng | Hỏi debug |
+
+#### 5.1. Prompt nguyên văn
+
+```text
+Error: src/components/shared/Header/HeaderActions.tsx(6,27): error TS6133: 'UserProfile' is declared but its value is never read.
+...
+github page deploy lên trả lỗi này
+```
+
+#### 5.2. Bối cảnh khi viết prompt
+
+```text
+Mã nguồn bị từ chối khi thực thi Workflow Deploy của GitHub Pages do gặp phải lỗi TS6133 và TS2552.
+```
+
+#### 5.3. Kết quả AI trả về
+
+```text
+Dọn dẹp lại cấu trúc các tệp tin Frontend, xoá các import dư thừa và gọi đúng hàm cập nhật cache của thư viện dữ liệu SWR (thay vì tự gán state sai).
+```
+
+#### 5.4. Kết quả đã áp dụng vào bài
+
+```text
+Sửa chữa thành công Frontend và giúp việc Push mã nguồn lên Production trở nên mượt mà.
+```
+
+#### 5.5. Phần sinh viên/nhóm đã chỉnh sửa hoặc cải tiến
+
+```text
+Chỉ đạo trực tiếp cho AI xử lý luôn phần lưu vết lịch sử thông qua workflow `/commit`.
+```
+
+#### 5.6. Đánh giá chất lượng prompt
+
+- [x] Prompt rõ ràng
+- [x] Prompt có đủ bối cảnh
+- [x] Prompt tạo ra kết quả tốt
+
+#### 5.7. Minh chứng liên quan
+
+| Loại minh chứng | Nội dung |
+|---|---|
+| Link commit | 15cbfba |
+| File liên quan | Frontend Components |
+| Screenshot | Bảng log từ GitHub Actions |
+| Kết quả chạy/test | Build pass |
+| Link tài liệu/báo cáo | N/A |
+| Ghi chú khác | N/A |

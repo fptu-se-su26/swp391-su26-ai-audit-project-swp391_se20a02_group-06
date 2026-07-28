@@ -467,3 +467,4 @@ Sinh viên/nhóm cam kết rằng nội dung changelog phản ánh đúng các t
 
 | 10 | Tích hợp dữ liệu User Dashboard và Phân quyền PT CRUD | Đạt | Dashboard.tsx, DashboardService.cs | Commit 0b5a897 |
 | 11 | Sửa lỗi cấu hình ưu tiên đọc Gemini API key | Đạt | appsettings.json, appsettings.Development.json | Commit 6213363 |
+| 12 | Khắc phục lỗi build Frontend TypeScript (Unused variables) | Đạt | HeaderActions.tsx, Profile.tsx, ... | Commit 15cbfba |

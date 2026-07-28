@@ -1635,3 +1635,62 @@ Yêu cầu Agent chạy lệnh commit để đồng bộ hóa cho team.
 ```text
 Học được cách .NET ưu tiên và ghi đè cấu hình (Configuration Provider), từ đó sửa lỗi không mong muốn khi triển khai biến môi trường an toàn.
 ```
+
+
+---
+
+### Lần sử dụng AI số 18
+
+| Nội dung | Thông tin |
+|---|---|
+| Ngày sử dụng | 28/07/2026 |
+| Công cụ AI | Antigravity |
+| Mục đích sử dụng | Sửa lỗi Build Frontend (Lỗi khai báo biến nhưng không sử dụng - Unused Variables) khiến GitHub Pages deploy thất bại |
+| Phần việc liên quan | Frontend / CI/CD Deployment |
+| Mức độ sử dụng | Hỗ trợ nhiều |
+
+#### 4.1. Prompt đã sử dụng
+
+```text
+- "Error: src/components/shared/Header/HeaderActions.tsx(6,27): error TS6133: 'UserProfile' is declared but its value is never read..."
+- "github page deploy lên trả lỗi này"
+- "commit and push lên cho ôi"
+```
+
+#### 4.2. Kết quả AI gợi ý
+
+```text
+- Giải thích nguyên nhân do TypeScript ở cấu hình strict mode ném lỗi exit code 2 khi phát hiện các biến dư thừa không được sử dụng tới trong code.
+- Tiến hành xoá các type/component import thừa ở `HeaderActions.tsx`, `AdminWorkouts.tsx`, `AIChat.tsx`, `Profile.tsx`.
+- Sửa lại hàm `setMetric` chưa được định nghĩa bằng hàm chuẩn `mutateMetric()` từ cấu trúc SWR.
+- Chạy lại build nội bộ (npm run build) đảm bảo Frontend build thành công.
+```
+
+#### 4.3. Phần sinh viên/nhóm đã sử dụng từ AI
+
+```text
+Chấp nhận sửa đổi toàn bộ các file được AI thông báo.
+```
+
+#### 4.4. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
+
+```text
+Yêu cầu lưu trữ lại quy trình commit và đẩy lên repo chung (commit & push).
+```
+
+#### 4.5. Minh chứng
+
+| Loại minh chứng | Nội dung |
+|---|---|
+| Link commit | 15cbfba |
+| File liên quan | HeaderActions.tsx, AdminWorkouts.tsx, AIChat.tsx, Profile.tsx |
+| Screenshot | Lỗi build trên GitHub Pages trước khi sửa |
+| Kết quả chạy/test | Local build pass 100%, thời gian build: 984ms |
+| Link video demo | N/A |
+| Ghi chú khác | N/A |
+
+#### 4.6. Nhận xét cá nhân/nhóm
+
+```text
+Học được rằng mã nguồn TypeScript nếu có khai báo không sử dụng (unused imports/variables) sẽ cản trở quá trình CI/CD build production. Khắc phục triệt để lỗi này bằng cách dọn dẹp mã nguồn thường xuyên.
+```
