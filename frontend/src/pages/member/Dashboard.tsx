@@ -31,6 +31,8 @@ import {
 } from '../../features/dashboard/components/DashboardWidgets.tsx'
 import useSWR from 'swr'
 import apiClient from '../../lib/axios'
+import { useNavigate } from 'react-router-dom'
+import { useWorkoutStore } from '../../store/useWorkoutStore'
 
 interface DashboardSummaryDto {
     currentStreak: number;
@@ -45,11 +47,55 @@ interface DashboardSummaryDto {
     fatsTarget: number;
 }
 
+import { warmupExercise, calcSetsReps, buildExerciseCard } from '../../features/workout/data/workoutExercises'
+
 const fetcher = (url: string) => apiClient.get(url).then(res => res.data)
 
-/* ── Dashboard Page ─────────────────────────── */
 const Dashboard: React.FC = () => {
     const { data: summary } = useSWR<DashboardSummaryDto>('/dashboard/summary', fetcher)
+    const { data: catalog } = useSWR<any[]>('/exercises/catalog', fetcher)
+    const { setExercises, setPhase, setFormData } = useWorkoutStore()
+    const navigate = useNavigate()
+
+    const suggestedRoutine = React.useMemo(() => {
+        if (!catalog) return []
+        const unlocked = catalog.filter(e => !e.isLocked)
+        if (unlocked.length < 4) return unlocked
+
+        const shuffled = [...unlocked].sort(() => 0.5 - Math.random())
+        return shuffled.slice(0, 4)
+    }, [catalog])
+
+    const handleStartWorkout = () => {
+        if (suggestedRoutine.length === 0) return
+
+        const warmupConfig = calcSetsReps(300, 'Beginner', 'general')
+        const mainConfig = calcSetsReps(600, 'Beginner', 'general')
+
+        const exercisesToPlay = [
+            buildExerciseCard(warmupExercise, 0, warmupConfig, true),
+            ...suggestedRoutine.map((ex, index) => buildExerciseCard(ex, index + 1, mainConfig, false))
+        ]
+
+        setExercises(exercisesToPlay)
+        setPhase('results')
+        setFormData({
+            planType: 'daily',
+            goal: 'General Fitness',
+            gender: 'Any',
+            age: 'Any',
+            height: 'Any',
+            weight: 'Any',
+            level: 'Beginner',
+            duration: 45,
+            frequency: 3,
+            equipment: [],
+            muscles: [],
+            targetCalories: 300
+        })
+        
+        navigate('/workouts')
+    }
 
     return (
         <MemberLayout>
@@ -143,7 +189,7 @@ const Dashboard: React.FC = () => {
 
                 {/* Middle Row */}
                 <Grid templateColumns="1fr 300px" gap="4" mb="5">
-                    {/* Hypertrophy Block */}
+                    {/* Suggested Routine Block */}
                     <Box
                         bg="#141720"
                         border="1px solid"
@@ -164,7 +210,7 @@ const Dashboard: React.FC = () => {
                                 borderRadius="6px"
                                 textTransform="uppercase"
                             >
-                                Strength
+                                Recommendation
                             </Badge>
                             <Badge
                                 bg="#2e3040"
@@ -175,31 +221,32 @@ const Dashboard: React.FC = () => {
                                 py="1"
                                 borderRadius="6px"
                             >
-                                45 MIN
+                                ~45 MIN
                             </Badge>
                         </HStack>
                         <Heading fontSize="24px" fontWeight="800" color="white" mb="2">
-                            Hypertrophy Block A
+                            Today's Suggested Routine
                         </Heading>
                         <Text fontSize="13px" color="#8A8A93" mb="5" maxW="500px">
-                            Focus on controlled eccentrics and progressive overload on main compound lifts.
+                            A curated selection of exercises from your library to keep your momentum going today.
                         </Text>
 
                         <Grid templateColumns="repeat(4, 1fr)" gap="4" mb="5">
-                            {[
-                                { label: 'Block 1', name: 'Barbell Squat', sets: '4 x 8–10' },
-                                { label: 'Block 2', name: 'Bulgarian Split', sets: '3 x 12 /leg' },
-                                { label: 'Block 3', name: 'Leg Press', sets: '3 x 15' },
-                                { label: 'Finisher', name: 'Calf Raises', sets: '4 x 20' },
-                            ].map((b, i) => (
-                                <Box key={i}>
-                                    <Text fontSize="9px" fontWeight="700" color="#8A8A93" textTransform="uppercase" letterSpacing="wider" mb="1">
-                                        {b.label}
-                                    </Text>
-                                    <Text fontSize="13px" fontWeight="600" color="white">{b.name}</Text>
-                                    <Text fontSize="11px" color="#8A8A93">{b.sets}</Text>
-                                </Box>
-                            ))}
+                            {suggestedRoutine.length > 0 ? (
+                                suggestedRoutine.map((ex, i) => (
+                                    <Box key={ex.id}>
+                                        <Text fontSize="9px" fontWeight="700" color="#8A8A93" textTransform="uppercase" letterSpacing="wider" mb="1">
+                                            {i === 3 ? 'Finisher' : `Block ${i + 1}`}
+                                        </Text>
+                                        <Text fontSize="13px" fontWeight="600" color="white" noOfLines={1}>{ex.title}</Text>
+                                        <Text fontSize="11px" color="#8A8A93">{ex.muscleGroup}</Text>
+                                    </Box>
+                                ))
+                            ) : (
+                                <Text fontSize="13px" color="#8A8A93" gridColumn="span 4">
+                                    Loading your suggestions...
+                                </Text>
+                            )}
                         </Grid>
 
                         <Flex align="center" justify="space-between">
@@ -222,6 +269,7 @@ const Dashboard: React.FC = () => {
                                 px="6"
                                 h="40px"
                                 fontSize="13px"
+                                onClick={handleStartWorkout}
                             />
                         </Flex>
                     </Box>

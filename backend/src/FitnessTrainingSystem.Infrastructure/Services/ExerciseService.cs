@@ -1,4 +1,4 @@
-﻿using FitnessTrainingSystem.Application.DTOs.Exercises;
+using FitnessTrainingSystem.Application.DTOs.Exercises;
 using FitnessTrainingSystem.Application.Interfaces;
 using FitnessTrainingSystem.Domain.Entities;
 using FitnessTrainingSystem.Infrastructure.Persistence;
@@ -131,6 +131,8 @@ public class ExerciseService : IExerciseService
                 MuscleGroup = e.MuscleGroup?.Name,
                 MuscleGroupId = e.MuscleGroupId,
                 Difficulty = (int)e.Difficulty,
+                Description = e.Description,
+                VideoUrl = isLocked ? null : e.VideoUrl,
                 DurationMinutes = e.DurationMinutes,
                 PackageId = e.PackageId,
                 PackageName = e.Package?.Name,

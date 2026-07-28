@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useRef } from 'react'
+import React, { useState, useMemo } from 'react'
 import {
     Box,
     Flex,
@@ -21,17 +21,11 @@ import {
     Select,
     useToast,
     VStack,
-    AlertDialog,
-    AlertDialogBody,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogContent,
-    AlertDialogOverlay,
-    AlertDialogCloseButton,
 } from '@chakra-ui/react'
 import useSWR from 'swr'
 import apiClient from '../../lib/axios'
 import AdminLayout from '../../components/shared/Layout/AdminLayout.tsx'
+import AppButton from '../../components/shared/Button/AppButton'
 import { uploadVideo } from '../../api/upload'
 import { useAuthStore } from '../../store/useAuthStore'
 import ExerciseFilters from '../../features/admin/components/ExerciseFilters'
@@ -87,9 +81,6 @@ const AdminWorkouts: React.FC = () => {
     const [isSubmitting, setIsSubmitting] = useState(false)
     const [isUploadingVideo, setIsUploadingVideo] = useState(false)
     const [editingExercise, setEditingExercise] = useState<ExerciseDto | null>(null)
-    const { isOpen: isDeleteOpen, onOpen: onDeleteOpen, onClose: onDeleteClose } = useDisclosure()
-    const [deleteId, setDeleteId] = useState<number | null>(null)
-    const cancelRef = useRef<HTMLButtonElement>(null)
 
     const [searchQuery, setSearchQuery] = useState('')
     const [categoryFilter, setCategoryFilter] = useState('All')
@@ -251,14 +242,8 @@ const AdminWorkouts: React.FC = () => {
     }
 
     const handleDelete = async (id: number) => {
-        setDeleteId(id)
-        onDeleteOpen()
-    }
-
-    const confirmDelete = async () => {
-        if (deleteId === null) return
         try {
-            await apiClient.delete(`/exercises/${deleteId}`)
+            await apiClient.delete(`/exercises/${id}`)
             toast({ title: 'Exercise deleted', status: 'success', duration: 3000, isClosable: true })
             mutate()
         } catch (error: any) {
@@ -267,9 +252,6 @@ const AdminWorkouts: React.FC = () => {
                 description: error.response?.data?.message || 'Something went wrong.',
                 status: 'error', duration: 3000, isClosable: true,
             })
-        } finally {
-            onDeleteClose()
-            setDeleteId(null)
         }
     }
 
@@ -536,25 +518,6 @@ const AdminWorkouts: React.FC = () => {
                     </form>
                 </ModalContent>
             </Modal>
-
-            <AlertDialog isOpen={isDeleteOpen} leastDestructiveRef={cancelRef} onClose={onDeleteClose} isCentered>
-                <AlertDialogOverlay />
-                <AlertDialogContent bg="#141720" color="white" borderColor="#1e2028" borderWidth="1px">
-                    <AlertDialogHeader fontSize="18px" fontWeight="700">Delete Exercise</AlertDialogHeader>
-                    <AlertDialogCloseButton />
-                    <AlertDialogBody fontSize="14px" color="#8A8A93">
-                        Are you sure you want to delete this exercise? This action cannot be undone.
-                    </AlertDialogBody>
-                    <AlertDialogFooter>
-                        <Button ref={cancelRef} onClick={onDeleteClose} variant="ghost" color="#8A8A93" h="44px">
-                            Cancel
-                        </Button>
-                        <Button bg="#E03030" color="white" _hover={{ bg: '#C92828' }} onClick={confirmDelete} ml={3} h="44px" px={6}>
-                            Delete
-                        </Button>
-                    </AlertDialogFooter>
-                </AlertDialogContent>
-            </AlertDialog>
         </AdminLayout>
     )
 }

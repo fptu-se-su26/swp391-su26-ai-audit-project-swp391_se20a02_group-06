@@ -348,12 +348,41 @@ export const HydrationCountdown: React.FC<{
     )
 }
 
-export const AIDinnerCard: React.FC = () => {
-    const items = [
-        { name: 'Lean Steak (200g)', macro: 'PRO 52g' },
-        { name: 'Sweet Potato Mash', macro: 'CARB 40g' },
-        { name: 'Asparagus', macro: 'FIBER 8g' },
-    ]
+export const AIDietPlanCard: React.FC<{
+    dietPlan?: any
+    onNavigateToAI: () => void
+}> = ({ dietPlan, onNavigateToAI }) => {
+    if (!dietPlan) {
+        return (
+            <Box
+                bg="#141720"
+                border="1px dashed"
+                borderColor="#2e3040"
+                borderRadius="14px"
+                p="4"
+                textAlign="center"
+            >
+                <Icon as={FiCpu} color="#E03030" boxSize="24px" mb="2" />
+                <Text fontSize="13px" fontWeight="600" color="white" mb="1">
+                    Chưa có Thực đơn AI
+                </Text>
+                <Text fontSize="11px" color="#8A8A93" mb="3">
+                    Hãy để trợ lý AI thiết kế thực đơn riêng cho bạn.
+                </Text>
+                <AppButton
+                    label="Trò chuyện ngay"
+                    variant="solid"
+                    size="sm"
+                    w="full"
+                    h="32px"
+                    fontSize="12px"
+                    onClick={onNavigateToAI}
+                />
+            </Box>
+        )
+    }
+
+    const firstMeal = dietPlan.meals?.[0]
 
     return (
         <Box
@@ -370,43 +399,36 @@ export const AIDinnerCard: React.FC = () => {
                         AI Recommendation
                     </Text>
                 </HStack>
-                <Text fontSize="10px" fontWeight="700" color="#8A8A93" textTransform="uppercase" letterSpacing="wider">
-                    Dinner Plan
+                <Text fontSize="10px" fontWeight="700" color="#8A8A93" textTransform="uppercase" letterSpacing="wider" maxW="100px" isTruncated>
+                    {dietPlan.diet_title || 'Diet Plan'}
                 </Text>
             </Flex>
-            <Stack spacing="2" mb="3">
-                {items.map((item, i) => (
-                    <Flex key={i} align="center" justify="space-between" py="1">
-                        <HStack spacing="2">
-                            <Box w="5px" h="5px" borderRadius="full" bg="#E03030" flexShrink={0} />
-                            <Text fontSize="12px" color="#E2E1EB">
-                                {item.name}
-                            </Text>
-                        </HStack>
-                        <HStack spacing="2">
-                            <Text fontSize="10px" color="#8A8A93">
-                                {item.macro}
-                            </Text>
-                            <Box
-                                w="18px"
-                                h="18px"
-                                borderRadius="full"
-                                border="1px solid"
-                                borderColor="#2e3040"
-                                display="flex"
-                                alignItems="center"
-                                justifyContent="center"
-                                cursor="pointer"
-                                _hover={{ borderColor: '#E03030', color: '#E03030' }}
-                            >
-                                <Icon as={FiPlus} boxSize="10px" color="#8A8A93" />
-                            </Box>
-                        </HStack>
-                    </Flex>
-                ))}
-            </Stack>
+            {firstMeal && (
+                <>
+                    <Text fontSize="12px" fontWeight="600" color="white" mb="2">
+                        {firstMeal.name} - {firstMeal.calories} kcal
+                    </Text>
+                    <Stack spacing="2" mb="3">
+                        {firstMeal.foods.map((item: any, i: number) => (
+                            <Flex key={i} align="center" justify="space-between" py="1">
+                                <HStack spacing="2" maxW="140px">
+                                    <Box w="5px" h="5px" borderRadius="full" bg="#E03030" flexShrink={0} />
+                                    <Text fontSize="12px" color="#E2E1EB" isTruncated>
+                                        {item.food_name} ({item.amount})
+                                    </Text>
+                                </HStack>
+                                <HStack spacing="2">
+                                    <Text fontSize="10px" color="#8A8A93">
+                                        PRO {item.protein}g
+                                    </Text>
+                                </HStack>
+                            </Flex>
+                        ))}
+                    </Stack>
+                </>
+            )}
             <AppButton
-                label="Add All"
+                label="Xem toàn bộ"
                 variant="outline"
                 size="sm"
                 w="full"
@@ -414,6 +436,7 @@ export const AIDinnerCard: React.FC = () => {
                 fontSize="11px"
                 borderColor="#2e3040"
                 _hover={{ borderColor: '#E03030', color: '#E03030' }}
+                onClick={onNavigateToAI}
             />
         </Box>
     )

@@ -7,6 +7,8 @@ public class ExerciseCatalogDto
     public string? MuscleGroup { get; set; }
     public int? MuscleGroupId { get; set; }
     public int Difficulty { get; set; }
+    public string? Description { get; set; }
+    public string? VideoUrl { get; set; }
     public int? DurationMinutes { get; set; }
     public int? PackageId { get; set; }
     public string? PackageName { get; set; }

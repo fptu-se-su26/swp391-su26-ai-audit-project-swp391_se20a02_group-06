@@ -58,7 +58,10 @@ public static class DependencyInjection
 
         services.AddScoped<ICloudinaryService, CloudinaryService>();
 
-        services.AddHttpClient<IGeminiAiService, DirectGeminiService>();
+        services.AddHttpClient<IGeminiAiService, DirectGeminiService>(client =>
+        {
+            client.Timeout = TimeSpan.FromMinutes(5);
+        });
         services.AddScoped<IAIChatService, AIChatService>();
 
         services.AddSingleton(new PayOSClient(new PayOSOptions

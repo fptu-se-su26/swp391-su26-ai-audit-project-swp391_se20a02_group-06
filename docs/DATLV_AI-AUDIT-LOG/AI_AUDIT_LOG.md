@@ -973,6 +973,72 @@ Cung cấp screenshot giao diện lỗi cho AI để khoanh vùng và xác nhậ
 - Scalar có giao diện hiện đại hơn Swagger UI và tích hợp tốt hơn với MapOpenApi() của .NET 9.
 ```
 
+---
+
+### Lần sử dụng AI số 23
+
+| Nội dung | Thông tin |
+|---|---|
+| Ngày sử dụng | 27/07/2026 |
+| Công cụ AI | Antigravity |
+| Mục đích sử dụng | Sửa lỗi luồng Workout Suggestion trên Dashboard hiển thị sai video và cấu hình Global Decimal Rounding |
+| Phần việc liên quan | Fullstack |
+| Mức độ sử dụng | Hỗ trợ nhiều |
+
+#### 4.1. Prompt đã sử dụng
+
+```text
+1. tôi muốn những chữ số thập phân hiển thị trên UI thì phải được làm tròn đến chữ số thập phân thứ 2 chứ khong in nhiều ra làm xấu và mất format UI
+2. không phải ở phần AIChat mà ở tất cả UI luôn toàn hệ thống luôn
+3. ở dashboard phần thẻ thứ 2 sẽ hiển thị gợi ý các bài tập trong list danh sách của người dung ra để toạ cảm hứng tập, bấm start wokout thì sẽ nhảy đến bài tập đó
+4. nếu như bại đã tạo như vậy thì nhảy đến tab workout mà có luôn 4 bài tập đó kèm theo bài khỏi động luôn. 
+5. bài đàu tiên bị sai, bài đầu tiên phỉa là bìa khời động mặc định như tôi để ngừoi dụng chọn ở workout á, và ở trong popup dadng không lấy được.
+6. đây tôi chuyển bài rôif nhưng nó mãi ở bài đầu tiên là sao. phần nội dung
+7. /commit
+```
+
+#### 4.2. Kết quả AI gợi ý
+
+```text
+- Tạo `DoubleRoundingJsonConverter` và `DecimalRoundingJsonConverter` cho JSON Serializer ở Backend để làm tròn 2 chữ số toàn cầu.
+- Import các hàm cốt lõi `calcSetsReps` và `buildExerciseCard` từ luồng Workout chính để tái sử dụng trên Dashboard (Gợi ý Workout).
+- Cập nhật backend (`ExerciseCatalogDto`, `ExerciseService.cs`) để trả về thêm `VideoUrl` và `Description` cho catalog API.
+- Cập nhật giao diện Dashboard để lấy danh sách bài tập, nối bài khởi động và truyền thẳng vào Zustand store.
+```
+
+#### 4.3. Phần sinh viên/nhóm đã sử dụng từ AI
+
+```text
+- Giữ nguyên toàn bộ logic đồng bộ hoá từ luồng bài tập chính.
+- Sử dụng các lớp JSON Converter AI viết ra.
+- Dùng logic lấy VideoUrl có check phân quyền gói cước.
+```
+
+#### 4.4. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
+
+```text
+- User review liên tục (ping pong) để yêu cầu AI chỉnh sửa luồng nhảy trang sao cho bypass được Setup Screen, đảm bảo bài khởi động luôn ở vị trí số 1.
+- Gửi screenshot cho AI để debug nhanh lỗi lặp video thay vì tự dò log.
+```
+
+#### 4.5. Minh chứng
+
+| Loại minh chứng | Nội dung |
+|---|---|
+| Link commit | 4fd1dce |
+| File liên quan | ExerciseCatalogDto.cs, ExerciseService.cs, Dashboard.tsx, workoutExercises.ts, DoubleRoundingJsonConverter.cs |
+| Screenshot | Đã cung cấp trong phiên |
+| Kết quả chạy/test | Frontend/Backend build pass, chức năng hiển thị đúng video/thông số. |
+| Link video demo | N/A |
+| Ghi chú khác | N/A |
+
+#### 4.6. Nhận xét cá nhân/nhóm
+
+```text
+Bài học lớn nhất là khi build API phục vụ UI, cần phải lường trước các state (VD: `VideoUrl` bị thiếu làm React app fallback về default state).
+JSON Converter cấp độ Global rất mạnh để xử lý vấn đề format data chung toàn hệ thống thay vì phải fix từng màn hình FE.
+```
+
 ## 5. Bảng tổng hợp mức độ sử dụng AI
 
 Đánh dấu mức độ AI hỗ trợ ở từng hạng mục.
@@ -1511,3 +1577,61 @@ Cung cấp screenshot lỗi CI từ GitHub Actions và xác nhận đồng ý co
 Hiểu rõ cơ chế `frozen-lockfile` trong CI/CD giúp đảm bảo tất cả các lần build sản phẩm đều nhất quán phiên bản thư viện, tránh lỗi chênh lệch phiên bản giữa máy dev và máy chủ CI.
 ```
 
+
+
+---
+
+### Lần sử dụng AI số 17
+
+| Nội dung | Thông tin |
+|---|---|
+| Ngày sử dụng | 28/07/2026 |
+| Công cụ AI | Antigravity |
+| Mục đích sử dụng | Khắc phục lỗi cấu hình ghi đè biến môi trường (Gemini API Key) trong appsettings.json |
+| Phần việc liên quan | Backend |
+| Mức độ sử dụng | Hỗ trợ nhiều |
+
+#### 4.1. Prompt đã sử dụng
+
+```text
+- "nguyên nhân tại sao chat không dùng được vậy, nó trả lừoi xin lỗi là sao"
+- "gắn log vào để tooi xem lỗi AI trả lời như thế này là vì sao là do hết limit hay sao. check lại cho toi"
+- "/commit , và push lên để các member khác trong team tôi dùng được."
+```
+
+#### 4.2. Kết quả AI gợi ý
+
+```text
+- Tìm ra nguyên nhân lỗi `400 API_KEY_INVALID` do `appsettings.json` ghi đè giá trị `Gemini:ApiKey` bằng placeholder, bỏ qua `GEMINI_API_KEY` ở cấp độ root.
+- Chỉnh sửa `appsettings.json` và `appsettings.Development.json` để xoá cấu hình ghi đè cứng.
+- Sử dụng cơ chế fallback tự động của .NET để load API Key từ `.env` mà không làm lộ key khi commit.
+```
+
+#### 4.3. Phần sinh viên/nhóm đã sử dụng từ AI
+
+```text
+Sử dụng cấu hình sửa đổi trong `appsettings.json` và `appsettings.Development.json`.
+```
+
+#### 4.4. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
+
+```text
+Yêu cầu Agent chạy lệnh commit để đồng bộ hóa cho team.
+```
+
+#### 4.5. Minh chứng
+
+| Loại minh chứng | Nội dung |
+|---|---|
+| Link commit | 6213363 |
+| File liên quan | appsettings.json, appsettings.Development.json |
+| Screenshot | Đã kiểm thử lại luồng chat AI sau khi fix |
+| Kết quả chạy/test | Build pass 100%, kết nối Gemini API thành công |
+| Link video demo | N/A |
+| Ghi chú khác | Fix thành công mà không để lộ secret lên git |
+
+#### 4.6. Nhận xét cá nhân/nhóm
+
+```text
+Học được cách .NET ưu tiên và ghi đè cấu hình (Configuration Provider), từ đó sửa lỗi không mong muốn khi triển khai biến môi trường an toàn.
+```

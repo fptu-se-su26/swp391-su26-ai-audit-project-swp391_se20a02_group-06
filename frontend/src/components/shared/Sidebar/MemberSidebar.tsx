@@ -41,6 +41,7 @@ const MemberSidebar: React.FC = () => {
             position="fixed"
             top="0"
             left="0"
+            className="no-print"
             bg="#111318"
             borderRight="1px solid"
             borderColor="#1e1f26"
