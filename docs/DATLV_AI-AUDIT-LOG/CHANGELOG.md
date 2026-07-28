@@ -476,3 +476,4 @@ Sinh viên/nhóm cam kết rằng nội dung changelog phản ánh đúng các t
 | 21 | Sửa lỗi crash sinh thực đơn Gemini và đồng nhất UI sang tiếng Anh | Đạt | DirectGeminiService.cs, AIChat.tsx | Commit 0c4a7c5 |
 | 22 | Thêm cấu hình Dockerfile cho Backend để deploy Render | Đạt | Dockerfile, .dockerignore | N/A |
 | 23 | Cập nhật luồng Github Actions để nạp file .env từ Secret Base64 | Đạt | .github/workflows/deploy-pages.yml | N/A |
+| 23 | Cập nhật luồng Github Actions để nạp file .env từ Secret Base64 | Đạt | .github/workflows/deploy-pages.yml | N/A |
