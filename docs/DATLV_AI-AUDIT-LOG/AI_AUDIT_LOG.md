@@ -1694,3 +1694,120 @@ Yêu cầu lưu trữ lại quy trình commit và đẩy lên repo chung (commit
 ```text
 Học được rằng mã nguồn TypeScript nếu có khai báo không sử dụng (unused imports/variables) sẽ cản trở quá trình CI/CD build production. Khắc phục triệt để lỗi này bằng cách dọn dẹp mã nguồn thường xuyên.
 ```
+
+---
+
+### Lần sử dụng AI số 19
+
+| Nội dung | Thông tin |
+|---|---|
+| Ngày sử dụng | 28/07/2026 |
+| Công cụ AI | Antigravity |
+| Mục đích sử dụng | Sửa lỗi Water Race Condition (BUG-04) và AI Session Ownership (BUG-05) theo test report |
+| Phần việc liên quan | Backend |
+| Mức độ sử dụng | Sinh chính nội dung |
+
+#### 4.1. Prompt đã sử dụng
+
+```text
+- "đây là test của member team tôi, hãy check và test lại 1 lần nưã nếu có lỗi hãy tổng hợp và cho tôi 1 plan của bạn fix những lỗi đó tôi sẽ duyệt"
+- "chạy dự án để tôi test nào và hướng dẫn cách test cho tôi"
+- "/commit"
+```
+
+#### 4.2. Kết quả AI gợi ý
+
+```text
+- Check test report, tìm ra nguyên nhân 2 bug.
+- BUG-04: Thiếu DB transaction ở hàm LogWaterAsync trong NutritionService. 
+- BUG-05: Thiếu kiểm tra UserId trong get session tại AIChatService và AIChatController.
+- AI lên kế hoạch, sau đó bọc transaction với mức Isolation Serializable, thêm logic kiểm tra quyền vào API Chat, xoá reference dư thừa.
+- AI start server test và hướng dẫn cách test.
+```
+
+#### 4.3. Phần sinh viên/nhóm đã sử dụng từ AI
+
+```text
+Sử dụng toàn bộ logic fix backend bao gồm transaction xử lý race condition.
+```
+
+#### 4.4. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
+
+```text
+Tự động duyệt kế hoạch (auto approve) thông qua review policy, yêu cầu AI chạy test server.
+```
+
+#### 4.5. Minh chứng
+
+| Loại minh chứng | Nội dung |
+|---|---|
+| Link commit | 1d23144 |
+| File liên quan | NutritionService.cs, AIChatService.cs, IAIChatService.cs, AIChatController.cs |
+| Screenshot | N/A |
+| Kết quả chạy/test | Build backend (dotnet build) pass 100% |
+| Link video demo | N/A |
+| Ghi chú khác | N/A |
+
+#### 4.6. Nhận xét cá nhân/nhóm
+
+```text
+Việc áp dụng Serializable Transaction giải quyết triệt để lỗi ghi đè dữ liệu khi submit nhiều request đồng thời, đồng thời bảo mật API Chat tốt hơn.
+```
+
+---
+
+### Lần sử dụng AI số 20
+
+| Nội dung | Thông tin |
+|---|---|
+| Ngày sử dụng | 28/07/2026 |
+| Công cụ AI | Antigravity |
+| Mục đích sử dụng | Dọn dẹp code thừa ở giao diện MemberLayout |
+| Phần việc liên quan | Frontend |
+| Mức độ sử dụng | Hỗ trợ ít |
+
+#### 4.1. Prompt đã sử dụng
+
+```text
+- "@[/Users/mac/Subject/SWP-projectFitness/swp391-su26-ai-audit-project-swp391_se20a02_group-06/frontend/src/components/shared/Layout/MemberLayout.tsx] cái này không dùng xoá đi vì không cần phần này"
+- "@[/Users/mac/Subject/SWP-projectFitness/swp391-su26-ai-audit-project-swp391_se20a02_group-06/frontend/src/components/shared/Layout/MemberLayout.tsx] file này luôn"
+- "commit and push lại cho tôi."
+```
+
+#### 4.2. Kết quả AI gợi ý
+
+```text
+- Xoá comment code thừa `PT Booking` trong danh sách `memberTabs`
+- Xoá Component `ResponsiveTabs` khỏi file `MemberLayout.tsx` để dọn dẹp theo yêu cầu
+- Xoá biến `memberTabs` dư thừa
+- Thực hiện build frontend và commit push.
+```
+
+#### 4.3. Phần sinh viên/nhóm đã sử dụng từ AI
+
+```text
+Áp dụng toàn bộ sự thay đổi ở file MemberLayout.tsx.
+```
+
+#### 4.4. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
+
+```text
+Chỉ đạo trực tiếp thông qua workflow `/commit` để AI commit và push lên repo.
+```
+
+#### 4.5. Minh chứng
+
+| Loại minh chứng | Nội dung |
+|---|---|
+| Link commit | 16ce2d8 |
+| File liên quan | MemberLayout.tsx |
+| Screenshot | N/A |
+| Kết quả chạy/test | Build pass |
+| Link video demo | N/A |
+| Ghi chú khác | N/A |
+
+#### 4.6. Nhận xét cá nhân/nhóm
+
+```text
+Giữ code gọn gàng, loại bỏ các dòng code bị comment không cần thiết giúp giảm technical debt và làm code dễ bảo trì hơn.
+```

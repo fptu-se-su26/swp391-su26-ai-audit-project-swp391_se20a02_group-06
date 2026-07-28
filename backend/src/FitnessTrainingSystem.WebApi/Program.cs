@@ -160,8 +160,8 @@ if (app.Environment.IsDevelopment())
             CONSTRAINT `FK_ai_diet_histories_sessions_session_id` FOREIGN KEY (`session_id`) REFERENCES `ai_chat_sessions` (`id`) ON DELETE SET NULL
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
     ");
-}
-
+    }
+    
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {

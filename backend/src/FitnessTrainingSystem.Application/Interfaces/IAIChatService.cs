@@ -10,6 +10,7 @@ public interface IAIChatService
 
 
     Task<List<AIChatResponse>> GetMessagesAsync(
+        int userId,
         int sessionId);
 
 
