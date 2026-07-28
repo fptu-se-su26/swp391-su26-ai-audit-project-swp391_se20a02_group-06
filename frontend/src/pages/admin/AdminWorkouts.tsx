@@ -25,7 +25,7 @@ import {
 import useSWR from 'swr'
 import apiClient from '../../lib/axios'
 import AdminLayout from '../../components/shared/Layout/AdminLayout.tsx'
-import AppButton from '../../components/shared/Button/AppButton'
+
 import { uploadVideo } from '../../api/upload'
 import { useAuthStore } from '../../store/useAuthStore'
 import ExerciseFilters from '../../features/admin/components/ExerciseFilters'
