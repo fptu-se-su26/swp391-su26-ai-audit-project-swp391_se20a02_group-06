@@ -364,13 +364,13 @@ export const AIDietPlanCard: React.FC<{
             >
                 <Icon as={FiCpu} color="#E03030" boxSize="24px" mb="2" />
                 <Text fontSize="13px" fontWeight="600" color="white" mb="1">
-                    Chưa có Thực đơn AI
+                    No AI Diet Plan yet
                 </Text>
                 <Text fontSize="11px" color="#8A8A93" mb="3">
-                    Hãy để trợ lý AI thiết kế thực đơn riêng cho bạn.
+                    Let the AI assistant design a personalized diet plan for you.
                 </Text>
                 <AppButton
-                    label="Trò chuyện ngay"
+                    label="Chat Now"
                     variant="solid"
                     size="sm"
                     w="full"
@@ -428,7 +428,7 @@ export const AIDietPlanCard: React.FC<{
                 </>
             )}
             <AppButton
-                label="Xem toàn bộ"
+                label="View All"
                 variant="outline"
                 size="sm"
                 w="full"

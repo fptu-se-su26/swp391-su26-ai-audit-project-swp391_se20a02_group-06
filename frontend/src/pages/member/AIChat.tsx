@@ -68,7 +68,7 @@ const ChatInputArea = ({ onSend, sending, loadingHistory }: { onSend: (text: str
                             handleSend()
                         }
                     }}
-                    placeholder="Nhập tin nhắn trả lời trợ lý AI..."
+                    placeholder="Type your message to the AI assistant..."
                     rows={1}
                     minH="44px"
                     maxH="100px"
@@ -119,7 +119,7 @@ const AIChat: React.FC = () => {
 
     const initialGreeting: LocalMessage = {
         role: 'assistant',
-        message: 'Xin chào! Tôi là Trợ lý Dinh dưỡng AI của hệ thống. Tôi sẽ giúp thiết kế thực đơn ăn uống được cá nhân hóa hoàn toàn dành riêng cho bạn.\n\nĐể bắt đầu, hãy chia sẻ cho tôi biết mục tiêu dinh dưỡng của bạn (Ví dụ: tăng cân, giảm mỡ, giữ dáng), thói quen ăn uống (chay hay mặn), dị ứng thực phẩm, bệnh lý nền (nếu có) hoặc số lượng bữa ăn bạn muốn ăn mỗi ngày nhé!',
+        message: "Hello! I am your AI Nutrition Assistant. I will help design a fully personalized nutrition plan just for you.\n\nTo get started, please share your nutrition goals (e.g., weight gain, fat loss, maintenance), eating habits (vegetarian or not), food allergies, medical conditions (if any), or how many meals you'd like to eat per day!",
         dietPlan: null
     }
 
@@ -173,7 +173,7 @@ const AIChat: React.FC = () => {
         } catch (error) {
             console.error('Failed to load chat history:', error)
             toast({
-                title: 'Không thể tải lịch sử cuộc trò chuyện.',
+                title: 'Failed to load chat history.',
                 status: 'error',
                 duration: 3000,
                 isClosable: true,
@@ -230,8 +230,8 @@ const AIChat: React.FC = () => {
                     setActiveDietPlan(response.dietPlan || null)
                     setGeneratingPlan(false)
                     toast({
-                        title: 'Đã tạo thực đơn dinh dưỡng thành công!',
-                        description: 'Hãy kiểm tra thực đơn chi tiết bên cạnh.',
+                        title: 'Nutrition plan created successfully!',
+                        description: 'Please check the detailed menu on the side.',
                         status: 'success',
                         duration: 5000,
                         isClosable: true,
@@ -256,8 +256,8 @@ const AIChat: React.FC = () => {
         } catch (error: any) {
             console.error(error)
             toast({
-                title: 'Lỗi gửi tin nhắn.',
-                description: error?.response?.data?.detail || error?.message || 'Có lỗi xảy ra khi kết nối với AI.',
+                title: 'Message sending failed.',
+                description: error?.response?.data?.detail || error?.message || 'An error occurred while connecting to AI.',
                 status: 'error',
                 duration: 4000,
                 isClosable: true,
@@ -268,13 +268,13 @@ const AIChat: React.FC = () => {
     }
 
     const handleRestartChat = () => {
-        if (window.confirm('Bạn có chắc chắn muốn xóa lịch sử cuộc trò chuyện hiện tại và bắt đầu lại không?')) {
+        if (window.confirm('Are you sure you want to delete the current chat history and start over?')) {
             localStorage.removeItem('ai_chat_session_id')
             setSessionId(undefined)
             setMessages([initialGreeting])
             setActiveDietPlan(null)
             toast({
-                title: 'Đã bắt đầu cuộc trò chuyện mới.',
+                title: 'Started a new conversation.',
                 status: 'info',
                 duration: 2000,
                 isClosable: true,
@@ -291,11 +291,11 @@ const AIChat: React.FC = () => {
     }
 
     const suggestions = [
-        'Tôi muốn giảm mỡ bụng',
-        'Lên thực đơn tăng cân',
-        'Tôi muốn ăn chay mặn',
-        'Tôi bị dị ứng hải sản',
-        'Chia làm 4 bữa một ngày',
+        'I want to lose belly fat',
+        'Create a weight gain menu',
+        'I am vegetarian/non-vegetarian',
+        'I am allergic to seafood',
+        'Divide into 4 meals a day',
     ]
 
     return (
@@ -318,7 +318,7 @@ const AIChat: React.FC = () => {
                         </Box>
                         <Box>
                             <Heading fontSize="22px" color="white" fontWeight="800">
-                                Trợ lý Dinh dưỡng AI
+                                AI Nutrition Assistant
                             </Heading>
                             <HStack spacing="2" mt="0.5">
                                 <Box
@@ -353,7 +353,7 @@ const AIChat: React.FC = () => {
                                 _hover={{ bg: '#1e2028', borderColor: '#8A8A93' }}
                                 onClick={handlePrint}
                             >
-                                In thực đơn
+                                Print Menu
                             </Button>
                         )}
                         <Button
@@ -366,7 +366,7 @@ const AIChat: React.FC = () => {
                             _hover={{ bg: '#1e2028', borderColor: '#8A8A93' }}
                             onClick={handleOpenHistory}
                         >
-                            Lịch sử thực đơn
+                            Diet History
                         </Button>
                         <Button
                             leftIcon={<Icon as={FiRefreshCw} />}
@@ -377,7 +377,7 @@ const AIChat: React.FC = () => {
                             _hover={{ bg: 'rgba(224,48,48,0.08)' }}
                             onClick={handleRestartChat}
                         >
-                            Cuộc trò chuyện mới
+                            New Chat
                         </Button>
                     </HStack>
                 </Flex>
@@ -420,7 +420,7 @@ const AIChat: React.FC = () => {
                             {loadingHistory ? (
                                 <Flex align="center" justify="center" h="full" direction="column" gap="3">
                                     <Spinner color="#E03030" size="lg" />
-                                    <Text fontSize="13px" color="#8A8A93">Đang tải lịch sử hội thoại...</Text>
+                                    <Text fontSize="13px" color="#8A8A93">Loading chat history...</Text>
                                 </Flex>
                             ) : (
                                 <Stack spacing="4">
@@ -614,9 +614,9 @@ const AIChat: React.FC = () => {
                             <Flex align="center" justify="center" direction="column" flex="1" gap="4" py="10">
                                 <Spinner size="xl" color="#E03030" thickness="4px" speed="0.8s" />
                                 <VStack spacing="1">
-                                    <Heading size="sm" color="white">Đang sinh thực đơn dinh dưỡng...</Heading>
+                                    <Heading size="sm" color="white">Generating nutrition plan...</Heading>
                                     <Text fontSize="12px" color="#8A8A93" textAlign="center">
-                                        Thuật toán AI đang tính toán TDEE, phân bổ lượng Calo tiêu thụ và lựa chọn món ăn phù hợp với yêu cầu của bạn.
+                                        The AI is calculating your TDEE, distributing calorie intake, and selecting suitable foods based on your requirements.
                                     </Text>
                                 </VStack>
                             </Flex>
@@ -628,7 +628,7 @@ const AIChat: React.FC = () => {
                                         <HStack spacing="2">
                                             <Icon as={FiFileText} color="#E03030" boxSize="18px" className="no-print" />
                                             <Heading fontSize="18px" color="white" sx={{ '@media print': { color: 'black' } }}>
-                                                {activeDietPlan.diet_title || 'Thực đơn Dinh dưỡng Cá nhân hóa'}
+                                                {activeDietPlan.diet_title || 'Personalized Nutrition Plan'}
                                             </Heading>
                                         </HStack>
                                         <Badge
@@ -641,20 +641,20 @@ const AIChat: React.FC = () => {
                                             border="1px solid rgba(224,48,48,0.2)"
                                             sx={{ '@media print': { color: 'black', border: '1px solid black' } }}
                                         >
-                                            {activeDietPlan.daily_calories} kcal / ngày
+                                            {activeDietPlan.daily_calories} kcal / day
                                         </Badge>
                                     </Flex>
                                     <Text fontSize="13px" color="#8A8A93" mt="2" sx={{ '@media print': { color: '#333' } }}>
-                                        Mục tiêu dinh dưỡng được phân bổ theo tỷ lệ chuẩn dành riêng cho chỉ số cơ thể của bạn.
+                                        Nutrition targets are distributed according to standard ratios tailored to your body metrics.
                                     </Text>
                                 </Box>
 
                                 {/* Macros distribution grid */}
                                 <Grid templateColumns="repeat(3, 1fr)" gap="4">
                                     {[
-                                        { label: 'Protein (Đạm)', val: `${activeDietPlan.protein_target_g}g`, color: '#E03030', icon: FiZap, pct: 30 },
-                                        { label: 'Carbs (Tinh bột)', val: `${activeDietPlan.carbs_target_g}g`, color: '#3182CE', icon: FiActivity, pct: 50 },
-                                        { label: 'Fat (Chất béo)', val: `${activeDietPlan.fat_target_g}g`, color: '#DD6B20', icon: FiDroplet, pct: 20 },
+                                        { label: 'Protein', val: `${activeDietPlan.protein_target_g}g`, color: '#E03030', icon: FiZap, pct: 30 },
+                                        { label: 'Carbs', val: `${activeDietPlan.carbs_target_g}g`, color: '#3182CE', icon: FiActivity, pct: 50 },
+                                        { label: 'Fat', val: `${activeDietPlan.fat_target_g}g`, color: '#DD6B20', icon: FiDroplet, pct: 20 },
                                     ].map((macro) => (
                                         <Box
                                             key={macro.label}
@@ -719,7 +719,7 @@ const AIChat: React.FC = () => {
                                                                     {food.food_name}
                                                                 </Text>
                                                                 <Text fontSize="11px" color="#8A8A93" sx={{ '@media print': { color: '#555' } }}>
-                                                                    Khối lượng/Khẩu phần: {food.amount}
+                                                                    Amount/Portion: {food.amount}
                                                                 </Text>
                                                             </Box>
                                                             <Text fontSize="12px" fontWeight="600" color="#E2E1EB" sx={{ '@media print': { color: 'black' } }}>
@@ -728,13 +728,13 @@ const AIChat: React.FC = () => {
                                                         </Flex>
                                                         <HStack spacing="2">
                                                             <Badge bg="rgba(224, 48, 48, 0.08)" color="#E03030" fontSize="10px" px="1.5" py="0.2">
-                                                                Đạm: {food.protein}g
+                                                                Protein: {food.protein}g
                                                             </Badge>
                                                             <Badge bg="rgba(49, 130, 206, 0.08)" color="#3182CE" fontSize="10px" px="1.5" py="0.2">
                                                                 Carbs: {food.carbs}g
                                                             </Badge>
                                                             <Badge bg="rgba(221, 107, 32, 0.08)" color="#DD6B20" fontSize="10px" px="1.5" py="0.2">
-                                                                Béo: {food.fat}g
+                                                                Fat: {food.fat}g
                                                             </Badge>
                                                         </HStack>
                                                     </Box>
@@ -761,22 +761,22 @@ const AIChat: React.FC = () => {
                                     <Icon as={FiCpu} color="#E03030" boxSize="28px" />
                                 </Box>
                                 <Heading fontSize="16px" color="white" mb="2" textAlign="center" fontWeight="700">
-                                    Thực đơn dinh dưỡng cá nhân hóa
+                                    Personalized Nutrition Plan
                                 </Heading>
                                 <Text fontSize="13px" color="#8A8A93" textAlign="center" maxW="320px" lineHeight="1.6" mb="6">
-                                    Bản thiết kế thực đơn sẽ tự động xuất hiện ở đây sau khi bạn cung cấp đủ thông tin cho trợ lý AI.
+                                    Your diet plan will automatically appear here once you provide enough information to the AI assistant.
                                 </Text>
                                 <Box bg="#0B0D14" border="1px solid" borderColor="#1e2028" borderRadius="14px" p="4" w="full">
                                     <Text fontSize="11px" fontWeight="700" color="#E03030" textTransform="uppercase" letterSpacing="wider" mb="3">
-                                        AI cần bạn chia sẻ:
+                                        The AI needs you to share:
                                     </Text>
                                     <VStack align="stretch" spacing="2">
                                         {[
-                                            'Mục tiêu dinh dưỡng (Tăng cơ, giảm mỡ, giữ cân...)',
-                                            'Bạn có ăn chay mặn hay chế độ ăn kiêng đặc biệt?',
-                                            'Dị ứng thực phẩm (không ăn được tôm, lạc, cua...)',
-                                            'Số lượng bữa ăn mong muốn trong ngày (3, 4 hoặc 5 bữa)',
-                                            'Các món ăn bạn không thích để AI loại bỏ khỏi thực đơn'
+                                            'Nutrition goals (Muscle gain, fat loss, weight maintenance...)',
+                                            'Do you follow a vegetarian or special diet?',
+                                            'Food allergies (cannot eat shrimp, peanuts, crab...)',
+                                            'Desired number of meals per day (3, 4, or 5 meals)',
+                                            'Foods you dislike so the AI can exclude them'
                                         ].map((item, idx) => (
                                             <HStack key={idx} spacing="2" align="flex-start">
                                                 <Icon as={FiInfo} color="#E03030" mt="0.5" boxSize="12px" />
@@ -824,7 +824,7 @@ const AIChat: React.FC = () => {
                 <DrawerOverlay />
                 <DrawerContent bg="#141720" color="white">
                     <DrawerCloseButton />
-                    <DrawerHeader borderBottomWidth="1px" borderColor="#1e2028">Lịch sử thực đơn AI</DrawerHeader>
+                    <DrawerHeader borderBottomWidth="1px" borderColor="#1e2028">Diet History AI</DrawerHeader>
                     <DrawerBody p={0} css={{
                         '&::-webkit-scrollbar': { width: '6px' },
                         '&::-webkit-scrollbar-track': { background: 'transparent' },
@@ -832,7 +832,7 @@ const AIChat: React.FC = () => {
                     }}>
                         {dietHistories.length === 0 ? (
                             <Flex align="center" justify="center" h="200px" color="#8A8A93">
-                                Chưa có thực đơn nào được tạo.
+                                No diet plan has been created yet.
                             </Flex>
                         ) : (
                             <Stack spacing="0" divider={<Divider borderColor="#1e2028" />}>
@@ -848,7 +848,7 @@ const AIChat: React.FC = () => {
                                             {item.dietTitle || 'AI Diet Plan'}
                                         </Heading>
                                         <Flex justify="space-between" align="center" fontSize="13px" color="#8A8A93">
-                                            <Text>{new Date(item.createdAt).toLocaleDateString('vi-VN')} {new Date(item.createdAt).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })}</Text>
+                                            <Text>{new Date(item.createdAt).toLocaleDateString('en-US')} {new Date(item.createdAt).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}</Text>
                                             <Badge bg="rgba(224,48,48,0.1)" color="#E03030">
                                                 {item.totalCalories} kcal
                                             </Badge>

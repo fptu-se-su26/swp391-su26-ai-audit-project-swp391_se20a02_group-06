@@ -1811,3 +1811,64 @@ Chỉ đạo trực tiếp thông qua workflow `/commit` để AI commit và pus
 ```text
 Giữ code gọn gàng, loại bỏ các dòng code bị comment không cần thiết giúp giảm technical debt và làm code dễ bảo trì hơn.
 ```
+
+---
+
+### Lần sử dụng AI số 21
+
+| Nội dung | Thông tin |
+|---|---|
+| Ngày sử dụng | 28/07/2026 |
+| Công cụ AI | Antigravity |
+| Mục đích sử dụng | Sửa lỗi Gemini trả về JSON sai và đồng nhất tiếng Anh giao diện |
+| Phần việc liên quan | Fullstack (Backend & Frontend) |
+| Mức độ sử dụng | Sinh chính nội dung |
+
+#### 4.1. Prompt đã sử dụng
+
+```text
+- @[test_report.md] đây là test của member team tôi, hãy check và test lại 1 lần nưã nếu có lỗi hãy tổng hợp và cho tôi 1 plan của bạn fix những lỗi đó tôi sẽ duyệt
+- chạy dự án để tôi test nào và hướng dẫn cách test cho tôi
+- bạn hãy test phần AI tôi nói đi nào
+- chắc chắn nó ổn định nhé tôi có button test thông báo nước, xoá cho tôi luôn đi, đảm bảo trang web tôi đồng nhất 1 ngôn ngữ là tiếng anh
+- /commit
+```
+
+#### 4.2. Kết quả AI gợi ý
+
+```text
+- Sửa DirectGeminiService.cs ở Backend để dùng MIME type text/plain thay vì bắt buộc application/json, giúp tránh lỗi HTTP 400.
+- Xóa NotificationTestWidget.tsx và TestWaterReminderButton.
+- Dịch toàn bộ chuỗi hardcode tiếng Việt trong AIChat.tsx sang tiếng Anh, đồng bộ toLocaleDateString('en-US').
+```
+
+#### 4.3. Phần sinh viên/nhóm đã sử dụng từ AI
+
+```text
+- Sử dụng toàn bộ code sửa lỗi JSON parsing và bản dịch UI của AI.
+```
+
+#### 4.4. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
+
+```text
+- Yêu cầu AI giữ nguyên định dạng vi-VN cho tiền tệ (VND) để hiển thị đúng dấu phân cách.
+- Test độc lập trên local để chắc chắn thực đơn được sinh ra thành công.
+```
+
+#### 4.5. Minh chứng
+
+| Loại minh chứng | Nội dung |
+|---|---|
+| Link commit | 0c4a7c5 |
+| File liên quan | DirectGeminiService.cs, AIChat.tsx, Nutrition.tsx, NutritionWidgets.tsx, NotificationTestWidget.tsx |
+| Screenshot | N/A |
+| Kết quả chạy/test | Build pass (Frontend & Backend), Test thực đơn qua API thành công |
+| Link video demo | N/A |
+| Ghi chú khác | N/A |
+
+#### 4.6. Nhận xét cá nhân/nhóm
+
+```text
+- Lỗi AI trả về plain text nhưng set MIME là JSON rất phổ biến, nhờ AI đọc log và tìm ra ngay.
+- Việc đồng nhất ngôn ngữ giúp UI chuyên nghiệp hơn, kết hợp Regex và Replace giúp fix hàng loạt chữ.
+```

@@ -472,3 +472,5 @@ Sinh viên/nhóm cam kết rằng nội dung changelog phản ánh đúng các t
 | 13 | Fix lỗi BUG-04 (Water Race Condition) và BUG-05 (AI Session Ownership) | Đạt | NutritionService.cs, AIChatService.cs | Commit 1d23144 |
 
 | 14 | Dọn dẹp code thừa ở MemberLayout (xoá ResponsiveTabs) | Đạt | MemberLayout.tsx | Commit 16ce2d8 |
+
+| 21 | Sửa lỗi crash sinh thực đơn Gemini và đồng nhất UI sang tiếng Anh | Đạt | DirectGeminiService.cs, AIChat.tsx | Commit 0c4a7c5 |
