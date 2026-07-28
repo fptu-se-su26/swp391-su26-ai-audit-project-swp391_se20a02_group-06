@@ -1577,3 +1577,61 @@ Cung cấp screenshot lỗi CI từ GitHub Actions và xác nhận đồng ý co
 Hiểu rõ cơ chế `frozen-lockfile` trong CI/CD giúp đảm bảo tất cả các lần build sản phẩm đều nhất quán phiên bản thư viện, tránh lỗi chênh lệch phiên bản giữa máy dev và máy chủ CI.
 ```
 
+
+
+---
+
+### Lần sử dụng AI số 17
+
+| Nội dung | Thông tin |
+|---|---|
+| Ngày sử dụng | 28/07/2026 |
+| Công cụ AI | Antigravity |
+| Mục đích sử dụng | Khắc phục lỗi cấu hình ghi đè biến môi trường (Gemini API Key) trong appsettings.json |
+| Phần việc liên quan | Backend |
+| Mức độ sử dụng | Hỗ trợ nhiều |
+
+#### 4.1. Prompt đã sử dụng
+
+```text
+- "nguyên nhân tại sao chat không dùng được vậy, nó trả lừoi xin lỗi là sao"
+- "gắn log vào để tooi xem lỗi AI trả lời như thế này là vì sao là do hết limit hay sao. check lại cho toi"
+- "/commit , và push lên để các member khác trong team tôi dùng được."
+```
+
+#### 4.2. Kết quả AI gợi ý
+
+```text
+- Tìm ra nguyên nhân lỗi `400 API_KEY_INVALID` do `appsettings.json` ghi đè giá trị `Gemini:ApiKey` bằng placeholder, bỏ qua `GEMINI_API_KEY` ở cấp độ root.
+- Chỉnh sửa `appsettings.json` và `appsettings.Development.json` để xoá cấu hình ghi đè cứng.
+- Sử dụng cơ chế fallback tự động của .NET để load API Key từ `.env` mà không làm lộ key khi commit.
+```
+
+#### 4.3. Phần sinh viên/nhóm đã sử dụng từ AI
+
+```text
+Sử dụng cấu hình sửa đổi trong `appsettings.json` và `appsettings.Development.json`.
+```
+
+#### 4.4. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
+
+```text
+Yêu cầu Agent chạy lệnh commit để đồng bộ hóa cho team.
+```
+
+#### 4.5. Minh chứng
+
+| Loại minh chứng | Nội dung |
+|---|---|
+| Link commit | 6213363 |
+| File liên quan | appsettings.json, appsettings.Development.json |
+| Screenshot | Đã kiểm thử lại luồng chat AI sau khi fix |
+| Kết quả chạy/test | Build pass 100%, kết nối Gemini API thành công |
+| Link video demo | N/A |
+| Ghi chú khác | Fix thành công mà không để lộ secret lên git |
+
+#### 4.6. Nhận xét cá nhân/nhóm
+
+```text
+Học được cách .NET ưu tiên và ghi đè cấu hình (Configuration Provider), từ đó sửa lỗi không mong muốn khi triển khai biến môi trường an toàn.
+```

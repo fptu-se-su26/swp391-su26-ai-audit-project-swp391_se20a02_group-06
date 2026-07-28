@@ -1018,3 +1018,64 @@ Yêu cầu AI điều chỉnh lại routing để nhảy thẳng sang màn hình
 | Link tài liệu/báo cáo | N/A |
 | Ghi chú khác | N/A |
 
+
+
+---
+
+### Prompt số 13
+
+| Nội dung | Thông tin |
+|---|---|
+| Ngày sử dụng | 28/07/2026 |
+| Công cụ AI | Antigravity |
+| Mục đích | Debug lỗi hệ thống AI Chat trả về kết quả dự phòng |
+| Phần việc liên quan | Debug |
+| Mức độ sử dụng | Hỏi debug |
+
+#### 5.1. Prompt nguyên văn
+
+```text
+nguyên nhân tại sao chat không dùng được vậy, nó trả lừoi xin lỗi là sao
+gắn log vào để tooi xem lỗi AI trả lời như thế này là vì sao là do hết limit hay sao. check lại cho toi
+```
+
+#### 5.2. Bối cảnh khi viết prompt
+
+```text
+Chat UI liên tục báo lỗi do kết nối AI bị gián đoạn, nghi ngờ hết limit API.
+```
+
+#### 5.3. Kết quả AI trả về
+
+```text
+AI phân tích log Backend (.NET Core) và tìm thấy lỗi `BadRequest` do dùng sai placeholder key thay vì biến môi trường thực.
+```
+
+#### 5.4. Kết quả đã áp dụng vào bài
+
+```text
+Xóa key ảo trong `appsettings.json` để khôi phục cơ chế đọc từ file `.env`.
+```
+
+#### 5.5. Phần sinh viên/nhóm đã chỉnh sửa hoặc cải tiến
+
+```text
+Chủ động yêu cầu AI đóng gói commit mà không bao gồm key thật nhằm chia sẻ source code an toàn cho team.
+```
+
+#### 5.6. Đánh giá chất lượng prompt
+
+- [x] Prompt rõ ràng
+- [x] Prompt có đủ bối cảnh
+- [x] Prompt tạo ra kết quả tốt
+
+#### 5.7. Minh chứng liên quan
+
+| Loại minh chứng | Nội dung |
+|---|---|
+| Link commit | 6213363 |
+| File liên quan | appsettings.json, appsettings.Development.json |
+| Screenshot | N/A |
+| Kết quả chạy/test | Fix lỗi chat thành công |
+| Link tài liệu/báo cáo | N/A |
+| Ghi chú khác | N/A |
