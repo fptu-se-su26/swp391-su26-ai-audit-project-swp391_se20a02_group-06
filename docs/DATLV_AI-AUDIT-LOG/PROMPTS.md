@@ -1259,3 +1259,62 @@ N/A
 | Kết quả chạy/test | Build pass |
 | Link tài liệu/báo cáo | N/A |
 | Ghi chú khác | N/A |
+
+---
+
+### Prompt số 18
+
+| Nội dung | Thông tin |
+|---|---|
+| Ngày sử dụng | 28/07/2026 |
+| Công cụ AI | Antigravity |
+| Mục đích | Dọn dẹp nút test và đồng nhất ngôn ngữ UI, commit code |
+| Phần việc liên quan | Coding / Refactor |
+| Mức độ sử dụng | Yêu cầu làm trọn gói (Plan + Execute) |
+
+#### 5.1. Prompt nguyên văn
+
+```text
+chắc chắn nó ổn định nhé tôi có button test thông báo nước, xoá cho tôi luôn đi, đảm bảo trang web tôi đồng nhất 1 ngôn ngữ là tiếng anh chứ không phải nơi tiếng anh, nơi tiếng việt... /commit
+```
+
+#### 5.2. Bối cảnh khi viết prompt
+
+```text
+Sau khi test AI trả về dữ liệu thành công, phát hiện giao diện còn rác (nút test) và ngôn ngữ lộn xộn (nửa Tây nửa Ta), cần dọn dẹp trước khi merge/commit.
+```
+
+#### 5.3. Kết quả AI trả về
+
+```text
+AI đề xuất plan: xoá component thừa, dùng Regex tìm các chữ Việt, viết script Python để replace toàn bộ sang tiếng Anh, rồi tự động commit + ghi log.
+```
+
+#### 5.4. Kết quả đã áp dụng vào bài
+
+```text
+Sử dụng 100% các script replace và code commit của AI.
+```
+
+#### 5.5. Phần sinh viên/nhóm đã chỉnh sửa hoặc cải tiến
+
+```text
+Giám sát việc AI không được đổi định dạng VND (giá tiền).
+```
+
+#### 5.6. Đánh giá chất lượng prompt
+
+- [x] Prompt rõ ràng
+- [x] Prompt có đủ bối cảnh
+- [x] Prompt tạo ra kết quả tốt
+
+#### 5.7. Minh chứng liên quan
+
+| Loại minh chứng | Nội dung |
+|---|---|
+| Link commit | 0c4a7c5 |
+| File liên quan | AIChat.tsx, Nutrition.tsx |
+| Screenshot | N/A |
+| Kết quả chạy/test | Build thành công |
+| Link tài liệu/báo cáo | N/A |
+| Ghi chú khác | N/A |

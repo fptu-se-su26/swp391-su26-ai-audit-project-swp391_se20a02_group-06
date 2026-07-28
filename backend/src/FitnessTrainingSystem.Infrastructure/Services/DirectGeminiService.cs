@@ -128,17 +128,17 @@ LỊCH SỬ CHAT
 {conversation}
 """;
 
-        var reply = await CallGeminiWithRetryAsync(systemInstruction, prompt);
+        var reply = await CallGeminiWithRetryAsync(systemInstruction, prompt, isJson: false);
         return reply.Trim().Trim('"', '\'');
     }
 
-    private async Task<string> CallGeminiWithRetryAsync(string systemInstruction, string userPrompt, int maxRetries = 3)
+    private async Task<string> CallGeminiWithRetryAsync(string systemInstruction, string userPrompt, int maxRetries = 3, bool isJson = true)
     {
         for (int attempt = 1; attempt <= maxRetries; attempt++)
         {
             try
             {
-                return await CallGeminiAsync(systemInstruction, userPrompt);
+                return await CallGeminiAsync(systemInstruction, userPrompt, isJson);
             }
             catch (HttpRequestException ex) when (attempt < maxRetries && IsTransientError(ex))
             {
@@ -148,7 +148,7 @@ LỊCH SỬ CHAT
             }
         }
 
-        return await CallGeminiAsync(systemInstruction, userPrompt);
+        return await CallGeminiAsync(systemInstruction, userPrompt, isJson);
     }
 
     private static bool IsTransientError(HttpRequestException ex)
@@ -163,7 +163,7 @@ LỊCH SỬ CHAT
         };
     }
 
-    private async Task<string> CallGeminiAsync(string systemInstruction, string userPrompt)
+    private async Task<string> CallGeminiAsync(string systemInstruction, string userPrompt, bool isJson)
     {
         var requestBody = new
         {
@@ -172,7 +172,7 @@ LỊCH SỬ CHAT
                 new { role = "user", parts = new[] { new { text = userPrompt } } }
             },
             systemInstruction = new { parts = new[] { new { text = systemInstruction } } },
-            generationConfig = new { responseMimeType = "application/json", temperature = 0.2 }
+            generationConfig = new { responseMimeType = isJson ? "application/json" : "text/plain", temperature = 0.2 }
         };
 
         var json = JsonSerializer.Serialize(requestBody);
