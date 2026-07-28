@@ -1,4 +1,4 @@
-﻿import { create } from 'zustand'
+import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import type { WorkoutFormData, WorkoutPhase, ExerciseCardData } from '../features/workout/types/workout'
 
@@ -60,22 +60,16 @@ export const useWorkoutStore = create<WorkoutState>()(
             })),
             resetWorkout: () => set({ phase: 'intro', formData: null, exercises: [], activePlanId: null, activeSessionId: null }),
 
-            startWorkoutSession: async (_payload) => {
-                // TODO: Gọi API lưu vào database tại đây (axios/fetch)
-                // Ví dụ: const res = await axios.post('/api/workout/session', payload)
-                
-                // Hiện tại trả về dữ liệu Mock để app chạy mượt mà không lỗi:
-                const mockSessionId = Math.floor(Math.random() * 100000)
-                return { id: mockSessionId }
+            startWorkoutSession: async (payload) => {
+                const { startWorkoutSession: apiStartWorkoutSession } = await import('../api/workouts.ts')
+                const res = await apiStartWorkoutSession(payload)
+                return { id: res.id }
             },
 
             completeWorkoutSession: async (sessionId, payload) => {
-                // TODO: Gọi API hoàn thành/lưu kết quả buổi tập lên database
-                // Ví dụ: await axios.put(`/api/workout/session/${sessionId}`, payload)
-                
+                const { completeWorkoutSession: apiCompleteWorkoutSession } = await import('../api/workouts.ts')
+                await apiCompleteWorkoutSession(sessionId, payload)
                 console.log(`Saved Session ${sessionId} successfully:`, payload)
-                
-                // Sau khi kết thúc thì clear session id hiện tại đi
                 set({ activeSessionId: null })
             }
         }),
