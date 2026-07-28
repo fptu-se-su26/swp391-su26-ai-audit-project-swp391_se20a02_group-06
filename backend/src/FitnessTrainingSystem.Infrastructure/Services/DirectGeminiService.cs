@@ -4,6 +4,7 @@ using System.Text.Json.Serialization;
 using FitnessTrainingSystem.Application.DTOs.Nutrition;
 using FitnessTrainingSystem.Application.Common.Interfaces;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 
 namespace FitnessTrainingSystem.Infrastructure.Services;
 
@@ -11,11 +12,18 @@ public class DirectGeminiService : IGeminiAiService
 {
     private readonly HttpClient _httpClient;
     private readonly string _apiKey;
+    private readonly string _model;
+    private readonly string _baseUrl;
+    private readonly ILogger<DirectGeminiService> _logger;
+    private static readonly Random _jitter = new();
 
-    public DirectGeminiService(HttpClient httpClient, IConfiguration configuration)
+    public DirectGeminiService(HttpClient httpClient, IConfiguration configuration, ILogger<DirectGeminiService> logger)
     {
         _httpClient = httpClient;
-        _apiKey = configuration["GEMINI_API_KEY"] ?? configuration["GeminiApiKey"] ?? "";
+        _apiKey = configuration["Gemini:ApiKey"] ?? configuration["GEMINI_API_KEY"] ?? "";
+        _model = configuration["Gemini:Model"] ?? "gemini-2.5-flash";
+        _baseUrl = configuration["Gemini:BaseUrl"] ?? "https://generativelanguage.googleapis.com/v1beta/models/";
+        _logger = logger;
     }
 
     public async Task<DietPlanResponse> GenerateDietPlanAsync(string userInfo, string foodListJson)
@@ -43,6 +51,8 @@ QUY TẮC THỰC ĐƠN
 - Khẩu phần ăn phải phù hợp với người trưởng thành Việt Nam.
 - Calories phải được phân bổ hợp lý (KHÔNG để một bữa ăn chiếm quá 50% tổng calories).
 - Protein phải được phân bổ tương đối đồng đều giữa các bữa ăn.
+- LƯU Ý QUAN TRỌNG: TUYỆT ĐỐI KHÔNG thêm đơn vị (như "g", "kcal", "ml") vào các trường số (ví dụ: daily_calories, protein, carbs, fat). Chỉ trả về số nguyên hoặc số thập phân hợp lệ của JSON.
+- Ví dụ ĐÚNG: "protein": 15. Ví dụ SAI: "protein": 15g hoặc "protein": "15g".
 
 Output phải là JSON hợp lệ theo schema:
 {
@@ -79,7 +89,14 @@ DANH SÁCH MÓN ĂN DATABASE
 {foodListJson}
 """;
 
-        var resultJson = await CallGeminiAsync(systemInstruction, userPrompt);
+        var resultJson = await CallGeminiWithRetryAsync(systemInstruction, userPrompt);
+        
+        // Clean up markdown block if API returns it
+        if (resultJson.StartsWith("```json")) resultJson = resultJson.Substring(7);
+        if (resultJson.StartsWith("```")) resultJson = resultJson.Substring(3);
+        if (resultJson.EndsWith("```")) resultJson = resultJson.Substring(0, resultJson.Length - 3);
+        resultJson = resultJson.Trim();
+
         var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
         return JsonSerializer.Deserialize<DietPlanResponse>(resultJson, options)
             ?? throw new Exception("Không đọc được JSON từ AI.");
@@ -90,11 +107,19 @@ DANH SÁCH MÓN ĂN DATABASE
         var systemInstruction = """
 Bạn là AI Nutrition Assistant của hệ thống quản lý phòng gym.
 Nhiệm vụ: thu thập thông tin dinh dưỡng từ hội viên.
+
+LƯU Ý QUAN TRỌNG:
+1. Kiểm tra LỊCH SỬ CHAT.
+2. Nếu hội viên CHƯA được hỏi về dị ứng hoặc thực phẩm kiêng khem:
+   -> Hãy hỏi ĐÚNG 1 CÂU THÂN THIỆN: "Bạn có bị dị ứng với loại thực phẩm nào hoặc có lưu ý kiêng khem gì đặc biệt không?"
+3. Nếu hội viên ĐÃ TRẢ LỜI về dị ứng/thực phẩm kiêng (hoặc nói không dị ứng, hoặc tin nhắn đầu tiên đã đề cập):
+   -> TUYỆT ĐỐI KHÔNG HỎI THÊM BẤT CỨ CÂU NÀO KHÁC.
+   -> TRẢ LỜI CHÍNH XÁC DUY NHẤT CỤM TỪ: 
+   READY_TO_GENERATE
+
 QUY TẮC:
-- KHÔNG hỏi chiều cao, cân nặng, tuổi, giới tính (đã có trong Database).
-- MỖI LẦN CHỈ ĐƯỢC HỎI ĐÚNG 1 CÂU HỎI.
-- Khi đã đủ dữ liệu, chỉ trả lời đúng: READY_TO_GENERATE
-- Trò chuyện tự nhiên và thân thiện như ChatGPT.
+- Không hỏi thêm mục tiêu, số bữa, ngân sách hay bất kỳ thứ gì khác.
+- Khi đã sẵn sàng, CHỈ TRẢ VỀ: READY_TO_GENERATE (Không thêm khoảng trắng thừa, không thêm dấu chấm).
 """;
 
         var prompt = $"""
@@ -103,7 +128,39 @@ LỊCH SỬ CHAT
 {conversation}
 """;
 
-        return await CallGeminiAsync(systemInstruction, prompt);
+        var reply = await CallGeminiWithRetryAsync(systemInstruction, prompt);
+        return reply.Trim().Trim('"', '\'');
+    }
+
+    private async Task<string> CallGeminiWithRetryAsync(string systemInstruction, string userPrompt, int maxRetries = 3)
+    {
+        for (int attempt = 1; attempt <= maxRetries; attempt++)
+        {
+            try
+            {
+                return await CallGeminiAsync(systemInstruction, userPrompt);
+            }
+            catch (HttpRequestException ex) when (attempt < maxRetries && IsTransientError(ex))
+            {
+                var delay = TimeSpan.FromMilliseconds((int)Math.Pow(2, attempt) * 1000 + _jitter.Next(0, 1000));
+                _logger.LogWarning(ex, "Gemini API transient error (attempt {Attempt}/{MaxRetries}), retrying in {Delay}ms", attempt, maxRetries, delay.TotalMilliseconds);
+                await Task.Delay(delay);
+            }
+        }
+
+        return await CallGeminiAsync(systemInstruction, userPrompt);
+    }
+
+    private static bool IsTransientError(HttpRequestException ex)
+    {
+        return ex.StatusCode switch
+        {
+            System.Net.HttpStatusCode.TooManyRequests => true,
+            System.Net.HttpStatusCode.ServiceUnavailable => true,
+            System.Net.HttpStatusCode.BadGateway => true,
+            System.Net.HttpStatusCode.GatewayTimeout => true,
+            _ => false
+        };
     }
 
     private async Task<string> CallGeminiAsync(string systemInstruction, string userPrompt)
@@ -122,10 +179,15 @@ LỊCH SỬ CHAT
         var content = new StringContent(json, Encoding.UTF8, "application/json");
 
         var response = await _httpClient.PostAsync(
-            $"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={_apiKey}",
+            $"{_baseUrl}{_model}:generateContent?key={_apiKey}",
             content);
 
-        response.EnsureSuccessStatusCode();
+        if (!response.IsSuccessStatusCode)
+        {
+            var errorContent = await response.Content.ReadAsStringAsync();
+            throw new HttpRequestException($"Gemini API error ({response.StatusCode}): {errorContent}", null, response.StatusCode);
+        }
+
         var rawJson = await response.Content.ReadAsStringAsync();
 
         using var doc = JsonDocument.Parse(rawJson);

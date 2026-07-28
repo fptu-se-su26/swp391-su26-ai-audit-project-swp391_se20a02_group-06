@@ -37,9 +37,11 @@ public partial class ApplicationDbContext : DbContext
     public virtual DbSet<WorkoutPlanExercise> WorkoutPlanExercises { get; set; }
     public virtual DbSet<WorkoutSession> WorkoutSessions { get; set; }
     public virtual DbSet<WorkoutSessionDetail> WorkoutSessionDetails { get; set; }
-    public virtual DbSet<AIChatSession> AIChatSessions { get; set; }
-    public virtual DbSet<AIChatMessage> AIChatMessages { get; set; }
-    public virtual DbSet<AIDietHistory> AIDietHistories { get; set; }
+  public virtual DbSet<AIChatSession> AIChatSessions { get; set; }
+
+public virtual DbSet<AIChatMessage> AIChatMessages { get; set; }
+
+public virtual DbSet<AIDietHistory> AIDietHistories { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
@@ -107,9 +109,6 @@ public partial class ApplicationDbContext : DbContext
                 .WithMany()
                 .HasForeignKey(r => r.RequestedBy)
                 .OnDelete(DeleteBehavior.Restrict);
-
-            entity.Property(e => e.Difficulty)
-                .HasConversion<string>();
         });
 
         modelBuilder.Entity<Exercise>()
@@ -117,6 +116,72 @@ public partial class ApplicationDbContext : DbContext
             .WithMany(u => u.CreatedExercises)
             .HasForeignKey(e => e.CreatedBy);
 
+        modelBuilder.Entity<Exercise>()
+            .HasOne(e => e.MuscleGroup)
+            .WithMany(m => m.Exercises)
+            .HasForeignKey(e => e.MuscleGroupId);
+
+        // AIChatSession table mapping
+        modelBuilder.Entity<AIChatSession>(entity =>
+        {
+            entity.ToTable("ai_chat_sessions");
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.UserId).HasColumnName("user_id");
+            entity.Property(e => e.Title).HasColumnName("title");
+            entity.Property(e => e.Status).HasColumnName("status");
+            entity.Property(e => e.CreatedAt).HasColumnName("created_at");
+            entity.Property(e => e.UpdatedAt).HasColumnName("updated_at");
+
+            entity.HasOne(x => x.User)
+                .WithMany(x => x.AIChatSessions)
+                .HasForeignKey(x => x.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasMany(x => x.Messages)
+                .WithOne(x => x.Session)
+                .HasForeignKey(x => x.SessionId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        // AIChatMessage table mapping
+        modelBuilder.Entity<AIChatMessage>(entity =>
+        {
+            entity.ToTable("ai_chat_messages");
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.SessionId).HasColumnName("session_id");
+            entity.Property(e => e.Role).HasColumnName("sender");  // DB column is 'sender'
+            entity.Property(e => e.Message).HasColumnName("message");
+            entity.Property(e => e.CreatedAt).HasColumnName("created_at");
+        });
+
+        // AIDietHistory table mapping
+        modelBuilder.Entity<AIDietHistory>(entity =>
+        {
+            entity.ToTable("ai_diet_histories");
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.UserId).HasColumnName("user_id");
+            entity.Property(e => e.SessionId).HasColumnName("session_id");
+            entity.Property(e => e.DietTitle).HasColumnName("diet_title");
+            entity.Property(e => e.TotalCalories).HasColumnName("total_calories");
+            entity.Property(e => e.Protein).HasColumnName("protein");
+            entity.Property(e => e.Carbs).HasColumnName("carbs");
+            entity.Property(e => e.Fat).HasColumnName("fat");
+            entity.Property(e => e.DietJson).HasColumnName("raw_json");  // DB column is 'raw_json'
+            entity.Property(e => e.CreatedAt).HasColumnName("created_at");
+
+            entity.HasOne(x => x.User)
+                .WithMany(x => x.AIDietHistories)
+                .HasForeignKey(x => x.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasOne(x => x.Session)
+                .WithMany()
+                .HasForeignKey(x => x.SessionId)
+                .OnDelete(DeleteBehavior.SetNull);
+        });
         modelBuilder.Entity<Exercise>()
             .HasOne(e => e.MuscleGroup)
             .WithMany(m => m.Exercises)
@@ -137,23 +202,5 @@ public partial class ApplicationDbContext : DbContext
             .HasOne(s => s.Package)
             .WithMany()
             .HasForeignKey(s => s.PackageId);
-
-        modelBuilder.Entity<AIChatSession>()
-            .HasOne(x => x.User)
-            .WithMany(x => x.AIChatSessions)
-            .HasForeignKey(x => x.UserId)
-            .OnDelete(DeleteBehavior.Cascade);
-
-        modelBuilder.Entity<AIChatSession>()
-            .HasMany(x => x.Messages)
-            .WithOne(x => x.Session)
-            .HasForeignKey(x => x.SessionId)
-            .OnDelete(DeleteBehavior.Cascade);
-
-        modelBuilder.Entity<AIDietHistory>()
-            .HasOne(x => x.User)
-            .WithMany(x => x.AIDietHistories)
-            .HasForeignKey(x => x.UserId)
-            .OnDelete(DeleteBehavior.Cascade);
     }
 }

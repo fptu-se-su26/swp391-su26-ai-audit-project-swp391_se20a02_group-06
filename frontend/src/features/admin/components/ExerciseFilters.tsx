@@ -13,6 +13,11 @@ import {
 import { FiSearch, FiPlus } from 'react-icons/fi'
 import { adminColors } from '../../../pages/admin/AdminPrimitives'
 
+interface PackageOption {
+    id: number
+    name: string
+}
+
 interface ExerciseFiltersProps {
     searchQuery: string
     onSearchChange: (val: string) => void
@@ -22,8 +27,11 @@ interface ExerciseFiltersProps {
     onDifficultyChange: (val: string) => void
     muscleTargetFilter: string
     onMuscleTargetChange: (val: string) => void
+    packageFilter: string
+    onPackageChange: (val: string) => void
     categories: string[]
     muscleTargets: string[]
+    packages: PackageOption[]
     onAddExercise: () => void
     showAddButton?: boolean
 }
@@ -37,8 +45,11 @@ const ExerciseFilters: React.FC<ExerciseFiltersProps> = ({
     onDifficultyChange,
     muscleTargetFilter,
     onMuscleTargetChange,
+    packageFilter,
+    onPackageChange,
     categories,
     muscleTargets,
+    packages,
     onAddExercise,
     showAddButton = true,
 }) => {
@@ -133,6 +144,31 @@ const ExerciseFilters: React.FC<ExerciseFiltersProps> = ({
                     <option value="all" style={{ color: '#000' }}>All Muscles</option>
                     {muscleTargets.map((m) => (
                         <option key={m} value={m} style={{ color: '#000' }}>{m}</option>
+                    ))}
+                </Select>
+            </Box>
+
+            <Box>
+                <Text color={adminColors.dim} fontSize="11px" fontWeight="700" textTransform="uppercase" letterSpacing="0.08em" mb={2}>
+                    Package
+                </Text>
+                <Select
+                    value={packageFilter}
+                    onChange={(e) => onPackageChange(e.target.value)}
+                    h="36px"
+                    bg={adminColors.surfaceMid}
+                    border="1px solid"
+                    borderColor={adminColors.surfaceVariant}
+                    borderRadius="10px"
+                    color={adminColors.text}
+                    fontSize="13px"
+                    _focus={{ borderColor: adminColors.primary, boxShadow: 'none' }}
+                    iconColor={adminColors.dim}
+                >
+                    <option value="all" style={{ color: '#000' }}>All Packages</option>
+                    <option value="free" style={{ color: '#000' }}>Free</option>
+                    {packages.map((p) => (
+                        <option key={p.id} value={p.id.toString()} style={{ color: '#000' }}>{p.name}</option>
                     ))}
                 </Select>
             </Box>

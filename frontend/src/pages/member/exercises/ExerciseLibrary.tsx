@@ -1,8 +1,8 @@
-import React, { useState, useRef, useEffect } from 'react'
+import React, { useState, useRef, useEffect, useCallback } from 'react'
 import {
     Box, Flex, Grid, Heading, Text, Icon, Button, Spinner,
 } from '@chakra-ui/react'
-import { FiChevronDown, FiX, FiChevronRight, FiChevronLeft } from 'react-icons/fi'
+import { FiChevronDown, FiX, FiChevronRight } from 'react-icons/fi'
 import useSWR from 'swr'
 import apiClient from '../../../lib/axios'
 import MemberLayout from '../../../components/shared/Layout/MemberLayout'
@@ -10,6 +10,7 @@ import MemberLayout from '../../../components/shared/Layout/MemberLayout'
 import ExerciseGridCard from './components/ExerciseGridCard'
 import PlanSidebar from './components/PlanSidebar'
 import WorkoutExerciseModal from '../../../features/workout/components/WorkoutExerciseModal'
+import PaginationFooter from '../../../features/admin/components/PaginationFooter'
 import type { ExerciseGridItem } from './components/ExerciseGridCard'
 
 const fetcher = (url: string) => apiClient.get(url).then(res => res.data)
@@ -47,30 +48,28 @@ const ExerciseLibrary: React.FC = () => {
     const diffRef = useRef<HTMLDivElement>(null)
     const resetPage = () => setPage(1)
 
-    const { data: exercises, isLoading, error } = useSWR<any[]>('/exercises', fetcher)
+    const { data: catalog, isLoading, error } = useSWR<any[]>('/exercises/catalog', fetcher)
     const { data: membership } = useSWR<any>('/membership/my', fetcher)
 
-    const userTier = membership?.packageName || 'Free'
-
     const mapped: ExerciseGridItem[] = React.useMemo(() => {
-        if (!exercises) return []
-        return exercises.map((ex: any) => {
+        if (!catalog) return []
+        return catalog.map((ex: any) => {
             const pkgName = ex.packageName || 'Free'
             const badge = packageBadgeMap[pkgName] || { label: pkgName.toUpperCase(), color: '#8A8A93', bg: 'rgba(138,138,147,0.15)' }
-            const isLocked = ex.packageId != null && ex.packageName !== userTier && userTier === 'Free'
+            const isLocked = ex.isLocked
             return {
                 id: ex.id,
-                title: ex.title || ex.description || 'Untitled',
+                title: ex.title || 'Untitled',
                 muscleGroup: ex.muscleGroup || 'General',
                 difficulty: ex.difficulty !== undefined ? (difficultyLabels[String(ex.difficulty)] || 'General') : 'General',
-                duration: ex.duration ? `${ex.duration}m` : '--',
-                thumbnail: ex.videoUrl || undefined,
+                duration: ex.durationMinutes ? `${ex.durationMinutes}m` : '--',
                 packageBadge: badge,
                 isLocked,
                 requiredPlan: isLocked ? pkgName : undefined,
+                thumbnailUrl: ex.thumbnailUrl || undefined,
             }
         })
-    }, [exercises, userTier])
+    }, [catalog])
 
     const filtered = React.useMemo(() => {
         let result = mapped
@@ -87,18 +86,23 @@ const ExerciseLibrary: React.FC = () => {
     const safePage = Math.min(page, totalPages)
     const paginated = filtered.slice((safePage - 1) * PER_PAGE, safePage * PER_PAGE)
 
-    const handlePlay = (id: number) => {
-        const raw = exercises?.find((e: any) => e.id === id)
+    const handlePlay = useCallback(async (id: number) => {
         const grid = mapped.find(e => e.id === id)
         if (!grid) return
-        setSelectedModal({
-            name: grid.title,
-            videoUrl: raw?.videoUrl || undefined,
-            description: raw?.description || undefined,
-            tags: [grid.muscleGroup, grid.difficulty],
-            duration: raw?.duration || undefined,
-        })
-    }
+        try {
+            const res = await apiClient.get(`/exercises/${id}`)
+            const full = res.data
+            setSelectedModal({
+                name: full.title || grid.title,
+                videoUrl: full.videoUrl || undefined,
+                description: full.description || undefined,
+                tags: [full.muscleGroup || grid.muscleGroup, full.difficulty !== undefined ? (difficultyLabels[String(full.difficulty)] || 'General') : grid.difficulty],
+                duration: full.duration || undefined,
+            })
+        } catch {
+            setSelectedModal(null)
+        }
+    }, [mapped])
 
     const handleModalComplete = () => {
         setSelectedModal(null)
@@ -403,61 +407,24 @@ const ExerciseLibrary: React.FC = () => {
                             ))}
                         </Grid>
 
-                        {/* Pagination */}
+                        {/* Pagination — reuses admin PaginationFooter with member colors */}
                         {totalPages > 1 && (
-                            <Flex justify="center" align="center" gap="2" mt="12" mb="8">
-                                <Flex
-                                    as="button"
-                                    align="center" justify="center"
-                                    w="36px" h="36px"
-                                    borderRadius="full"
-                                    color={safePage === 1 ? '#555' : '#8A8A93'}
-                                    bg={safePage === 1 ? 'transparent' : '#1A1A1A'}
-                                    border="1px solid"
-                                    borderColor={safePage === 1 ? 'rgba(255,255,255,0.04)' : 'rgba(255,255,255,0.08)'}
-                                    cursor={safePage === 1 ? 'not-allowed' : 'pointer'}
-                                    _hover={safePage > 1 ? { color: 'white', borderColor: 'white' } : undefined}
-                                    onClick={() => { if (safePage > 1) setPage(safePage - 1) }}
-                                >
-                                    <Icon as={FiChevronLeft} boxSize="16px" />
-                                </Flex>
-
-                                {Array.from({ length: totalPages }, (_, i) => i + 1).map(p => (
-                                    <Flex
-                                        key={p}
-                                        as="button"
-                                        align="center" justify="center"
-                                        w="36px" h="36px"
-                                        borderRadius="full"
-                                        fontSize="13px" fontWeight="600"
-                                        bg={safePage === p ? '#E03030' : '#1A1A1A'}
-                                        color={safePage === p ? 'white' : '#8A8A93'}
-                                        border="1px solid"
-                                        borderColor={safePage === p ? '#E03030' : 'rgba(255,255,255,0.08)'}
-                                        _hover={{ bg: safePage === p ? '#C62828' : '#262626', color: 'white' }}
-                                        transition="all 0.15s"
-                                        onClick={() => setPage(p)}
-                                    >
-                                        {p}
-                                    </Flex>
-                                ))}
-
-                                <Flex
-                                    as="button"
-                                    align="center" justify="center"
-                                    w="36px" h="36px"
-                                    borderRadius="full"
-                                    color={safePage === totalPages ? '#555' : '#8A8A93'}
-                                    bg={safePage === totalPages ? 'transparent' : '#1A1A1A'}
-                                    border="1px solid"
-                                    borderColor={safePage === totalPages ? 'rgba(255,255,255,0.04)' : 'rgba(255,255,255,0.08)'}
-                                    cursor={safePage === totalPages ? 'not-allowed' : 'pointer'}
-                                    _hover={safePage < totalPages ? { color: 'white', borderColor: 'white' } : undefined}
-                                    onClick={() => { if (safePage < totalPages) setPage(safePage + 1) }}
-                                >
-                                    <Icon as={FiChevronRight} boxSize="16px" />
-                                </Flex>
-                            </Flex>
+                            <Box mt="10" mb="6">
+                                <PaginationFooter
+                                    currentPage={safePage}
+                                    totalPages={totalPages}
+                                    totalItems={filtered.length}
+                                    pageSize={PER_PAGE}
+                                    onPageChange={setPage}
+                                    hideItemCount
+                                    colors={{
+                                        dim: '#8A8A93',
+                                        text: '#FFFFFF',
+                                        primary: '#E03030',
+                                        surfaceVariant: 'rgba(255,255,255,0.06)',
+                                    }}
+                                />
+                            </Box>
                         )}
                     </>
                 )}

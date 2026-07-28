@@ -248,6 +248,12 @@ DD/MM/YYYY
 | 9 | Sửa lỗi EF Core Mapping (InvalidCastException, shadow property) | Đạt | `Exercise.cs`, `ApplicationDbContext.cs` | Commit 40c8805 |
 | 11 | Hoàn thiện Logic AI Workout, UI Popup và Fix DB Exercises FK | Đạt | workoutExercises.ts, FixCreatorId.cs | Commit ead4498 |
 | 12 | Thêm Scalar API Reference thay thế Swagger UI cho .NET 9 | Đạt | Program.cs, WebApi.csproj | Commit 7de96b2 |
+| 13 | Khắc phục lỗi 500 API, JWT Claim Mapping & Retry Gemini API | Đạt | DirectGeminiService.cs, Program.cs | Commit a3e7084 |
+| 14 | Redesign Topbar Layout, Timeline Progress UI & ComingSoon Overlay | Đạt | Progress.tsx, ComingSoonOverlay.tsx | Commit 787a4e6 |
+| 15 | Tích hợp SignalR Realtime Hydration Reminder & Custom UserProvider | Đạt | SubClaimUserIdProvider.cs, HydrationCountdown.tsx | Commit 78ae5ed |
+| 16 | Đồng bộ Database SQL, Fix schema emailotp, cấu hình appsettings.json Production | Đạt | appsettings.json, AuthController.cs | Commit 2047286 |
+| 17 | Cập nhật pnpm-lock.yaml sửa lỗi ERR_PNPM_OUTDATED_LOCKFILE trên CI/CD GitHub Actions | Đạt | `pnpm-lock.yaml` | Commit 9f17f8e |
+| 18 | Đồng bộ Logic Dashboard Suggested Routine với Core Workout Engine & Cấu hình Global Decimal Rounding JSON Backend | Đạt | Dashboard.tsx, workoutExercises.ts, DoubleRoundingJsonConverter.cs | Commit 4fd1dce |
 
 ## AI có hỗ trợ không?
 
@@ -460,3 +466,5 @@ Sinh viên/nhóm cam kết rằng nội dung changelog phản ánh đúng các t
 |  |  |
 
 | 10 | Tích hợp dữ liệu User Dashboard và Phân quyền PT CRUD | Đạt | Dashboard.tsx, DashboardService.cs | Commit 0b5a897 |
+| 11 | Sửa lỗi cấu hình ưu tiên đọc Gemini API key | Đạt | appsettings.json, appsettings.Development.json | Commit 6213363 |
+| 12 | Khắc phục lỗi build Frontend TypeScript (Unused variables) | Đạt | HeaderActions.tsx, Profile.tsx, ... | Commit 15cbfba |

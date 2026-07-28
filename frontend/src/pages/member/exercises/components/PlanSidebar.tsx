@@ -196,7 +196,7 @@ const PlanSidebar: React.FC<PlanSidebarProps> = ({ isOpen, onClose }) => {
                                                     )}
                                                     <Heading fontSize="16px" fontWeight="600" color="white" mb="1">{pkg.name}</Heading>
                                                     <Text fontSize="22px" fontWeight="800" color="#E03030" mb="1">
-                                                        ${pkg.price}<Text as="span" fontSize="12px" fontWeight="400" color="#8A8A93">/{pkg.durationDays}d</Text>
+                                                        {pkg.price.toLocaleString('vi-VN')}₫<Text as="span" fontSize="12px" fontWeight="400" color="#8A8A93">/{pkg.durationDays}d</Text>
                                                     </Text>
                                                     <Text fontSize="11px" color="#8A8A93" noOfLines={4} mb="3">
                                                         {pkg.description || `${pkg.durationDays}-day access to ${pkg.name} tier exercises`}

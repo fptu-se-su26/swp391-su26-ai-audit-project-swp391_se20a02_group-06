@@ -1,5 +1,5 @@
 import React from 'react'
-import { Box, Grid, Heading } from '@chakra-ui/react'
+import { Box, Grid, Heading, Text } from '@chakra-ui/react'
 import MemberLayout from '../../components/shared/Layout/MemberLayout.tsx'
 
 import PTBookingModal from '../../features/pt/components/PTBookingModal.tsx'
@@ -9,13 +9,29 @@ import PTSessionPanel from '../../features/pt/components/PTSessionPanel.tsx'
 import { usePTBooking } from '../../features/pt/hooks/usePTBooking'
 import { MOCK_COACH } from '../../features/pt/types/pt'
 
-
 const PTBooking: React.FC = () => {
     const booking = usePTBooking()
 
     return (
         <MemberLayout>
-            <Box px={{ base: '5', md: '7' }} py="6" maxW="1200px">
+            <Box px={{ base: '5', md: '7' }} py="6" maxW="1200px" position="relative" minH="70vh">
+                <Box
+                    position="absolute"
+                    inset={0}
+                    bg="blackAlpha.600"
+                    display="flex"
+                    alignItems="center"
+                    justifyContent="center"
+                    zIndex={10}
+                    borderRadius="16px"
+                >
+                    <Box bg="#1a1d27" border="1px solid" borderColor="#E03030" borderRadius="12px" px="8" py="4" boxShadow="0 0 30px rgba(224,48,48,0.25)" pointerEvents="auto">
+                        <Text fontSize="28px" fontWeight="800" color="#E03030">
+                            Coming Soon
+                        </Text>
+                    </Box>
+                </Box>
+
                 <Box mb="9">
                     <Heading fontSize={{ base: '18px', md: '20px' }} fontWeight="800" color="#E2E1EB">
                         Elite Performance Coaching

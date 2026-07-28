@@ -28,7 +28,8 @@ public class ExercisesController : ControllerBase
         {
             userId = uid;
         }
-        var exercises = await _exerciseService.GetAllAsync(userId);
+        var isAdmin = User.IsInRole("Admin") || User.IsInRole("ADMIN");
+        var exercises = await _exerciseService.GetAllAsync(userId, isAdmin);
         return Ok(exercises);
     }
 
@@ -46,10 +47,35 @@ public class ExercisesController : ControllerBase
         return Ok(exercises);
     }
 
+    [HttpGet("catalog")]
+    [AllowAnonymous]
+    public async Task<IActionResult> GetCatalog()
+    {
+        int? userId = null;
+        var userIdString = User.FindFirstValue(JwtRegisteredClaimNames.Sub) ?? User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (!string.IsNullOrEmpty(userIdString) && int.TryParse(userIdString, out var uid))
+        {
+            userId = uid;
+        }
+        var catalog = await _exerciseService.GetCatalogAsync(userId);
+        return Ok(catalog);
+    }
+
     [HttpGet("{id}")]
     [AllowAnonymous]
     public async Task<IActionResult> GetById(int id)
     {
+        int? userId = null;
+        var userIdString = User.FindFirstValue(JwtRegisteredClaimNames.Sub) ?? User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (!string.IsNullOrEmpty(userIdString) && int.TryParse(userIdString, out var uid))
+        {
+            userId = uid;
+        }
+
+        var hasAccess = await _exerciseService.HasAccessAsync(id, userId);
+        if (!hasAccess)
+            return StatusCode(403, new { message = "This exercise requires a higher plan. Please upgrade to access it." });
+
         var exercise = await _exerciseService.GetByIdAsync(id);
         if (exercise == null) return NotFound(new { message = "Exercise not found." });
 

@@ -21,6 +21,14 @@ public class AuthService : IAuthService
         _configuration = configuration;
     }
 
+    private string GenerateRefreshToken()
+    {
+        var randomNumber = new byte[32];
+        using var rng = System.Security.Cryptography.RandomNumberGenerator.Create();
+        rng.GetBytes(randomNumber);
+        return Convert.ToBase64String(randomNumber);
+    }
+
     public async Task<AuthResponseDto> RegisterAsync(RegisterRequestDto request)
     {
         var existingUser = await _context.Users.Include(u => u.Role).FirstOrDefaultAsync(u => u.Email == request.Email);
@@ -49,6 +57,11 @@ public class AuthService : IAuthService
         await _context.Entry(user).Reference(u => u.Role).LoadAsync();
 
         var token = _jwtTokenGenerator.GenerateToken(user);
+        var refreshToken = GenerateRefreshToken();
+        user.RefreshToken = refreshToken;
+        user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7);
+        _context.Users.Update(user);
+        await _context.SaveChangesAsync();
 
         return new AuthResponseDto
         {
@@ -56,6 +69,7 @@ public class AuthService : IAuthService
             Fullname = user.Fullname,
             Email = user.Email,
             Token = token,
+            RefreshToken = refreshToken,
             RoleId = user.RoleId
         };
     }
@@ -93,6 +107,11 @@ public class AuthService : IAuthService
         }
 
         var token = _jwtTokenGenerator.GenerateToken(user);
+        var refreshToken = GenerateRefreshToken();
+        user.RefreshToken = refreshToken;
+        user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7);
+        _context.Users.Update(user);
+        await _context.SaveChangesAsync();
 
         return new AuthResponseDto
         {
@@ -100,6 +119,7 @@ public class AuthService : IAuthService
             Fullname = user.Fullname,
             Email = user.Email,
             Token = token,
+            RefreshToken = refreshToken,
             RoleId = user.RoleId
         };
     }
@@ -148,6 +168,11 @@ public class AuthService : IAuthService
             }
 
             var token = _jwtTokenGenerator.GenerateToken(user);
+            var refreshToken = GenerateRefreshToken();
+            user.RefreshToken = refreshToken;
+            user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7);
+            _context.Users.Update(user);
+            await _context.SaveChangesAsync();
 
             return new AuthResponseDto
             {
@@ -155,6 +180,7 @@ public class AuthService : IAuthService
                 Fullname = user.Fullname,
                 Email = user.Email,
                 Token = token,
+                RefreshToken = refreshToken,
                 RoleId = user.RoleId
             };
         }
@@ -162,5 +188,34 @@ public class AuthService : IAuthService
         {
             throw new Exception("Invalid Google credential.");
         }
+    }
+
+    public async Task<AuthResponseDto> RefreshTokenAsync(RefreshTokenRequestDto request)
+    {
+        var user = await _context.Users.Include(u => u.Role).FirstOrDefaultAsync(u => u.RefreshToken == request.RefreshToken);
+
+        if (user == null || user.RefreshTokenExpiryTime <= DateTime.UtcNow)
+        {
+            throw new UnauthorizedAccessException("Invalid or expired refresh token.");
+        }
+
+        var newToken = _jwtTokenGenerator.GenerateToken(user);
+        var newRefreshToken = GenerateRefreshToken();
+
+        user.RefreshToken = newRefreshToken;
+        user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7);
+        
+        _context.Users.Update(user);
+        await _context.SaveChangesAsync();
+
+        return new AuthResponseDto
+        {
+            UserId = user.Id,
+            Fullname = user.Fullname,
+            Email = user.Email,
+            Token = newToken,
+            RefreshToken = newRefreshToken,
+            RoleId = user.RoleId
+        };
     }
 }

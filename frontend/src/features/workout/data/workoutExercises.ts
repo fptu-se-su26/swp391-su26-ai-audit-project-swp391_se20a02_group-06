@@ -1,11 +1,11 @@
-﻿import apiClient from '../../../lib/axios'
+import apiClient from '../../../lib/axios'
 import type { ExerciseCardData, WorkoutFormData } from '../types/workout'
 
 const WARMUP_DURATION_SECONDS = 300
 const BREAK_TIME_DEFAULT = 30
 const WARMUP_VIDEO = 'https://res.cloudinary.com/bucd22r4/video/upload/v1783523875/8017173747145_aqfvrr.mp4'
 
-const warmupExercise = {
+export const warmupExercise = {
     id: 0,
     title: 'Full Body Warmup',
     description: 'A light full-body warmup to prepare your body for the workout ahead. Follow along at a comfortable pace.',
@@ -16,7 +16,7 @@ const warmupExercise = {
     _isWarmup: true,
 }
 
-const calcSetsReps = (timeBudgetSec: number, level: string, goal: string) => {
+export const calcSetsReps = (timeBudgetSec: number, level: string, goal: string) => {
     let restTime = 60
     if (level === 'Intermediate') restTime = 45
     else if (level === 'Advanced') restTime = 30
@@ -79,7 +79,7 @@ export const generateExercises = async (data: WorkoutFormData): Promise<Exercise
     }
 }
 
-const buildExerciseCard = (ex: any, index: number, config: { sets: number; reps: number; restTime: number; timePerRep: number; actualTime: number }, isWarmup: boolean): ExerciseCardData => {
+export const buildExerciseCard = (ex: any, index: number, config: { sets: number; reps: number; restTime: number; timePerRep: number; actualTime: number }, isWarmup: boolean): ExerciseCardData => {
     const { sets, reps, restTime, actualTime } = config
 
     let exSetsStr = isWarmup ? formatTime(actualTime) : `${sets} x ${reps}`

@@ -1,6 +1,7 @@
 import React from 'react'
 import { Box, Flex, Text } from '@chakra-ui/react'
 import { useLocation } from 'react-router-dom'
+import ResponsiveTabs from '../Tabs/ResponsiveTabs'
 import MemberSidebar from '../Sidebar/MemberSidebar'
 import HeaderActions from '../Header/HeaderActions'
 
@@ -22,7 +23,12 @@ interface MemberLayoutProps {
 const MemberLayout: React.FC<MemberLayoutProps> = ({ children }) => {
     const location = useLocation()
     const title = pathTitles[location.pathname] || 'Member'
-
+    const memberTabs = [
+        { id: '/dashboard', label: 'Dashboard' },
+        { id: '/workouts', label: 'Workout' },
+        { id: '/nutrition', label: 'Nutrition' },
+        { id: '/pt-booking', label: 'PT Booking' },
+    ];
     return (
         <Flex minH="100vh" bg="#0A0C10">
             <MemberSidebar />
@@ -53,7 +59,11 @@ const MemberLayout: React.FC<MemberLayoutProps> = ({ children }) => {
                     <HeaderActions />
                 </Flex>
 
-                <Box as="main" pt="80px" pb="32px" minH="100vh">
+                <Box maxW="1200px" mx="auto" px="4">
+                <ResponsiveTabs tabs={memberTabs} />
+                </Box>
+                <Box as="main" pt={['80px','120px']} pb="32px" minH="100vh">
+
                     {children}
                 </Box>
             </Box>
