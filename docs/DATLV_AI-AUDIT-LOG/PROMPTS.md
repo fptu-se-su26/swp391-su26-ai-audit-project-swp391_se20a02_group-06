@@ -1318,3 +1318,62 @@ Giám sát việc AI không được đổi định dạng VND (giá tiền).
 | Kết quả chạy/test | Build thành công |
 | Link tài liệu/báo cáo | N/A |
 | Ghi chú khác | N/A |
+
+---
+
+### Prompt số 19
+
+| Nội dung | Thông tin |
+|---|---|
+| Ngày sử dụng | 28/07/2026 |
+| Công cụ AI | Antigravity |
+| Mục đích | Tạo file cấu hình deploy Docker |
+| Phần việc liên quan | DevOps / Setup |
+| Mức độ sử dụng | Yêu cầu viết cấu hình từ đầu |
+
+#### 5.1. Prompt nguyên văn
+
+```text
+chưa có docker file đúng không deploy BE lên đi
+```
+
+#### 5.2. Bối cảnh khi viết prompt
+
+```text
+Đang thực hiện thao tác setup trên nền tảng Render nhưng phát hiện project BE thiếu file cấu hình Docker.
+```
+
+#### 5.3. Kết quả AI trả về
+
+```text
+AI cung cấp 1 file Dockerfile 2-stage cho .NET 9 và file ignore chuẩn xác.
+```
+
+#### 5.4. Kết quả đã áp dụng vào bài
+
+```text
+- Copy trực tiếp vào project.
+```
+
+#### 5.5. Phần sinh viên/nhóm đã chỉnh sửa hoặc cải tiến
+
+```text
+- Không có.
+```
+
+#### 5.6. Đánh giá chất lượng prompt
+
+- [x] Prompt rõ ràng
+- [x] Prompt có đủ bối cảnh
+- [x] Prompt tạo ra kết quả tốt
+
+#### 5.7. Minh chứng liên quan
+
+| Loại minh chứng | Nội dung |
+|---|---|
+| Link commit | N/A |
+| File liên quan | Dockerfile |
+| Screenshot | N/A |
+| Kết quả chạy/test | N/A |
+| Link tài liệu/báo cáo | N/A |
+| Ghi chú khác | N/A |
