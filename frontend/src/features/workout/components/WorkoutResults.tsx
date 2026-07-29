@@ -148,11 +148,18 @@ const WorkoutResults: React.FC = () => {
     const hasStartedRef = useRef(false)
 
     useEffect(() => {
-        if (!activeSessionId && activePlanId && !hasStartedRef.current) {
+        if (!activeSessionId && !hasStartedRef.current) {
             hasStartedRef.current = true
-            startWorkoutSession({ workoutPlanId: activePlanId })
-                .then((session: any) => setActiveSessionId(session.id))
-                .catch(console.error)
+            startWorkoutSession(activePlanId ? { workoutPlanId: activePlanId } : {})
+                .then((session: any) => {
+                    if (session?.id) {
+                        setActiveSessionId(session.id)
+                    }
+                })
+                .catch(err => {
+                    console.error("Failed to start session:", err)
+                    hasStartedRef.current = false
+                })
         }
     }, [activeSessionId, activePlanId, startWorkoutSession, setActiveSessionId])
 
@@ -213,25 +220,35 @@ const WorkoutResults: React.FC = () => {
     }
 
     const handleCompleteWorkout = async () => {
-        if (!activeSessionId) {
-            resetWorkout()
-            navigate('/nutrition')
-            return
-        }
-        const doneExercises = exercises.filter(e => e.isDone && e.id > 0)
+        const doneExercises = exercises.filter(e => e.isDone && Number(e.id) > 0)
         const totalCalories = data?.targetCalories || (doneExercises.length * 30)
+
+        const details = doneExercises.map(ex => {
+            const setsStr = String(ex.sets || '')
+            const setsParts = setsStr.split('x')
+            return {
+                exerciseId: Number(ex.id),
+                setsDone: parseInt(setsParts[0]) || 3,
+                repsDone: parseInt(setsParts[1]) || 12,
+                durationSeconds: ex.duration || 0,
+                caloriesBurned: 30
+            }
+        })
+
         try {
-            await completeWorkoutSession(activeSessionId, {
-                totalDurationMinutes: totalDuration,
-                totalCaloriesBurned: totalCalories,
-                details: doneExercises.map(ex => ({
-                    exerciseId: ex.id,
-                    setsDone: parseInt(ex.sets.split('x')[0]) || 3,
-                    repsDone: parseInt(ex.sets.split('x')[1]) || 12,
-                    durationSeconds: ex.duration || 0,
-                    caloriesBurned: 30
-                }))
-            })
+            let sessionId = activeSessionId
+            if (!sessionId) {
+                const newSession = await startWorkoutSession(activePlanId ? { workoutPlanId: activePlanId } : {})
+                sessionId = newSession?.id || null
+            }
+
+            if (sessionId) {
+                await completeWorkoutSession(sessionId, {
+                    totalDurationMinutes: totalDuration,
+                    totalCaloriesBurned: totalCalories,
+                    details
+                })
+            }
         } catch (error) {
             console.error("Failed to complete session:", error)
         } finally {

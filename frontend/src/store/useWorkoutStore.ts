@@ -18,7 +18,7 @@ interface WorkoutState {
     resetWorkout: () => void
     
     // BỔ SUNG ĐỊNH NGHĨA PHƯƠNG THỨC ASYNC TẠI ĐÂY
-    startWorkoutSession: (payload: { workoutPlanId: number }) => Promise<{ id: number }>
+    startWorkoutSession: (payload: { workoutPlanId?: number }) => Promise<{ id: number }>
     completeWorkoutSession: (
         sessionId: number, 
         payload: {
