@@ -35,8 +35,19 @@ apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      localStorage.removeItem('auth-storage')
-      window.location.href = '/login'
+      const requestUrl = error.config?.url || ''
+      const isAuthApi = requestUrl.includes('/auth/login') || requestUrl.includes('/auth/register') || requestUrl.includes('/auth/refresh')
+      const currentPath = window.location.pathname
+      const isAuthPage = currentPath === '/login' || currentPath === '/register' || currentPath === '/forgot-password'
+
+      if (!isAuthApi && !isAuthPage) {
+        try {
+          localStorage.removeItem('auth-storage')
+        } catch {
+          // Ignore storage errors
+        }
+        window.location.href = '/login'
+      }
     }
     return Promise.reject(error)
   }
