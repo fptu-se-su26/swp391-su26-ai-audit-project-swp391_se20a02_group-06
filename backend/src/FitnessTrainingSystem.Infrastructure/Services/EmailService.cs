@@ -22,8 +22,8 @@ public class EmailService : IEmailService
 
     public async Task SendEmailAsync(string toEmail, string subject, string body)
     {
-        var user = _configuration["SMTP_USER"];
-        var pass = _configuration["SMTP_PASS"];
+        var user = _configuration["SMTP_USER"]?.Trim();
+        var pass = _configuration["SMTP_PASS"]?.Replace(" ", "").Trim();
 
         // In development, just log the email content instead of sending
         if (string.IsNullOrEmpty(user) || string.IsNullOrEmpty(pass))
@@ -63,6 +63,7 @@ public class EmailService : IEmailService
             email.Body = builder.ToMessageBody();
 
             using var smtp = new SmtpClient();
+            smtp.ServerCertificateValidationCallback = (s, c, ch, e) => true;
             
             if (enableSsl)
             {
