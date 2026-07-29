@@ -2032,3 +2032,66 @@ còn phần ở phần gitpage làm sao nữa
 ```text
 - AI hiểu rất rõ luồng của Github Actions và cách bảo mật biến môi trường.
 ```
+
+---
+
+### Lần sử dụng AI số 24
+
+| Nội dung | Thông tin |
+|---|---|
+| Ngày sử dụng | 29/07/2026 |
+| Công cụ AI | Antigravity |
+| Mục đích sử dụng | Sửa lỗi TypeScript build frontend (`useWorkoutStore.ts`), tự động hóa nạp file `.env` đa cấp thư mục cho Backend và khắc phục cơ chế fallback đọc Gemini API Key |
+| Phần việc liên quan | Fullstack (Frontend & Backend) |
+| Mức độ sử dụng | Hỗ trợ nhiều |
+
+#### 4.1. Prompt đã sử dụng
+
+```text
+- "npm run build và chạyBE, FE local tôi test đi nào"
+- ".env bỏ key gemini vào ch"
+- "appsettings.Development.json appsettings.json gắn vào đây thì AI mới chạy đưuojc chứ"
+- ".env bạn điền cho tôi luôn, bị sao vậy"
+- "chạy lại cho tôi"
+```
+
+#### 4.2. Kết quả AI gợi ý
+
+```text
+AI phân tích nguyên nhân và thực hiện các bước khắc phục:
+1. Frontend: Fix lỗi TypeScript type mapping (exerciseId từ string | number sang number) trước khi gọi API completeWorkoutSession trong `useWorkoutStore.ts`.
+2. Backend: Sửa `DirectGeminiService.cs` kiểm tra `string.IsNullOrWhiteSpace` và loại bỏ chuỗi placeholder rác `"AIzaSy_YOUR_VALID_..."` trong `appsettings.Development.json` để tự động fallback đọc `GEMINI_API_KEY` từ file `.env`.
+3. Cấu hình .NET Core: Sửa `Program.cs` hỗ trợ nạp tất cả các file `.env` ở các cấp thư mục cha/con.
+4. Quản lý hệ thống: Khởi chạy và restart đồng bộ 2 tiến trình Backend (port 5007) và Frontend Vite (port 5173).
+```
+
+#### 4.3. Phần sinh viên/nhóm đã sử dụng từ AI
+
+```text
+- Sử dụng toàn bộ mã nguồn sửa đổi trong `useWorkoutStore.ts`, `DirectGeminiService.cs`, và `Program.cs`.
+- Áp dụng cấu hình và quy trình khởi chạy server do AI thiết lập.
+```
+
+#### 4.4. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
+
+```text
+- Sinh viên phản ánh vấn đề phải điền file `.env` thủ công, đặt câu hỏi về ưu tiên giữa appsettings và `.env` để AI làm rõ và khắc phục triệt để.
+```
+
+#### 4.5. Minh chứng
+
+| Loại minh chứng | Nội dung |
+|---|---|
+| Link commit | a95bf1c448bbbfcaaa7e0ea5efaa79e612eb3ec4 |
+| File liên quan | `useWorkoutStore.ts`, `DirectGeminiService.cs`, `Program.cs`, `appsettings.Development.json`, `.env` |
+| Screenshot | Build FE pass 100%, Backend & Frontend khởi chạy thành công |
+| Kết quả chạy/test | `npm run build` thành công, Backend dotnet run nạp đúng GEMINI_API_KEY từ .env |
+| Link video demo | N/A |
+| Ghi chú khác | N/A |
+
+#### 4.6. Nhận xét cá nhân/nhóm
+
+```text
+Hiểu rõ thứ tự ưu tiên cấu hình (Configuration Provider Order) trong ASP.NET Core giữa appsettings.json, appsettings.Development.json và Environment Variables. Nắm được cách xử lý nạp file .env linh hoạt khi dự án có nhiều thư mục con.
+```
+

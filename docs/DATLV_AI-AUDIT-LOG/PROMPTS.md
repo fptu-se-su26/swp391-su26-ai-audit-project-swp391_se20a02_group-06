@@ -1495,3 +1495,67 @@ AI đề xuất đổi file deploy-pages.yml để nhúng biến môi trường.
 | Kết quả chạy/test | N/A |
 | Link tài liệu/báo cáo | N/A |
 | Ghi chú khác | N/A |
+
+---
+
+### Prompt số 21
+
+| Nội dung | Thông tin |
+|---|---|
+| Ngày sử dụng | 29/07/2026 |
+| Công cụ AI | Antigravity |
+| Mục đích | Sửa lỗi build TypeScript FE, sửa logic nạp `.env` Backend & fallback Gemini API Key |
+| Phần việc liên quan | Fullstack (Frontend & Backend) |
+| Mức độ sử dụng | Hỏi debug & yêu cầu chạy server local |
+
+#### 5.1. Prompt nguyên văn
+
+```text
+npm run build và chạyBE, FE local tôi test đi nào
+backend/.env bỏ key gemini vào ch
+appsettings.Development.json appsettings.json gắn vào đây thì AI mới chạy đưuojc chứ
+backend/src/FitnessTrainingSystem.WebApi/.env bạn điền cho tôi luôn, bị sao vậy
+chạy lại cho tôi
+```
+
+#### 5.2. Bối cảnh khi viết prompt
+
+```text
+Cần build dự án Frontend và chạy đồng thời BE/FE local để kiểm thử, đồng thời xử lý triệt để việc Backend không tự động đọc Gemini API key từ file .env.
+```
+
+#### 5.3. Kết quả AI trả về
+
+```text
+AI fix lỗi TS trong useWorkoutStore.ts, sửa DirectGeminiService.cs để tự động fallback đọc .env khi appsettings chứa placeholder string, cập nhật Program.cs nạp .env đa cấp thư mục, và chạy 2 server local.
+```
+
+#### 5.4. Kết quả đã áp dụng vào bài
+
+```text
+Áp dụng toàn bộ code sửa đổi và cấu hình mới cho dự án.
+```
+
+#### 5.5. Phần sinh viên/nhóm đã chỉnh sửa hoặc cải tiến
+
+```text
+Không có (chấp nhận kết quả AI sửa đổi).
+```
+
+#### 5.6. Đánh giá chất lượng prompt
+
+- [x] Prompt rõ ràng
+- [x] Prompt có đủ bối cảnh
+- [x] Prompt tạo ra kết quả tốt
+
+#### 5.7. Minh chứng liên quan
+
+| Loại minh chứng | Nội dung |
+|---|---|
+| Link commit | a95bf1c |
+| File liên quan | useWorkoutStore.ts, DirectGeminiService.cs, Program.cs, appsettings.Development.json |
+| Screenshot | N/A |
+| Kết quả chạy/test | npm run build pass, BE & FE running |
+| Link tài liệu/báo cáo | N/A |
+| Ghi chú khác | N/A |
+

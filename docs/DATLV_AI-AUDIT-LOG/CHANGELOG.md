@@ -254,6 +254,7 @@ DD/MM/YYYY
 | 16 | Đồng bộ Database SQL, Fix schema emailotp, cấu hình appsettings.json Production | Đạt | appsettings.json, AuthController.cs | Commit 2047286 |
 | 17 | Cập nhật pnpm-lock.yaml sửa lỗi ERR_PNPM_OUTDATED_LOCKFILE trên CI/CD GitHub Actions | Đạt | `pnpm-lock.yaml` | Commit 9f17f8e |
 | 18 | Đồng bộ Logic Dashboard Suggested Routine với Core Workout Engine & Cấu hình Global Decimal Rounding JSON Backend | Đạt | Dashboard.tsx, workoutExercises.ts, DoubleRoundingJsonConverter.cs | Commit 4fd1dce |
+| 19 | Sửa lỗi nạp file .env Backend, resolution Gemini API Key và type mapping useWorkoutStore | Đạt | DirectGeminiService.cs, Program.cs, useWorkoutStore.ts | Commit a95bf1c |
 
 ## AI có hỗ trợ không?
 
