@@ -6,19 +6,18 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Scalar.AspNetCore;
 using FitnessTrainingSystem.Infrastructure.Hubs;
-// Load environment variables from .env file in the backend root directory
-var envPath = Path.Combine(Directory.GetCurrentDirectory(), "..", "..", ".env");
-if (File.Exists(envPath))
+// Load environment variables from .env files
+string[] envPaths = [
+    Path.Combine(Directory.GetCurrentDirectory(), "..", "..", ".env"),
+    Path.Combine(Directory.GetCurrentDirectory(), "..", ".env"),
+    Path.Combine(Directory.GetCurrentDirectory(), ".env")
+];
+
+foreach (var path in envPaths)
 {
-    DotNetEnv.Env.Load(envPath);
-}
-else
-{
-    // Fallback if running from backend root directly
-    var fallbackPath = Path.Combine(Directory.GetCurrentDirectory(), ".env");
-    if (File.Exists(fallbackPath))
+    if (File.Exists(path))
     {
-        DotNetEnv.Env.Load(fallbackPath);
+        DotNetEnv.Env.Load(path);
     }
 }
 

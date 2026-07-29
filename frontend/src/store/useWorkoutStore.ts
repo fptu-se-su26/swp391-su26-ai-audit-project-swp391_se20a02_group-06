@@ -18,7 +18,7 @@ interface WorkoutState {
     resetWorkout: () => void
     
     // BỔ SUNG ĐỊNH NGHĨA PHƯƠNG THỨC ASYNC TẠI ĐÂY
-    startWorkoutSession: (payload: { workoutPlanId: number }) => Promise<{ id: number }>
+    startWorkoutSession: (payload: { workoutPlanId?: number }) => Promise<{ id: number }>
     completeWorkoutSession: (
         sessionId: number, 
         payload: {
@@ -68,7 +68,14 @@ export const useWorkoutStore = create<WorkoutState>()(
 
             completeWorkoutSession: async (sessionId, payload) => {
                 const { completeWorkoutSession: apiCompleteWorkoutSession } = await import('../api/workouts.ts')
-                await apiCompleteWorkoutSession(sessionId, payload)
+                const formattedPayload = {
+                    ...payload,
+                    details: payload.details.map((item) => ({
+                        ...item,
+                        exerciseId: typeof item.exerciseId === 'number' ? item.exerciseId : (Number(item.exerciseId) || 0)
+                    }))
+                }
+                await apiCompleteWorkoutSession(sessionId, formattedPayload)
                 console.log(`Saved Session ${sessionId} successfully:`, payload)
                 set({ activeSessionId: null })
             }

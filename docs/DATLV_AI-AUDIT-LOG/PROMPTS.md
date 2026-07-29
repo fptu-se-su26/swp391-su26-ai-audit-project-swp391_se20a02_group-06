@@ -1495,3 +1495,128 @@ AI đề xuất đổi file deploy-pages.yml để nhúng biến môi trường.
 | Kết quả chạy/test | N/A |
 | Link tài liệu/báo cáo | N/A |
 | Ghi chú khác | N/A |
+
+---
+
+### Prompt số 21
+
+| Nội dung | Thông tin |
+|---|---|
+| Ngày sử dụng | 29/07/2026 |
+| Công cụ AI | Antigravity |
+| Mục đích | Sửa lỗi build TypeScript FE, sửa logic nạp `.env` Backend & fallback Gemini API Key |
+| Phần việc liên quan | Fullstack (Frontend & Backend) |
+| Mức độ sử dụng | Hỏi debug & yêu cầu chạy server local |
+
+#### 5.1. Prompt nguyên văn
+
+```text
+npm run build và chạyBE, FE local tôi test đi nào
+backend/.env bỏ key gemini vào ch
+appsettings.Development.json appsettings.json gắn vào đây thì AI mới chạy đưuojc chứ
+backend/src/FitnessTrainingSystem.WebApi/.env bạn điền cho tôi luôn, bị sao vậy
+chạy lại cho tôi
+```
+
+#### 5.2. Bối cảnh khi viết prompt
+
+```text
+Cần build dự án Frontend và chạy đồng thời BE/FE local để kiểm thử, đồng thời xử lý triệt để việc Backend không tự động đọc Gemini API key từ file .env.
+```
+
+#### 5.3. Kết quả AI trả về
+
+```text
+AI fix lỗi TS trong useWorkoutStore.ts, sửa DirectGeminiService.cs để tự động fallback đọc .env khi appsettings chứa placeholder string, cập nhật Program.cs nạp .env đa cấp thư mục, và chạy 2 server local.
+```
+
+#### 5.4. Kết quả đã áp dụng vào bài
+
+```text
+Áp dụng toàn bộ code sửa đổi và cấu hình mới cho dự án.
+```
+
+#### 5.5. Phần sinh viên/nhóm đã chỉnh sửa hoặc cải tiến
+
+```text
+Không có (chấp nhận kết quả AI sửa đổi).
+```
+
+#### 5.6. Đánh giá chất lượng prompt
+
+- [x] Prompt rõ ràng
+- [x] Prompt có đủ bối cảnh
+- [x] Prompt tạo ra kết quả tốt
+
+#### 5.7. Minh chứng liên quan
+
+| Loại minh chứng | Nội dung |
+|---|---|
+| Link commit | a95bf1c |
+| File liên quan | useWorkoutStore.ts, DirectGeminiService.cs, Program.cs, appsettings.Development.json |
+| Screenshot | N/A |
+| Kết quả chạy/test | npm run build pass, BE & FE running |
+| Link tài liệu/báo cáo | N/A |
+| Ghi chú khác | N/A |
+
+---
+
+### Prompt số 22
+
+| Nội dung | Thông tin |
+|---|---|
+| Ngày sử dụng | 29/07/2026 |
+| Công cụ AI | Antigravity |
+| Mục đích | Debug và fix lỗi không lưu lịch sử bài tập vào trang Progress |
+| Phần việc liên quan | Frontend / Fullstack |
+| Mức độ sử dụng | Hỏi debug & yêu cầu commit |
+
+#### 5.1. Prompt nguyên văn
+
+```text
+hiệnt tại nó không lưu lịch sử vào đây, nguyên nhân là tại sao, lúc trước đã ônr định nhưng tại sao lại bị như vậy
+ok /commit
+```
+
+#### 5.2. Bối cảnh khi viết prompt
+
+```text
+Sau khi tập xong buổi tập, trang Progress không cập nhật lịch sử bài tập mới do luồng khởi tạo Session bị thiếu activePlanId và bị return sớm.
+```
+
+#### 5.3. Kết quả AI trả về
+
+```text
+AI phân tích 3 nguyên nhân chính, cập nhật Workouts.tsx tự lưu plan, cập nhật WorkoutResults.tsx tự khởi tạo session linh hoạt & fallback complete session, ép kiểu ID bài tập hợp lệ.
+```
+
+#### 5.4. Kết quả đã áp dụng vào bài
+
+```text
+Áp dụng 100% mã nguồn sửa đổi cho Frontend.
+```
+
+#### 5.5. Phần sinh viên/nhóm đã chỉnh sửa hoặc cải tiến
+
+```text
+Không có (chấp nhận kết quả AI sửa đổi).
+```
+
+#### 5.6. Đánh giá chất lượng prompt
+
+- [x] Prompt rõ ràng
+- [x] Prompt có đủ bối cảnh
+- [x] Prompt tạo ra kết quả tốt
+
+#### 5.7. Minh chứng liên quan
+
+| Loại minh chứng | Nội dung |
+|---|---|
+| Link commit | f8e943d |
+| File liên quan | Workouts.tsx, WorkoutResults.tsx, useWorkoutStore.ts |
+| Screenshot | N/A |
+| Kết quả chạy/test | npm run build pass, workout session saved to DB |
+| Link tài liệu/báo cáo | N/A |
+| Ghi chú khác | N/A |
+
+

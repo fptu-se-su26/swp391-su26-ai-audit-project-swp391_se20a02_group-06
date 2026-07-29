@@ -2032,3 +2032,125 @@ còn phần ở phần gitpage làm sao nữa
 ```text
 - AI hiểu rất rõ luồng của Github Actions và cách bảo mật biến môi trường.
 ```
+
+---
+
+### Lần sử dụng AI số 24
+
+| Nội dung | Thông tin |
+|---|---|
+| Ngày sử dụng | 29/07/2026 |
+| Công cụ AI | Antigravity |
+| Mục đích sử dụng | Sửa lỗi TypeScript build frontend (`useWorkoutStore.ts`), tự động hóa nạp file `.env` đa cấp thư mục cho Backend và khắc phục cơ chế fallback đọc Gemini API Key |
+| Phần việc liên quan | Fullstack (Frontend & Backend) |
+| Mức độ sử dụng | Hỗ trợ nhiều |
+
+#### 4.1. Prompt đã sử dụng
+
+```text
+- "npm run build và chạyBE, FE local tôi test đi nào"
+- ".env bỏ key gemini vào ch"
+- "appsettings.Development.json appsettings.json gắn vào đây thì AI mới chạy đưuojc chứ"
+- ".env bạn điền cho tôi luôn, bị sao vậy"
+- "chạy lại cho tôi"
+```
+
+#### 4.2. Kết quả AI gợi ý
+
+```text
+AI phân tích nguyên nhân và thực hiện các bước khắc phục:
+1. Frontend: Fix lỗi TypeScript type mapping (exerciseId từ string | number sang number) trước khi gọi API completeWorkoutSession trong `useWorkoutStore.ts`.
+2. Backend: Sửa `DirectGeminiService.cs` kiểm tra `string.IsNullOrWhiteSpace` và loại bỏ chuỗi placeholder rác `"AIzaSy_YOUR_VALID_..."` trong `appsettings.Development.json` để tự động fallback đọc `GEMINI_API_KEY` từ file `.env`.
+3. Cấu hình .NET Core: Sửa `Program.cs` hỗ trợ nạp tất cả các file `.env` ở các cấp thư mục cha/con.
+4. Quản lý hệ thống: Khởi chạy và restart đồng bộ 2 tiến trình Backend (port 5007) và Frontend Vite (port 5173).
+```
+
+#### 4.3. Phần sinh viên/nhóm đã sử dụng từ AI
+
+```text
+- Sử dụng toàn bộ mã nguồn sửa đổi trong `useWorkoutStore.ts`, `DirectGeminiService.cs`, và `Program.cs`.
+- Áp dụng cấu hình và quy trình khởi chạy server do AI thiết lập.
+```
+
+#### 4.4. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
+
+```text
+- Sinh viên phản ánh vấn đề phải điền file `.env` thủ công, đặt câu hỏi về ưu tiên giữa appsettings và `.env` để AI làm rõ và khắc phục triệt để.
+```
+
+#### 4.5. Minh chứng
+
+| Loại minh chứng | Nội dung |
+|---|---|
+| Link commit | a95bf1c448bbbfcaaa7e0ea5efaa79e612eb3ec4 |
+| File liên quan | `useWorkoutStore.ts`, `DirectGeminiService.cs`, `Program.cs`, `appsettings.Development.json`, `.env` |
+| Screenshot | Build FE pass 100%, Backend & Frontend khởi chạy thành công |
+| Kết quả chạy/test | `npm run build` thành công, Backend dotnet run nạp đúng GEMINI_API_KEY từ .env |
+| Link video demo | N/A |
+| Ghi chú khác | N/A |
+
+#### 4.6. Nhận xét cá nhân/nhóm
+
+```text
+Hiểu rõ thứ tự ưu tiên cấu hình (Configuration Provider Order) trong ASP.NET Core giữa appsettings.json, appsettings.Development.json và Environment Variables. Nắm được cách xử lý nạp file .env linh hoạt khi dự án có nhiều thư mục con.
+```
+
+---
+
+### Lần sử dụng AI số 25
+
+| Nội dung | Thông tin |
+|---|---|
+| Ngày sử dụng | 29/07/2026 |
+| Công cụ AI | Antigravity |
+| Mục đích sử dụng | Sửa lỗi không lưu lịch sử tập luyện vào trang Progress (xử lý khởi tạo WorkoutPlan, khởi tạo WorkoutSession tự động và cơ chế fallback hoàn thành buổi tập) |
+| Phần việc liên quan | Frontend / Fullstack |
+| Mức độ sử dụng | Hỗ trợ nhiều |
+
+#### 4.1. Prompt đã sử dụng
+
+```text
+- "hiệnt tại nó không lưu lịch sử vào đây, nguyên nhân là tại sao, lúc trước đã ônr định nhưng tại sao lại bị như vậy"
+- "ok /commit"
+```
+
+#### 4.2. Kết quả AI gợi ý
+
+```text
+AI phân tích nguyên nhân và thực hiện các bước khắc phục:
+1. Tạo Plan tự động: Cập nhật `Workouts.tsx` để tự động gọi API `createWorkoutPlan` lưu Plan vào Database khi vừa khởi tạo xong danh sách bài tập.
+2. Khởi tạo Session linh hoạt: Cập nhật `WorkoutResults.tsx` cho phép gọi `startWorkoutSession` tự động ngay khi bắt đầu tập (kể cả khi chưa có activePlanId).
+3. Cơ chế Fallback Complete: Bổ sung logic kiểm tra và tự động khởi tạo Session tức thời trong `handleCompleteWorkout` nếu `activeSessionId` bị null trước khi lưu kết quả vào DB.
+4. Chuẩn hóa ID: Ép kiểu `Number(ex.id) > 0` loại bỏ bài tập Warmup (id 0) để tránh lỗi vi phạm khóa ngoại MySQL.
+```
+
+#### 4.3. Phần sinh viên/nhóm đã sử dụng từ AI
+
+```text
+- Sử dụng toàn bộ mã nguồn sửa đổi trong `Workouts.tsx`, `WorkoutResults.tsx`, và `useWorkoutStore.ts`.
+```
+
+#### 4.4. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
+
+```text
+- Sinh viên phát hiện vấn đề không lưu lịch sử trên giao diện Progress và gửi ảnh chụp màn hình kiểm thử thực tế để AI chẩn đoán.
+```
+
+#### 4.5. Minh chứng
+
+| Loại minh chứng | Nội dung |
+|---|---|
+| Link commit | f8e943d04fc4efd8c1c4f4a3bfec682c0ef05fa5 |
+| File liên quan | `Workouts.tsx`, `WorkoutResults.tsx`, `useWorkoutStore.ts` |
+| Screenshot | Giao diện Progress hiển thị lịch sử tập luyện |
+| Kết quả chạy/test | Build FE pass 100%, WorkoutSession & WorkoutSessionDetails ghi nhận chuẩn xuống MySQL Workbench |
+| Link video demo | N/A |
+| Ghi chú khác | N/A |
+
+#### 4.6. Nhận xét cá nhân/nhóm
+
+```text
+Rút kinh nghiệm về việc kiểm tra tính liên tục của luồng dữ liệu giữa các bước Setup -> Results -> History. Luôn cần có cơ chế Fallback (tự động tạo Session nếu bị khuyết) để tránh việc dữ liệu người dùng bị rơi rụng im lặng (Silent Drop).
+```
+
+

@@ -20,7 +20,12 @@ public class DirectGeminiService : IGeminiAiService
     public DirectGeminiService(HttpClient httpClient, IConfiguration configuration, ILogger<DirectGeminiService> logger)
     {
         _httpClient = httpClient;
-        _apiKey = configuration["Gemini:ApiKey"] ?? configuration["GEMINI_API_KEY"] ?? "";
+        var apiKey = configuration["Gemini:ApiKey"];
+        if (string.IsNullOrWhiteSpace(apiKey) || apiKey.Contains("YOUR_VALID_GEMINI_API_KEY"))
+        {
+            apiKey = configuration["GEMINI_API_KEY"] ?? configuration["Gemini__ApiKey"];
+        }
+        _apiKey = apiKey ?? "";
         _model = configuration["Gemini:Model"] ?? "gemini-2.5-flash";
         _baseUrl = configuration["Gemini:BaseUrl"] ?? "https://generativelanguage.googleapis.com/v1beta/models/";
         _logger = logger;
