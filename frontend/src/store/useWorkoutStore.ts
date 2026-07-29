@@ -68,11 +68,16 @@ export const useWorkoutStore = create<WorkoutState>()(
 
             completeWorkoutSession: async (sessionId, payload) => {
                 const { completeWorkoutSession: apiCompleteWorkoutSession } = await import('../api/workouts.ts')
-                const formattedPayload = {
-                    ...payload,
+                type CompleteWorkoutSessionDto = Parameters<typeof apiCompleteWorkoutSession>[1]
+                const formattedPayload: CompleteWorkoutSessionDto = {
+                    totalDurationMinutes: payload.totalDurationMinutes,
+                    totalCaloriesBurned: payload.totalCaloriesBurned,
                     details: payload.details.map((item) => ({
-                        ...item,
-                        exerciseId: typeof item.exerciseId === 'number' ? item.exerciseId : (Number(item.exerciseId) || 0)
+                        exerciseId: typeof item.exerciseId === 'number' ? item.exerciseId : (Number(item.exerciseId) || 0),
+                        setsDone: item.setsDone,
+                        repsDone: item.repsDone,
+                        durationSeconds: item.durationSeconds,
+                        caloriesBurned: item.caloriesBurned
                     }))
                 }
                 await apiCompleteWorkoutSession(sessionId, formattedPayload)
