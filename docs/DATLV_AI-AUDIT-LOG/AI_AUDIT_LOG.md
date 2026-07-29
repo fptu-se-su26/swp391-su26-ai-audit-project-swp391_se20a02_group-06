@@ -2095,3 +2095,62 @@ AI phân tích nguyên nhân và thực hiện các bước khắc phục:
 Hiểu rõ thứ tự ưu tiên cấu hình (Configuration Provider Order) trong ASP.NET Core giữa appsettings.json, appsettings.Development.json và Environment Variables. Nắm được cách xử lý nạp file .env linh hoạt khi dự án có nhiều thư mục con.
 ```
 
+---
+
+### Lần sử dụng AI số 25
+
+| Nội dung | Thông tin |
+|---|---|
+| Ngày sử dụng | 29/07/2026 |
+| Công cụ AI | Antigravity |
+| Mục đích sử dụng | Sửa lỗi không lưu lịch sử tập luyện vào trang Progress (xử lý khởi tạo WorkoutPlan, khởi tạo WorkoutSession tự động và cơ chế fallback hoàn thành buổi tập) |
+| Phần việc liên quan | Frontend / Fullstack |
+| Mức độ sử dụng | Hỗ trợ nhiều |
+
+#### 4.1. Prompt đã sử dụng
+
+```text
+- "hiệnt tại nó không lưu lịch sử vào đây, nguyên nhân là tại sao, lúc trước đã ônr định nhưng tại sao lại bị như vậy"
+- "ok /commit"
+```
+
+#### 4.2. Kết quả AI gợi ý
+
+```text
+AI phân tích nguyên nhân và thực hiện các bước khắc phục:
+1. Tạo Plan tự động: Cập nhật `Workouts.tsx` để tự động gọi API `createWorkoutPlan` lưu Plan vào Database khi vừa khởi tạo xong danh sách bài tập.
+2. Khởi tạo Session linh hoạt: Cập nhật `WorkoutResults.tsx` cho phép gọi `startWorkoutSession` tự động ngay khi bắt đầu tập (kể cả khi chưa có activePlanId).
+3. Cơ chế Fallback Complete: Bổ sung logic kiểm tra và tự động khởi tạo Session tức thời trong `handleCompleteWorkout` nếu `activeSessionId` bị null trước khi lưu kết quả vào DB.
+4. Chuẩn hóa ID: Ép kiểu `Number(ex.id) > 0` loại bỏ bài tập Warmup (id 0) để tránh lỗi vi phạm khóa ngoại MySQL.
+```
+
+#### 4.3. Phần sinh viên/nhóm đã sử dụng từ AI
+
+```text
+- Sử dụng toàn bộ mã nguồn sửa đổi trong `Workouts.tsx`, `WorkoutResults.tsx`, và `useWorkoutStore.ts`.
+```
+
+#### 4.4. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
+
+```text
+- Sinh viên phát hiện vấn đề không lưu lịch sử trên giao diện Progress và gửi ảnh chụp màn hình kiểm thử thực tế để AI chẩn đoán.
+```
+
+#### 4.5. Minh chứng
+
+| Loại minh chứng | Nội dung |
+|---|---|
+| Link commit | f8e943d04fc4efd8c1c4f4a3bfec682c0ef05fa5 |
+| File liên quan | `Workouts.tsx`, `WorkoutResults.tsx`, `useWorkoutStore.ts` |
+| Screenshot | Giao diện Progress hiển thị lịch sử tập luyện |
+| Kết quả chạy/test | Build FE pass 100%, WorkoutSession & WorkoutSessionDetails ghi nhận chuẩn xuống MySQL Workbench |
+| Link video demo | N/A |
+| Ghi chú khác | N/A |
+
+#### 4.6. Nhận xét cá nhân/nhóm
+
+```text
+Rút kinh nghiệm về việc kiểm tra tính liên tục của luồng dữ liệu giữa các bước Setup -> Results -> History. Luôn cần có cơ chế Fallback (tự động tạo Session nếu bị khuyết) để tránh việc dữ liệu người dùng bị rơi rụng im lặng (Silent Drop).
+```
+
+

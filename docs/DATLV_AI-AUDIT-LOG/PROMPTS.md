@@ -1559,3 +1559,64 @@ Không có (chấp nhận kết quả AI sửa đổi).
 | Link tài liệu/báo cáo | N/A |
 | Ghi chú khác | N/A |
 
+---
+
+### Prompt số 22
+
+| Nội dung | Thông tin |
+|---|---|
+| Ngày sử dụng | 29/07/2026 |
+| Công cụ AI | Antigravity |
+| Mục đích | Debug và fix lỗi không lưu lịch sử bài tập vào trang Progress |
+| Phần việc liên quan | Frontend / Fullstack |
+| Mức độ sử dụng | Hỏi debug & yêu cầu commit |
+
+#### 5.1. Prompt nguyên văn
+
+```text
+hiệnt tại nó không lưu lịch sử vào đây, nguyên nhân là tại sao, lúc trước đã ônr định nhưng tại sao lại bị như vậy
+ok /commit
+```
+
+#### 5.2. Bối cảnh khi viết prompt
+
+```text
+Sau khi tập xong buổi tập, trang Progress không cập nhật lịch sử bài tập mới do luồng khởi tạo Session bị thiếu activePlanId và bị return sớm.
+```
+
+#### 5.3. Kết quả AI trả về
+
+```text
+AI phân tích 3 nguyên nhân chính, cập nhật Workouts.tsx tự lưu plan, cập nhật WorkoutResults.tsx tự khởi tạo session linh hoạt & fallback complete session, ép kiểu ID bài tập hợp lệ.
+```
+
+#### 5.4. Kết quả đã áp dụng vào bài
+
+```text
+Áp dụng 100% mã nguồn sửa đổi cho Frontend.
+```
+
+#### 5.5. Phần sinh viên/nhóm đã chỉnh sửa hoặc cải tiến
+
+```text
+Không có (chấp nhận kết quả AI sửa đổi).
+```
+
+#### 5.6. Đánh giá chất lượng prompt
+
+- [x] Prompt rõ ràng
+- [x] Prompt có đủ bối cảnh
+- [x] Prompt tạo ra kết quả tốt
+
+#### 5.7. Minh chứng liên quan
+
+| Loại minh chứng | Nội dung |
+|---|---|
+| Link commit | f8e943d |
+| File liên quan | Workouts.tsx, WorkoutResults.tsx, useWorkoutStore.ts |
+| Screenshot | N/A |
+| Kết quả chạy/test | npm run build pass, workout session saved to DB |
+| Link tài liệu/báo cáo | N/A |
+| Ghi chú khác | N/A |
+
+
