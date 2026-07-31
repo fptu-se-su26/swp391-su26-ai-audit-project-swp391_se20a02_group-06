@@ -3,7 +3,7 @@ import { Box, Flex, Icon, Text } from '@chakra-ui/react'
 import { FiMoreVertical, FiEye, FiThumbsUp, FiClock, FiAlertTriangle, FiArrowRight } from 'react-icons/fi'
 import { adminColors } from '../../../pages/admin/AdminPrimitives'
 
-type ExerciseStatus = 'published' | 'pending' | 'rejected'
+type ExerciseStatus = 'published' | 'pending' | 'rejected' | 'draft'
 
 interface ExerciseCardProps {
     title: string
@@ -45,6 +45,12 @@ const statusConfig: Record<ExerciseStatus, {
         borderColor: adminColors.primary,
         avatarFilter: 'grayscale(1) brightness(0.6)',
         overlay: true,
+    },
+    draft: {
+        label: 'Draft',
+        dotColor: adminColors.dim,
+        bgColor: `${adminColors.surfaceHigh}E6`,
+        borderColor: adminColors.surfaceVariant,
     },
 }
 
@@ -159,9 +165,9 @@ const ExerciseCard: React.FC<ExerciseCardProps> = ({
                     ) : isRejected ? (
                         <Icon as={FiAlertTriangle} color={adminColors.primary} boxSize="12px" />
                     ) : (
-                        <Box w="2" h="2" borderRadius="full" bg="#10b981" />
+                        <Box w="2" h="2" borderRadius="full" bg={cfg.dotColor} />
                     )}
-                    <Text fontSize="9px" fontWeight="700" letterSpacing="0.05em" textTransform="uppercase" color={isRejected ? adminColors.primary : adminColors.text}>
+                    <Text fontSize="9px" fontWeight="700" letterSpacing="0.05em" textTransform="uppercase" color={isRejected ? adminColors.primary : status === 'draft' ? adminColors.dim : adminColors.text}>
                         {cfg.label}
                     </Text>
                 </Flex>

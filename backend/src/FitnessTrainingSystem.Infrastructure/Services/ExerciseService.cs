@@ -21,6 +21,7 @@ public class ExerciseService : IExerciseService
             .Include(e => e.Creator)
             .Include(e => e.MuscleGroup)
             .Include(e => e.Package)
+            .Where(e => !e.IsDraft)
             .AsQueryable();
 
         // Admin sees all exercises
@@ -94,6 +95,7 @@ public class ExerciseService : IExerciseService
         var query = _context.Exercises
             .Include(e => e.MuscleGroup)
             .Include(e => e.Package)
+            .Where(e => !e.IsDraft)
             .AsQueryable();
 
         int? userTier = null;
@@ -179,7 +181,8 @@ public class ExerciseService : IExerciseService
                 Duration = e.DurationMinutes,
                 CreatedBy = e.CreatedBy,
                 CreatorName = e.Creator != null ? e.Creator.Fullname : null,
-                PackageId = e.PackageId
+                PackageId = e.PackageId,
+                IsDraft = e.IsDraft
             })
             .ToListAsync();
     }
@@ -206,7 +209,8 @@ public class ExerciseService : IExerciseService
             Duration = exercise.DurationMinutes,
             CreatedBy = exercise.CreatedBy,
             CreatorName = exercise.Creator?.Fullname,
-            PackageId = exercise.PackageId
+            PackageId = exercise.PackageId,
+            IsDraft = exercise.IsDraft
         };
     }
 
@@ -250,7 +254,8 @@ public class ExerciseService : IExerciseService
             Difficulty = dto.Difficulty,
             DurationMinutes = dto.Duration,
             CreatedBy = createdByUserId,
-            PackageId = dto.PackageId
+            PackageId = dto.PackageId,
+            IsDraft = dto.IsDraft
         };
 
         _context.Exercises.Add(exercise);

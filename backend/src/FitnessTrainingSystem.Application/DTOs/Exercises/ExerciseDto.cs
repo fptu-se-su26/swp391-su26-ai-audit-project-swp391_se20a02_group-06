@@ -15,4 +15,6 @@ public class ExerciseDto
     public int? CreatedBy { get; set; }
     public string? CreatorName { get; set; }
     public int? PackageId { get; set; }
+    public bool IsDraft { get; set; }
 }
+
