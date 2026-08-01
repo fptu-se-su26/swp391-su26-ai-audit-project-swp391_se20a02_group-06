@@ -31,7 +31,7 @@ public partial class PtUploadRequest
     // Admin request fields
     public int? RequestedBy { get; set; }
     public string? MuscleGroup { get; set; }
-    public ExerciseDifficulty? Difficulty { get; set; }
+    public string? Difficulty { get; set; }
     public string? Instructions { get; set; }
     public string? Priority { get; set; } // LOW, MEDIUM, HIGH
     public DateTime? Deadline { get; set; }

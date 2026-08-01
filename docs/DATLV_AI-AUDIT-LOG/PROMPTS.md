@@ -956,3 +956,65 @@ Cung cấp screenshot lỗi trên GitHub Actions và yêu cầu AI tự động 
 | Link tài liệu/báo cáo | N/A |
 | Ghi chú khác | N/A |
 
+---
+
+### Prompt số 12
+
+| Nội dung | Thông tin |
+|---|---|
+| Ngày sử dụng | 27/07/2026 |
+| Công cụ AI | Antigravity |
+| Mục đích | Fix lỗi luồng Workout Suggestion trên Dashboard hiển thị sai video và cấu hình Global Decimal Rounding |
+| Phần việc liên quan | Coding / Debug |
+| Mức độ sử dụng | Hỏi debug / Hỏi sinh code |
+
+#### 5.1. Prompt nguyên văn
+
+```text
+- Làm tròn 2 chữ số toàn hệ thống UI.
+- Thẻ thứ 2 trên Dashboard hiển thị gợi ý bài tập, bấm Start Workout thì nhảy sang bài tập đó.
+- Sửa lỗi bài đầu tiên không lấy được video khởi động mặc định.
+- Fix lỗi "chuyển bài nhưng nội dung video mãi ở bài đầu tiên".
+```
+
+#### 5.2. Bối cảnh khi viết prompt
+
+```text
+Tính năng Gợi ý bài tập trên Dashboard chưa liên kết với luồng bài tập chính. UI hiển thị số thập phân quá dài gây vỡ layout. Lỗi fallback video khởi động khi API không trả về link video của bài tập.
+```
+
+#### 5.3. Kết quả AI trả về
+
+```text
+Phân tích nguyên nhân do API `/exercises/catalog` không trả về `VideoUrl`. Hướng dẫn tạo Global JSON Converter cho số thập phân. Tái sử dụng logic bài tập từ `workoutExercises.ts` vào Dashboard.
+```
+
+#### 5.4. Kết quả đã áp dụng vào bài
+
+```text
+Đồng bộ hoàn toàn luồng bài tập giữa Dashboard và trang Workout chính. Khắc phục được lỗi hiển thị số thập phân quá dài trên toàn hệ thống.
+```
+
+#### 5.5. Phần sinh viên/nhóm đã chỉnh sửa hoặc cải tiến
+
+```text
+Yêu cầu AI điều chỉnh lại routing để nhảy thẳng sang màn hình chính của hệ thống Workout thay vì Landing Page. Gửi screenshot lỗi thực tế để AI bám sát tình hình hiển thị của UI.
+```
+
+#### 5.6. Đánh giá chất lượng prompt
+
+- [x] Prompt rõ ràng
+- [x] Prompt có đủ bối cảnh
+- [x] Prompt tạo ra kết quả tốt
+
+#### 5.7. Minh chứng liên quan
+
+| Loại minh chứng | Nội dung |
+|---|---|
+| Link commit | 4fd1dce |
+| File liên quan | ExerciseCatalogDto.cs, Dashboard.tsx, workoutExercises.ts |
+| Screenshot | Đã gửi 2 screenshot trong phiên chat |
+| Kết quả chạy/test | Fix thành công |
+| Link tài liệu/báo cáo | N/A |
+| Ghi chú khác | N/A |
+

@@ -43,6 +43,12 @@ public partial class ApplicationDbContext : DbContext
 
     public virtual DbSet<PtUploadRequest> PtUploadRequests { get; set; }
 
+    public virtual DbSet<AIChatSession> AIChatSessions { get; set; }
+
+    public virtual DbSet<AIChatMessage> AIChatMessages { get; set; }
+
+    public virtual DbSet<AIDietHistory> AIDietHistories { get; set; }
+
     public virtual DbSet<Role> Roles { get; set; }
 
     public virtual DbSet<Schedule> Schedules { get; set; }

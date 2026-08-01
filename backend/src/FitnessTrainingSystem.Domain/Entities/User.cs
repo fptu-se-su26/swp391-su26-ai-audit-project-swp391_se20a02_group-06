@@ -18,6 +18,8 @@ public class User : BaseAuditableEntity
     public int? RoleId { get; set; }
     public string? WaterReminderStartTime { get; set; }
     public string? WaterReminderEndTime { get; set; }
+    public string? RefreshToken { get; set; }
+    public DateTime? RefreshTokenExpiryTime { get; set; }
 
     // Navigation properties
     public Role? Role { get; set; }

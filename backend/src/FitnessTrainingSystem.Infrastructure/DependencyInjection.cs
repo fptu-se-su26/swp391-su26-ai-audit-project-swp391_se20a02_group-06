@@ -60,7 +60,12 @@ public static class DependencyInjection
         services.AddScoped<ICloudinaryService, CloudinaryService>();
 
         // 🚀 ĐĂNG KÝ HỆ THỐNG TRUY CẬP AI DƯỚI ĐÂY
-        services.AddHttpClient<IGeminiAiService, GeminiAiService>();
+        services.AddHttpClient<GeminiAiService>();
+        services.AddHttpClient<IGeminiAiService, DirectGeminiService>(client =>
+        {
+            client.Timeout = TimeSpan.FromMinutes(5);
+        });
+        services.AddScoped<IAIChatService, AIChatService>();
 
         // PayOS
         services.AddSingleton(new PayOSClient(new PayOSOptions
