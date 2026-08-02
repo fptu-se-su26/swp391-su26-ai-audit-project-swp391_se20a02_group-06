@@ -13,12 +13,12 @@ const getFallbackExercises = async (): Promise<ExerciseCardData[]> => {
         const shuffled = allExercises.sort(() => 0.5 - Math.random())
         const selected = shuffled.slice(0, 4)
         return selected.map((ex, idx) => {
-            const isCardio = ex.muscleGroup?.name?.toLowerCase().includes('cardio') || ex.title?.toLowerCase().includes('jump')
+            const isCardio = (ex.muscleGroup && typeof ex.muscleGroup === 'string' ? ex.muscleGroup.toLowerCase() : '').includes('cardio') || (ex.title && ex.title.toLowerCase().includes('jump'))
             return {
                 id: ex.id,
                 index: idx + 1,
                 name: ex.title || 'Unknown Exercise',
-                tags: ex.muscleGroup?.name ? [ex.muscleGroup.name] : ['Full Body'],
+                tags: ex.muscleGroup ? [ex.muscleGroup] : ['Full Body'],
                 sets: isCardio ? '3 x 30s' : '3 x 12',
                 setsLabel: isCardio ? 'Sets / Time' : 'Sets / Reps',
                 setsCount: 3,
@@ -55,11 +55,24 @@ export const generateExercises = async (data: WorkoutFormData): Promise<Exercise
             muscleGroup = muscleNames.join(', ')
         }
 
+        let injuredMuscleGroups: string | undefined = undefined
+        if (data.injuries && data.injuries.length > 0) {
+            const injuredNames = data.injuries.map(injury => {
+                const found = apiMuscles.find(
+                    (m) => m.id.toString() === injury.id || m.name.toLowerCase() === injury.id.toLowerCase()
+                )
+                const name = found ? found.name : injury.id
+                return `${name} (Mức độ ${injury.severity}/5)`
+            })
+            injuredMuscleGroups = injuredNames.join(', ')
+        }
+
         // 2. Fetch all exercises from DB (to join details) and call AI in parallel
         const [exercisesResponse, aiResponse] = await Promise.all([
             apiClient.get('/exercises'),
             generateAiWorkoutPlan({
                 muscleGroup,
+                injuredMuscleGroups,
                 targetCalories: data.targetCalories,
                 durationMinutes: data.duration
             })
@@ -90,7 +103,7 @@ export const generateExercises = async (data: WorkoutFormData): Promise<Exercise
                 setsLabelStr = 'Sets / Time'
             }
 
-            const muscleGroupName = dbEx?.muscleGroup?.name || muscleGroup
+            const muscleGroupName = dbEx?.muscleGroup || muscleGroup
 
             return {
                 id: exerciseId,
@@ -132,10 +145,23 @@ export const generateWeeklyExercises = async (data: WorkoutFormData): Promise<We
             muscleGroup = muscleNames.join(', ')
         }
 
+        let injuredMuscleGroups: string | undefined = undefined
+        if (data.injuries && data.injuries.length > 0) {
+            const injuredNames = data.injuries.map(injury => {
+                const found = apiMuscles.find(
+                    (m) => m.id.toString() === injury.id || m.name.toLowerCase() === injury.id.toLowerCase()
+                )
+                const name = found ? found.name : injury.id
+                return `${name} (Mức độ ${injury.severity}/5)`
+            })
+            injuredMuscleGroups = injuredNames.join(', ')
+        }
+
         const [exercisesResponse, aiResponse] = await Promise.all([
             apiClient.get('/exercises'),
             generateAiWeeklyWorkoutPlan({
                 muscleGroup,
+                injuredMuscleGroups,
                 targetCaloriesPerDay: data.targetCalories,
                 durationMinutesPerDay: data.duration,
                 frequency: data.frequency
@@ -164,7 +190,7 @@ export const generateWeeklyExercises = async (data: WorkoutFormData): Promise<We
                     setsStr = `${aiEx.sets} x ${durationSeconds}s`
                     setsLabelStr = 'Sets / Time'
                 }
-                const muscleGroupName = dbEx?.muscleGroup?.name || muscleGroup
+                const muscleGroupName = dbEx?.muscleGroup || muscleGroup
 
                 return {
                     id: exerciseId,

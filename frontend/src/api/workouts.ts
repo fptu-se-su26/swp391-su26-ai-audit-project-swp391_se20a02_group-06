@@ -80,6 +80,7 @@ export const getWorkoutHistory = async (): Promise<WorkoutSessionDto[]> => {
 
 export interface AiWorkoutPlanRequestDto {
     muscleGroup: string
+    injuredMuscleGroups?: string
     targetCalories: number
     durationMinutes: number
 }
@@ -117,6 +118,7 @@ export const generateAiWorkoutPlan = async (data: AiWorkoutPlanRequestDto): Prom
 
 export interface AiWeeklyWorkoutPlanRequestDto {
     muscleGroup: string
+    injuredMuscleGroups?: string
     targetCaloriesPerDay: number
     durationMinutesPerDay: number
     frequency: number

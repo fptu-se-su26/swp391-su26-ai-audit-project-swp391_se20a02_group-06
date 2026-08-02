@@ -95,5 +95,20 @@ Bạn bắt buộc phải trả về chuỗi định dạng JSON thuần khớp 
             
             return dietPlan ?? new DietPlanResponse { Success = false };
         }
+
+        public Task<string> ChatAsync(string conversation, string userInfo)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<FitnessTrainingSystem.Application.DTOs.Workouts.AiWorkoutPlanResponseDto> GenerateWorkoutPlanAsync(int userId, string muscleGroup, int targetCalories, int durationMinutes, string availableExercisesJson, string? injuredMuscleGroups = null)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<FitnessTrainingSystem.Application.DTOs.Workouts.AiWeeklyWorkoutPlanResponseDto> GenerateWeeklyWorkoutPlanAsync(int userId, string muscleGroup, int targetCaloriesPerDay, int durationMinutesPerDay, int frequency, string availableExercisesJson, string? injuredMuscleGroups = null)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

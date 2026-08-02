@@ -2,6 +2,7 @@ using System.Text;
 using System.Text.Json;
 using FitnessTrainingSystem.Application.Common.Interfaces;
 using FitnessTrainingSystem.Application.DTOs.Nutrition;
+using FitnessTrainingSystem.Application.DTOs.Workouts;
 
 namespace FitnessTrainingSystem.Infrastructure.Services;
 
@@ -133,4 +134,14 @@ return replyElement
             .GetString()
             ?? string.Empty;
 }
+
+    public Task<AiWorkoutPlanResponseDto> GenerateWorkoutPlanAsync(int userId, string muscleGroup, int targetCalories, int durationMinutes, string availableExercisesJson, string? injuredMuscleGroups = null)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<AiWeeklyWorkoutPlanResponseDto> GenerateWeeklyWorkoutPlanAsync(int userId, string muscleGroup, int targetCaloriesPerDay, int durationMinutesPerDay, int frequency, string availableExercisesJson, string? injuredMuscleGroups = null)
+    {
+        throw new NotImplementedException();
+    }
 }

@@ -323,6 +323,7 @@ public class ExerciseService : IExerciseService
                 Title = e.Title,
                 Description = e.Description,
                 MuscleGroupId = e.MuscleGroupId,
+                MuscleGroupName = e.MuscleGroup != null ? e.MuscleGroup.Name : null,
                 Equipment = "None",
                 DurationMinutes = e.DurationMinutes,
                 CaloriesBurnPerMin = 5.0,

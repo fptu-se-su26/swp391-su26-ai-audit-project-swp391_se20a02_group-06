@@ -12,6 +12,7 @@ export type WorkoutFormData = {
     frequency: number
     equipment: string[]
     muscles: string[]
+    injuries: { id: string; severity: number }[]
     targetCalories: number
 }
 

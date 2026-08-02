@@ -1,13 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Http;
-using System.Net.Http.Json;
 using System.Threading;
+using System.Threading.Tasks;
+using System.Text.Json;
 using System.Threading.Tasks;
 using MediatR;
 using FitnessTrainingSystem.Application.DTOs.Workouts;
 using FitnessTrainingSystem.Application.Interfaces;
+using FitnessTrainingSystem.Application.Common.Interfaces;
 
 using Microsoft.Extensions.Configuration;
 
@@ -15,14 +16,12 @@ namespace FitnessTrainingSystem.Application.Features.AiRecommendations.Commands.
 
 public class GenerateWorkoutPlanCommandHandler : IRequestHandler<GenerateWorkoutPlanCommand, AiWorkoutPlanResponseDto>
 {
-    private readonly HttpClient _httpClient;
+    private readonly IGeminiAiService _geminiAiService;
     private readonly IExerciseService _exerciseService;
 
-    public GenerateWorkoutPlanCommandHandler(IHttpClientFactory httpClientFactory, IExerciseService exerciseService, IConfiguration configuration)
+    public GenerateWorkoutPlanCommandHandler(IGeminiAiService geminiAiService, IExerciseService exerciseService)
     {
-        _httpClient = httpClientFactory.CreateClient();
-        var baseUrl = configuration["AiServiceSettings:BaseUrl"] ?? "http://localhost:5007";
-        _httpClient.BaseAddress = new Uri(baseUrl);
+        _geminiAiService = geminiAiService;
         _exerciseService = exerciseService;
     }
 
@@ -41,7 +40,8 @@ public class GenerateWorkoutPlanCommandHandler : IRequestHandler<GenerateWorkout
                     Id = e.Id,
                     Title = e.Title,
                     Description = e.Description,
-                    MuscleGroupId = 0,
+                    MuscleGroupId = e.MuscleGroupId,
+                    MuscleGroupName = e.MuscleGroup,
                     Equipment = "None",
                     DurationMinutes = e.Duration ?? 10,
                     CaloriesBurnPerMin = 5.0,
@@ -72,7 +72,8 @@ public class GenerateWorkoutPlanCommandHandler : IRequestHandler<GenerateWorkout
                         Id = e.Id,
                         Title = e.Title,
                         Description = e.Description,
-                        MuscleGroupId = 0,
+                        MuscleGroupId = e.MuscleGroupId,
+                        MuscleGroupName = e.MuscleGroup,
                         Equipment = "None",
                         DurationMinutes = e.Duration ?? 10,
                         CaloriesBurnPerMin = 5.0,
@@ -97,28 +98,10 @@ public class GenerateWorkoutPlanCommandHandler : IRequestHandler<GenerateWorkout
             };
         }
 
-        // 2. Đóng gói dữ liệu đầu vào (Payload) khớp hoàn toàn với cấu trúc WorkoutAiRequest bên Python
-        var pythonRequestPayload = new
-        {
-            user_id = request.UserId,
-            muscle_group = request.MuscleGroup,
-            target_calories = request.TargetCalories,
-            duration_minutes = request.DurationMinutes,
-            available_exercises = availableExercises
-        };
+        var availableExercisesJson = JsonSerializer.Serialize(availableExercises);
 
-        // 3. Bắn HTTP POST Request sang bên bến FastAPI Python
-        var response = await _httpClient.PostAsJsonAsync("/api/ai/generate-workout", pythonRequestPayload, cancellationToken);
-
-        // Nếu bến Python trả về lỗi (Ví dụ lỗi sập mạng, lỗi Gemini hết hạn key...), bắt lỗi và ném ra Exception
-        if (!response.IsSuccessStatusCode)
-        {
-            var errorContent = await response.Content.ReadAsStringAsync(cancellationToken);
-            throw new Exception($"Lỗi xử lý từ AI Microservice (Python): {errorContent}");
-        }
-
-        // 4. Nhận cục JSON kết quả trả về từ Python và tự động map vào DTO lớp C# thông qua JsonPropertyName
-        var aiResult = await response.Content.ReadFromJsonAsync<AiWorkoutPlanResponseDto>(cancellationToken);
+        // 3. Bắn request sang service C# Gemini
+        var aiResult = await _geminiAiService.GenerateWorkoutPlanAsync(request.UserId, request.MuscleGroup, request.TargetCalories, request.DurationMinutes, availableExercisesJson, request.InjuredMuscleGroups);
 
         if (aiResult == null || !aiResult.Success)
         {

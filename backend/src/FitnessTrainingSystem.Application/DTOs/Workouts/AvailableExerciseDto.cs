@@ -16,6 +16,9 @@ public class AvailableExerciseDto
     [JsonPropertyName("muscle_group_id")]
     public int? MuscleGroupId { get; set; }
 
+    [JsonPropertyName("muscle_group_name")]
+    public string? MuscleGroupName { get; set; }
+
     [JsonPropertyName("equipment")]
     public string? Equipment { get; set; }
 

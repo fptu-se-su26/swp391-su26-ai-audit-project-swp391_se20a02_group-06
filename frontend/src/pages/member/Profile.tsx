@@ -22,8 +22,8 @@ import { useAuthStore } from '../../store/useAuthStore'
 import MemberLayout from '../../components/shared/Layout/MemberLayout'
 import BodyMetricsModal from './components/BodyMetricsModal'
 import ChangePasswordModal from './components/ChangePasswordModal'
-import { getLatestBodyMetric, addBodyMetric, type BodyMetric } from '../../api/bodyMetrics'
-import { getProfile, type UserProfile } from '../../api/user'
+import { getLatestBodyMetric, addBodyMetric } from '../../api/bodyMetrics'
+import { getProfile } from '../../api/user'
 
 const formatTimeAgo = (dateString: string | null) => {
     if (!dateString) return 'Never changed';
@@ -65,7 +65,7 @@ const Profile: React.FC = () => {
 
     const handleSaveMetrics = async (data: { age: number; gender: string; height: number; weight: number }) => {
         const newMetric = await addBodyMetric(data)
-        setMetric(newMetric)
+        mutateMetric(newMetric)
         toast({ title: 'Body Metrics saved successfully', status: 'success', duration: 3000 })
     }
 

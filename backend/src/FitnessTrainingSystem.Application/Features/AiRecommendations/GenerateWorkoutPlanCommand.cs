@@ -7,6 +7,7 @@ public class GenerateWorkoutPlanCommand : IRequest<AiWorkoutPlanResponseDto>
 {
     public int UserId { get; set; }
     public string MuscleGroup { get; set; } = null!;
+    public string? InjuredMuscleGroups { get; set; }
     public int TargetCalories { get; set; }
     public int DurationMinutes { get; set; }
     

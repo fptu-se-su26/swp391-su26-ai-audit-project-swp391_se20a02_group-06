@@ -46,6 +46,7 @@ public class WorkoutsController : ControllerBase
             {
                 UserId = userId,
                 MuscleGroup = dto.MuscleGroup,
+                InjuredMuscleGroups = dto.InjuredMuscleGroups,
                 TargetCalories = dto.TargetCalories,
                 DurationMinutes = dto.DurationMinutes
             };
@@ -69,6 +70,7 @@ public class WorkoutsController : ControllerBase
             {
                 UserId = userId,
                 MuscleGroup = dto.MuscleGroup,
+                InjuredMuscleGroups = dto.InjuredMuscleGroups,
                 TargetCaloriesPerDay = dto.TargetCaloriesPerDay,
                 DurationMinutesPerDay = dto.DurationMinutesPerDay,
                 Frequency = dto.Frequency

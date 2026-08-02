@@ -36,7 +36,7 @@ import {
     HydrationTracker,
     MacroCard,
     MealSection,
-} from '../../features/nutrition/components/NutritionWidgets.tsx'
+} from '../../features/nutrition/components/NutritionWidgets'
 import { logWater, updateReminderSettings } from '../../api/nutrition'
 import { triggerTestWaterReminder } from '../../api/notifications'
 import { useAuthStore } from '../../store/useAuthStore'
@@ -50,16 +50,16 @@ const Nutrition: React.FC = () => {
     const dateStr = today.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
     const [searchQuery, setSearchQuery] = useState('')
     const toast = useToast()
-    const sessionId = useAuthStore(state => state.sessionId)
+    const isAuthenticated = useAuthStore(state => state.isAuthenticated)
 
     // Fetch foods from API
-    const { data: foods, isLoading, error } = useSWR(sessionId ? '/foods' : null, fetcher)
+    const { data: foods, isLoading, error } = useSWR(isAuthenticated ? '/foods' : null, fetcher)
 
     // Fetch daily nutrition summary
-    const { data: summary } = useSWR(sessionId ? `/nutrition/daily?date=${todayStr}` : null, fetcher)
+    const { data: summary } = useSWR(isAuthenticated ? `/nutrition/daily?date=${todayStr}` : null, fetcher)
 
     // Fetch AI Diet Histories
-    const { data: dietHistories } = useSWR(sessionId ? '/AIChat/diet-history' : null, fetcher)
+    const { data: dietHistories } = useSWR(isAuthenticated ? '/AIChat/diet-history' : null, fetcher)
     const latestDiet = dietHistories && dietHistories.length > 0 ? dietHistories[0] : null
 
     const navigate = useNavigate()

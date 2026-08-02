@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Flex, Input, Select, Button, VStack } from '@chakra-ui/react';
+import { Box, Input, Select, Button, VStack } from '@chakra-ui/react';
 
 interface ExerciseFiltersProps {
     searchQuery: string;

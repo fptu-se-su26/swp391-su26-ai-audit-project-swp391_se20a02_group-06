@@ -38,3 +38,6 @@ export const updateReminderSettings = async (startTime: string, endTime: string)
     const response = await apiClient.put('/nutrition/reminder-settings', { startTime, endTime })
     return response.data
 }
+
+
+export interface DietPlanResponse { recommendation: { plan_type: string; target_calories: number; meals: any[]; shopping_list: string[]; meal_prep_tips: string[]; disclaimer: string; }; }

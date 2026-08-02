@@ -8,6 +8,7 @@ public class GenerateWeeklyWorkoutPlanCommand : IRequest<AiWeeklyWorkoutPlanResp
 {
     public int UserId { get; set; }
     public string MuscleGroup { get; set; } = null!;
+    public string? InjuredMuscleGroups { get; set; }
     public int TargetCaloriesPerDay { get; set; }
     public int DurationMinutesPerDay { get; set; }
     public int Frequency { get; set; }

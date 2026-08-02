@@ -1,28 +1,27 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Http;
-using System.Net.Http.Json;
 using System.Threading;
+using System.Threading.Tasks;
+using System.Text.Json;
 using System.Threading.Tasks;
 using MediatR;
 using FitnessTrainingSystem.Application.DTOs.Workouts;
 using FitnessTrainingSystem.Application.Interfaces;
+using FitnessTrainingSystem.Application.Common.Interfaces;
 using Microsoft.Extensions.Configuration;
 
 namespace FitnessTrainingSystem.Application.Features.AiRecommendations.Commands.GenerateWeeklyWorkoutPlan;
 
 public class GenerateWeeklyWorkoutPlanCommandHandler : IRequestHandler<GenerateWeeklyWorkoutPlanCommand, AiWeeklyWorkoutPlanResponseDto>
 {
-    private readonly HttpClient _httpClient;
+    private readonly IGeminiAiService _geminiAiService;
     private readonly IExerciseService _exerciseService;
     private readonly IProductPackageService _packageService;
 
-    public GenerateWeeklyWorkoutPlanCommandHandler(IHttpClientFactory httpClientFactory, IExerciseService exerciseService, IConfiguration configuration, IProductPackageService packageService)
+    public GenerateWeeklyWorkoutPlanCommandHandler(IGeminiAiService geminiAiService, IExerciseService exerciseService, IProductPackageService packageService)
     {
-        _httpClient = httpClientFactory.CreateClient();
-        var baseUrl = configuration["AiServiceSettings:BaseUrl"] ?? "http://localhost:5007";
-        _httpClient.BaseAddress = new Uri(baseUrl);
+        _geminiAiService = geminiAiService;
         _exerciseService = exerciseService;
         _packageService = packageService;
     }
@@ -48,7 +47,8 @@ public class GenerateWeeklyWorkoutPlanCommandHandler : IRequestHandler<GenerateW
                     Id = e.Id,
                     Title = e.Title,
                     Description = e.Description,
-                    MuscleGroupId = 0,
+                    MuscleGroupId = e.MuscleGroupId,
+                    MuscleGroupName = e.MuscleGroup,
                     Equipment = "None",
                     DurationMinutes = e.Duration ?? 10,
                     CaloriesBurnPerMin = 5.0,
@@ -79,7 +79,8 @@ public class GenerateWeeklyWorkoutPlanCommandHandler : IRequestHandler<GenerateW
                         Id = e.Id,
                         Title = e.Title,
                         Description = e.Description,
-                        MuscleGroupId = 0,
+                        MuscleGroupId = e.MuscleGroupId,
+                        MuscleGroupName = e.MuscleGroup,
                         Equipment = "None",
                         DurationMinutes = e.Duration ?? 10,
                         CaloriesBurnPerMin = 5.0,
@@ -106,25 +107,9 @@ public class GenerateWeeklyWorkoutPlanCommandHandler : IRequestHandler<GenerateW
             };
         }
 
-        var pythonRequestPayload = new
-        {
-            user_id = request.UserId,
-            muscle_group = request.MuscleGroup,
-            target_calories_per_day = request.TargetCaloriesPerDay,
-            duration_minutes_per_day = request.DurationMinutesPerDay,
-            frequency = request.Frequency,
-            available_exercises = availableExercises
-        };
+        var availableExercisesJson = JsonSerializer.Serialize(availableExercises);
 
-        var response = await _httpClient.PostAsJsonAsync("/api/ai/generate-weekly-workout", pythonRequestPayload, cancellationToken);
-
-        if (!response.IsSuccessStatusCode)
-        {
-            var errorContent = await response.Content.ReadAsStringAsync(cancellationToken);
-            throw new Exception($"Lỗi xử lý từ AI Microservice (Python) khi tạo Weekly Plan: {errorContent}");
-        }
-
-        var aiResult = await response.Content.ReadFromJsonAsync<AiWeeklyWorkoutPlanResponseDto>(cancellationToken);
+        var aiResult = await _geminiAiService.GenerateWeeklyWorkoutPlanAsync(request.UserId, request.MuscleGroup, request.TargetCaloriesPerDay, request.DurationMinutesPerDay, request.Frequency, availableExercisesJson, request.InjuredMuscleGroups);
 
         if (aiResult == null || !aiResult.Success)
         {

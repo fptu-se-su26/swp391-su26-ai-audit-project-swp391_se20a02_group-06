@@ -2,6 +2,7 @@ using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using FitnessTrainingSystem.Application.DTOs.Nutrition;
+using FitnessTrainingSystem.Application.DTOs.Workouts;
 using FitnessTrainingSystem.Application.Common.Interfaces;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -199,5 +200,145 @@ LỊCH SỬ CHAT
             .GetString();
 
         return text ?? "{}";
+    }
+
+    public async Task<AiWorkoutPlanResponseDto> GenerateWorkoutPlanAsync(int userId, string muscleGroup, int targetCalories, int durationMinutes, string availableExercisesJson, string? injuredMuscleGroups = null)
+    {
+        var systemInstruction = @"You are an elite AI Personal Trainer and a strict mathematician. You build safe workout plans using ONLY the provided input exercises. Your calculations for calories and duration MUST be mathematically flawless.
+[ĐỊNH DẠNG ĐẦU RA BẮT BUỘC]
+Bạn bắt buộc phải trả về chuỗi định dạng JSON thuần khớp hoàn toàn với cấu trúc sau mà không kèm theo bất kỳ ký tự markdown nào:
+{
+  ""title"": ""Tiêu đề giáo án tập luyện hấp dẫn."",
+  ""goal"": ""Mục tiêu cụ thể ngắn gọn của giáo án."",
+  ""target_calories"": 0,
+  ""target_duration_minutes"": 0,
+  ""exercises"": [
+    {
+      ""exercise_id"": 0,
+      ""exercise_title"": ""Tên bài tập"",
+      ""sets"": 3,
+      ""reps"": 12,
+      ""duration_seconds"": 0,
+      ""rest_seconds"": 60,
+      ""exercise_order"": 1,
+      ""calories_burned"": 30
+    }
+  ]
+}";
+
+        var userPrompt = $@"Hãy thiết kế một kế hoạch bài tập (Workout Plan) tối ưu cho hội viên dựa trên các thông số sau:
+- Nhóm cơ đích cần tập: {muscleGroup}
+- Mục tiêu tiêu hao năng lượng hướng tới: {targetCalories} kcal
+- Tổng thời gian giới hạn: {durationMinutes} phút
+
+BẮT BUỘC CHỈ ĐƯỢC CHỌN CÁC BÀI TẬP CÓ TRONG DANH SÁCH DƯỚI ĐÂY (Tuyệt đối không tự bịa ra bài tập ngoài danh sách này):
+{availableExercisesJson}
+
+Yêu cầu thuật toán phân bổ (RẤT QUAN TRỌNG - PHẢI CHÍNH XÁC VỀ MẶT TOÁN HỌC):
+1. Tổng calories_burned của tất cả bài tập CỘNG LẠI phải bằng ĐÚNG {targetCalories} kcal (du di tối đa +-10%).
+2. Tổng duration_seconds của tất cả bài tập (tính cả thời gian nghỉ rest_seconds) CỘNG LẠI phải bằng ĐÚNG {durationMinutes * 60} giây (du di tối đa +-10%).
+3. Tính toán logic cho MỖI BÀI TẬP:
+   - Thời gian tập mỗi hiệp (phút) = (reps * 3 giây)/60 HOẶC (duration_seconds)/60.
+   - Tổng thời gian tập bài đó (phút) = (Thời gian tập mỗi hiệp) * sets.
+   - Lượng calo đốt của bài (calories_burned) = (Tổng thời gian tập bài đó) * calories_burn_per_min.
+   => BẠN PHẢI TỰ ĐIỀU CHỈNH sets, reps, duration_seconds ĐỂ ĐẠT ĐƯỢC CON SỐ CALO VÀ THỜI GIAN MONG MUỐN!
+4. Chỉ được chọn bài tập từ danh sách được cung cấp. Khuyến khích chọn các bài tập thuộc các nhóm cơ sau: {muscleGroup} (hoặc lấy tất cả nếu là Full Body).";
+
+        if (!string.IsNullOrWhiteSpace(injuredMuscleGroups))
+        {
+            userPrompt += $"\n\n[LƯU Ý QUAN TRỌNG VỀ CHẤN THƯƠNG]\nHội viên đang bị đau hoặc chấn thương ở các vị trí và mức độ (1-5) như sau: {injuredMuscleGroups}.\nYÊU CẦU BẮT BUỘC:\n- Nếu mức độ chấn thương từ 1 đến 3: Hãy giảm số lượng bài tập cho nhóm cơ đó xuống tối đa 1 bài tập nhẹ nhàng.\n- Nếu mức độ chấn thương từ 4 đến 5: TUYỆT ĐỐI BỎ HẲN, KHÔNG CHỌN bất kỳ bài tập nào tác động trực tiếp vào các nhóm cơ bị chấn thương này. Hãy chọn các bài tập thay thế an toàn cho các nhóm cơ khác.";
+        }
+
+        var resultJson = await CallGeminiWithRetryAsync(systemInstruction, userPrompt);
+        
+        // Clean up markdown block if API returns it
+        if (resultJson.StartsWith("```json")) resultJson = resultJson.Substring(7);
+        if (resultJson.StartsWith("```")) resultJson = resultJson.Substring(3);
+        if (resultJson.EndsWith("```")) resultJson = resultJson.Substring(0, resultJson.Length - 3);
+        resultJson = resultJson.Trim();
+
+        var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+        var planOutput = JsonSerializer.Deserialize<WorkoutPlanOutput>(resultJson, options);
+
+        return new AiWorkoutPlanResponseDto
+        {
+            Success = planOutput != null,
+            UserId = userId,
+            Model = _model,
+            Recommendation = planOutput!
+        };
+    }
+
+    public async Task<AiWeeklyWorkoutPlanResponseDto> GenerateWeeklyWorkoutPlanAsync(int userId, string muscleGroup, int targetCaloriesPerDay, int durationMinutesPerDay, int frequency, string availableExercisesJson, string? injuredMuscleGroups = null)
+    {
+        var systemInstruction = @"You are an elite AI Personal Trainer and a strict mathematician. You build safe, mathematically accurate weekly split workout plans using ONLY the provided input exercises. Your calculations for calories and duration MUST be mathematically flawless.
+[ĐỊNH DẠNG ĐẦU RA BẮT BUỘC]
+Bạn bắt buộc phải trả về chuỗi định dạng JSON thuần khớp hoàn toàn với cấu trúc sau mà không kèm theo bất kỳ ký tự markdown nào:
+{
+  ""days"": [
+    {
+      ""title"": ""Tiêu đề buổi tập"",
+      ""goal"": ""Mục tiêu buổi tập"",
+      ""target_calories"": 0,
+      ""target_duration_minutes"": 0,
+      ""exercises"": [
+        {
+          ""exercise_id"": 0,
+          ""exercise_title"": ""Tên bài tập"",
+          ""sets"": 3,
+          ""reps"": 12,
+          ""duration_seconds"": 0,
+          ""rest_seconds"": 60,
+          ""exercise_order"": 1,
+          ""calories_burned"": 30
+        }
+      ]
+    }
+  ]
+}";
+
+        var userPrompt = $@"Hãy thiết kế một lịch tập luyện hàng tuần (Weekly Workout Plan) gồm {frequency} buổi tập tối ưu cho hội viên dựa trên các thông số sau:
+- Nhóm cơ đích tập trung: {muscleGroup}
+- Mục tiêu tiêu hao năng lượng mỗi buổi: {targetCaloriesPerDay} kcal
+- Tổng thời gian giới hạn mỗi buổi: {durationMinutesPerDay} phút
+- Số buổi tập trong tuần: {frequency} buổi.
+
+BẮT BUỘC CHỈ ĐƯỢC CHỌN CÁC BÀI TẬP CÓ TRONG DANH SÁCH DƯỚI ĐÂY (Tuyệt đối không tự bịa ra bài tập ngoài danh sách này):
+{availableExercisesJson}
+
+Yêu cầu thuật toán phân bổ (RẤT QUAN TRỌNG - PHẢI CHÍNH XÁC VỀ MẶT TOÁN HỌC):
+1. Chia đều hoặc luân phiên các nhóm cơ giữa các buổi (ví dụ: Buổi 1 tập Ngực/Vai, Buổi 2 tập Lưng/Tay, Buổi 3 tập Chân/Bụng...) tùy theo các bài tập có sẵn để tối ưu hóa phục hồi cơ bắp.
+2. Mỗi ngày trong danh sách 'days' đại diện cho 1 buổi tập riêng biệt, có đầy đủ tiêu đề (title), mục tiêu (goal), và mảng bài tập (exercises).
+3. Tính toán logic calo cho TỪNG BUỔI TẬP:
+   - Tổng calories_burned của tất cả bài tập trong 1 buổi CỘNG LẠI phải bằng ĐÚNG {targetCaloriesPerDay} kcal (du di tối đa +-10%).
+   - Tổng duration_seconds của tất cả bài tập trong 1 buổi (tính cả thời gian nghỉ rest_seconds) CỘNG LẠI phải bằng ĐÚNG {durationMinutesPerDay * 60} giây (du di tối đa +-10%).
+   - Thời gian tập mỗi hiệp (phút) = (reps * 3 giây)/60 HOẶC (duration_seconds)/60.
+   - Tổng thời gian tập bài đó (phút) = (Thời gian tập mỗi hiệp) * sets.
+   - Lượng calo đốt của bài (calories_burned) = (Tổng thời gian tập bài đó) * calories_burn_per_min.
+   => BẠN PHẢI TỰ ĐIỀU CHỈNH sets, reps, duration_seconds ĐỂ ĐẠT ĐƯỢC CON SỐ CALO VÀ THỜI GIAN MONG MUỐN!";
+
+        if (!string.IsNullOrWhiteSpace(injuredMuscleGroups))
+        {
+            userPrompt += $"\n\n[LƯU Ý QUAN TRỌNG VỀ CHẤN THƯƠNG]\nHội viên đang bị đau hoặc chấn thương ở các vị trí và mức độ (1-5) như sau: {injuredMuscleGroups}.\nYÊU CẦU BẮT BUỘC:\n- Nếu mức độ chấn thương từ 1 đến 3: Hãy giảm số lượng bài tập cho nhóm cơ đó xuống tối đa 1 bài tập nhẹ nhàng.\n- Nếu mức độ chấn thương từ 4 đến 5: TUYỆT ĐỐI BỎ HẲN, KHÔNG CHỌN bất kỳ bài tập nào tác động trực tiếp vào các nhóm cơ bị chấn thương này. Hãy chọn các bài tập thay thế an toàn cho các nhóm cơ khác.";
+        }
+
+        var resultJson = await CallGeminiWithRetryAsync(systemInstruction, userPrompt);
+        
+        // Clean up markdown block if API returns it
+        if (resultJson.StartsWith("```json")) resultJson = resultJson.Substring(7);
+        if (resultJson.StartsWith("```")) resultJson = resultJson.Substring(3);
+        if (resultJson.EndsWith("```")) resultJson = resultJson.Substring(0, resultJson.Length - 3);
+        resultJson = resultJson.Trim();
+
+        var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+        var planOutput = JsonSerializer.Deserialize<WeeklyWorkoutPlanOutput>(resultJson, options);
+
+        return new AiWeeklyWorkoutPlanResponseDto
+        {
+            Success = planOutput != null,
+            UserId = userId,
+            Model = _model,
+            Recommendation = planOutput!
+        };
     }
 }

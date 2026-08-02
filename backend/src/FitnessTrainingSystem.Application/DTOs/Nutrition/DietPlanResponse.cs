@@ -11,6 +11,24 @@ namespace FitnessTrainingSystem.Application.DTOs.Nutrition
 
         [JsonProperty("data")]
         public DietData? Data { get; set; }
+
+        [JsonProperty("diet_title")]
+        public string? DietTitle { get; set; }
+
+        [JsonProperty("daily_calories")]
+        public int DailyCalories { get; set; }
+
+        [JsonProperty("protein_target_g")]
+        public double ProteinTargetG { get; set; }
+
+        [JsonProperty("carbs_target_g")]
+        public double CarbsTargetG { get; set; }
+
+        [JsonProperty("fat_target_g")]
+        public double FatTargetG { get; set; }
+
+        [JsonProperty("meals")]
+        public List<MealPlanItem>? Meals { get; set; }
     }
 
     // Lớp chứa thông tin calo mục tiêu và danh sách các bữa ăn
@@ -26,6 +44,9 @@ namespace FitnessTrainingSystem.Application.DTOs.Nutrition
     // Lớp đại diện cho từng bữa ăn (Ví dụ: Bữa sáng, Bữa trưa...)
     public class MealPlanItem
     {
+        [JsonProperty("name")]
+        public string? Name { get; set; }
+
         [JsonProperty("meal_time")]
         public string? MealTime { get; set; }
 
@@ -38,6 +59,9 @@ namespace FitnessTrainingSystem.Application.DTOs.Nutrition
     {
         [JsonProperty("food_id")]
         public string? FoodId { get; set; }
+
+        [JsonProperty("food_name")]
+        public string? FoodName { get; set; }
 
         [JsonProperty("amount")]
         public string? Amount { get; set; }
