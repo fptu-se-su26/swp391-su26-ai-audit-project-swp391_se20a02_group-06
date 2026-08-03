@@ -103,7 +103,11 @@ HÃY TẠO THỰC ĐƠN NGAY BÂY GIỜ. CHỈ TRẢ VỀ DUY NHẤT CHUỖI JSO
             throw new Exception("Không tìm thấy dữ liệu JSON hợp lệ trong câu trả lời của Groq AI.");
         }
 
-        var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+        var options = new JsonSerializerOptions 
+        { 
+            PropertyNameCaseInsensitive = true,
+            NumberHandling = System.Text.Json.Serialization.JsonNumberHandling.AllowReadingFromString | System.Text.Json.Serialization.JsonNumberHandling.WriteAsString
+        };
         return JsonSerializer.Deserialize<DietPlanResponse>(cleanJson, options)
             ?? throw new Exception("Không đọc được JSON từ Groq AI.");
     }

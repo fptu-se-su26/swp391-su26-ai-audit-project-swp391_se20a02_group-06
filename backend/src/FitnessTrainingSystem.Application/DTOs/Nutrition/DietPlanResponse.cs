@@ -1,15 +1,41 @@
+using System;
 using System.Collections.Generic;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 using Newtonsoft.Json;
 
 namespace FitnessTrainingSystem.Application.DTOs.Nutrition
 {
+    public class FlexibleStringConverter : System.Text.Json.Serialization.JsonConverter<string>
+    {
+        public override string? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        {
+            if (reader.TokenType == JsonTokenType.Number)
+            {
+                if (reader.TryGetInt64(out long l))
+                    return l.ToString();
+                if (reader.TryGetDouble(out double d))
+                    return d.ToString();
+            }
+            if (reader.TokenType == JsonTokenType.String)
+            {
+                return reader.GetString();
+            }
+            return reader.GetString();
+        }
+
+        public override void Write(Utf8JsonWriter writer, string value, JsonSerializerOptions options)
+        {
+            writer.WriteStringValue(value);
+        }
+    }
+
     // Lớp bọc ngoài cùng của kết quả trả về
     public class DietPlanResponse
     {
         [JsonProperty("success")]
         [JsonPropertyName("success")]
-        public bool Success { get; set; }
+        public bool Success { get; set; } = true;
 
         [JsonProperty("data")]
         [JsonPropertyName("data")]
@@ -81,6 +107,7 @@ namespace FitnessTrainingSystem.Application.DTOs.Nutrition
     {
         [JsonProperty("food_id")]
         [JsonPropertyName("food_id")]
+        [System.Text.Json.Serialization.JsonConverter(typeof(FlexibleStringConverter))]
         public string? FoodId { get; set; }
 
         [JsonProperty("food_name")]
