@@ -126,7 +126,7 @@ public class AuthService : IAuthService
             {
                 payload = await GoogleJsonWebSignature.ValidateAsync(request.Credential, settings);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 var handler = new System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler();
                 

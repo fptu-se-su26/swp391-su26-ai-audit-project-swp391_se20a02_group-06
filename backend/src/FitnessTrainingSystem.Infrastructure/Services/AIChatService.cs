@@ -374,7 +374,7 @@ Conversation:
             .ToListAsync();
 
         return histories.Select(x => {
-            DietPlanResponse dietPlan = null;
+            DietPlanResponse? dietPlan = null;
             try
             {
                 var options = new System.Text.Json.JsonSerializerOptions

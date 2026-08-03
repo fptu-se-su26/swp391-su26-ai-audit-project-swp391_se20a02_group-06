@@ -159,7 +159,11 @@ const WorkoutResults: React.FC = () => {
         setCurrentDayIndex,
         setWeeklyPlanActiveSessionId,
         markWeeklyExerciseDone,
-        skipWeeklyExercise
+        skipWeeklyExercise,
+        setExercises,
+        setActivePlanId,
+        setWeeklyPlans,
+        setPhase
     } = useWorkoutStore()
     const [selectedExercise, setSelectedExercise] = useState<(ExerciseCardData & { arrayIndex: number }) | null>(null)
     const navigate = useNavigate()
@@ -256,13 +260,22 @@ const WorkoutResults: React.FC = () => {
                         </Badge>
                     </Flex>
 
-                    <Text
-                        fontSize="11px" color="#8A8A93" mb="5"
-                        cursor="pointer" _hover={{ color: '#E03030' }}
-                        display="inline-block" onClick={resetWorkout}
-                    >
-                        Regenerate Workout
-                    </Text>
+                    <HStack spacing="4" mb="5">
+                        <Text
+                            fontSize="12px" color="#8A8A93"
+                            cursor="pointer" _hover={{ color: '#E03030' }}
+                            onClick={() => {
+                                setExercises([])
+                                setActivePlanId(null)
+                                setActiveSessionId(null)
+                                setWeeklyPlans([])
+                                setCurrentDayIndex(0)
+                                setPhase('setup')
+                            }}
+                        >
+                            ← Return
+                        </Text>
+                    </HStack>
 
                     {/* Weekly Plan Day Tabs */}
                     {data.planType === 'weekly' && (
