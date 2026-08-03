@@ -210,11 +210,54 @@ ADD COLUMN description VARCHAR(255) NULL;
             }
 
             await _context.SaveChangesAsync();
-            return Ok(new { message = "Schedule payment confirmed.", scheduleId = schedule.Id });
+            
+            return Ok(new { message = "Payment successful and schedule confirmed." });
         }
         catch (Exception ex)
         {
-            return StatusCode(500, new { message = $"Failed to confirm schedule payment: {ex.InnerException?.Message ?? ex.Message}" });
+            return StatusCode(500, new { message = $"Error confirming payment: {ex.Message}" });
+        }
+    }
+
+    [HttpPost("cancel-payment")]
+    public async Task<IActionResult> CancelPayment([FromQuery] long orderCode)
+    {
+        try
+        {
+            // Check if it's a schedule payment
+            var schedule = await _context.Schedules.FirstOrDefaultAsync(s => s.OrderCode == orderCode);
+            if (schedule != null)
+            {
+                if (schedule.Status == FitnessTrainingSystem.Domain.Enums.ScheduleStatus.Pending)
+                {
+                    schedule.Status = FitnessTrainingSystem.Domain.Enums.ScheduleStatus.Available;
+                    schedule.MemberId = null;
+                    schedule.OrderCode = null;
+                    schedule.Price = null;
+                    await _context.SaveChangesAsync();
+                    return Ok(new { type = "PT_SESSION" });
+                }
+                return Ok(new { type = "PT_SESSION", message = "Schedule was not pending." });
+            }
+
+            // Check if it's a subscription payment
+            var order = await _context.Orders.FirstOrDefaultAsync(o => o.OrderCode == orderCode);
+            if (order != null)
+            {
+                if (order.PaymentStatus == FitnessTrainingSystem.Domain.Enums.PaymentStatus.Pending)
+                {
+                    order.PaymentStatus = FitnessTrainingSystem.Domain.Enums.PaymentStatus.Cancelled;
+                    await _context.SaveChangesAsync();
+                    return Ok(new { type = "SUBSCRIPTION" });
+                }
+                return Ok(new { type = "SUBSCRIPTION", message = "Order was not pending." });
+            }
+
+            return NotFound(new { message = "Order code not found." });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { message = $"Error cancelling payment: {ex.Message}" });
         }
     }
 }
