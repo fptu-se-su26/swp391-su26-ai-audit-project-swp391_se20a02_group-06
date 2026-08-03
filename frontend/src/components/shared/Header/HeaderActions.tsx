@@ -3,7 +3,7 @@ import useSWR from 'swr'
 import { HStack, IconButton, Icon, Avatar, Menu, MenuButton, MenuList, MenuItem, useDisclosure } from '@chakra-ui/react'
 import { FiSettings, FiLock } from 'react-icons/fi'
 import { useNavigate } from 'react-router-dom'
-import { getProfile, type UserProfile } from '../../../api/user'
+import { getProfile } from '../../../api/user'
 import NotificationBell from './NotificationBell'
 import ChangePasswordModal from '../../../pages/member/components/ChangePasswordModal'
 

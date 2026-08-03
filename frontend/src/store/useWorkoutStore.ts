@@ -1,4 +1,4 @@
-﻿import { create } from 'zustand'
+import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import type { WorkoutFormData, WorkoutPhase, ExerciseCardData } from '../features/workout/types/workout'
 
@@ -18,7 +18,7 @@ interface WorkoutState {
     resetWorkout: () => void
     
     // BỔ SUNG ĐỊNH NGHĨA PHƯƠNG THỨC ASYNC TẠI ĐÂY
-    startWorkoutSession: (payload: { workoutPlanId: number }) => Promise<{ id: number }>
+    startWorkoutSession: (payload: { workoutPlanId?: number }) => Promise<{ id: number }>
     completeWorkoutSession: (
         sessionId: number, 
         payload: {
@@ -60,22 +60,28 @@ export const useWorkoutStore = create<WorkoutState>()(
             })),
             resetWorkout: () => set({ phase: 'intro', formData: null, exercises: [], activePlanId: null, activeSessionId: null }),
 
-            startWorkoutSession: async (_payload) => {
-                // TODO: Gọi API lưu vào database tại đây (axios/fetch)
-                // Ví dụ: const res = await axios.post('/api/workout/session', payload)
-                
-                // Hiện tại trả về dữ liệu Mock để app chạy mượt mà không lỗi:
-                const mockSessionId = Math.floor(Math.random() * 100000)
-                return { id: mockSessionId }
+            startWorkoutSession: async (payload) => {
+                const { startWorkoutSession: apiStartWorkoutSession } = await import('../api/workouts.ts')
+                const res = await apiStartWorkoutSession(payload)
+                return { id: res.id }
             },
 
             completeWorkoutSession: async (sessionId, payload) => {
-                // TODO: Gọi API hoàn thành/lưu kết quả buổi tập lên database
-                // Ví dụ: await axios.put(`/api/workout/session/${sessionId}`, payload)
-                
+                const { completeWorkoutSession: apiCompleteWorkoutSession } = await import('../api/workouts.ts')
+                type CompleteWorkoutSessionDto = Parameters<typeof apiCompleteWorkoutSession>[1]
+                const formattedPayload: CompleteWorkoutSessionDto = {
+                    totalDurationMinutes: payload.totalDurationMinutes,
+                    totalCaloriesBurned: payload.totalCaloriesBurned,
+                    details: payload.details.map((item) => ({
+                        exerciseId: typeof item.exerciseId === 'number' ? item.exerciseId : (Number(item.exerciseId) || 0),
+                        setsDone: item.setsDone,
+                        repsDone: item.repsDone,
+                        durationSeconds: item.durationSeconds,
+                        caloriesBurned: item.caloriesBurned
+                    }))
+                }
+                await apiCompleteWorkoutSession(sessionId, formattedPayload)
                 console.log(`Saved Session ${sessionId} successfully:`, payload)
-                
-                // Sau khi kết thúc thì clear session id hiện tại đi
                 set({ activeSessionId: null })
             }
         }),

@@ -6,19 +6,18 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Scalar.AspNetCore;
 using FitnessTrainingSystem.Infrastructure.Hubs;
-// Load environment variables from .env file in the backend root directory
-var envPath = Path.Combine(Directory.GetCurrentDirectory(), "..", "..", ".env");
-if (File.Exists(envPath))
+// Load environment variables from .env files
+string[] envPaths = [
+    Path.Combine(Directory.GetCurrentDirectory(), "..", "..", ".env"),
+    Path.Combine(Directory.GetCurrentDirectory(), "..", ".env"),
+    Path.Combine(Directory.GetCurrentDirectory(), ".env")
+];
+
+foreach (var path in envPaths)
 {
-    DotNetEnv.Env.Load(envPath);
-}
-else
-{
-    // Fallback if running from backend root directly
-    var fallbackPath = Path.Combine(Directory.GetCurrentDirectory(), ".env");
-    if (File.Exists(fallbackPath))
+    if (File.Exists(path))
     {
-        DotNetEnv.Env.Load(fallbackPath);
+        DotNetEnv.Env.Load(path);
     }
 }
 
@@ -160,8 +159,8 @@ if (app.Environment.IsDevelopment())
             CONSTRAINT `FK_ai_diet_histories_sessions_session_id` FOREIGN KEY (`session_id`) REFERENCES `ai_chat_sessions` (`id`) ON DELETE SET NULL
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
     ");
-}
-
+    }
+    
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {

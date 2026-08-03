@@ -1577,3 +1577,580 @@ Cung cấp screenshot lỗi CI từ GitHub Actions và xác nhận đồng ý co
 Hiểu rõ cơ chế `frozen-lockfile` trong CI/CD giúp đảm bảo tất cả các lần build sản phẩm đều nhất quán phiên bản thư viện, tránh lỗi chênh lệch phiên bản giữa máy dev và máy chủ CI.
 ```
 
+
+
+---
+
+### Lần sử dụng AI số 17
+
+| Nội dung | Thông tin |
+|---|---|
+| Ngày sử dụng | 28/07/2026 |
+| Công cụ AI | Antigravity |
+| Mục đích sử dụng | Khắc phục lỗi cấu hình ghi đè biến môi trường (Gemini API Key) trong appsettings.json |
+| Phần việc liên quan | Backend |
+| Mức độ sử dụng | Hỗ trợ nhiều |
+
+#### 4.1. Prompt đã sử dụng
+
+```text
+- "nguyên nhân tại sao chat không dùng được vậy, nó trả lừoi xin lỗi là sao"
+- "gắn log vào để tooi xem lỗi AI trả lời như thế này là vì sao là do hết limit hay sao. check lại cho toi"
+- "/commit , và push lên để các member khác trong team tôi dùng được."
+```
+
+#### 4.2. Kết quả AI gợi ý
+
+```text
+- Tìm ra nguyên nhân lỗi `400 API_KEY_INVALID` do `appsettings.json` ghi đè giá trị `Gemini:ApiKey` bằng placeholder, bỏ qua `GEMINI_API_KEY` ở cấp độ root.
+- Chỉnh sửa `appsettings.json` và `appsettings.Development.json` để xoá cấu hình ghi đè cứng.
+- Sử dụng cơ chế fallback tự động của .NET để load API Key từ `.env` mà không làm lộ key khi commit.
+```
+
+#### 4.3. Phần sinh viên/nhóm đã sử dụng từ AI
+
+```text
+Sử dụng cấu hình sửa đổi trong `appsettings.json` và `appsettings.Development.json`.
+```
+
+#### 4.4. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
+
+```text
+Yêu cầu Agent chạy lệnh commit để đồng bộ hóa cho team.
+```
+
+#### 4.5. Minh chứng
+
+| Loại minh chứng | Nội dung |
+|---|---|
+| Link commit | 6213363 |
+| File liên quan | appsettings.json, appsettings.Development.json |
+| Screenshot | Đã kiểm thử lại luồng chat AI sau khi fix |
+| Kết quả chạy/test | Build pass 100%, kết nối Gemini API thành công |
+| Link video demo | N/A |
+| Ghi chú khác | Fix thành công mà không để lộ secret lên git |
+
+#### 4.6. Nhận xét cá nhân/nhóm
+
+```text
+Học được cách .NET ưu tiên và ghi đè cấu hình (Configuration Provider), từ đó sửa lỗi không mong muốn khi triển khai biến môi trường an toàn.
+```
+
+
+---
+
+### Lần sử dụng AI số 18
+
+| Nội dung | Thông tin |
+|---|---|
+| Ngày sử dụng | 28/07/2026 |
+| Công cụ AI | Antigravity |
+| Mục đích sử dụng | Sửa lỗi Build Frontend (Lỗi khai báo biến nhưng không sử dụng - Unused Variables) khiến GitHub Pages deploy thất bại |
+| Phần việc liên quan | Frontend / CI/CD Deployment |
+| Mức độ sử dụng | Hỗ trợ nhiều |
+
+#### 4.1. Prompt đã sử dụng
+
+```text
+- "Error: src/components/shared/Header/HeaderActions.tsx(6,27): error TS6133: 'UserProfile' is declared but its value is never read..."
+- "github page deploy lên trả lỗi này"
+- "commit and push lên cho ôi"
+```
+
+#### 4.2. Kết quả AI gợi ý
+
+```text
+- Giải thích nguyên nhân do TypeScript ở cấu hình strict mode ném lỗi exit code 2 khi phát hiện các biến dư thừa không được sử dụng tới trong code.
+- Tiến hành xoá các type/component import thừa ở `HeaderActions.tsx`, `AdminWorkouts.tsx`, `AIChat.tsx`, `Profile.tsx`.
+- Sửa lại hàm `setMetric` chưa được định nghĩa bằng hàm chuẩn `mutateMetric()` từ cấu trúc SWR.
+- Chạy lại build nội bộ (npm run build) đảm bảo Frontend build thành công.
+```
+
+#### 4.3. Phần sinh viên/nhóm đã sử dụng từ AI
+
+```text
+Chấp nhận sửa đổi toàn bộ các file được AI thông báo.
+```
+
+#### 4.4. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
+
+```text
+Yêu cầu lưu trữ lại quy trình commit và đẩy lên repo chung (commit & push).
+```
+
+#### 4.5. Minh chứng
+
+| Loại minh chứng | Nội dung |
+|---|---|
+| Link commit | 15cbfba |
+| File liên quan | HeaderActions.tsx, AdminWorkouts.tsx, AIChat.tsx, Profile.tsx |
+| Screenshot | Lỗi build trên GitHub Pages trước khi sửa |
+| Kết quả chạy/test | Local build pass 100%, thời gian build: 984ms |
+| Link video demo | N/A |
+| Ghi chú khác | N/A |
+
+#### 4.6. Nhận xét cá nhân/nhóm
+
+```text
+Học được rằng mã nguồn TypeScript nếu có khai báo không sử dụng (unused imports/variables) sẽ cản trở quá trình CI/CD build production. Khắc phục triệt để lỗi này bằng cách dọn dẹp mã nguồn thường xuyên.
+```
+
+---
+
+### Lần sử dụng AI số 19
+
+| Nội dung | Thông tin |
+|---|---|
+| Ngày sử dụng | 28/07/2026 |
+| Công cụ AI | Antigravity |
+| Mục đích sử dụng | Sửa lỗi Water Race Condition (BUG-04) và AI Session Ownership (BUG-05) theo test report |
+| Phần việc liên quan | Backend |
+| Mức độ sử dụng | Sinh chính nội dung |
+
+#### 4.1. Prompt đã sử dụng
+
+```text
+- "đây là test của member team tôi, hãy check và test lại 1 lần nưã nếu có lỗi hãy tổng hợp và cho tôi 1 plan của bạn fix những lỗi đó tôi sẽ duyệt"
+- "chạy dự án để tôi test nào và hướng dẫn cách test cho tôi"
+- "/commit"
+```
+
+#### 4.2. Kết quả AI gợi ý
+
+```text
+- Check test report, tìm ra nguyên nhân 2 bug.
+- BUG-04: Thiếu DB transaction ở hàm LogWaterAsync trong NutritionService. 
+- BUG-05: Thiếu kiểm tra UserId trong get session tại AIChatService và AIChatController.
+- AI lên kế hoạch, sau đó bọc transaction với mức Isolation Serializable, thêm logic kiểm tra quyền vào API Chat, xoá reference dư thừa.
+- AI start server test và hướng dẫn cách test.
+```
+
+#### 4.3. Phần sinh viên/nhóm đã sử dụng từ AI
+
+```text
+Sử dụng toàn bộ logic fix backend bao gồm transaction xử lý race condition.
+```
+
+#### 4.4. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
+
+```text
+Tự động duyệt kế hoạch (auto approve) thông qua review policy, yêu cầu AI chạy test server.
+```
+
+#### 4.5. Minh chứng
+
+| Loại minh chứng | Nội dung |
+|---|---|
+| Link commit | 1d23144 |
+| File liên quan | NutritionService.cs, AIChatService.cs, IAIChatService.cs, AIChatController.cs |
+| Screenshot | N/A |
+| Kết quả chạy/test | Build backend (dotnet build) pass 100% |
+| Link video demo | N/A |
+| Ghi chú khác | N/A |
+
+#### 4.6. Nhận xét cá nhân/nhóm
+
+```text
+Việc áp dụng Serializable Transaction giải quyết triệt để lỗi ghi đè dữ liệu khi submit nhiều request đồng thời, đồng thời bảo mật API Chat tốt hơn.
+```
+
+---
+
+### Lần sử dụng AI số 20
+
+| Nội dung | Thông tin |
+|---|---|
+| Ngày sử dụng | 28/07/2026 |
+| Công cụ AI | Antigravity |
+| Mục đích sử dụng | Dọn dẹp code thừa ở giao diện MemberLayout |
+| Phần việc liên quan | Frontend |
+| Mức độ sử dụng | Hỗ trợ ít |
+
+#### 4.1. Prompt đã sử dụng
+
+```text
+- "@[/Users/mac/Subject/SWP-projectFitness/swp391-su26-ai-audit-project-swp391_se20a02_group-06/frontend/src/components/shared/Layout/MemberLayout.tsx] cái này không dùng xoá đi vì không cần phần này"
+- "@[/Users/mac/Subject/SWP-projectFitness/swp391-su26-ai-audit-project-swp391_se20a02_group-06/frontend/src/components/shared/Layout/MemberLayout.tsx] file này luôn"
+- "commit and push lại cho tôi."
+```
+
+#### 4.2. Kết quả AI gợi ý
+
+```text
+- Xoá comment code thừa `PT Booking` trong danh sách `memberTabs`
+- Xoá Component `ResponsiveTabs` khỏi file `MemberLayout.tsx` để dọn dẹp theo yêu cầu
+- Xoá biến `memberTabs` dư thừa
+- Thực hiện build frontend và commit push.
+```
+
+#### 4.3. Phần sinh viên/nhóm đã sử dụng từ AI
+
+```text
+Áp dụng toàn bộ sự thay đổi ở file MemberLayout.tsx.
+```
+
+#### 4.4. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
+
+```text
+Chỉ đạo trực tiếp thông qua workflow `/commit` để AI commit và push lên repo.
+```
+
+#### 4.5. Minh chứng
+
+| Loại minh chứng | Nội dung |
+|---|---|
+| Link commit | 16ce2d8 |
+| File liên quan | MemberLayout.tsx |
+| Screenshot | N/A |
+| Kết quả chạy/test | Build pass |
+| Link video demo | N/A |
+| Ghi chú khác | N/A |
+
+#### 4.6. Nhận xét cá nhân/nhóm
+
+```text
+Giữ code gọn gàng, loại bỏ các dòng code bị comment không cần thiết giúp giảm technical debt và làm code dễ bảo trì hơn.
+```
+
+---
+
+### Lần sử dụng AI số 21
+
+| Nội dung | Thông tin |
+|---|---|
+| Ngày sử dụng | 28/07/2026 |
+| Công cụ AI | Antigravity |
+| Mục đích sử dụng | Sửa lỗi Gemini trả về JSON sai và đồng nhất tiếng Anh giao diện |
+| Phần việc liên quan | Fullstack (Backend & Frontend) |
+| Mức độ sử dụng | Sinh chính nội dung |
+
+#### 4.1. Prompt đã sử dụng
+
+```text
+- @[test_report.md] đây là test của member team tôi, hãy check và test lại 1 lần nưã nếu có lỗi hãy tổng hợp và cho tôi 1 plan của bạn fix những lỗi đó tôi sẽ duyệt
+- chạy dự án để tôi test nào và hướng dẫn cách test cho tôi
+- bạn hãy test phần AI tôi nói đi nào
+- chắc chắn nó ổn định nhé tôi có button test thông báo nước, xoá cho tôi luôn đi, đảm bảo trang web tôi đồng nhất 1 ngôn ngữ là tiếng anh
+- /commit
+```
+
+#### 4.2. Kết quả AI gợi ý
+
+```text
+- Sửa DirectGeminiService.cs ở Backend để dùng MIME type text/plain thay vì bắt buộc application/json, giúp tránh lỗi HTTP 400.
+- Xóa NotificationTestWidget.tsx và TestWaterReminderButton.
+- Dịch toàn bộ chuỗi hardcode tiếng Việt trong AIChat.tsx sang tiếng Anh, đồng bộ toLocaleDateString('en-US').
+```
+
+#### 4.3. Phần sinh viên/nhóm đã sử dụng từ AI
+
+```text
+- Sử dụng toàn bộ code sửa lỗi JSON parsing và bản dịch UI của AI.
+```
+
+#### 4.4. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
+
+```text
+- Yêu cầu AI giữ nguyên định dạng vi-VN cho tiền tệ (VND) để hiển thị đúng dấu phân cách.
+- Test độc lập trên local để chắc chắn thực đơn được sinh ra thành công.
+```
+
+#### 4.5. Minh chứng
+
+| Loại minh chứng | Nội dung |
+|---|---|
+| Link commit | 0c4a7c5 |
+| File liên quan | DirectGeminiService.cs, AIChat.tsx, Nutrition.tsx, NutritionWidgets.tsx, NotificationTestWidget.tsx |
+| Screenshot | N/A |
+| Kết quả chạy/test | Build pass (Frontend & Backend), Test thực đơn qua API thành công |
+| Link video demo | N/A |
+| Ghi chú khác | N/A |
+
+#### 4.6. Nhận xét cá nhân/nhóm
+
+```text
+- Lỗi AI trả về plain text nhưng set MIME là JSON rất phổ biến, nhờ AI đọc log và tìm ra ngay.
+- Việc đồng nhất ngôn ngữ giúp UI chuyên nghiệp hơn, kết hợp Regex và Replace giúp fix hàng loạt chữ.
+```
+
+---
+
+### Lần sử dụng AI số 22
+
+| Nội dung | Thông tin |
+|---|---|
+| Ngày sử dụng | 28/07/2026 |
+| Công cụ AI | Antigravity |
+| Mục đích sử dụng | Khởi tạo cấu hình Docker deploy Backend lên Render |
+| Phần việc liên quan | DevOps / Backend |
+| Mức độ sử dụng | Sinh chính nội dung |
+
+#### 4.1. Prompt đã sử dụng
+
+```text
+chưa có docker file đúng không deploy BE lên đi
+```
+
+#### 4.2. Kết quả AI gợi ý
+
+```text
+- Viết file `Dockerfile` chuẩn .NET 9.0 build multi-stage cho Backend.
+- Viết file `.dockerignore` để loại bỏ bin/, obj/ và các file rác.
+```
+
+#### 4.3. Phần sinh viên/nhóm đã sử dụng từ AI
+
+```text
+- Giữ nguyên 100% cấu hình Dockerfile và .dockerignore của AI sinh ra.
+```
+
+#### 4.4. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
+
+```text
+- Tự cấu hình Root Directory trên Render Dashboard trỏ vào thư mục backend/.
+```
+
+#### 4.5. Minh chứng
+
+| Loại minh chứng | Nội dung |
+|---|---|
+| Link commit | (will be updated) |
+| File liên quan | backend/Dockerfile, backend/.dockerignore |
+| Screenshot | N/A |
+| Kết quả chạy/test | Build Docker thành công |
+| Link video demo | N/A |
+| Ghi chú khác | N/A |
+
+#### 4.6. Nhận xét cá nhân/nhóm
+
+```text
+- AI nắm bắt luồng cấu trúc C# và viết Dockerfile rất chuẩn xác.
+```
+
+---
+
+### Lần sử dụng AI số 23
+
+| Nội dung | Thông tin |
+|---|---|
+| Ngày sử dụng | 28/07/2026 |
+| Công cụ AI | Antigravity |
+| Mục đích sử dụng | Cấu hình Github Actions deploy Frontend |
+| Phần việc liên quan | DevOps / Frontend |
+| Mức độ sử dụng | Sinh chính nội dung |
+
+#### 4.1. Prompt đã sử dụng
+
+```text
+còn phần ở phần gitpage làm sao nữa
+```
+
+#### 4.2. Kết quả AI gợi ý
+
+```text
+- Thêm bước giải mã Secret ENV_FILE_BASE64 ra thành file .env trong deploy-pages.yml.
+```
+
+#### 4.3. Phần sinh viên/nhóm đã sử dụng từ AI
+
+```text
+- Chấp nhận 100% code AI sửa đổi file YAML.
+```
+
+#### 4.4. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
+
+```text
+- Tự chuẩn bị mã Base64 của link Render và cấu hình Secret trên Github Settings.
+```
+
+#### 4.5. Minh chứng
+
+| Loại minh chứng | Nội dung |
+|---|---|
+| Link commit | (will be updated) |
+| File liên quan | .github/workflows/deploy-pages.yml |
+| Screenshot | N/A |
+| Kết quả chạy/test | Build Frontend thành công lấy được link Render |
+| Link video demo | N/A |
+| Ghi chú khác | N/A |
+
+#### 4.6. Nhận xét cá nhân/nhóm
+
+```text
+- AI hiểu rất rõ luồng của Github Actions và cách bảo mật biến môi trường.
+```
+
+---
+
+### Lần sử dụng AI số 23
+
+| Nội dung | Thông tin |
+|---|---|
+| Ngày sử dụng | 28/07/2026 |
+| Công cụ AI | Antigravity |
+| Mục đích sử dụng | Cấu hình Github Actions deploy Frontend |
+| Phần việc liên quan | DevOps / Frontend |
+| Mức độ sử dụng | Sinh chính nội dung |
+
+#### 4.1. Prompt đã sử dụng
+
+```text
+còn phần ở phần gitpage làm sao nữa
+```
+
+#### 4.2. Kết quả AI gợi ý
+
+```text
+- Thêm bước giải mã Secret ENV_FILE_BASE64 ra thành file .env trong deploy-pages.yml.
+```
+
+#### 4.3. Phần sinh viên/nhóm đã sử dụng từ AI
+
+```text
+- Chấp nhận 100% code AI sửa đổi file YAML.
+```
+
+#### 4.4. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
+
+```text
+- Tự chuẩn bị mã Base64 của link Render và cấu hình Secret trên Github Settings.
+```
+
+#### 4.5. Minh chứng
+
+| Loại minh chứng | Nội dung |
+|---|---|
+| Link commit | (will be updated) |
+| File liên quan | .github/workflows/deploy-pages.yml |
+| Screenshot | N/A |
+| Kết quả chạy/test | Build Frontend thành công lấy được link Render |
+| Link video demo | N/A |
+| Ghi chú khác | N/A |
+
+#### 4.6. Nhận xét cá nhân/nhóm
+
+```text
+- AI hiểu rất rõ luồng của Github Actions và cách bảo mật biến môi trường.
+```
+
+---
+
+### Lần sử dụng AI số 24
+
+| Nội dung | Thông tin |
+|---|---|
+| Ngày sử dụng | 29/07/2026 |
+| Công cụ AI | Antigravity |
+| Mục đích sử dụng | Sửa lỗi TypeScript build frontend (`useWorkoutStore.ts`), tự động hóa nạp file `.env` đa cấp thư mục cho Backend và khắc phục cơ chế fallback đọc Gemini API Key |
+| Phần việc liên quan | Fullstack (Frontend & Backend) |
+| Mức độ sử dụng | Hỗ trợ nhiều |
+
+#### 4.1. Prompt đã sử dụng
+
+```text
+- "npm run build và chạyBE, FE local tôi test đi nào"
+- ".env bỏ key gemini vào ch"
+- "appsettings.Development.json appsettings.json gắn vào đây thì AI mới chạy đưuojc chứ"
+- ".env bạn điền cho tôi luôn, bị sao vậy"
+- "chạy lại cho tôi"
+```
+
+#### 4.2. Kết quả AI gợi ý
+
+```text
+AI phân tích nguyên nhân và thực hiện các bước khắc phục:
+1. Frontend: Fix lỗi TypeScript type mapping (exerciseId từ string | number sang number) trước khi gọi API completeWorkoutSession trong `useWorkoutStore.ts`.
+2. Backend: Sửa `DirectGeminiService.cs` kiểm tra `string.IsNullOrWhiteSpace` và loại bỏ chuỗi placeholder rác `"AIzaSy_YOUR_VALID_..."` trong `appsettings.Development.json` để tự động fallback đọc `GEMINI_API_KEY` từ file `.env`.
+3. Cấu hình .NET Core: Sửa `Program.cs` hỗ trợ nạp tất cả các file `.env` ở các cấp thư mục cha/con.
+4. Quản lý hệ thống: Khởi chạy và restart đồng bộ 2 tiến trình Backend (port 5007) và Frontend Vite (port 5173).
+```
+
+#### 4.3. Phần sinh viên/nhóm đã sử dụng từ AI
+
+```text
+- Sử dụng toàn bộ mã nguồn sửa đổi trong `useWorkoutStore.ts`, `DirectGeminiService.cs`, và `Program.cs`.
+- Áp dụng cấu hình và quy trình khởi chạy server do AI thiết lập.
+```
+
+#### 4.4. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
+
+```text
+- Sinh viên phản ánh vấn đề phải điền file `.env` thủ công, đặt câu hỏi về ưu tiên giữa appsettings và `.env` để AI làm rõ và khắc phục triệt để.
+```
+
+#### 4.5. Minh chứng
+
+| Loại minh chứng | Nội dung |
+|---|---|
+| Link commit | a95bf1c448bbbfcaaa7e0ea5efaa79e612eb3ec4 |
+| File liên quan | `useWorkoutStore.ts`, `DirectGeminiService.cs`, `Program.cs`, `appsettings.Development.json`, `.env` |
+| Screenshot | Build FE pass 100%, Backend & Frontend khởi chạy thành công |
+| Kết quả chạy/test | `npm run build` thành công, Backend dotnet run nạp đúng GEMINI_API_KEY từ .env |
+| Link video demo | N/A |
+| Ghi chú khác | N/A |
+
+#### 4.6. Nhận xét cá nhân/nhóm
+
+```text
+Hiểu rõ thứ tự ưu tiên cấu hình (Configuration Provider Order) trong ASP.NET Core giữa appsettings.json, appsettings.Development.json và Environment Variables. Nắm được cách xử lý nạp file .env linh hoạt khi dự án có nhiều thư mục con.
+```
+
+---
+
+### Lần sử dụng AI số 25
+
+| Nội dung | Thông tin |
+|---|---|
+| Ngày sử dụng | 29/07/2026 |
+| Công cụ AI | Antigravity |
+| Mục đích sử dụng | Sửa lỗi không lưu lịch sử tập luyện vào trang Progress (xử lý khởi tạo WorkoutPlan, khởi tạo WorkoutSession tự động và cơ chế fallback hoàn thành buổi tập) |
+| Phần việc liên quan | Frontend / Fullstack |
+| Mức độ sử dụng | Hỗ trợ nhiều |
+
+#### 4.1. Prompt đã sử dụng
+
+```text
+- "hiệnt tại nó không lưu lịch sử vào đây, nguyên nhân là tại sao, lúc trước đã ônr định nhưng tại sao lại bị như vậy"
+- "ok /commit"
+```
+
+#### 4.2. Kết quả AI gợi ý
+
+```text
+AI phân tích nguyên nhân và thực hiện các bước khắc phục:
+1. Tạo Plan tự động: Cập nhật `Workouts.tsx` để tự động gọi API `createWorkoutPlan` lưu Plan vào Database khi vừa khởi tạo xong danh sách bài tập.
+2. Khởi tạo Session linh hoạt: Cập nhật `WorkoutResults.tsx` cho phép gọi `startWorkoutSession` tự động ngay khi bắt đầu tập (kể cả khi chưa có activePlanId).
+3. Cơ chế Fallback Complete: Bổ sung logic kiểm tra và tự động khởi tạo Session tức thời trong `handleCompleteWorkout` nếu `activeSessionId` bị null trước khi lưu kết quả vào DB.
+4. Chuẩn hóa ID: Ép kiểu `Number(ex.id) > 0` loại bỏ bài tập Warmup (id 0) để tránh lỗi vi phạm khóa ngoại MySQL.
+```
+
+#### 4.3. Phần sinh viên/nhóm đã sử dụng từ AI
+
+```text
+- Sử dụng toàn bộ mã nguồn sửa đổi trong `Workouts.tsx`, `WorkoutResults.tsx`, và `useWorkoutStore.ts`.
+```
+
+#### 4.4. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
+
+```text
+- Sinh viên phát hiện vấn đề không lưu lịch sử trên giao diện Progress và gửi ảnh chụp màn hình kiểm thử thực tế để AI chẩn đoán.
+```
+
+#### 4.5. Minh chứng
+
+| Loại minh chứng | Nội dung |
+|---|---|
+| Link commit | f8e943d04fc4efd8c1c4f4a3bfec682c0ef05fa5 |
+| File liên quan | `Workouts.tsx`, `WorkoutResults.tsx`, `useWorkoutStore.ts` |
+| Screenshot | Giao diện Progress hiển thị lịch sử tập luyện |
+| Kết quả chạy/test | Build FE pass 100%, WorkoutSession & WorkoutSessionDetails ghi nhận chuẩn xuống MySQL Workbench |
+| Link video demo | N/A |
+| Ghi chú khác | N/A |
+
+#### 4.6. Nhận xét cá nhân/nhóm
+
+```text
+Rút kinh nghiệm về việc kiểm tra tính liên tục của luồng dữ liệu giữa các bước Setup -> Results -> History. Luôn cần có cơ chế Fallback (tự động tạo Session nếu bị khuyết) để tránh việc dữ liệu người dùng bị rơi rụng im lặng (Silent Drop).
+```
+
+

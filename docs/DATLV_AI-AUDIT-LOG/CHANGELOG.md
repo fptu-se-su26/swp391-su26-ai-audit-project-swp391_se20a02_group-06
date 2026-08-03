@@ -254,6 +254,8 @@ DD/MM/YYYY
 | 16 | Đồng bộ Database SQL, Fix schema emailotp, cấu hình appsettings.json Production | Đạt | appsettings.json, AuthController.cs | Commit 2047286 |
 | 17 | Cập nhật pnpm-lock.yaml sửa lỗi ERR_PNPM_OUTDATED_LOCKFILE trên CI/CD GitHub Actions | Đạt | `pnpm-lock.yaml` | Commit 9f17f8e |
 | 18 | Đồng bộ Logic Dashboard Suggested Routine với Core Workout Engine & Cấu hình Global Decimal Rounding JSON Backend | Đạt | Dashboard.tsx, workoutExercises.ts, DoubleRoundingJsonConverter.cs | Commit 4fd1dce |
+| 19 | Sửa lỗi nạp file .env Backend, resolution Gemini API Key và type mapping useWorkoutStore | Đạt | DirectGeminiService.cs, Program.cs, useWorkoutStore.ts | Commit a95bf1c |
+| 20 | Fix lỗi không lưu Workout History (khởi tạo Plan/Session tự động & fallback complete) | Đạt | Workouts.tsx, WorkoutResults.tsx, useWorkoutStore.ts | Commit f8e943d |
 
 ## AI có hỗ trợ không?
 
@@ -466,3 +468,14 @@ Sinh viên/nhóm cam kết rằng nội dung changelog phản ánh đúng các t
 |  |  |
 
 | 10 | Tích hợp dữ liệu User Dashboard và Phân quyền PT CRUD | Đạt | Dashboard.tsx, DashboardService.cs | Commit 0b5a897 |
+| 11 | Sửa lỗi cấu hình ưu tiên đọc Gemini API key | Đạt | appsettings.json, appsettings.Development.json | Commit 6213363 |
+| 12 | Khắc phục lỗi build Frontend TypeScript (Unused variables) | Đạt | HeaderActions.tsx, Profile.tsx, ... | Commit 15cbfba |
+
+| 13 | Fix lỗi BUG-04 (Water Race Condition) và BUG-05 (AI Session Ownership) | Đạt | NutritionService.cs, AIChatService.cs | Commit 1d23144 |
+
+| 14 | Dọn dẹp code thừa ở MemberLayout (xoá ResponsiveTabs) | Đạt | MemberLayout.tsx | Commit 16ce2d8 |
+
+| 21 | Sửa lỗi crash sinh thực đơn Gemini và đồng nhất UI sang tiếng Anh | Đạt | DirectGeminiService.cs, AIChat.tsx | Commit 0c4a7c5 |
+| 22 | Thêm cấu hình Dockerfile cho Backend để deploy Render | Đạt | Dockerfile, .dockerignore | N/A |
+| 23 | Cập nhật luồng Github Actions để nạp file .env từ Secret Base64 | Đạt | .github/workflows/deploy-pages.yml | N/A |
+| 23 | Cập nhật luồng Github Actions để nạp file .env từ Secret Base64 | Đạt | .github/workflows/deploy-pages.yml | N/A |

@@ -30,57 +30,27 @@ apiClient.interceptors.request.use(
   }
 )
 
-// Response interceptor to handle 401 and refresh token
+// Response interceptor to handle 401 Unauthorized globally
 apiClient.interceptors.response.use(
   (response) => response,
-  async (error) => {
-    const originalRequest = error.config;
+  (error) => {
+    if (error.response?.status === 401) {
+      const requestUrl = error.config?.url || ''
+      const isAuthApi = requestUrl.includes('/auth/login') || requestUrl.includes('/auth/register') || requestUrl.includes('/auth/refresh')
+      const currentPath = window.location.pathname
+      const isAuthPage = currentPath === '/login' || currentPath === '/register' || currentPath === '/forgot-password'
 
-    // Prevent infinite loops if refresh-token API itself returns 401
-    if (originalRequest.url === '/auth/refresh-token') {
-      return Promise.reject(error);
-    }
-
-    if (error.response?.status === 401 && !originalRequest._retry) {
-      originalRequest._retry = true;
-
-      try {
-        const raw = localStorage.getItem('auth-storage');
-        if (raw) {
-          const parsed = JSON.parse(raw);
-          const refreshToken = parsed?.state?.refreshToken;
-          const accessToken = parsed?.state?.accessToken;
-
-          if (refreshToken && accessToken) {
-            // Call refresh-token using a new axios instance to avoid interceptors loop
-            const { data } = await axios.post(`${apiClient.defaults.baseURL}/auth/refresh-token`, {
-              accessToken,
-              refreshToken,
-            });
-
-            // Parse and update the local storage directly to avoid circular dependency with useAuthStore
-            parsed.state.accessToken = data.token;
-            parsed.state.refreshToken = data.refreshToken;
-            if (data.roleId) {
-              parsed.state.roleId = data.roleId;
-            }
-            localStorage.setItem('auth-storage', JSON.stringify(parsed));
-            
-            // Reload window if we want Zustand to catch it, or just use custom event
-            // But updating header for the current request is enough to retry
-            originalRequest.headers.Authorization = `Bearer ${data.token}`;
-            return apiClient(originalRequest);
-          }
+      if (!isAuthApi && !isAuthPage) {
+        try {
+          localStorage.removeItem('auth-storage')
+        } catch {
+          // Ignore storage errors
         }
-      } catch (refreshError) {
-        // Refresh failed, force logout
-        localStorage.removeItem('auth-storage');
-        window.location.href = '/login';
+        window.location.href = '/login'
       }
     }
-    
-    return Promise.reject(error);
+    return Promise.reject(error)
   }
-);
+)
 
 export default apiClient

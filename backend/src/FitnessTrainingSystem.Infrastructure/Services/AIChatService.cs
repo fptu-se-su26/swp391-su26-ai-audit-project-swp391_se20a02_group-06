@@ -24,13 +24,15 @@ public class AIChatService : IAIChatService
     {
         AIChatSession session;
 
-        // 1. Lấy hoặc tạo mới Session
         if (request.SessionId.HasValue)
         {
             session = await _context.AIChatSessions
                 .Include(x => x.Messages)
                 .FirstOrDefaultAsync(x => x.Id == request.SessionId.Value)
                 ?? throw new Exception("Chat session not found.");
+                
+            if (session.UserId != userId) 
+                throw new UnauthorizedAccessException("Not your session.");
         }
         else
         {
@@ -165,8 +167,12 @@ Weight: {metric?.Weight ?? 65}
     }
 
 
-    public async Task<List<AIChatResponse>> GetMessagesAsync(int sessionId)
+    public async Task<List<AIChatResponse>> GetMessagesAsync(int userId, int sessionId)
     {
+        var session = await _context.AIChatSessions.FirstOrDefaultAsync(x => x.Id == sessionId);
+        if (session == null || session.UserId != userId)
+            throw new UnauthorizedAccessException("Not your session.");
+
         var messages = await _context.AIChatMessages
             .Where(x => x.SessionId == sessionId)
             .OrderBy(x => x.CreatedAt)
