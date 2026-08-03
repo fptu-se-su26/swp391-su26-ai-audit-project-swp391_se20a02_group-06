@@ -58,14 +58,12 @@ public static class DependencyInjection
 
         services.AddScoped<ICloudinaryService, CloudinaryService>();
 
-        services.AddHttpClient<IGeminiAiService, DirectGeminiService>(client =>
+        services.AddHttpClient<IGroqAiService, GroqAiService>(client =>
         {
-            var baseUrl = configuration["AiService:BaseUrl"] ?? "http://localhost:8000";
-            client.BaseAddress = new Uri(baseUrl);
-            client.Timeout = TimeSpan.FromMinutes(5);
+            client.BaseAddress = new Uri("https://api.groq.com/");
+            client.Timeout = TimeSpan.FromMinutes(3);
         });
-        services.AddScoped<IAIChatService, AIChatService>();
-
+services.AddScoped<IAIChatService, AIChatService>();
         services.AddSingleton(new PayOSClient(new PayOSOptions
         {
             ClientId = configuration["PayOS:ClientId"] ?? "",

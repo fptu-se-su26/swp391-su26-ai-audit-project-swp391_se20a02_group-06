@@ -8,16 +8,16 @@ public class DietPlanResponse
     public string DietTitle { get; set; } = "";
 
     [JsonPropertyName("daily_calories")]
-    public int DailyCalories { get; set; }
+    public double DailyCalories { get; set; }
 
     [JsonPropertyName("protein_target_g")]
-    public int ProteinTargetG { get; set; }
+    public double ProteinTargetG { get; set; }
 
     [JsonPropertyName("carbs_target_g")]
-    public int CarbsTargetG { get; set; }
+    public double CarbsTargetG { get; set; }
 
     [JsonPropertyName("fat_target_g")]
-    public int FatTargetG { get; set; }
+    public double FatTargetG { get; set; }
 
     [JsonPropertyName("meals")]
     public List<MealDto> Meals { get; set; } = new();
@@ -29,7 +29,7 @@ public class MealDto
     public string Name { get; set; } = "";
 
     [JsonPropertyName("calories")]
-    public int Calories { get; set; }
+    public double Calories { get; set; }
 
     [JsonPropertyName("foods")]
     public List<FoodItemDto> Foods { get; set; } = new();
@@ -47,7 +47,7 @@ public class FoodItemDto
     public string Amount { get; set; } = "";
 
     [JsonPropertyName("calories")]
-    public int Calories { get; set; }
+    public double Calories { get; set; }
 
     [JsonPropertyName("protein")]
     public double Protein { get; set; }
