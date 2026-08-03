@@ -86,7 +86,10 @@ builder.Services.AddSingleton<Microsoft.AspNetCore.SignalR.IUserIdProvider, Fitn
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", policy =>
-        policy.WithOrigins("http://localhost:5173", "https://fptu-se-su26.github.io")
+        policy.SetIsOriginAllowed(origin => 
+                  origin.StartsWith("http://localhost:") || 
+                  origin == "https://fptu-se-su26.github.io" ||
+                  origin.EndsWith(".vercel.app"))
               .AllowAnyHeader()
               .AllowAnyMethod()
               .AllowCredentials());
