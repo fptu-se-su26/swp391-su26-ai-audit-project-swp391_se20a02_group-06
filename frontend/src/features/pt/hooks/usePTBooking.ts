@@ -200,6 +200,7 @@ export const usePTBooking = (ptId: number | null): PTBookingContext => {
 
             const res = await apiClient.post('/schedules/checkout', {
                 ptId,
+                scheduleId: parseInt(pendingSession.id, 10),
                 startTime: start.toISOString(),
                 endTime: end.toISOString()
             })
@@ -238,6 +239,7 @@ export const usePTBooking = (ptId: number | null): PTBookingContext => {
             // Step 1: Create checkout (creates Pending schedule)
             const res = await apiClient.post('/schedules/checkout', {
                 ptId,
+                scheduleId: parseInt(pendingSession.id, 10),
                 startTime: start.toISOString(),
                 endTime: end.toISOString()
             })

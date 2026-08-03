@@ -65,8 +65,8 @@ public class PTProfileService : IPTProfileService
             
         if (dto.SessionRate.HasValue)
         {
-            if (dto.SessionRate.Value < 150000m)
-                throw new Exception("Session rate cannot be less than 150,000 VND.");
+            if (dto.SessionRate.Value < 2000m)
+                throw new Exception("Session rate cannot be less than 2,000 VND.");
             user.PtProfile.SessionRate = dto.SessionRate.Value;
         }
 

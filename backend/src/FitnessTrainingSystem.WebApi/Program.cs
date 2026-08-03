@@ -206,8 +206,23 @@ try
 {
     using var scope = app.Services.CreateScope();
     var dbContext = scope.ServiceProvider.GetRequiredService<FitnessTrainingSystem.Infrastructure.Persistence.ApplicationDbContext>();
-    dbContext.Database.ExecuteSqlRaw("ALTER TABLE users ADD COLUMN refresh_token longtext;");
-    dbContext.Database.ExecuteSqlRaw("ALTER TABLE users ADD COLUMN refresh_token_expiry_time datetime(6);");
+    
+    void SafeExecuteSql(string sql)
+    {
+        try { dbContext.Database.ExecuteSqlRaw(sql); } catch { }
+    }
+
+    SafeExecuteSql("ALTER TABLE users ADD COLUMN refresh_token longtext;");
+    SafeExecuteSql("ALTER TABLE users ADD COLUMN refresh_token_expiry_time datetime(6);");
+    
+    SafeExecuteSql("ALTER TABLE exercises ADD COLUMN is_draft tinyint(1) NOT NULL DEFAULT 0;");
+    
+    SafeExecuteSql("ALTER TABLE schedules ADD COLUMN order_code bigint NULL;");
+    SafeExecuteSql("ALTER TABLE schedules ADD COLUMN price decimal(18,2) NULL;");
+    SafeExecuteSql("ALTER TABLE schedules ADD COLUMN description longtext NULL;");
+    
+    SafeExecuteSql("ALTER TABLE pt_profiles ADD COLUMN coaching_philosophy varchar(1000) NULL;");
+    SafeExecuteSql("ALTER TABLE pt_profiles ADD COLUMN session_rate decimal(18,2) NULL;");
 }
 catch { }
 
