@@ -8,10 +8,12 @@ export type SessionType = 'Video Call' | 'In-Person'
 
 export interface Session {
     id: string
-    date: string
+    date?: string
     time: string
     status: SessionStatus
     type?: SessionType
+    label?: string
+    period?: SessionPeriod
 }
 
 export interface WeekDay {
