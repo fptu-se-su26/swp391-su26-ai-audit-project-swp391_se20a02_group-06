@@ -321,9 +321,9 @@ Conversation:
             SessionId = sessionId,
             DietTitle = response.DietTitle ?? "AI Diet Plan",
             TotalCalories = response.DailyCalories,
-            Protein = response.ProteinTargetG,
-            Carbs = response.CarbsTargetG,
-            Fat = response.FatTargetG,
+            Protein = (int)response.ProteinTargetG,
+            Carbs = (int)response.CarbsTargetG,
+            Fat = (int)response.FatTargetG,
             DietJson = System.Text.Json.JsonSerializer.Serialize(response),
             CreatedAt = DateTime.UtcNow
         };
@@ -345,20 +345,26 @@ Conversation:
 
         var mealScheduleItems = new List<MealScheduleItem>();
         
-        foreach (var meal in response.Meals)
+        if (response.Meals != null)
         {
-            foreach (var food in meal.Foods)
+            foreach (var meal in response.Meals)
             {
-                var item = new MealScheduleItem
+                if (meal.Foods != null)
                 {
-                    MealScheduleId = mealSchedule.Id,
-                    FoodId = food.FoodId,
-                    // Kết hợp Tên Bữa Ăn và Khối lượng để UI dễ hiển thị sau này (ví dụ: "Breakfast: 100g")
-                    Amount = $"{meal.Name} - {food.Amount}",
-                    IsEaten = false,
-                    CreatedAt = DateTime.UtcNow
-                };
-                mealScheduleItems.Add(item);
+                    foreach (var food in meal.Foods)
+                    {
+                        var item = new MealScheduleItem
+                        {
+                            MealScheduleId = mealSchedule.Id,
+                            FoodId = int.Parse(food.FoodId ?? "0"),
+                            // Kết hợp Tên Bữa Ăn và Khối lượng để UI dễ hiển thị sau này (ví dụ: "Breakfast: 100g")
+                            Amount = $"{meal.Name} - {food.Amount}",
+                            IsEaten = false,
+                            CreatedAt = DateTime.UtcNow
+                        };
+                        mealScheduleItems.Add(item);
+                    }
+                }
             }
         }
 
@@ -374,7 +380,7 @@ Conversation:
             .ToListAsync();
 
         return histories.Select(x => {
-            DietPlanResponse dietPlan = null;
+            DietPlanResponse? dietPlan = null;
             try
             {
                 var options = new System.Text.Json.JsonSerializerOptions

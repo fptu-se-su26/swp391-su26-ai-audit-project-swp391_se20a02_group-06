@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react'
+import React, { useState } from 'react'
 import {
     Box,
     Flex,
@@ -28,13 +28,6 @@ import {
     useToast,
     IconButton,
     Switch,
-    AlertDialog,
-    AlertDialogBody,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogContent,
-    AlertDialogOverlay,
-    AlertDialogCloseButton,
 } from '@chakra-ui/react'
 import { FiTrash2, FiEdit2 } from 'react-icons/fi'
 import useSWR from 'swr'
@@ -64,9 +57,6 @@ const AdminPackages: React.FC = () => {
     const { isOpen, onOpen, onClose } = useDisclosure()
     const toast = useToast()
     const { data: packages, error, isLoading, mutate } = useSWR<ProductPackageDto[]>('/product-packages', fetcher)
-    const { isOpen: isDeleteOpen, onOpen: onDeleteOpen, onClose: onDeleteClose } = useDisclosure()
-    const [deleteId, setDeleteId] = useState<number | null>(null)
-    const cancelRef = useRef<HTMLButtonElement>(null)
     
     const [isSubmitting, setIsSubmitting] = useState(false)
     const [editingId, setEditingId] = useState<number | null>(null)
@@ -157,14 +147,10 @@ const AdminPackages: React.FC = () => {
     }
 
     const handleDelete = async (id: number) => {
-        setDeleteId(id)
-        onDeleteOpen()
-    }
+        if (!window.confirm('Are you sure you want to delete this package?')) return
 
-    const confirmDelete = async () => {
-        if (deleteId === null) return
         try {
-            await apiClient.delete(`/product-packages/${deleteId}`)
+            await apiClient.delete(`/product-packages/${id}`)
             toast({ title: 'Package deleted', status: 'info', duration: 3000, isClosable: true })
             mutate()
         } catch (error: any) {
@@ -173,9 +159,6 @@ const AdminPackages: React.FC = () => {
                 description: error.response?.data?.message || 'Something went wrong.',
                 status: 'error', duration: 3000, isClosable: true,
             })
-        } finally {
-            onDeleteClose()
-            setDeleteId(null)
         }
     }
 
@@ -423,25 +406,6 @@ const AdminPackages: React.FC = () => {
                     </ModalFooter>
                 </ModalContent>
             </Modal>
-
-            <AlertDialog isOpen={isDeleteOpen} leastDestructiveRef={cancelRef} onClose={onDeleteClose} isCentered>
-                <AlertDialogOverlay />
-                <AlertDialogContent bg="#141720" color="white" borderColor="#1e2028" borderWidth="1px">
-                    <AlertDialogHeader fontSize="18px" fontWeight="700">Delete Package</AlertDialogHeader>
-                    <AlertDialogCloseButton />
-                    <AlertDialogBody fontSize="14px" color="#8A8A93">
-                        Are you sure you want to delete this package? This action cannot be undone.
-                    </AlertDialogBody>
-                    <AlertDialogFooter>
-                        <Button ref={cancelRef} onClick={onDeleteClose} variant="ghost" color="#8A8A93" h="44px">
-                            Cancel
-                        </Button>
-                        <Button bg="#E03030" color="white" _hover={{ bg: '#C92828' }} onClick={confirmDelete} ml={3} h="44px" px={6}>
-                            Delete
-                        </Button>
-                    </AlertDialogFooter>
-                </AlertDialogContent>
-            </AlertDialog>
         </AdminLayout>
     )
 }

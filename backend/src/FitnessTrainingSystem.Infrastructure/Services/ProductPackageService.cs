@@ -18,47 +18,18 @@ public class ProductPackageService : IProductPackageService
         _mapper = mapper;
     }
 
-    public async Task<IEnumerable<ProductPackageDto>> GetAllAsync(int? currentUserId = null)
+    public async Task<IEnumerable<ProductPackageDto>> GetAllAsync()
     {
         var packages = await _context.ProductPackages.ToListAsync();
-
-        var activePackageIds = new HashSet<int>();
-        if (currentUserId.HasValue)
-        {
-            var now = DateTime.UtcNow;
-            activePackageIds = (await _context.MembershipSubscriptions
-                .Where(s => s.UserId == currentUserId.Value && s.Status == "ACTIVE" && s.EndDate >= now)
-                .Select(s => s.PackageId)
-                .ToListAsync())
-                .ToHashSet();
-        }
-
-        var dtos = _mapper.Map<List<ProductPackageDto>>(packages);
-        foreach (var dto in dtos)
-        {
-            if (activePackageIds.Contains(dto.Id))
-                dto.IsPurchased = true;
-        }
-
-        return dtos;
+        return _mapper.Map<IEnumerable<ProductPackageDto>>(packages);
     }
 
-    public async Task<ProductPackageDto?> GetByIdAsync(int id, int? currentUserId = null)
+    public async Task<ProductPackageDto?> GetByIdAsync(int id)
     {
         var package = await _context.ProductPackages.FindAsync(id);
         if (package == null) return null;
 
-        var dto = _mapper.Map<ProductPackageDto>(package);
-
-        if (currentUserId.HasValue)
-        {
-            var now = DateTime.UtcNow;
-            var isPurchased = await _context.MembershipSubscriptions
-                .AnyAsync(s => s.UserId == currentUserId.Value && s.PackageId == id && s.Status == "ACTIVE" && s.EndDate >= now);
-            dto.IsPurchased = isPurchased;
-        }
-
-        return dto;
+        return _mapper.Map<ProductPackageDto>(package);
     }
 
     public async Task<ProductPackageDto> CreateAsync(CreateProductPackageDto dto)
@@ -90,5 +61,20 @@ public class ProductPackageService : IProductPackageService
         await _context.SaveChangesAsync();
         
         return true;
+    }
+        
+    public async Task<bool> HasHighestTierPackageAsync(int userId)
+    {
+        var maxTier = await _context.ProductPackages.MaxAsync(p => (int?)p.Tier) ?? 0;
+        
+        var userActiveSub = await _context.MembershipSubscriptions
+            .Include(s => s.Package)
+            .Where(s => s.UserId == userId && s.Status == "ACTIVE" && s.EndDate > DateTime.UtcNow)
+            .OrderByDescending(s => s.StartDate)
+            .FirstOrDefaultAsync();
+
+        if (userActiveSub?.Package == null) return false;
+
+        return userActiveSub.Package.Tier >= maxTier;
     }
 }

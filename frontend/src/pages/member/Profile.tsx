@@ -64,8 +64,8 @@ const Profile: React.FC = () => {
     }, [isMetricLoading, metric])
 
     const handleSaveMetrics = async (data: { age: number; gender: string; height: number; weight: number }) => {
-        await addBodyMetric(data)
-        mutateMetric()
+        const newMetric = await addBodyMetric(data)
+        mutateMetric(newMetric)
         toast({ title: 'Body Metrics saved successfully', status: 'success', duration: 3000 })
     }
 

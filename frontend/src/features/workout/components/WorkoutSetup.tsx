@@ -7,7 +7,18 @@ import {
     Text,
     Stack,
     HStack,
+    useToast,
+    Icon,
+    Modal,
+    ModalOverlay,
+    ModalContent,
+    ModalHeader,
+    ModalBody,
+    ModalFooter,
+    Button
 } from '@chakra-ui/react'
+import { FiLock } from 'react-icons/fi'
+import { useNavigate } from 'react-router-dom'
 import AppButton from '../../../components/shared/Button/AppButton'
 import type { WorkoutFormData } from '../types/workout'
 import {
@@ -20,6 +31,8 @@ import {
 } from './WorkoutSetupControls'
 import { muscleShapes } from '../data/muscleShapes'
 import { getMuscleGroups } from '../../../api/muscleGroups'
+import { getProfile } from '../../../api/user'
+import { getProductPackages } from '../../../api/productPackages'
 
 interface WorkoutSetupProps {
     onComplete: (data: WorkoutFormData) => void
@@ -29,6 +42,10 @@ interface WorkoutSetupProps {
 const WorkoutSetup: React.FC<WorkoutSetupProps> = ({ onComplete }) => {
     const [step, setStep] = useState(0)
     const TOTAL = 3
+    const toast = useToast()
+    const [hasWeeklyAccess, setHasWeeklyAccess] = useState(false)
+    const [showInjuryWarning, setShowInjuryWarning] = useState(false)
+    const navigate = useNavigate()
 
     const [form, setForm] = useState<WorkoutFormData>({
         planType: 'daily',
@@ -42,18 +59,17 @@ const WorkoutSetup: React.FC<WorkoutSetupProps> = ({ onComplete }) => {
         frequency: 3,
         equipment: [],
         muscles: [],
+        injuries: [],
         targetCalories: 300,
     })
 
     const [muscleZones, setMuscleZones] = useState<{ id: string; label: string; d: string }[]>(muscleShapes)
 
     useEffect(() => {
-        const fetchMuscles = async () => {
+        const fetchMusclesAndAccess = async () => {
             try {
                 const apiMuscles = await getMuscleGroups()
-                // Map API data to SVG shapes
                 const mappedZones = apiMuscles.map(apiM => {
-                    // Try to find a shape matching the name
                     const shape = muscleShapes.find(s => s.label.toLowerCase() === apiM.name.toLowerCase() || s.id === apiM.name.toLowerCase())
                     return {
                         id: apiM.name.toLowerCase(),
@@ -62,11 +78,17 @@ const WorkoutSetup: React.FC<WorkoutSetupProps> = ({ onComplete }) => {
                     }
                 })
                 setMuscleZones(mappedZones)
+
+                // Check user tier for Weekly plan access
+                const profile = await getProfile()
+                if (profile && profile.tier && profile.tier !== 'Free' && profile.tier !== 'None') {
+                    setHasWeeklyAccess(true)
+                }
             } catch (err) {
-                console.error("Failed to fetch muscle groups:", err)
+                console.error("Failed to fetch data:", err)
             }
         }
-        fetchMuscles()
+        fetchMusclesAndAccess()
     }, [])
 
     const set = (key: keyof WorkoutFormData, value: WorkoutFormData[keyof WorkoutFormData]) =>
@@ -75,8 +97,28 @@ const WorkoutSetup: React.FC<WorkoutSetupProps> = ({ onComplete }) => {
     const toggleMuscle = (val: string) =>
         setForm((prev) => ({
             ...prev,
-            muscles: prev.muscles.includes(val) ? [] : [val],
+            muscles: prev.muscles.includes(val)
+                ? prev.muscles.filter(m => m !== val)
+                : [...prev.muscles, val],
         }))
+
+    const toggleInjury = (val: string) =>
+        setForm((prev) => {
+            const exists = prev.injuries.find((i) => i.id === val)
+            return {
+                ...prev,
+                injuries: exists
+                    ? prev.injuries.filter((i) => i.id !== val)
+                    : [...prev.injuries, { id: val, severity: 1 }],
+            }
+        })
+
+    const updateInjurySeverity = (val: string, severity: number) => {
+        setForm((prev) => ({
+            ...prev,
+            injuries: prev.injuries.map(i => i.id === val ? { ...i, severity } : i)
+        }))
+    }
 
     const canNext = () => {
         if (step === 0) return !!form.planType
@@ -86,8 +128,15 @@ const WorkoutSetup: React.FC<WorkoutSetupProps> = ({ onComplete }) => {
     }
 
     const next = () => {
-        if (step < TOTAL - 1) setStep((s) => s + 1)
-        else onComplete(form)
+        if (step < TOTAL - 1) {
+            setStep((s) => s + 1)
+        } else {
+            if (form.injuries.length >= 2) {
+                setShowInjuryWarning(true)
+            } else {
+                onComplete(form)
+            }
+        }
     }
     const back = () => setStep((s) => s - 1)
 
@@ -251,6 +300,43 @@ const WorkoutSetup: React.FC<WorkoutSetupProps> = ({ onComplete }) => {
                                         </Flex>
                                     </Box>
                                 )}
+
+                                {/* Selected injuries chips */}
+                                {form.injuries.length > 0 && (
+                                    <Box mt="4">
+                                        <Text fontSize="9px" fontWeight="700" color="#E03030" textTransform="uppercase" letterSpacing="wider" mb="2">
+                                            Injuries / Pain
+                                        </Text>
+                                        <Flex flexWrap="wrap" gap="1">
+                                            {form.injuries.map((m) => {
+                                                const zone = muscleZones.find((z) => z.id === m.id)
+                                                return (
+                                                    <HStack
+                                                        key={m.id}
+                                                        spacing="1"
+                                                        px="2"
+                                                        py="1"
+                                                        bg="rgba(224,48,48,0.1)"
+                                                        borderRadius="6px"
+                                                        border="1px solid"
+                                                        borderColor="#E03030"
+                                                    >
+                                                        <Text fontSize="10px" color="#E03030">{zone?.label ?? m.id} (Lvl {m.severity})</Text>
+                                                        <Box
+                                                            fontSize="10px"
+                                                            color="#E03030"
+                                                            cursor="pointer"
+                                                            _hover={{ color: 'white' }}
+                                                            onClick={() => toggleInjury(m.id)}
+                                                        >
+                                                            ×
+                                                        </Box>
+                                                    </HStack>
+                                                )
+                                            })}
+                                        </Flex>
+                                    </Box>
+                                )}
                             </Box>
 
                             {/* Right: body diagram */}
@@ -292,6 +378,71 @@ const WorkoutSetup: React.FC<WorkoutSetupProps> = ({ onComplete }) => {
                                         }}
                                     />
                                 </Flex>
+
+                                <Flex
+                                    justify="center"
+                                    mt="5"
+                                    align="center"
+                                    gap="2"
+                                    px="4"
+                                    py="2"
+                                    bg="rgba(224,48,48,0.1)"
+                                    borderRadius="full"
+                                    w="fit-content"
+                                    mx="auto"
+                                >
+                                    <Text fontSize="12px" color="#E03030" fontWeight="600">Are you experiencing pain or injury in any muscle group?</Text>
+                                </Flex>
+
+                                <Flex flexWrap="wrap" gap="2" justify="center" mt="3">
+                                    {muscleZones.map((z) => {
+                                        const injury = form.injuries.find((i) => i.id === z.id)
+                                        const isInjured = !!injury
+                                        return (
+                                            <Box key={z.id}>
+                                                <Box
+                                                    px="3"
+                                                    py="1.5"
+                                                    borderRadius="full"
+                                                    border="1px solid"
+                                                    borderColor={isInjured ? '#E03030' : '#2e3040'}
+                                                    bg={isInjured ? 'rgba(224,48,48,0.2)' : 'transparent'}
+                                                    color={isInjured ? 'white' : '#8A8A93'}
+                                                    fontSize="12px"
+                                                    cursor="pointer"
+                                                    transition="all 0.2s"
+                                                    _hover={{ borderColor: '#E03030' }}
+                                                    onClick={() => toggleInjury(z.id)}
+                                                >
+                                                    {z.label}
+                                                </Box>
+                                                {isInjured && (
+                                                    <HStack mt="2" spacing="1" justify="center">
+                                                        {[1, 2, 3, 4, 5].map(lvl => (
+                                                            <Box
+                                                                key={lvl}
+                                                                w="18px" h="18px"
+                                                                borderRadius="full"
+                                                                bg={injury.severity >= lvl ? '#E03030' : '#2e3040'}
+                                                                cursor="pointer"
+                                                                onClick={() => updateInjurySeverity(z.id, lvl)}
+                                                                fontSize="10px"
+                                                                fontWeight="bold"
+                                                                display="flex"
+                                                                alignItems="center"
+                                                                justifyContent="center"
+                                                                color="white"
+                                                                title={`Severity: ${lvl}`}
+                                                            >
+                                                                {lvl}
+                                                            </Box>
+                                                        ))}
+                                                    </HStack>
+                                                )}
+                                            </Box>
+                                        )
+                                    })}
+                                </Flex>
                             </Box>
                         </Flex>
                     )}
@@ -321,18 +472,36 @@ const WorkoutSetup: React.FC<WorkoutSetupProps> = ({ onComplete }) => {
                                 </Box>
                                 <Box
                                     p="5"
-                                    bg="#141720"
+                                    bg={form.planType === 'weekly' ? 'rgba(224,48,48,0.1)' : '#141720'}
                                     border="1.5px solid"
-                                    borderColor="#2e3040"
+                                    borderColor={form.planType === 'weekly' ? '#E03030' : '#2e3040'}
                                     borderRadius="16px"
-                                    opacity={0.5}
-                                    cursor="not-allowed"
+                                    cursor="pointer"
+                                    transition="all 0.2s"
+                                    onClick={() => {
+                                        if (!hasWeeklyAccess) {
+                                            toast({
+                                                title: "Premium Feature",
+                                                description: "You need to upgrade to the highest tier package to unlock the Weekly Plan feature.",
+                                                status: "warning",
+                                                duration: 4000,
+                                                isClosable: true,
+                                                position: 'top'
+                                            })
+                                            return
+                                        }
+                                        set('planType', 'weekly')
+                                    }}
+                                    _hover={{ borderColor: form.planType === 'weekly' ? '#E03030' : (!hasWeeklyAccess ? '#2e3040' : '#3e4050') }}
                                 >
-                                    <Heading fontSize="18px" fontWeight="800" color="#E2E1EB" mb="2">
-                                        Weekly
-                                    </Heading>
+                                    <Flex justify="space-between" align="center" mb="2">
+                                        <Heading fontSize="18px" fontWeight="800" color={form.planType === 'weekly' ? 'white' : '#E2E1EB'}>
+                                            Weekly
+                                        </Heading>
+                                        {!hasWeeklyAccess && <Icon as={FiLock} color="#E03030" />}
+                                    </Flex>
                                     <Text fontSize="13px" color="#8A8A93">
-                                        Coming soon
+                                        Generate a personalized weekly plan aligned with your schedule.
                                     </Text>
                                 </Box>
                             </Grid>
@@ -376,6 +545,41 @@ const WorkoutSetup: React.FC<WorkoutSetupProps> = ({ onComplete }) => {
                     />
                 </Flex>
             </Box>
+
+            {/* Injury Warning Modal */}
+            <Modal isOpen={showInjuryWarning} onClose={() => setShowInjuryWarning(false)} isCentered>
+                <ModalOverlay />
+                <ModalContent bg="#111318" border="1px solid #1e2028" color="white" borderRadius="16px">
+                    <ModalHeader color="#E03030">Health Warning</ModalHeader>
+                    <ModalBody>
+                        <Text fontSize="15px" color="#E2E1EB">
+                            You should rest and take care your health before doing exercises!
+                        </Text>
+                    </ModalBody>
+                    <ModalFooter>
+                        <Button
+                            variant="ghost"
+                            color="#8A8A93"
+                            _hover={{ bg: '#1e2028', color: 'white' }}
+                            mr={3}
+                            onClick={() => navigate('/dashboard')}
+                        >
+                            Exit
+                        </Button>
+                        <Button
+                            bg="#E03030"
+                            color="white"
+                            _hover={{ bg: '#C02020' }}
+                            onClick={() => {
+                                setShowInjuryWarning(false)
+                                onComplete(form)
+                            }}
+                        >
+                            Continue
+                        </Button>
+                    </ModalFooter>
+                </ModalContent>
+            </Modal>
         </Box>
     )
 }

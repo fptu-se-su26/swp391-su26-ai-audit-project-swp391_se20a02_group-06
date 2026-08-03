@@ -1,4 +1,5 @@
 import axios from 'axios'
+import { useAuthStore } from '../store/useAuthStore'
 
 const apiClient = axios.create({
   baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5007/api',
@@ -7,10 +8,9 @@ const apiClient = axios.create({
   },
 })
 
-// Request interceptor to add the auth token header to requests
+// Request interceptor — attach auth token to every outgoing request
 apiClient.interceptors.request.use(
   (config) => {
-    // Zustand persist stores state under 'auth-storage' as JSON: { state: { accessToken, ... }, version: 0 }
     try {
       const raw = localStorage.getItem('auth-storage')
       if (raw) {
@@ -42,7 +42,8 @@ apiClient.interceptors.response.use(
 
       if (!isAuthApi && !isAuthPage) {
         try {
-          localStorage.removeItem('auth-storage')
+          const { logout } = useAuthStore.getState()
+          logout()
         } catch {
           // Ignore storage errors
         }

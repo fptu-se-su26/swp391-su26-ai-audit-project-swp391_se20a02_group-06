@@ -5,5 +5,4 @@ namespace FitnessTrainingSystem.Application.Interfaces;
 public interface IOrderService
 {
     Task<OrderDto> PurchasePackageAsync(int userId, PurchasePackageDto dto);
-    Task<IEnumerable<OrderListDto>> GetAllOrdersAsync();
 }

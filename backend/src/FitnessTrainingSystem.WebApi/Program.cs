@@ -4,8 +4,8 @@ using FitnessTrainingSystem.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using Scalar.AspNetCore;
 using FitnessTrainingSystem.Infrastructure.Hubs;
+
 // Load environment variables from .env files
 string[] envPaths = [
     Path.Combine(Directory.GetCurrentDirectory(), "..", "..", ".env"),
@@ -27,29 +27,17 @@ builder.Configuration.AddEnvironmentVariables();
 // Add services to the container.
 builder.Services.AddInfrastructureServices(builder.Configuration);
 builder.Services.AddAutoMapper(cfg => cfg.AddMaps(typeof(FitnessTrainingSystem.Application.Common.Mappings.ProductPackageProfile).Assembly));
+builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(FitnessTrainingSystem.Application.Features.AiRecommendations.Commands.GenerateWorkoutPlan.GenerateWorkoutPlanCommand).Assembly));
 
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
-
-builder.Services.AddControllers()
-    .AddJsonOptions(options =>
-    {
-        options.JsonSerializerOptions.PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase;
-        options.JsonSerializerOptions.Converters.Add(new FitnessTrainingSystem.WebApi.Converters.DoubleRoundingJsonConverter());
-        options.JsonSerializerOptions.Converters.Add(new FitnessTrainingSystem.WebApi.Converters.NullableDoubleRoundingJsonConverter());
-        options.JsonSerializerOptions.Converters.Add(new FitnessTrainingSystem.WebApi.Converters.DecimalRoundingJsonConverter());
-        options.JsonSerializerOptions.Converters.Add(new FitnessTrainingSystem.WebApi.Converters.NullableDecimalRoundingJsonConverter());
-    });
-
-builder.Services.AddMediatR(cfg => {
-    cfg.RegisterServicesFromAssemblies(AppDomain.CurrentDomain.GetAssemblies());
-});
+builder.Services.AddControllers();
+builder.Services.AddSignalR();
 
 var jwtSettings = builder.Configuration.GetSection("JwtSettings");
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
-        options.MapInboundClaims = false; // Giữ nguyên tên claim 'sub' từ JWT, không map sang URI dài
         options.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateIssuer = true,
@@ -77,11 +65,22 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             }
         };
 
+        options.Events = new JwtBearerEvents
+        {
+            OnMessageReceived = context =>
+            {
+                var accessToken = context.Request.Query["access_token"];
 
-    
+                // Read token from query string if it is a SignalR hub request
+                var path = context.HttpContext.Request.Path;
+                if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/r/notifications"))
+                {
+                    context.Token = accessToken;
+                }
+                return Task.CompletedTask;
+            }
+        };
     });
-builder.Services.AddSignalR();
-builder.Services.AddSingleton<Microsoft.AspNetCore.SignalR.IUserIdProvider, FitnessTrainingSystem.Infrastructure.Hubs.SubClaimUserIdProvider>();
 
 // CORS: fixed origins + optional extras from config (comma-separated Cors:AllowedOrigins)
 var fixedOrigins = new[] { "http://localhost:5173", "https://fptu-se-su26.github.io", "https://swp391-su26-ai-audit-project-swp391-sigma.vercel.app" };
@@ -123,47 +122,6 @@ if (app.Environment.IsDevelopment())
             INDEX `IX_EmailOTP_Purpose` (`purpose`),
             INDEX `IX_EmailOTP_ExpiredAt` (`expired_at`)
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
-        CREATE TABLE IF NOT EXISTS `ai_chat_sessions` (
-            `id` INT NOT NULL AUTO_INCREMENT,
-            `user_id` INT NOT NULL,
-            `title` VARCHAR(255) NOT NULL DEFAULT 'Nutrition AI Chat',
-            `status` VARCHAR(50) NOT NULL DEFAULT 'active',
-            `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-            `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-            PRIMARY KEY (`id`),
-            INDEX `IX_ai_chat_sessions_user_id` (`user_id`),
-            CONSTRAINT `FK_ai_chat_sessions_users_user_id` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
-        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
-        CREATE TABLE IF NOT EXISTS `ai_chat_messages` (
-            `id` INT NOT NULL AUTO_INCREMENT,
-            `session_id` INT NOT NULL,
-            `sender` VARCHAR(50) NOT NULL,
-            `message` LONGTEXT NOT NULL,
-            `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-            PRIMARY KEY (`id`),
-            INDEX `IX_ai_chat_messages_session_id` (`session_id`),
-            CONSTRAINT `FK_ai_chat_messages_sessions_session_id` FOREIGN KEY (`session_id`) REFERENCES `ai_chat_sessions` (`id`) ON DELETE CASCADE
-        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
-        CREATE TABLE IF NOT EXISTS `ai_diet_histories` (
-            `id` INT NOT NULL AUTO_INCREMENT,
-            `user_id` INT NOT NULL,
-            `session_id` INT NULL,
-            `diet_title` VARCHAR(255) NOT NULL,
-            `total_calories` INT NOT NULL,
-            `protein` INT NOT NULL,
-            `carbs` INT NOT NULL,
-            `fat` INT NOT NULL,
-            `raw_json` LONGTEXT NOT NULL,
-            `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-            PRIMARY KEY (`id`),
-            INDEX `IX_ai_diet_histories_user_id` (`user_id`),
-            INDEX `IX_ai_diet_histories_session_id` (`session_id`),
-            CONSTRAINT `FK_ai_diet_histories_users_user_id` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
-            CONSTRAINT `FK_ai_diet_histories_sessions_session_id` FOREIGN KEY (`session_id`) REFERENCES `ai_chat_sessions` (`id`) ON DELETE SET NULL
-        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
     ");
     }
     
@@ -171,26 +129,24 @@ if (app.Environment.IsDevelopment())
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
-    app.MapScalarApiReference(options =>
-    {
-        options.WithTitle("Fitness API");
-    });
 }
 
 // app.UseHttpsRedirection(); // Disabled: HTTPS port not configured
+
 app.UseCors("AllowFrontend");
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
-app.MapHub<NotificationHub>("/r/notifications");
-// (Bạn có thể giữ hoặc xóa đoạn code WeatherForecast mặc định này tùy ý)
+app.MapHub<FitnessTrainingSystem.Infrastructure.Hubs.NotificationHub>("/r/notifications");
+
 var summaries = new[]
 {
     "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
 };
+
 app.MapGet("/weatherforecast", () =>
 {
-    var forecast = Enumerable.Range(1, 5).Select(index =>
+    var forecast =  Enumerable.Range(1, 5).Select(index =>
         new WeatherForecast
         (
             DateOnly.FromDateTime(DateTime.Now.AddDays(index)),

@@ -1,5 +1,3 @@
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
 using FitnessTrainingSystem.Application.DTOs.ProductPackages;
 using FitnessTrainingSystem.Application.Interfaces;
 using Microsoft.AspNetCore.Authorization;
@@ -20,18 +18,10 @@ public class ProductPackagesController : ControllerBase
     }
 
     [HttpGet]
-    [AllowAnonymous]
+    [AllowAnonymous] // Allow anyone to see the packages
     public async Task<IActionResult> GetAll()
     {
-        int? userId = null;
-        if (User.Identity?.IsAuthenticated == true)
-        {
-            var sub = User.FindFirst(JwtRegisteredClaimNames.Sub)?.Value
-                   ?? User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (int.TryParse(sub, out var uid))
-                userId = uid;
-        }
-        var packages = await _productPackageService.GetAllAsync(userId);
+        var packages = await _productPackageService.GetAllAsync();
         return Ok(packages);
     }
 
@@ -39,15 +29,7 @@ public class ProductPackagesController : ControllerBase
     [AllowAnonymous]
     public async Task<IActionResult> GetById(int id)
     {
-        int? userId = null;
-        if (User.Identity?.IsAuthenticated == true)
-        {
-            var sub = User.FindFirst(JwtRegisteredClaimNames.Sub)?.Value
-                   ?? User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (int.TryParse(sub, out var uid))
-                userId = uid;
-        }
-        var package = await _productPackageService.GetByIdAsync(id, userId);
+        var package = await _productPackageService.GetByIdAsync(id);
         if (package == null) return NotFound(new { message = "Package not found." });
 
         return Ok(package);

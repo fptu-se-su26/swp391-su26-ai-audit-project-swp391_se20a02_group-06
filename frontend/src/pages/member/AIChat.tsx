@@ -38,8 +38,6 @@ import {
     FiFileText,
 } from 'react-icons/fi'
 import MemberLayout from '../../components/shared/Layout/MemberLayout.tsx'
-import { sendChatMessage, getChatMessages, getDietHistories, type AIDietHistoryDto } from '../../api/aiChat'
-import { type DietPlanResponse } from '../../api/nutrition'
 
 interface LocalMessage {
     role: 'user' | 'assistant' | 'system'

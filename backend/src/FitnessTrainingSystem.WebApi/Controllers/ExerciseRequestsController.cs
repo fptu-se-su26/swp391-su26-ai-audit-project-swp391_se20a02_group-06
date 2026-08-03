@@ -1,4 +1,3 @@
-using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using FitnessTrainingSystem.Application.DTOs.Exercises;
@@ -25,7 +24,7 @@ public class ExerciseRequestsController : ControllerBase
     {
         if (!ModelState.IsValid) return BadRequest(ModelState);
 
-        var userIdString = User.FindFirstValue(JwtRegisteredClaimNames.Sub) ?? User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
         if (!int.TryParse(userIdString, out int adminId))
         {
             return Unauthorized(new { message = "Invalid user identifier." });
@@ -54,7 +53,7 @@ public class ExerciseRequestsController : ControllerBase
     [Authorize(Roles = "PT,PersonalTrainer,Admin,ADMIN")]
     public async Task<IActionResult> GetMyRequests()
     {
-        var userIdString = User.FindFirstValue(JwtRegisteredClaimNames.Sub) ?? User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
         if (!int.TryParse(userIdString, out int ptId))
         {
             return Unauthorized(new { message = "Invalid user identifier." });
@@ -70,7 +69,7 @@ public class ExerciseRequestsController : ControllerBase
     {
         if (!ModelState.IsValid) return BadRequest(ModelState);
 
-        var userIdString = User.FindFirstValue(JwtRegisteredClaimNames.Sub) ?? User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
         if (!int.TryParse(userIdString, out int ptId))
         {
             return Unauthorized(new { message = "Invalid user identifier." });
@@ -93,7 +92,7 @@ public class ExerciseRequestsController : ControllerBase
     {
         if (!ModelState.IsValid) return BadRequest(ModelState);
 
-        var userIdString = User.FindFirstValue(JwtRegisteredClaimNames.Sub) ?? User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
         if (!int.TryParse(userIdString, out int adminId))
         {
             return Unauthorized(new { message = "Invalid user identifier." });

@@ -1,4 +1,4 @@
-﻿export type WorkoutPhase = 'intro' | 'setup' | 'loading' | 'results'
+export type WorkoutPhase = 'intro' | 'setup' | 'loading' | 'results'
 
 export type WorkoutFormData = {
     planType: 'daily' | 'weekly'
@@ -12,6 +12,7 @@ export type WorkoutFormData = {
     frequency: number
     equipment: string[]
     muscles: string[]
+    injuries: { id: string; severity: number }[]
     targetCalories: number
 }
 
@@ -29,7 +30,9 @@ export interface ExerciseCardData {
     isLocked?: boolean
     isDone?: boolean
     isSkipped?: boolean
-    isWarmup?: boolean
-    duration?: number
-    breakTime?: number
+    setsCount?: number
+    repsCount?: number
+    durationSeconds?: number
+    restSeconds?: number
+    caloriesBurned?: number
 }
