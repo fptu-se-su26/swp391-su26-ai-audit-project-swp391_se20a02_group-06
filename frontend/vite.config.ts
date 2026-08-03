@@ -18,8 +18,5 @@ export default defineConfig(({ mode }) => ({
     port: 5173,
     strictPort: true,
   },
-  base:
-    mode === 'production'
-      ? '/swp391-su26-ai-audit-project-swp391_se20a02_group-06/'
-      : '/',
+  base: '/',
 }))
