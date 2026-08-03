@@ -1,6 +1,10 @@
 import React from 'react'
 import { Box, Flex, Grid, Heading, Text } from '@chakra-ui/react'
 import { FiCalendar, FiUsers, FiStar, FiDollarSign, FiCheckCircle, FiMessageSquare, FiUserPlus } from 'react-icons/fi'
+import useSWR from 'swr'
+import apiClient from '../../lib/axios'
+
+const fetcher = (url: string) => apiClient.get(url).then(res => res.data)
 import AdminLayout from '../../components/shared/Layout/AdminLayout'
 import StatCard from '../../features/pt/components/StatCard'
 import ScheduleTimeline from '../../features/pt/components/ScheduleTimeline'
@@ -10,12 +14,7 @@ import ContentLibrary from '../../features/pt/components/ContentLibrary'
 import { adminColors } from '../admin/AdminPrimitives'
 import type { SlotData } from '../../features/pt/components/ScheduleTimeline'
 
-const statCards = [
-    { label: 'Sessions This Week', value: '24', trend: '+3 from last week', icon: FiCalendar },
-    { label: 'Active Clients', value: '18', trend: '+2 new', icon: FiUsers },
-    { label: 'Avg Rating', value: '4.9', trend: 'Based on 142 reviews', icon: FiStar },
-    { label: 'Earnings (Oct)', value: '$4,250', trend: '+12% vs Sep', icon: FiDollarSign, highlight: true },
-] as const
+
 
 const todaySlots: SlotData[] = [
     { time: '08:00', ampm: 'AM', name: 'Sarah Jenkins', type: '1-on-1 • Strength Focus', status: 'completed', avatar: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBiTVd15cCxagvFy--NUjsE2L80OekVMlrXEFlJEkZyNnqKJrzx3tWIRoOlESrP1hEJ7IbtdXBMxZ44Vrk7chJglwk2fos4KWX7hMeiRlO096uApzuXCJpOGEHUwDgtNJs52Xb-zF8B2bvGkw5RRsRg7ggQCtbZeovO4nNjv3_Q6aht2mlJEEq8C1-_HLxiaah4tGTJ1JI56ZYDTPt19RCHH4-UEiMvcKgB_l_rxALHPesasLy46dn4G0LBiZJpP8ah73Ql4oaz95eM' },
@@ -30,7 +29,17 @@ const activities = [
     { icon: FiUserPlus, iconColor: adminColors.dim, text: <>New client <Text as="span" fontWeight="700">Emma W.</Text> signed up for Premium Tier.</>, time: 'Yesterday' },
 ] as const
 
-const PTDashboard: React.FC = () => (
+const PTDashboard: React.FC = () => {
+    const { data: stats } = useSWR('/pt/dashboard/stats', fetcher)
+
+    const statCards = [
+        { label: 'Sessions This Week', value: stats?.sessionsThisWeek?.toString() || '0', trend: 'Total booked this week', icon: FiCalendar },
+        { label: 'Active Clients', value: stats?.activeClients?.toString() || '0', trend: 'Total distinct clients', icon: FiUsers },
+        { label: 'Avg Rating', value: '4.9', trend: 'Based on 142 reviews', icon: FiStar },
+        { label: 'Earnings (Oct)', value: '$4,250', trend: '+12% vs Sep', icon: FiDollarSign, highlight: true },
+    ]
+
+    return (
     <AdminLayout title="PT Portal">
         <Box maxW="1440px" mx="auto">
             <Flex justify="space-between" align="flex-end" mb="6">
@@ -65,6 +74,7 @@ const PTDashboard: React.FC = () => (
             </Grid>
         </Box>
     </AdminLayout>
-)
+    )
+}
 
 export default PTDashboard

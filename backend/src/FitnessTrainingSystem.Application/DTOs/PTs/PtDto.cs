@@ -9,4 +9,6 @@ public class PtDto
     public string Experience { get; set; } = string.Empty;
     public string Status { get; set; } = string.Empty;
     public string? AvatarUrl { get; set; }
+    public string? CoachingPhilosophy { get; set; }
+    public decimal? SessionRate { get; set; }
 }

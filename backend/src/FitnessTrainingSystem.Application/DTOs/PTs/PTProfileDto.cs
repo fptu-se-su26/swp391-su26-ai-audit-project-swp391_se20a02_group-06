@@ -8,6 +8,7 @@ public class PTProfileDto
     public string? AvatarUrl { get; set; }
     public string? Bio { get; set; }
     public int? ExperienceYears { get; set; }
-    public decimal? HourlyRate { get; set; }
+    public decimal? SessionRate { get; set; }
     public decimal? Rating { get; set; }
+    public string? CoachingPhilosophy { get; set; }
 }

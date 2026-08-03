@@ -30,7 +30,8 @@ public class PTProfileService : IPTProfileService
             AvatarUrl = user.AvatarUrl,
             Bio = user.PtProfile?.Bio,
             ExperienceYears = user.PtProfile?.ExperienceYears,
-            HourlyRate = null, // No hourly rate field currently, extend later if needed
+            SessionRate = user.PtProfile?.SessionRate,
+            CoachingPhilosophy = user.PtProfile?.CoachingPhilosophy,
             Rating = user.PtProfile?.Rating
         };
     }
@@ -61,6 +62,16 @@ public class PTProfileService : IPTProfileService
 
         if (dto.ExperienceYears.HasValue)
             user.PtProfile.ExperienceYears = dto.ExperienceYears;
+            
+        if (dto.SessionRate.HasValue)
+        {
+            if (dto.SessionRate.Value < 150000m)
+                throw new Exception("Session rate cannot be less than 150,000 VND.");
+            user.PtProfile.SessionRate = dto.SessionRate.Value;
+        }
+
+        if (dto.CoachingPhilosophy != null)
+            user.PtProfile.CoachingPhilosophy = dto.CoachingPhilosophy;
 
         user.UpdatedAt = DateTime.UtcNow;
         await _context.SaveChangesAsync();

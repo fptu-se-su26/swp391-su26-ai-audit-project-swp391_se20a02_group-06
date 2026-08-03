@@ -4,19 +4,20 @@ export type SessionStatus = 'available' | 'reserved' | 'booked' | 'locked'
 
 export type SessionPeriod = 'morning' | 'afternoon' | 'evening'
 
-export type SessionType = 'Video Call' | 'In-Person at Elite Lab' | 'Recovery Review'
+export type SessionType = 'Video Call' | 'In-Person'
 
 export interface Session {
     id: string
-    time: string           // e.g. "08:00 AM"
-    label: string          // e.g. "60 min Strength"
-    period: SessionPeriod
+    date: string
+    time: string
     status: SessionStatus
+    type?: SessionType
 }
 
 export interface WeekDay {
     label: string  // "MON"
     date: number   // 17
+    fullDate?: Date
     isToday: boolean
 }
 
@@ -27,7 +28,8 @@ export interface Coach {
     tagline: string
     bio: string
     tags: string[]
-    philosophy: string
+    philosophy?: string
+    sessionRate?: number
     isOnline: boolean
     imageUrl: string
     imageAlt: string

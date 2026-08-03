@@ -29,7 +29,7 @@ interface ClientDto {
 const fetcher = (url: string) => apiClient.get(url).then(res => res.data)
 
 const PTClients: React.FC = () => {
-    const { data: clients, error, isLoading } = useSWR<ClientDto[]>('/user', fetcher)
+    const { data: clients, error, isLoading } = useSWR<ClientDto[]>('/pt-clients', fetcher)
 
     return (
         <AdminLayout>
