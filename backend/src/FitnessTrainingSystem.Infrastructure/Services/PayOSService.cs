@@ -18,8 +18,8 @@ public class PayOSService : IPayOSService
     public PayOSService(PayOSClient payOS, IConfiguration configuration, ILogger<PayOSService> logger)
     {
         _payOS = payOS;
-        _returnUrl = configuration["PayOS:ReturnUrl"] ?? "http://localhost:5173/payment/success";
-        _cancelUrl = configuration["PayOS:CancelUrl"] ?? "http://localhost:5173/payment/cancel";
+        _returnUrl = configuration["PayOS:ReturnUrl"] ?? "https://swp391-su26-ai-audit-project-swp391-sigma.vercel.app/#/payment/success";
+        _cancelUrl = configuration["PayOS:CancelUrl"] ?? "https://swp391-su26-ai-audit-project-swp391-sigma.vercel.app/#/payment/cancel";
         _logger = logger;
     }
 
