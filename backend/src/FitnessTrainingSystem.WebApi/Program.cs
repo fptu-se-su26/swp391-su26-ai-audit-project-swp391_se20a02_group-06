@@ -83,13 +83,16 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 builder.Services.AddSignalR();
 builder.Services.AddSingleton<Microsoft.AspNetCore.SignalR.IUserIdProvider, FitnessTrainingSystem.Infrastructure.Hubs.SubClaimUserIdProvider>();
 
+// CORS: fixed origins + optional extras from config (comma-separated Cors:AllowedOrigins)
+var fixedOrigins = new[] { "http://localhost:5173", "https://fptu-se-su26.github.io", "https://swp391-su26-ai-audit-project-swp391-sigma.vercel.app" };
+var extraOrigins = (builder.Configuration["Cors:AllowedOrigins"] ?? "")
+    .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+var allOrigins = fixedOrigins.Concat(extraOrigins).Distinct().ToArray();
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", policy =>
-        policy.SetIsOriginAllowed(origin => 
-                  origin.StartsWith("http://localhost:") || 
-                  origin == "https://fptu-se-su26.github.io" ||
-                  origin.EndsWith(".vercel.app"))
+        policy.WithOrigins(allOrigins)
               .AllowAnyHeader()
               .AllowAnyMethod()
               .AllowCredentials());
