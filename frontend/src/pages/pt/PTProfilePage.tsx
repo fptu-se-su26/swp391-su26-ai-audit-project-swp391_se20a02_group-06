@@ -108,6 +108,16 @@ const PTProfilePage: React.FC = () => {
     }
 
     const handleSave = async () => {
+        if (editSessionRate && parseFloat(editSessionRate) < 2000) {
+            toast({
+                title: 'Invalid Session Rate',
+                description: 'Giá thuê mỗi buổi tập tối thiểu là 2.000 VNĐ.',
+                status: 'warning',
+                duration: 4000,
+                isClosable: true
+            })
+            return
+        }
         setSaving(true)
         try {
             const payload: UpdatePTProfilePayload = {
@@ -128,7 +138,8 @@ const PTProfilePage: React.FC = () => {
                 title: 'Update failed',
                 description: error.response?.data?.message || 'Something went wrong',
                 status: 'error',
-                duration: 3000,
+                duration: 4000,
+                isClosable: true
             })
         } finally {
             setSaving(false)
@@ -265,7 +276,7 @@ const PTProfilePage: React.FC = () => {
                                             type="number"
                                             value={editSessionRate}
                                             onChange={(e) => setEditSessionRate(e.target.value)}
-                                            placeholder="Min: 150000"
+                                            placeholder="Min: 2000"
                                             bg="#0A0C10"
                                             borderColor="#1e2028"
                                             color="white"

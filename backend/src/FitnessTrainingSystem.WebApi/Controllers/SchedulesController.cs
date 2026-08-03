@@ -59,11 +59,23 @@ public class SchedulesController : ControllerBase
         var ptProfile = await _context.PtProfiles.Include(p => p.User).FirstOrDefaultAsync(p => p.UserId == request.PtId);
         if (ptProfile == null) return NotFound(new { message = "PT not found." });
 
-        // Find if there is an Available slot that covers this requested time exactly
-        var schedule = await _context.Schedules.FirstOrDefaultAsync(s => 
-            s.PtId == request.PtId && 
-            s.Status == ScheduleStatus.Available &&
-            s.StartTime == request.StartTime && s.EndTime == request.EndTime);
+        Schedule? schedule = null;
+
+        if (request.ScheduleId.HasValue && request.ScheduleId.Value > 0)
+        {
+            schedule = await _context.Schedules.FirstOrDefaultAsync(s => 
+                s.Id == request.ScheduleId.Value && 
+                s.PtId == request.PtId && 
+                s.Status == ScheduleStatus.Available);
+        }
+
+        if (schedule == null)
+        {
+            schedule = await _context.Schedules.FirstOrDefaultAsync(s => 
+                s.PtId == request.PtId && 
+                s.Status == ScheduleStatus.Available &&
+                s.StartTime == request.StartTime && s.EndTime == request.EndTime);
+        }
 
         if (schedule == null)
         {
@@ -241,6 +253,7 @@ public class CreateAvailabilityRequest
 public class CheckoutScheduleRequest
 {
     public int PtId { get; set; }
+    public int? ScheduleId { get; set; }
     public DateTime StartTime { get; set; }
     public DateTime EndTime { get; set; }
 }
