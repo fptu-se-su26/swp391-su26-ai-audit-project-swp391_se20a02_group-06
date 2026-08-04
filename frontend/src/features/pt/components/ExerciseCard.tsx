@@ -1,9 +1,12 @@
 import React from 'react'
-import { Box, Flex, Icon, Text } from '@chakra-ui/react'
-import { FiMoreVertical, FiEye, FiThumbsUp, FiClock, FiAlertTriangle, FiArrowRight } from 'react-icons/fi'
+import {
+    Box, Flex, Icon, Text,
+    Menu, MenuButton, MenuList, MenuItem,
+} from '@chakra-ui/react'
+import { FiMoreVertical, FiEye, FiThumbsUp, FiClock, FiAlertTriangle, FiArrowRight, FiEdit2, FiTrash2 } from 'react-icons/fi'
 import { adminColors } from '../../../pages/admin/AdminPrimitives'
 
-type ExerciseStatus = 'published' | 'pending' | 'rejected'
+type ExerciseStatus = 'published' | 'pending' | 'rejected' | 'draft'
 
 interface ExerciseCardProps {
     title: string
@@ -15,6 +18,8 @@ interface ExerciseCardProps {
     likes?: string
     feedbackMsg?: string
     submittedAgo?: string
+    onEdit?: () => void
+    onDelete?: () => void
 }
 
 const statusConfig: Record<ExerciseStatus, {
@@ -45,6 +50,12 @@ const statusConfig: Record<ExerciseStatus, {
         borderColor: adminColors.primary,
         avatarFilter: 'grayscale(1) brightness(0.6)',
         overlay: true,
+    },
+    draft: {
+        label: 'Draft',
+        dotColor: adminColors.dim,
+        bgColor: `${adminColors.surfaceHigh}E6`,
+        borderColor: adminColors.surfaceVariant,
     },
 }
 
@@ -91,10 +102,12 @@ const ThumbnailMedia: React.FC<{ url: string; rejected: boolean; pending: boolea
 
 const ExerciseCard: React.FC<ExerciseCardProps> = ({
     title, status, duration, tags, thumbnail, views, likes, feedbackMsg, submittedAgo,
+    onEdit, onDelete,
 }) => {
     const cfg = statusConfig[status]
     const isPending = status === 'pending'
     const isRejected = status === 'rejected'
+    const hasActions = !!(onEdit || onDelete)
 
     return (
         <Box
@@ -159,9 +172,9 @@ const ExerciseCard: React.FC<ExerciseCardProps> = ({
                     ) : isRejected ? (
                         <Icon as={FiAlertTriangle} color={adminColors.primary} boxSize="12px" />
                     ) : (
-                        <Box w="2" h="2" borderRadius="full" bg="#10b981" />
+                        <Box w="2" h="2" borderRadius="full" bg={cfg.dotColor} />
                     )}
-                    <Text fontSize="9px" fontWeight="700" letterSpacing="0.05em" textTransform="uppercase" color={isRejected ? adminColors.primary : adminColors.text}>
+                    <Text fontSize="9px" fontWeight="700" letterSpacing="0.05em" textTransform="uppercase" color={isRejected ? adminColors.primary : status === 'draft' ? adminColors.dim : adminColors.text}>
                         {cfg.label}
                     </Text>
                 </Flex>
@@ -190,7 +203,61 @@ const ExerciseCard: React.FC<ExerciseCardProps> = ({
                     <Text fontSize="16px" fontWeight="600" color={adminColors.text} noOfLines={2}>
                         {title}
                     </Text>
-                    <Icon as={FiMoreVertical} color={adminColors.dim} boxSize="16px" cursor="pointer" flexShrink={0} ml="2" _hover={{ color: adminColors.primary }} />
+                    {hasActions ? (
+                        <Menu placement="bottom-end">
+                            <MenuButton
+                                as={Box}
+                                cursor="pointer"
+                                flexShrink={0}
+                                ml="2"
+                                color={adminColors.dim}
+                                _hover={{ color: adminColors.primary }}
+                                transition="color 0.15s"
+                                onClick={(e: React.MouseEvent) => e.stopPropagation()}
+                            >
+                                <Icon as={FiMoreVertical} boxSize="16px" />
+                            </MenuButton>
+                            <MenuList
+                                bg="#141720"
+                                borderColor="#1e2028"
+                                boxShadow="0 8px 32px rgba(0,0,0,0.5)"
+                                borderRadius="12px"
+                                minW="160px"
+                                py="1"
+                            >
+                                {onEdit && (
+                                    <MenuItem
+                                        icon={<Icon as={FiEdit2} boxSize="14px" />}
+                                        onClick={(e) => { e.stopPropagation(); onEdit() }}
+                                        bg="transparent"
+                                        color="white"
+                                        fontSize="13px"
+                                        fontWeight="500"
+                                        _hover={{ bg: 'rgba(255,255,255,0.06)' }}
+                                        _focus={{ bg: 'rgba(255,255,255,0.06)' }}
+                                    >
+                                        Edit Exercise
+                                    </MenuItem>
+                                )}
+                                {onDelete && (
+                                    <MenuItem
+                                        icon={<Icon as={FiTrash2} boxSize="14px" />}
+                                        onClick={(e) => { e.stopPropagation(); onDelete() }}
+                                        bg="transparent"
+                                        color="#E03030"
+                                        fontSize="13px"
+                                        fontWeight="500"
+                                        _hover={{ bg: 'rgba(224,48,48,0.08)' }}
+                                        _focus={{ bg: 'rgba(224,48,48,0.08)' }}
+                                    >
+                                        Delete Exercise
+                                    </MenuItem>
+                                )}
+                            </MenuList>
+                        </Menu>
+                    ) : (
+                        <Icon as={FiMoreVertical} color={adminColors.dim} boxSize="16px" flexShrink={0} ml="2" />
+                    )}
                 </Flex>
 
                 <Flex wrap="wrap" gap="1" mb="3">

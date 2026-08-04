@@ -202,5 +202,24 @@ public virtual DbSet<AIDietHistory> AIDietHistories { get; set; }
             .HasOne(s => s.Package)
             .WithMany()
             .HasForeignKey(s => s.PackageId);
+
+        modelBuilder.Entity<Exercise>()
+            .Property(e => e.Difficulty)
+            .HasConversion(
+                v => v.ToString().ToUpper(),
+                v => (FitnessTrainingSystem.Domain.Enums.ExerciseDifficulty)System.Enum.Parse(typeof(FitnessTrainingSystem.Domain.Enums.ExerciseDifficulty), v, true)
+            );
+
+        modelBuilder.Entity<AIChatMessage>(entity =>
+        {
+            entity.ToTable("ai_chat_messages");
+            entity.Property(e => e.Role).HasColumnName("sender");
+        });
+
+        modelBuilder.Entity<AIDietHistory>(entity =>
+        {
+            entity.ToTable("ai_diet_histories");
+            entity.Property(e => e.DietJson).HasColumnName("raw_json");
+        });
     }
 }

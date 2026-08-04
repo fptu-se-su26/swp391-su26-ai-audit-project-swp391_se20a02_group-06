@@ -49,6 +49,8 @@ const PTProfilePage: React.FC = () => {
     const [editBio, setEditBio] = useState('')
     const [editExperienceYears, setEditExperienceYears] = useState('')
     const [editAvatarUrl, setEditAvatarUrl] = useState<string | null>(null)
+    const [editCoachingPhilosophy, setEditCoachingPhilosophy] = useState('')
+    const [editSessionRate, setEditSessionRate] = useState('')
 
     const loadData = async () => {
         try {
@@ -64,6 +66,8 @@ const PTProfilePage: React.FC = () => {
                 setEditBio(profileData.bio || '')
                 setEditExperienceYears(profileData.experienceYears?.toString() || '')
                 setEditAvatarUrl(profileData.avatarUrl)
+                setEditCoachingPhilosophy(profileData.coachingPhilosophy || '')
+                setEditSessionRate(profileData.sessionRate?.toString() || '')
             }
             if (metricData) {
                 setMetric(metricData)
@@ -104,12 +108,24 @@ const PTProfilePage: React.FC = () => {
     }
 
     const handleSave = async () => {
+        if (editSessionRate && parseFloat(editSessionRate) < 2000) {
+            toast({
+                title: 'Invalid Session Rate',
+                description: 'Giá thuê mỗi buổi tập tối thiểu là 2.000 VNĐ.',
+                status: 'warning',
+                duration: 4000,
+                isClosable: true
+            })
+            return
+        }
         setSaving(true)
         try {
             const payload: UpdatePTProfilePayload = {
                 fullName: editFullName,
                 bio: editBio,
                 experienceYears: editExperienceYears ? parseInt(editExperienceYears) : undefined,
+                sessionRate: editSessionRate ? parseFloat(editSessionRate) : undefined,
+                coachingPhilosophy: editCoachingPhilosophy || undefined,
                 avatarUrl: editAvatarUrl || undefined,
             }
 
@@ -122,7 +138,8 @@ const PTProfilePage: React.FC = () => {
                 title: 'Update failed',
                 description: error.response?.data?.message || 'Something went wrong',
                 status: 'error',
-                duration: 3000,
+                duration: 4000,
+                isClosable: true
             })
         } finally {
             setSaving(false)
@@ -180,6 +197,8 @@ const PTProfilePage: React.FC = () => {
                                                 setEditBio(profile?.bio || '')
                                                 setEditExperienceYears(profile?.experienceYears?.toString() || '')
                                                 setEditAvatarUrl(profile?.avatarUrl || null)
+                                                setEditCoachingPhilosophy(profile?.coachingPhilosophy || '')
+                                                setEditSessionRate(profile?.sessionRate?.toString() || '')
                                             }
                                         }}
                                     >
@@ -251,6 +270,34 @@ const PTProfilePage: React.FC = () => {
                                             _focus={{ borderColor: '#E03030', boxShadow: 'none' }}
                                         />
                                     </FormControl>
+                                    <FormControl>
+                                        <FormLabel color="#8A8A93" fontSize="13px">SESSION RATE (VND)</FormLabel>
+                                        <Input
+                                            type="number"
+                                            value={editSessionRate}
+                                            onChange={(e) => setEditSessionRate(e.target.value)}
+                                            placeholder="Min: 2000"
+                                            bg="#0A0C10"
+                                            borderColor="#1e2028"
+                                            color="white"
+                                            _hover={{ borderColor: '#E03030' }}
+                                            _focus={{ borderColor: '#E03030', boxShadow: 'none' }}
+                                        />
+                                    </FormControl>
+                                    <FormControl>
+                                        <FormLabel color="#8A8A93" fontSize="13px">COACHING PHILOSOPHY</FormLabel>
+                                        <Textarea
+                                            value={editCoachingPhilosophy}
+                                            onChange={(e) => setEditCoachingPhilosophy(e.target.value)}
+                                            placeholder="e.g. Push beyond your limits..."
+                                            bg="#0A0C10"
+                                            borderColor="#1e2028"
+                                            color="white"
+                                            minH="60px"
+                                            _hover={{ borderColor: '#E03030' }}
+                                            _focus={{ borderColor: '#E03030', boxShadow: 'none' }}
+                                        />
+                                    </FormControl>
                                 </Stack>
                             </Box>
                         )}
@@ -315,8 +362,16 @@ const PTProfilePage: React.FC = () => {
                                         <Text fontSize="15px" fontWeight="600" color="white">{profile?.experienceYears ? `${profile.experienceYears} years` : '--'}</Text>
                                     </Box>
                                     <Box>
+                                        <Text fontSize="13px" color="#8A8A93" mb="1">Session Rate</Text>
+                                        <Text fontSize="15px" fontWeight="600" color="#E03030">{profile?.sessionRate ? `${new Intl.NumberFormat('vi-VN').format(profile.sessionRate)} VND` : '--'}</Text>
+                                    </Box>
+                                    <Box>
                                         <Text fontSize="13px" color="#8A8A93" mb="1">Rating</Text>
                                         <Badge bg="rgba(224,48,48,0.1)" color="#E03030" px="2" py="0.5" borderRadius="4px">{profile?.rating?.toFixed(1) ?? '5.0'} ⭐</Badge>
+                                    </Box>
+                                    <Box gridColumn="span 2">
+                                        <Text fontSize="13px" color="#8A8A93" mb="1">Coaching Philosophy</Text>
+                                        <Text fontSize="14px" fontStyle="italic" color="white">{profile?.coachingPhilosophy || '--'}</Text>
                                     </Box>
                                     <Box gridColumn="span 2">
                                         <Text fontSize="13px" color="#8A8A93" mb="1">Bio</Text>

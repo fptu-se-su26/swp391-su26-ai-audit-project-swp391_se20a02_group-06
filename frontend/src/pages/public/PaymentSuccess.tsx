@@ -31,26 +31,38 @@ const PaymentSuccess = () => {
       const payosCode = searchParams.get('code') || new URLSearchParams(window.location.search).get('code')
       const payosStatus = searchParams.get('status') || new URLSearchParams(window.location.search).get('status')
 
-      if (payosCode && payosCode !== '00') {
+      if ((payosCode && payosCode !== '00') || (payosStatus && payosStatus.toUpperCase() === 'CANCELLED')) {
+        try {
+          await apiClient.post(`/jobs/cancel-payment?orderCode=${orderCode}`)
+        } catch {}
         setStatus('cancelled')
-        setMessage('Thanh toán đã bị huỷ hoặc không thành công.')
-        return
-      }
-      if (payosStatus && payosStatus.toUpperCase() === 'CANCELLED') {
-        setStatus('cancelled')
-        setMessage('Thanh toán đã bị huỷ.')
+        setMessage('Thanh toán đã bị huỷ hoặc không thành công. Slot tập đã được mở lại.')
         return
       }
 
       try {
-        await apiClient.post(`/jobs/simulate-payment?orderCode=${orderCode}`)
-        setStatus('success')
-        setMessage('Thanh toán thành công! Gói tập của bạn đã được kích hoạt.')
-        setTimeout(() => navigate('/dashboard'), 3000)
+        // Try PT Schedule Payment first
+        try {
+          await apiClient.post(`/jobs/simulate-schedule-payment?orderCode=${orderCode}`)
+          setStatus('success')
+          setMessage('Thanh toán lịch tập PT thành công! Link Google Meet đã được tạo và gửi qua email cho bạn.')
+          setTimeout(() => navigate('/dashboard'), 3000)
+          return
+        } catch (schedErr: any) {
+          // If error is not schedule-related, fall through to subscription package payment
+          if (schedErr.response?.data?.message?.includes('Schedule not found')) {
+            await apiClient.post(`/jobs/simulate-payment?orderCode=${orderCode}`)
+            setStatus('success')
+            setMessage('Thanh toán thành công! Gói tập của bạn đã được kích hoạt.')
+            setTimeout(() => navigate('/dashboard'), 3000)
+            return
+          }
+          throw schedErr
+        }
       } catch (err: any) {
         if (err.response?.status === 400) {
           setStatus('success')
-          setMessage('Thanh toán đã được xác nhận trước đó. Gói tập của bạn đang hoạt động.')
+          setMessage('Thanh toán đã được xác nhận trước đó.')
           setTimeout(() => navigate('/dashboard'), 3000)
         } else {
           setStatus('error')

@@ -24,4 +24,11 @@ public class CreateExerciseDto
     public int? Duration { get; set; }
 
     public int? PackageId { get; set; }
+
+    /// <summary>
+    /// PT-only: when true the exercise is saved as a draft.
+    /// Ignored (forced to false) when created by an Admin.
+    /// </summary>
+    public bool IsDraft { get; set; } = false;
 }
+

@@ -9,7 +9,7 @@ using System.Net.Http.Headers;
 
 namespace FitnessTrainingSystem.Infrastructure.Services;
 
-public class GroqAiService : IGeminiAiService
+public class GroqAiService : IGeminiAiService, IGroqAiService
 {
     private readonly HttpClient _httpClient;
     private readonly string _apiKey;

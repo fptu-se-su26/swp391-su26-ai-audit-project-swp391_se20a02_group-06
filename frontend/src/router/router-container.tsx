@@ -39,6 +39,7 @@ import PtExerciseRequests from "../pages/pt/PtExerciseRequests";
 import PTDashboard from "../pages/pt/PTDashboard";
 import PTClients from "../pages/pt/PTClients";
 import PTProfilePage from "../pages/pt/PTProfilePage";
+import PTManageSchedule from "../pages/pt/PTManageSchedule";
 
 import PTContentLibrary from "../pages/pt/PTContentLibrary";
 
@@ -153,6 +154,14 @@ const RouterContainer = () => {
                     <PrivateRoute requiredRoles={['PT', 'PersonalTrainer']}>
                         <PTProfilePage />
                     </PrivateRoute>
+                }
+            />
+            <Route
+                path="/pt/schedule"
+                element={
+                    <PTRoute>
+                        <PTManageSchedule />
+                    </PTRoute>
                 }
             />
             <Route

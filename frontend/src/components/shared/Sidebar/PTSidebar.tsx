@@ -15,10 +15,12 @@ import {
     FiFileText,
     FiUploadCloud,
     FiUser,
+    FiCalendar,
 } from 'react-icons/fi'
 
 const navItems = [
     { label: 'Dashboard', icon: FiGrid, path: '/pt/dashboard' },
+    { label: 'Schedule', icon: FiCalendar, path: '/pt/schedule' },
     { label: 'My Clients', icon: FiUsers, path: '/pt/clients' },
     { label: 'My Content', icon: FiUploadCloud, path: '/pt/content-library' },
     { label: 'Workouts', icon: FiActivity, path: '/pt/workouts' },

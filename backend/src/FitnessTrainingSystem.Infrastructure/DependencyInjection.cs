@@ -62,6 +62,7 @@ public static class DependencyInjection
         {
             client.Timeout = TimeSpan.FromSeconds(60);
         });
+        services.AddScoped<IGroqAiService>(sp => (IGroqAiService)sp.GetRequiredService<IGeminiAiService>());
         services.AddScoped<IAIChatService, AIChatService>();
 
         services.AddSingleton(new PayOSClient(new PayOSOptions

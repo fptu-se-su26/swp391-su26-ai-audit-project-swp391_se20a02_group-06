@@ -98,7 +98,31 @@ const PTCoachCard: React.FC<PTCoachCardProps> = ({ coach }) => (
                         </Text>
                     </Box>
                 ))}
+                {coach.sessionRate && (
+                    <Box
+                        px="10px"
+                        py="5px"
+                        bg="rgba(224, 48, 48, 0.1)"
+                        border="1px solid rgba(224, 48, 48, 0.3)"
+                        borderRadius="full"
+                    >
+                        <Text fontSize="10px" fontWeight="800" color="#E03030">
+                            {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(coach.sessionRate)}/session
+                        </Text>
+                    </Box>
+                )}
             </Flex>
+
+            {coach.philosophy && (
+                <Box mb="6" p="4" bg="rgba(255, 255, 255, 0.02)" borderRadius="16px" border="1px solid" borderColor="rgba(255, 255, 255, 0.05)">
+                    <Text fontSize="10px" fontWeight="800" color="#C8C6C5" textTransform="uppercase" letterSpacing="wider" mb="2">
+                        Coaching Philosophy
+                    </Text>
+                    <Text fontSize="13px" color="#C8C6C5" fontStyle="italic" lineHeight="1.6">
+                        "{coach.philosophy}"
+                    </Text>
+                </Box>
+            )}
 
             <Button
                 leftIcon={<Icon as={FiMessageSquare} boxSize="15px" />}
@@ -113,21 +137,6 @@ const PTCoachCard: React.FC<PTCoachCardProps> = ({ coach }) => (
             >
                 Message {coach.name.split(' ')[0]}
             </Button>
-        </Box>
-
-        <Box
-            bg="#141414"
-            border="1px solid"
-            borderColor="#262626"
-            borderRadius="32px"
-            p={{ base: '5', md: '6' }}
-        >
-            <Text fontSize="10px" fontWeight="800" color="#C8C6C5" textTransform="uppercase" letterSpacing="wider" mb="4">
-                Coaching Philosophy
-            </Text>
-            <Text fontSize="14px" color="#C8C6C5" fontStyle="italic" lineHeight="1.7">
-                {coach.philosophy}
-            </Text>
         </Box>
     </Stack>
 )

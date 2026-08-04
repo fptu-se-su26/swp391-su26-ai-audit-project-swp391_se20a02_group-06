@@ -30,7 +30,9 @@ public class PtService : IPtService
             Rating = u.PtProfile?.Rating,
             Experience = u.PtProfile?.ExperienceYears != null ? $"{u.PtProfile.ExperienceYears} years" : "N/A",
             Status = u.Status ?? "Inactive",
-            AvatarUrl = u.AvatarUrl
+            AvatarUrl = u.AvatarUrl,
+            CoachingPhilosophy = u.PtProfile?.CoachingPhilosophy,
+            SessionRate = u.PtProfile?.SessionRate
         });
     }
 
