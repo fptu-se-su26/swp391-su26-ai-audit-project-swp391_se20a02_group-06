@@ -63,7 +63,17 @@ public class GenerateWeeklyWorkoutPlanCommandHandler : IRequestHandler<GenerateW
             throw new Exception($"Không có bài tập nào khả dụng trong hệ thống cho nhóm cơ '{request.MuscleGroup}'. Vui lòng chọn nhóm cơ khác hoặc thêm bài tập vào hệ thống trước.");
         }
 
-        var availableExercisesJson = JsonSerializer.Serialize(availableExercises);
+        // Tối ưu hóa mảng JSON để giảm số lượng Token (chỉ truyền các trường cần thiết, bỏ Description/Equipment)
+        var optimizedExercises = availableExercises.Select(e => new
+        {
+            Id = e.Id,
+            Title = e.Title,
+            MuscleGroup = e.MuscleGroupName,
+            DurationMinutes = e.DurationMinutes,
+            CaloriesBurnPerMin = e.CaloriesBurnPerMin,
+            Difficulty = e.Difficulty
+        });
+        var availableExercisesJson = JsonSerializer.Serialize(optimizedExercises);
 
         var aiResult = await _groqAiService.GenerateWeeklyWorkoutPlanAsync(request.UserId, request.MuscleGroup, request.TargetCaloriesPerDay, request.DurationMinutesPerDay, request.Frequency, availableExercisesJson, request.InjuredMuscleGroups);
 
