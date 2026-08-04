@@ -72,4 +72,28 @@ public class UploadController : ControllerBase
             return StatusCode(500, new { message = "Image upload failed.", detail = ex.Message });
         }
     }
+
+    /// <summary>
+    /// Gets a signature for direct-to-Cloudinary uploads from the frontend.
+    /// </summary>
+    [HttpGet("signature")]
+    [Authorize]
+    public IActionResult GetSignature([FromQuery] string folder = "fitness-training/exercises")
+    {
+        try
+        {
+            var (signature, timestamp, apiKey, cloudName) = _cloudinaryService.GetSignature(folder);
+            return Ok(new
+            {
+                signature,
+                timestamp,
+                apiKey,
+                cloudName
+            });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { message = "Failed to generate signature.", detail = ex.Message });
+        }
+    }
 }

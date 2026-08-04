@@ -5,30 +5,28 @@ using FitnessTrainingSystem.Application.DTOs.Nutrition;
 using FitnessTrainingSystem.Application.Common.Interfaces;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using System.Net.Http.Headers;
 
 namespace FitnessTrainingSystem.Infrastructure.Services;
 
-public class DirectGeminiService : IGeminiAiService
+public class GroqAiService : IGeminiAiService
 {
     private readonly HttpClient _httpClient;
     private readonly string _apiKey;
     private readonly string _model;
     private readonly string _baseUrl;
-    private readonly ILogger<DirectGeminiService> _logger;
+    private readonly ILogger<GroqAiService> _logger;
     private static readonly Random _jitter = new();
 
-    public DirectGeminiService(HttpClient httpClient, IConfiguration configuration, ILogger<DirectGeminiService> logger)
+    public GroqAiService(HttpClient httpClient, IConfiguration configuration, ILogger<GroqAiService> logger)
     {
         _httpClient = httpClient;
-        var apiKey = configuration["Gemini:ApiKey"];
-        if (string.IsNullOrWhiteSpace(apiKey) || apiKey.Contains("YOUR_VALID_GEMINI_API_KEY"))
-        {
-            apiKey = configuration["GEMINI_API_KEY"] ?? configuration["Gemini__ApiKey"];
-        }
-        _apiKey = apiKey ?? "";
-        _model = configuration["Gemini:Model"] ?? "gemini-2.5-flash";
-        _baseUrl = configuration["Gemini:BaseUrl"] ?? "https://generativelanguage.googleapis.com/v1beta/models/";
+        _apiKey = configuration["Groq:ApiKey"] ?? configuration["GROQ_API_KEY"] ?? throw new InvalidOperationException("Missing Groq:ApiKey");
+        _model = configuration["Groq:Model"] ?? "llama-3.3-70b-versatile";
+        _baseUrl = configuration["Groq:BaseUrl"] ?? "https://api.groq.com/openai/v1/chat/completions";
         _logger = logger;
+        
+        _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _apiKey);
     }
 
     public async Task<DietPlanResponse> GenerateDietPlanAsync(string userInfo, string foodListJson)
@@ -84,6 +82,8 @@ Output phải là JSON hợp lệ theo schema:
     }
   ]
 }
+
+Trả lời bằng JSON hợp lệ.
 """;
 
         var userPrompt = $"""
@@ -94,15 +94,42 @@ DANH SÁCH MÓN ĂN DATABASE
 {foodListJson}
 """;
 
-        var resultJson = await CallGeminiWithRetryAsync(systemInstruction, userPrompt, isJsonMode: true);
+        var resultJson = await CallGroqWithRetryAsync(systemInstruction, userPrompt, isJsonMode: true);
         
         // Clean up markdown block if API returns it
-        if (resultJson.StartsWith("```json")) resultJson = resultJson.Substring(7);
-        if (resultJson.StartsWith("```")) resultJson = resultJson.Substring(3);
-        if (resultJson.EndsWith("```")) resultJson = resultJson.Substring(0, resultJson.Length - 3);
+        if (resultJson.Contains("```json"))
+        {
+            var startIndex = resultJson.IndexOf("```json") + 7;
+            var endIndex = resultJson.LastIndexOf("```");
+            if (endIndex > startIndex)
+            {
+                resultJson = resultJson.Substring(startIndex, endIndex - startIndex);
+            }
+        }
+        else if (resultJson.Contains("```"))
+        {
+            var startIndex = resultJson.IndexOf("```") + 3;
+            var endIndex = resultJson.LastIndexOf("```");
+            if (endIndex > startIndex)
+            {
+                resultJson = resultJson.Substring(startIndex, endIndex - startIndex);
+            }
+        }
+
+        var jsonStart = resultJson.IndexOf('{');
+        var jsonEnd = resultJson.LastIndexOf('}');
+        if (jsonStart >= 0 && jsonEnd > jsonStart)
+        {
+            resultJson = resultJson.Substring(jsonStart, jsonEnd - jsonStart + 1);
+        }
+        
         resultJson = resultJson.Trim();
 
-        var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+        var options = new JsonSerializerOptions 
+        { 
+            PropertyNameCaseInsensitive = true,
+            NumberHandling = JsonNumberHandling.AllowReadingFromString
+        };
         return JsonSerializer.Deserialize<DietPlanResponse>(resultJson, options)
             ?? throw new Exception("Không đọc được JSON từ AI.");
     }
@@ -133,80 +160,96 @@ LỊCH SỬ CHAT
 {conversation}
 """;
 
-        var reply = await CallGeminiWithRetryAsync(systemInstruction, prompt, isJsonMode: false);
+        var reply = await CallGroqWithRetryAsync(systemInstruction, prompt, isJsonMode: false);
         return reply.Trim().Trim('"', '\'');
     }
 
-    private async Task<string> CallGeminiWithRetryAsync(string systemInstruction, string userPrompt, bool isJsonMode = false, int maxRetries = 3)
+    private async Task<string> CallGroqWithRetryAsync(string systemInstruction, string userPrompt, bool isJsonMode = false, int maxRetries = 3)
     {
         for (int attempt = 1; attempt <= maxRetries; attempt++)
         {
             try
             {
-                return await CallGeminiAsync(systemInstruction, userPrompt, isJsonMode);
+                return await CallGroqAsync(systemInstruction, userPrompt, isJsonMode);
             }
-            catch (HttpRequestException ex) when (attempt < maxRetries && IsTransientError(ex))
+            catch (Exception ex) when (attempt < maxRetries && IsTransientError(ex))
             {
                 var delay = TimeSpan.FromMilliseconds((int)Math.Pow(2, attempt) * 1000 + _jitter.Next(0, 1000));
-                _logger.LogWarning(ex, "Gemini API transient error (attempt {Attempt}/{MaxRetries}), retrying in {Delay}ms", attempt, maxRetries, delay.TotalMilliseconds);
+                _logger.LogWarning(ex, "Groq API transient error (attempt {Attempt}/{MaxRetries}), retrying in {Delay}ms", attempt, maxRetries, delay.TotalMilliseconds);
                 await Task.Delay(delay);
             }
         }
 
-        return await CallGeminiAsync(systemInstruction, userPrompt, isJsonMode);
+        throw new Exception("Exceeded max retries for Groq API.");
     }
 
-    private static bool IsTransientError(HttpRequestException ex)
+    private static bool IsTransientError(Exception ex)
     {
-        return ex.StatusCode switch
+        if (ex is TaskCanceledException) return true;
+        if (ex is HttpRequestException httpEx && httpEx.StatusCode.HasValue)
         {
-            System.Net.HttpStatusCode.TooManyRequests => true,
-            System.Net.HttpStatusCode.ServiceUnavailable => true,
-            System.Net.HttpStatusCode.BadGateway => true,
-            System.Net.HttpStatusCode.GatewayTimeout => true,
-            _ => false
-        };
+            var code = (int)httpEx.StatusCode.Value;
+            if (code == 429 || code == 500 || code == 502 || code == 503 || code == 504)
+                return true;
+        }
+        return false;
     }
 
-    private async Task<string> CallGeminiAsync(string systemInstruction, string userPrompt, bool isJsonMode)
+    private async Task<string> CallGroqAsync(string systemInstruction, string userPrompt, bool isJsonMode)
     {
-        object config = isJsonMode 
-            ? new { responseMimeType = "application/json", temperature = 0.2 }
-            : new { temperature = 0.7 };
-
-        var requestBody = new
+        var messages = new[]
         {
-            contents = new[]
-            {
-                new { role = "user", parts = new[] { new { text = userPrompt } } }
-            },
-            systemInstruction = new { parts = new[] { new { text = systemInstruction } } },
-            generationConfig = config
+            new { role = "system", content = systemInstruction },
+            new { role = "user", content = userPrompt }
         };
+
+        var requestBody = new Dictionary<string, object>
+        {
+            { "model", _model },
+            { "messages", messages },
+            { "temperature", isJsonMode ? 0.2 : 0.7 }
+        };
+
+        if (isJsonMode)
+        {
+            requestBody.Add("response_format", new { type = "json_object" });
+        }
 
         var json = JsonSerializer.Serialize(requestBody);
         var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-        var response = await _httpClient.PostAsync(
-            $"{_baseUrl}{_model}:generateContent?key={_apiKey}",
-            content);
+        var response = await _httpClient.PostAsync(_baseUrl, content);
 
         if (!response.IsSuccessStatusCode)
         {
             var errorContent = await response.Content.ReadAsStringAsync();
-            throw new HttpRequestException($"Gemini API error ({response.StatusCode}): {errorContent}", null, response.StatusCode);
+            _logger.LogError("Groq API error ({StatusCode}): {ErrorContent}", response.StatusCode, errorContent);
+            throw new HttpRequestException($"Groq API error ({response.StatusCode}): {errorContent}", null, response.StatusCode);
         }
 
         var rawJson = await response.Content.ReadAsStringAsync();
 
         using var doc = JsonDocument.Parse(rawJson);
-        var text = doc.RootElement
-            .GetProperty("candidates")[0]
-            .GetProperty("content")
-            .GetProperty("parts")[0]
-            .GetProperty("text")
-            .GetString();
+        var root = doc.RootElement;
 
+        if (!root.TryGetProperty("choices", out var choices) || choices.ValueKind != JsonValueKind.Array || choices.GetArrayLength() == 0)
+        {
+            throw new Exception("Invalid response format: 'choices' array is missing or empty.");
+        }
+
+        var choice = choices[0];
+        
+        if (choice.TryGetProperty("finish_reason", out var finishReason) && finishReason.GetString() == "length")
+        {
+            _logger.LogWarning("Groq API warning: finish_reason is 'length' (response was cut off).");
+        }
+
+        if (!choice.TryGetProperty("message", out var message) || !message.TryGetProperty("content", out var textElement))
+        {
+            throw new Exception("Invalid response format: 'message.content' is missing.");
+        }
+
+        var text = textElement.GetString();
         return text ?? "{}";
     }
 }

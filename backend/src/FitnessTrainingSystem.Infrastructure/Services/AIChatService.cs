@@ -242,22 +242,14 @@ Weight: {metric?.Weight ?? 65}
             metric = new BodyMetric { Height = 170, Weight = 65 };
         }
 
-        var foods = await _context.Foods.ToListAsync();
+        var foods = await _context.Foods
+            .AsNoTracking()
+            .Select(x => new { x.Id, x.Name, x.Calories, x.Protein, x.Carbs, x.Fat })
+            .Take(100)
+            .ToListAsync();
 
-        var foodObj = new
-        {
-            food_list = foods.Select(x => new
-            {
-                food_id = x.Id,
-                food_name = x.Name,
-                calories = x.Calories,
-                protein = Convert.ToDouble(x.Protein),
-                carbs = Convert.ToDouble(x.Carbs),
-                fat = Convert.ToDouble(x.Fat)
-            }).ToList()
-        };
-
-        var foodJson = System.Text.Json.JsonSerializer.Serialize(foodObj);
+        var foodLines = foods.Select(x => $"{x.Id},{x.Name},{x.Calories},{x.Protein},{x.Carbs},{x.Fat}");
+        var foodJson = string.Join("\n", foodLines);
 
         var historyMessages = session.Messages
             .OrderByDescending(x => x.CreatedAt)
