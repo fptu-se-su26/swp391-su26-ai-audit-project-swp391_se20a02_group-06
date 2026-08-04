@@ -166,16 +166,8 @@ public class NutritionService : INutritionService
 
                 if (log == null)
                 {
-                    // Call GetDailySummaryAsync WITHOUT its own strategy because we're already inside one, wait, GetDailySummaryAsync starts its own transaction and strategy.
-                    // To avoid nested strategy issues, we can just duplicate the logic or ensure GetDailySummaryAsync handles it.
-                    // Wait, if GetDailySummaryAsync has its own transaction, calling it inside this strategy might cause issues with nested transactions in EF Core depending on provider.
-                    // Instead, we just commit this transaction, call GetDailySummaryAsync, then start a new one if needed? 
-                    // Actually, if we just call GetDailySummaryAsync, it will create it. We can rollback our current transaction.
                     await transaction.RollbackAsync();
-                    
                     await GetDailySummaryAsync(userId, date);
-                    
-                    // Restart transaction for the update part
                     return await LogWaterInternalAsync(userId, date, dto);
                 }
 

@@ -67,18 +67,15 @@ public class BodyMetricService : IBodyMetricService
         }
 
         // Update user's age/gender if provided
-        bool userUpdated = false;
         if (dto.Gender != null && user.Gender != dto.Gender)
         {
             user.Gender = dto.Gender;
-            userUpdated = true;
         }
         if (dto.Age.HasValue)
         {
             // Simple date of birth calculation from age
             var dob = DateTime.UtcNow.AddYears(-dto.Age.Value);
             user.DateOfBirth = dob;
-            userUpdated = true;
         }
 
         var metric = new BodyMetric

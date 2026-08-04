@@ -9,6 +9,7 @@ export interface ProductPackage {
     description: string
     isActive: boolean
     isPopular: boolean
+    tier: number
 }
 
 export const getProductPackages = async (): Promise<ProductPackage[]> => {

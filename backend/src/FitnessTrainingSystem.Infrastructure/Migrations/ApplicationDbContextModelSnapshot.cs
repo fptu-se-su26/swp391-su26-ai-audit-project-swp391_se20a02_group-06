@@ -57,7 +57,7 @@ namespace FitnessTrainingSystem.Infrastructure.Migrations
                     b.HasKey("Id")
                         .HasName("pk_ai_recommendations");
 
-                    b.HasIndex("UserId")
+                    b.HasIndex(new[] { "UserId" }, "user_id")
                         .HasDatabaseName("ix_ai_recommendations_user_id");
 
                     b.ToTable("ai_recommendations", (string)null);
@@ -109,10 +109,82 @@ namespace FitnessTrainingSystem.Infrastructure.Migrations
                     b.ToTable("body_metrics", (string)null);
                 });
 
+            modelBuilder.Entity("FitnessTrainingSystem.Domain.Entities.DailyNutritionLog", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("id");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<decimal>("CaloriesBurned")
+                        .HasColumnType("decimal(65,30)")
+                        .HasColumnName("calories_burned");
+
+                    b.Property<int>("CaloriesConsumed")
+                        .HasColumnType("int")
+                        .HasColumnName("calories_consumed");
+
+                    b.Property<int>("CaloriesTarget")
+                        .HasColumnType("int")
+                        .HasColumnName("calories_target");
+
+                    b.Property<decimal>("CarbsConsumedGrams")
+                        .HasColumnType("decimal(65,30)")
+                        .HasColumnName("carbs_consumed_grams");
+
+                    b.Property<decimal>("CarbsTargetGrams")
+                        .HasColumnType("decimal(65,30)")
+                        .HasColumnName("carbs_target_grams");
+
+                    b.Property<decimal>("FatConsumedGrams")
+                        .HasColumnType("decimal(65,30)")
+                        .HasColumnName("fat_consumed_grams");
+
+                    b.Property<decimal>("FatTargetGrams")
+                        .HasColumnType("decimal(65,30)")
+                        .HasColumnName("fat_target_grams");
+
+                    b.Property<DateTime>("LogDate")
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("log_date");
+
+                    b.Property<decimal>("ProteinConsumedGrams")
+                        .HasColumnType("decimal(65,30)")
+                        .HasColumnName("protein_consumed_grams");
+
+                    b.Property<decimal>("ProteinTargetGrams")
+                        .HasColumnType("decimal(65,30)")
+                        .HasColumnName("protein_target_grams");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int")
+                        .HasColumnName("user_id");
+
+                    b.Property<int>("WaterConsumedGlasses")
+                        .HasColumnType("int")
+                        .HasColumnName("water_consumed_glasses");
+
+                    b.Property<int>("WaterTargetGlasses")
+                        .HasColumnType("int")
+                        .HasColumnName("water_target_glasses");
+
+                    b.HasKey("Id")
+                        .HasName("pk_daily_nutrition_logs");
+
+                    b.HasIndex("UserId", "LogDate")
+                        .IsUnique()
+                        .HasDatabaseName("IX_DailyNutritionLog_UserId_LogDate");
+
+                    b.ToTable("daily_nutrition_logs", (string)null);
+                });
+
             modelBuilder.Entity("FitnessTrainingSystem.Domain.Entities.EmailOTP", b =>
                 {
                     b.Property<string>("Id")
-                        .HasColumnType("varchar(255)")
+                        .HasMaxLength(36)
+                        .HasColumnType("varchar(36)")
                         .HasColumnName("id");
 
                     b.Property<int>("AttemptCount")
@@ -125,7 +197,8 @@ namespace FitnessTrainingSystem.Infrastructure.Migrations
 
                     b.Property<string>("Email")
                         .IsRequired()
-                        .HasColumnType("longtext")
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)")
                         .HasColumnName("email");
 
                     b.Property<DateTime>("ExpiredAt")
@@ -143,7 +216,8 @@ namespace FitnessTrainingSystem.Infrastructure.Migrations
 
                     b.Property<string>("Purpose")
                         .IsRequired()
-                        .HasColumnType("longtext")
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)")
                         .HasColumnName("purpose");
 
                     b.Property<DateTime>("UpdatedAt")
@@ -151,9 +225,18 @@ namespace FitnessTrainingSystem.Infrastructure.Migrations
                         .HasColumnName("updated_at");
 
                     b.HasKey("Id")
-                        .HasName("pk_email_ot_ps");
+                        .HasName("pk_email_otp");
 
-                    b.ToTable("email_ot_ps", (string)null);
+                    b.HasIndex("Email")
+                        .HasDatabaseName("IX_EmailOTP_Email");
+
+                    b.HasIndex("ExpiredAt")
+                        .HasDatabaseName("IX_EmailOTP_ExpiredAt");
+
+                    b.HasIndex("Purpose")
+                        .HasDatabaseName("IX_EmailOTP_Purpose");
+
+                    b.ToTable("EmailOTP", (string)null);
                 });
 
             modelBuilder.Entity("FitnessTrainingSystem.Domain.Entities.Exercise", b =>
@@ -173,6 +256,10 @@ namespace FitnessTrainingSystem.Infrastructure.Migrations
                         .HasColumnType("int")
                         .HasColumnName("created_by");
 
+                    b.Property<int?>("CreatorId")
+                        .HasColumnType("int")
+                        .HasColumnName("creator_id");
+
                     b.Property<string>("Description")
                         .HasColumnType("longtext")
                         .HasColumnName("description");
@@ -181,9 +268,13 @@ namespace FitnessTrainingSystem.Infrastructure.Migrations
                         .HasColumnType("int")
                         .HasColumnName("difficulty");
 
-                    b.Property<int?>("DurationMinutes")
+                    b.Property<int?>("Duration")
                         .HasColumnType("int")
                         .HasColumnName("duration");
+
+                    b.Property<string>("MuscleGroup")
+                        .HasColumnType("longtext")
+                        .HasColumnName("muscle_group");
 
                     b.Property<int?>("MuscleGroupId")
                         .HasColumnType("int")
@@ -201,8 +292,8 @@ namespace FitnessTrainingSystem.Infrastructure.Migrations
                     b.HasKey("Id")
                         .HasName("pk_exercises");
 
-                    b.HasIndex("CreatedBy")
-                        .HasDatabaseName("ix_exercises_created_by");
+                    b.HasIndex("CreatorId")
+                        .HasDatabaseName("ix_exercises_creator_id");
 
                     b.HasIndex("MuscleGroupId")
                         .HasDatabaseName("ix_exercises_muscle_group_id");
@@ -392,55 +483,6 @@ namespace FitnessTrainingSystem.Infrastructure.Migrations
                         .HasDatabaseName("ix_membership_subscriptions_user_id");
 
                     b.ToTable("membership_subscriptions", (string)null);
-                });
-
-            modelBuilder.Entity("FitnessTrainingSystem.Domain.Entities.MealScheduleItem", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasColumnName("id");
-
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Amount")
-                        .IsRequired()
-                        .HasColumnType("longtext")
-                        .HasColumnName("amount");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime(6)")
-                        .HasColumnName("created_at");
-
-                    b.Property<int>("FoodId")
-                        .HasColumnType("int")
-                        .HasColumnName("food_id");
-
-                    b.Property<bool>("IsEaten")
-                        .HasColumnType("tinyint(1)")
-                        .HasColumnName("is_eaten");
-
-                    b.Property<int>("MealScheduleId")
-                        .HasColumnType("int")
-                        .HasColumnName("meal_schedule_id");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("int")
-                        .HasColumnName("user_id");
-
-                    b.HasKey("Id")
-                        .HasName("pk_menus");
-
-                    b.HasIndex("FoodId")
-                        .HasDatabaseName("ix_menus_food_id");
-
-                    b.HasIndex("MealScheduleId")
-                        .HasDatabaseName("ix_menus_meal_schedule_id");
-
-                    b.HasIndex("UserId")
-                        .HasDatabaseName("ix_menus_user_id");
-
-                    b.ToTable("menus", (string)null);
                 });
 
             modelBuilder.Entity("FitnessTrainingSystem.Domain.Entities.MuscleGroup", b =>
@@ -687,17 +729,45 @@ namespace FitnessTrainingSystem.Infrastructure.Migrations
                         .HasColumnType("int")
                         .HasColumnName("admin_id");
 
+                    b.Property<DateTime?>("Deadline")
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("deadline");
+
                     b.Property<string>("Description")
                         .HasColumnType("longtext")
                         .HasColumnName("description");
+
+                    b.Property<int?>("Difficulty")
+                        .HasColumnType("int")
+                        .HasColumnName("difficulty");
+
+                    b.Property<int?>("Duration")
+                        .HasColumnType("int")
+                        .HasColumnName("duration");
 
                     b.Property<int?>("ExerciseId")
                         .HasColumnType("int")
                         .HasColumnName("exercise_id");
 
+                    b.Property<string>("Instructions")
+                        .HasColumnType("longtext")
+                        .HasColumnName("instructions");
+
+                    b.Property<string>("MuscleGroup")
+                        .HasColumnType("longtext")
+                        .HasColumnName("muscle_group");
+
+                    b.Property<string>("Priority")
+                        .HasColumnType("longtext")
+                        .HasColumnName("priority");
+
                     b.Property<int>("PtId")
                         .HasColumnType("int")
                         .HasColumnName("pt_id");
+
+                    b.Property<int?>("RequestedBy")
+                        .HasColumnType("int")
+                        .HasColumnName("requested_by");
 
                     b.Property<string>("ReviewNote")
                         .HasColumnType("longtext")
@@ -716,12 +786,10 @@ namespace FitnessTrainingSystem.Infrastructure.Migrations
                         .HasColumnName("submitted_at");
 
                     b.Property<string>("Title")
-                        .IsRequired()
                         .HasColumnType("longtext")
                         .HasColumnName("title");
 
                     b.Property<string>("VideoUrl")
-                        .IsRequired()
                         .HasColumnType("longtext")
                         .HasColumnName("video_url");
 
@@ -736,6 +804,9 @@ namespace FitnessTrainingSystem.Infrastructure.Migrations
 
                     b.HasIndex("PtId")
                         .HasDatabaseName("ix_pt_upload_requests_pt_id");
+
+                    b.HasIndex("RequestedBy")
+                        .HasDatabaseName("ix_pt_upload_requests_requested_by");
 
                     b.ToTable("pt_upload_requests", (string)null);
                 });
@@ -831,6 +902,10 @@ namespace FitnessTrainingSystem.Infrastructure.Migrations
                         .HasColumnType("longtext")
                         .HasColumnName("email");
 
+                    b.Property<string>("FitnessGoal")
+                        .HasColumnType("longtext")
+                        .HasColumnName("fitness_goal");
+
                     b.Property<string>("Fullname")
                         .IsRequired()
                         .HasColumnType("longtext")
@@ -868,6 +943,14 @@ namespace FitnessTrainingSystem.Infrastructure.Migrations
                         .HasColumnType("datetime(6)")
                         .HasColumnName("updated_at");
 
+                    b.Property<string>("WaterReminderEndTime")
+                        .HasColumnType("longtext")
+                        .HasColumnName("water_reminder_end_time");
+
+                    b.Property<string>("WaterReminderStartTime")
+                        .HasColumnType("longtext")
+                        .HasColumnName("water_reminder_start_time");
+
                     b.HasKey("Id")
                         .HasName("pk_users");
 
@@ -875,51 +958,6 @@ namespace FitnessTrainingSystem.Infrastructure.Migrations
                         .HasDatabaseName("ix_users_role_id");
 
                     b.ToTable("users", (string)null);
-                });
-
-            modelBuilder.Entity("FitnessTrainingSystem.Domain.Entities.WorkoutPlan", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasColumnName("id");
-
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int?>("ExerciseId")
-                        .HasColumnType("int")
-                        .HasColumnName("exercise_id");
-
-                    b.Property<DateTime>("LoggedAt")
-                        .HasColumnType("datetime(6)")
-                        .HasColumnName("logged_at");
-
-                    b.Property<int?>("Reps")
-                        .HasColumnType("int")
-                        .HasColumnName("reps");
-
-                    b.Property<int?>("Sets")
-                        .HasColumnType("int")
-                        .HasColumnName("sets");
-
-                    b.Property<int?>("UserId")
-                        .HasColumnType("int")
-                        .HasColumnName("user_id");
-
-                    b.Property<decimal?>("WeightKg")
-                        .HasColumnType("decimal(65,30)")
-                        .HasColumnName("weight_kg");
-
-                    b.HasKey("Id")
-                        .HasName("pk_workout_logs");
-
-                    b.HasIndex("ExerciseId")
-                        .HasDatabaseName("ix_workout_logs_exercise_id");
-
-                    b.HasIndex("UserId")
-                        .HasDatabaseName("ix_workout_logs_user_id");
-
-                    b.ToTable("workout_logs", (string)null);
                 });
 
             modelBuilder.Entity("FitnessTrainingSystem.Domain.Entities.WorkoutPlan", b =>
@@ -1142,21 +1180,31 @@ namespace FitnessTrainingSystem.Infrastructure.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("FitnessTrainingSystem.Domain.Entities.DailyNutritionLog", b =>
+                {
+                    b.HasOne("FitnessTrainingSystem.Domain.Entities.User", "User")
+                        .WithMany("DailyNutritionLogs")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_daily_nutrition_logs_users_user_id");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("FitnessTrainingSystem.Domain.Entities.Exercise", b =>
                 {
                     b.HasOne("FitnessTrainingSystem.Domain.Entities.User", "Creator")
                         .WithMany("CreatedExercises")
-                        .HasForeignKey("CreatedBy")
-                        .HasConstraintName("fk_exercises_users_created_by");
+                        .HasForeignKey("CreatorId")
+                        .HasConstraintName("fk_exercises_users_creator_id");
 
-                    b.HasOne("FitnessTrainingSystem.Domain.Entities.MuscleGroup", "MuscleGroup")
+                    b.HasOne("FitnessTrainingSystem.Domain.Entities.MuscleGroup", null)
                         .WithMany("Exercises")
                         .HasForeignKey("MuscleGroupId")
                         .HasConstraintName("fk_exercises_muscle_groups_muscle_group_id");
 
                     b.Navigation("Creator");
-
-                    b.Navigation("MuscleGroup");
                 });
 
             modelBuilder.Entity("FitnessTrainingSystem.Domain.Entities.MealSchedule", b =>
@@ -1227,74 +1275,6 @@ namespace FitnessTrainingSystem.Infrastructure.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("FitnessTrainingSystem.Domain.Entities.Menu", b =>
-                {
-                    b.HasOne("FitnessTrainingSystem.Domain.Entities.Food", "Food")
-                        .WithMany()
-                        .HasForeignKey("FoodId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_menus_foods_food_id");
-
-                    b.HasOne("FitnessTrainingSystem.Domain.Entities.MealSchedule", "MealSchedule")
-                        .WithMany()
-                        .HasForeignKey("MealScheduleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_menus_meal_schedules_meal_schedule_id");
-
-                    b.HasOne("FitnessTrainingSystem.Domain.Entities.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_menus_users_user_id");
-
-                    b.Navigation("Food");
-
-                    b.Navigation("MealSchedule");
-                });
-
-            modelBuilder.Entity("FitnessTrainingSystem.Domain.Entities.MembershipSubscription", b =>
-                {
-                    b.HasOne("FitnessTrainingSystem.Domain.Entities.Order", "Order")
-                        .WithMany()
-                        .HasForeignKey("OrderId")
-                        .HasConstraintName("fk_membership_subscriptions_orders_order_id");
-
-                    b.HasOne("FitnessTrainingSystem.Domain.Entities.ProductPackage", "Package")
-                        .WithMany()
-                        .HasForeignKey("PackageId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_membership_subscriptions_product_packages_package_id");
-
-                    b.HasOne("FitnessTrainingSystem.Domain.Entities.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_membership_subscriptions_users_user_id");
-
-                    b.Navigation("Order");
-
-                    b.Navigation("Package");
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("FitnessTrainingSystem.Domain.Entities.Notification", b =>
-                {
-                    b.HasOne("FitnessTrainingSystem.Domain.Entities.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_notifications_users_user_id");
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("FitnessTrainingSystem.Domain.Entities.Notification", b =>
                 {
                     b.HasOne("FitnessTrainingSystem.Domain.Entities.User", "User")
@@ -1353,6 +1333,7 @@ namespace FitnessTrainingSystem.Infrastructure.Migrations
                     b.HasOne("FitnessTrainingSystem.Domain.Entities.User", "Admin")
                         .WithMany()
                         .HasForeignKey("AdminId")
+                        .OnDelete(DeleteBehavior.Restrict)
                         .HasConstraintName("fk_pt_upload_requests_users_admin_id");
 
                     b.HasOne("FitnessTrainingSystem.Domain.Entities.Exercise", "Exercise")
@@ -1367,11 +1348,19 @@ namespace FitnessTrainingSystem.Infrastructure.Migrations
                         .IsRequired()
                         .HasConstraintName("fk_pt_upload_requests_users_pt_id");
 
+                    b.HasOne("FitnessTrainingSystem.Domain.Entities.User", "RequestedByUser")
+                        .WithMany()
+                        .HasForeignKey("RequestedBy")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .HasConstraintName("fk_pt_upload_requests_users_requested_by");
+
                     b.Navigation("Admin");
 
                     b.Navigation("Exercise");
 
                     b.Navigation("Pt");
+
+                    b.Navigation("RequestedByUser");
                 });
 
             modelBuilder.Entity("FitnessTrainingSystem.Domain.Entities.Schedule", b =>
@@ -1401,63 +1390,6 @@ namespace FitnessTrainingSystem.Infrastructure.Migrations
                         .HasConstraintName("fk_users_roles_role_id");
 
                     b.Navigation("Role");
-                });
-
-            modelBuilder.Entity("FitnessTrainingSystem.Domain.Entities.WorkoutPlan", b =>
-                {
-                    b.HasOne("FitnessTrainingSystem.Domain.Entities.Exercise", "Exercise")
-                        .WithMany()
-                        .HasForeignKey("ExerciseId")
-                        .HasConstraintName("fk_workout_logs_exercises_exercise_id");
-
-                    b.HasOne("FitnessTrainingSystem.Domain.Entities.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .HasConstraintName("fk_workout_logs_users_user_id");
-
-                    b.Navigation("Exercise");
-
-                    b.Navigation("WorkoutPlan");
-                });
-
-            modelBuilder.Entity("FitnessTrainingSystem.Domain.Entities.WorkoutSession", b =>
-                {
-                    b.HasOne("FitnessTrainingSystem.Domain.Entities.User", "User")
-                        .WithMany("WorkoutSessions")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_workout_sessions_users_user_id");
-
-                    b.HasOne("FitnessTrainingSystem.Domain.Entities.WorkoutPlan", "WorkoutPlan")
-                        .WithMany("WorkoutSessions")
-                        .HasForeignKey("WorkoutPlanId")
-                        .HasConstraintName("fk_workout_sessions_workout_plans_workout_plan_id");
-
-                    b.Navigation("User");
-
-                    b.Navigation("WorkoutPlan");
-                });
-
-            modelBuilder.Entity("FitnessTrainingSystem.Domain.Entities.WorkoutSessionDetail", b =>
-                {
-                    b.HasOne("FitnessTrainingSystem.Domain.Entities.Exercise", "Exercise")
-                        .WithMany("WorkoutSessionDetails")
-                        .HasForeignKey("ExerciseId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_workout_session_details_exercises_exercise_id");
-
-                    b.HasOne("FitnessTrainingSystem.Domain.Entities.WorkoutSession", "WorkoutSession")
-                        .WithMany("WorkoutSessionDetails")
-                        .HasForeignKey("WorkoutSessionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_workout_session_details_workout_sessions_workout_session_id");
-
-                    b.Navigation("Exercise");
-
-                    b.Navigation("WorkoutSession");
                 });
 
             modelBuilder.Entity("FitnessTrainingSystem.Domain.Entities.WorkoutPlan", b =>

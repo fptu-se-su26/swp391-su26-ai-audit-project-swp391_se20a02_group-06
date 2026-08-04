@@ -23,11 +23,9 @@ import {
     Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalFooter, IconButton
 } from '@chakra-ui/react'
 import AdminLayout from '../../components/shared/Layout/AdminLayout'
-import AppButton from '../../components/shared/Button/AppButton'
 import { FiSearch, FiCalendar, FiX } from 'react-icons/fi'
 import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
-import { Button as ShadcnButton } from '@/components/ui/button'
 import { 
     startOfWeek, endOfWeek, startOfMonth, endOfMonth, 
     startOfYear, endOfYear, isWithinInterval 
@@ -191,10 +189,6 @@ const AdminPayments: React.FC = () => {
                     <Heading fontSize="28px" fontWeight="900" color="white" textTransform="uppercase">
                         Payments & Revenue
                     </Heading>
-                    <HStack spacing={4}>
-                        <ShadcnButton variant="default">Shadcn Button</ShadcnButton>
-                        <AppButton label="Export Report" size="sm" />
-                    </HStack>
                 </Flex>
 
                 <Grid templateColumns="repeat(4, 1fr)" gap="4" mb="7">
@@ -247,7 +241,6 @@ const AdminPayments: React.FC = () => {
                                 <option value="Completed" style={{ background: '#141720' }}>Completed</option>
                                 <option value="Pending" style={{ background: '#141720' }}>Pending</option>
                                 <option value="Failed" style={{ background: '#141720' }}>Failed</option>
-                                <option value="Refunded" style={{ background: '#141720' }}>Refunded</option>
                             </Select>
                         </HStack>
 

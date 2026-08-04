@@ -14,7 +14,7 @@ import {
 } from '@chakra-ui/react'
 import useSWR from 'swr'
 import apiClient from '../../lib/axios'
-import AdminLayout from '../../components/shared/Layout/AdminLayout'
+import PTLayout from '../../components/shared/Layout/PTLayout'
 
 interface ClientDto {
     id: number;
@@ -32,7 +32,7 @@ const PTClients: React.FC = () => {
     const { data: clients, error, isLoading } = useSWR<ClientDto[]>('/pt-clients', fetcher)
 
     return (
-        <AdminLayout>
+        <PTLayout>
             <Box p="7" maxW="1200px">
                 <Flex justify="space-between" align="center" mb="7">
                     <Heading fontSize="24px" fontWeight="800" color="white">
@@ -77,7 +77,7 @@ const PTClients: React.FC = () => {
                     )}
                 </Box>
             </Box>
-        </AdminLayout>
+        </PTLayout>
     )
 }
 

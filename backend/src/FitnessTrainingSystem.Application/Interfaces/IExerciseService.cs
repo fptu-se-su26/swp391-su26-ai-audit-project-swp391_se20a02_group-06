@@ -1,4 +1,5 @@
 using FitnessTrainingSystem.Application.DTOs.Exercises;
+using FitnessTrainingSystem.Application.DTOs.Workouts;
 
 namespace FitnessTrainingSystem.Application.Interfaces;
 
@@ -12,4 +13,5 @@ public interface IExerciseService
     Task<ExerciseDto> CreateAsync(CreateExerciseDto dto, int createdByUserId);
     Task<bool> UpdateAsync(int id, UpdateExerciseDto dto);
     Task<bool> DeleteAsync(int id);
+    Task<List<AvailableExerciseDto>> GetAvailableExercisesByMuscleGroupAsync(string muscleGroup, CancellationToken cancellationToken = default);
 }

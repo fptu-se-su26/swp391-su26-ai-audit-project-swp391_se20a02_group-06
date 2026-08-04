@@ -24,7 +24,8 @@ import {
 } from '@chakra-ui/react'
 import useSWR from 'swr'
 import apiClient from '../../lib/axios'
-import AdminLayout from '../../components/shared/Layout/AdminLayout.tsx'
+import AdminLayout from '../../components/shared/Layout/AdminLayout'
+import PTLayout from '../../components/shared/Layout/PTLayout'
 
 import { uploadVideo } from '../../api/upload'
 import { useAuthStore } from '../../store/useAuthStore'
@@ -78,6 +79,7 @@ const AdminWorkouts: React.FC = () => {
     const { data: packages } = useSWR<ProductPackageDto[]>('/product-packages', fetcher)
     const { data: creators } = useSWR<CreatorDto[]>('/user/creators', fetcher)
     const roleId = useAuthStore(state => state.roleId)
+    const Layout = roleId === 2 ? PTLayout : AdminLayout
     const [isSubmitting, setIsSubmitting] = useState(false)
     const [isUploadingVideo, setIsUploadingVideo] = useState(false)
     const [editingExercise, setEditingExercise] = useState<ExerciseDto | null>(null)
@@ -421,7 +423,7 @@ const AdminWorkouts: React.FC = () => {
     )
 
     return (
-        <AdminLayout>
+        <Layout>
             <Box p="7" maxW="1440px">
                 <Heading fontSize="24px" fontWeight="800" color="white" mb="7">
                     Exercise Management
@@ -518,7 +520,7 @@ const AdminWorkouts: React.FC = () => {
                     </form>
                 </ModalContent>
             </Modal>
-        </AdminLayout>
+        </Layout>
     )
 }
 

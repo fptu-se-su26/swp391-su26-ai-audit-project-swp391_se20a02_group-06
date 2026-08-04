@@ -1,9 +1,8 @@
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
 using FitnessTrainingSystem.Application.DTOs.BodyMetric;
 using FitnessTrainingSystem.Application.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace FitnessTrainingSystem.WebApi.Controllers;
 
@@ -22,7 +21,7 @@ public class BodyMetricsController : ControllerBase
     [HttpGet("latest")]
     public async Task<IActionResult> GetLatestMetric()
     {
-        var userIdString = User.FindFirst(JwtRegisteredClaimNames.Sub)?.Value ?? User.FindFirst(JwtRegisteredClaimNames.Sub)?.Value ?? User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        var userIdString = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         if (string.IsNullOrEmpty(userIdString) || !int.TryParse(userIdString, out int userId))
         {
             return Unauthorized();
@@ -40,7 +39,7 @@ public class BodyMetricsController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetAllMetrics()
     {
-        var userIdString = User.FindFirst(JwtRegisteredClaimNames.Sub)?.Value ?? User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        var userIdString = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         if (string.IsNullOrEmpty(userIdString) || !int.TryParse(userIdString, out int userId))
         {
             return Unauthorized();
@@ -58,7 +57,7 @@ public class BodyMetricsController : ControllerBase
             return BadRequest(ModelState);
         }
 
-        var userIdString = User.FindFirst(JwtRegisteredClaimNames.Sub)?.Value ?? User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        var userIdString = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         if (string.IsNullOrEmpty(userIdString) || !int.TryParse(userIdString, out int userId))
         {
             return Unauthorized();

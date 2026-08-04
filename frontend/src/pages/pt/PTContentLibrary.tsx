@@ -1,4 +1,4 @@
-﻿import React, { useRef, useMemo, useState } from 'react'
+import React, { useRef, useMemo, useState } from 'react'
 import {
     Box, Flex, Grid, Heading, Icon, Text, Spinner, useDisclosure, useToast,
     Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, ModalFooter,
@@ -9,7 +9,7 @@ import {
 import { FiUpload, FiSave } from 'react-icons/fi'
 import useSWR from 'swr'
 import apiClient from '../../lib/axios'
-import AdminLayout from '../../components/shared/Layout/AdminLayout'
+import PTLayout from '../../components/shared/Layout/PTLayout'
 import ExerciseCard from '../../features/pt/components/ExerciseCard'
 import FilterTabs from '../../features/pt/components/FilterTabs'
 import { adminColors } from '../admin/AdminPrimitives'
@@ -451,7 +451,7 @@ const PTContentLibrary: React.FC = () => {
     }
 
     return (
-        <AdminLayout title="PT Portal">
+        <PTLayout title="PT Portal">
             <Box maxW="1280px" mx="auto" w="full">
                 <Flex direction={{ base: 'column', md: 'row' }} justify="space-between" align={{ md: 'center' }} mb="5" gap="4">
                     <Box>
@@ -515,7 +515,7 @@ const PTContentLibrary: React.FC = () => {
                     </AlertDialogFooter>
                 </AlertDialogContent>
             </AlertDialog>
-        </AdminLayout>
+        </PTLayout>
     )
 }
 

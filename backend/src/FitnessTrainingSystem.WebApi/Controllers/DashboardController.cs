@@ -1,5 +1,4 @@
 using System;
-using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using FitnessTrainingSystem.Application.DTOs.Dashboard;
@@ -23,7 +22,7 @@ public class DashboardController : ControllerBase
 
     private int GetCurrentUserId()
     {
-        var userIdString = User.FindFirst(JwtRegisteredClaimNames.Sub)?.Value ?? User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        var userIdString = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         if (int.TryParse(userIdString, out var userId))
             return userId;
         throw new UnauthorizedAccessException("User not authenticated.");

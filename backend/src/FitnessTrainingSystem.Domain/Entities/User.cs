@@ -37,4 +37,6 @@ public class User : BaseAuditableEntity
     public ICollection<MembershipSubscription> MembershipSubscriptions { get; set; } = new List<MembershipSubscription>();
     public ICollection<AIChatSession> AIChatSessions = new List<AIChatSession>();
     public ICollection<AIDietHistory> AIDietHistories = new List<AIDietHistory>();
+
+    public string? FitnessGoal { get; set; }
 }

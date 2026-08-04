@@ -4,3 +4,12 @@ GET {{FitnessTrainingSystem.WebApi_HostAddress}}/weatherforecast/
 Accept: application/json
 
 ###
+
+POST {{FitnessTrainingSystem.WebApi_HostAddress}}/api/workouts/ai-generate
+Content-Type: application/json
+
+{
+  "muscleGroup": "Chest",
+  "targetCalories": 300,
+  "durationMinutes": 45
+}
