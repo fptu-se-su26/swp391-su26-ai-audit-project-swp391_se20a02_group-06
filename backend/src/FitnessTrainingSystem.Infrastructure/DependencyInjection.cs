@@ -58,9 +58,9 @@ public static class DependencyInjection
 
         services.AddScoped<ICloudinaryService, CloudinaryService>();
 
-        services.AddHttpClient<IGeminiAiService, DirectGeminiService>(client =>
+        services.AddHttpClient<IGeminiAiService, GroqAiService>(client =>
         {
-            client.Timeout = TimeSpan.FromMinutes(5);
+            client.Timeout = TimeSpan.FromSeconds(60);
         });
         services.AddScoped<IAIChatService, AIChatService>();
 

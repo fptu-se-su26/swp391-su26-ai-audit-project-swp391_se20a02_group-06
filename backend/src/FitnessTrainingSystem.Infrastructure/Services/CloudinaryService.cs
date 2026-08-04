@@ -92,4 +92,18 @@ public class CloudinaryService : ICloudinaryService
 
         return result.SecureUrl.ToString();
     }
+
+    public (string signature, long timestamp, string apiKey, string cloudName) GetSignature(string folder = "fitness-training/exercises")
+    {
+        long timestamp = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+        var parameters = new Dictionary<string, object>
+        {
+            { "folder", folder },
+            { "timestamp", timestamp }
+        };
+
+        string signature = _cloudinary.Api.SignParameters(parameters);
+
+        return (signature, timestamp, _cloudinary.Api.Account.ApiKey, _cloudinary.Api.Account.Cloud);
+    }
 }
