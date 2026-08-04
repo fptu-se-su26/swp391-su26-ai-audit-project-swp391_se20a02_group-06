@@ -27,12 +27,26 @@ interface ActivityResponse {
 
 const timeAgo = (iso: string) => {
     const diff = Date.now() - new Date(iso).getTime()
-    const mins  = Math.floor(diff / 60000)
-    const hours = Math.floor(diff / 3600000)
-    const days  = Math.floor(diff / 86400000)
-    if (mins < 60)  return `${mins}m ago`
-    if (hours < 24) return `${hours}h ago`
-    return `${days}d ago`
+    const isFuture = diff < 0
+    const absDiff = Math.abs(diff)
+    
+    const mins  = Math.floor(absDiff / 60000)
+    const hours = Math.floor(absDiff / 3600000)
+    const days  = Math.floor(absDiff / 86400000)
+    
+    let timeStr = ''
+    if (mins < 60) timeStr = `${mins}m`
+    else if (hours < 24) timeStr = `${hours}h`
+    else timeStr = `${days}d`
+    
+    return isFuture ? `in ${timeStr}` : `${timeStr} ago`
+}
+
+const formatBookingTime = (iso: string) => {
+    const d = new Date(iso)
+    const time = d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false })
+    const date = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+    return `${time}, ${date}`
 }
 
 const ActivityFeed: React.FC = () => {
@@ -45,10 +59,10 @@ const ActivityFeed: React.FC = () => {
             iconColor: adminColors.primary,
             text: (
                 <>
-                    <Text as="span" fontWeight="700">{b.memberName}</Text> booked a session
+                    <Text as="span" fontWeight="700">{b.memberName}</Text> booked a session for <Text as="span" color={adminColors.primary}>{formatBookingTime(b.startTime)}</Text>
                 </>
             ),
-            time: timeAgo(b.startTime),
+            time: null,
         })),
         ...(data?.workouts ?? []).map(w => ({
             icon: FiZap,
@@ -97,7 +111,7 @@ const ActivityFeed: React.FC = () => {
                         </Flex>
                         <Box>
                             <Text fontSize="13px" color={adminColors.text}>{item.text}</Text>
-                            <Text fontSize="11px" color={adminColors.dim} mt="0.5">{item.time}</Text>
+                            {item.time && <Text fontSize="11px" color={adminColors.dim} mt="0.5">{item.time}</Text>}
                         </Box>
                     </Flex>
                 ))}
