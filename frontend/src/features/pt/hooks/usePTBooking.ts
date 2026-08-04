@@ -210,7 +210,8 @@ export const usePTBooking = (ptId: number | null): PTBookingContext => {
                 cancelUrl: `${baseUrl}/payment/cancel`
             })
 
-            if (res.data.checkoutUrl) {
+            if (res.data?.checkoutUrl) {
+                localStorage.setItem('payment-kind', 'PT_SESSION')
                 window.location.href = res.data.checkoutUrl
             }
         } catch (error: any) {
