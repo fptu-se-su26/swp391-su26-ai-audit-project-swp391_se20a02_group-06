@@ -257,6 +257,7 @@ DD/MM/YYYY
 | 19 | Sửa lỗi nạp file .env Backend, resolution Gemini API Key và type mapping useWorkoutStore | Đạt | DirectGeminiService.cs, Program.cs, useWorkoutStore.ts | Commit a95bf1c |
 | 20 | Fix lỗi không lưu Workout History (khởi tạo Plan/Session tự động & fallback complete) | Đạt | Workouts.tsx, WorkoutResults.tsx, useWorkoutStore.ts | Commit f8e943d |
 | 21 | Tích hợp Groq AI Nutrition, đồng bộ AI main & Fix lỗi Cloudinary Upload Signature | Đạt | GroqAiService.cs, CloudinaryService.cs, appsettings.json | Commit 37be2f0 |
+| 24 | Tối ưu độ trễ thanh toán, fix hiển thị Workout Modal và set/rep | Đạt | JobsController.cs, WorkoutExerciseModal.tsx, workoutExercises.ts | Commit daa19af |
 
 ## AI có hỗ trợ không?
 

@@ -1682,5 +1682,67 @@ Kiểm thử lại bằng curl các endpoint PT, Groq AI và Upload Signature, y
 | Link tài liệu/báo cáo | N/A |
 | Ghi chú khác | N/A |
 
+---
 
+### Prompt số 24
 
+| Nội dung | Thông tin |
+|---|---|
+| Ngày sử dụng | 04/08/2026 |
+| Công cụ AI | Antigravity |
+| Mục đích | Tối ưu luồng checkout PayOS (fire-and-forget email) và sửa logic hiển thị UI Workout |
+| Phần việc liên quan | Coding / Debug / Refactor |
+| Mức độ sử dụng | Hỏi sinh code & debug |
+
+#### 5.1. Prompt nguyên văn
+
+```text
+- Tối ưu độ trễ của luồng xác nhận thanh toán. Không thêm webhook, không thêm package, không đổi business logic.
+- Đảo thứ tự SaveChangesAsync, gửi email theo kiểu fire-and-forget.
+- Giảm setTimeout redirect và dùng localStorage để định tuyến.
+- Phục hồi lại popup tập luyện gốc cho phần Workout, sửa lỗi hiển thị Sets / Time thành Sets / Reps.
+```
+
+#### 5.2. Bối cảnh khi viết prompt
+
+```text
+Luồng Checkout bị delay lâu do phải chờ gửi Email SMTP, ảnh hưởng tới UX (người dùng bị treo 3-5s). Workout Popup tự viết inline bị thiếu tính năng đếm ngược thời gian nghỉ (break time) và nhảy luôn sang bài tiếp theo, cộng thêm việc UI Workout trả về sai format Set/Rep.
+```
+
+#### 5.3. Kết quả AI trả về
+
+```text
+- Viết lại Action SimulatePayment và SimulateSchedulePayment đẩy SaveChangesAsync lên trước và dùng Task.Run cho Email. Set SMTP timeout 10s.
+- Cập nhật PaymentSuccess.tsx đọc PaymentKind từ localStorage.
+- Khôi phục WorkoutExerciseModal.tsx, thêm restSeconds và logic chuyển bài tự động cho WorkoutResults.tsx.
+- Sửa lại file workoutExercises.ts ưu tiên repsCount thay vì durationSeconds.
+```
+
+#### 5.4. Kết quả đã áp dụng vào bài
+
+```text
+Áp dụng toàn bộ, đảm bảo backend và frontend hoạt động trơn tru sau khi refactor.
+```
+
+#### 5.5. Phần sinh viên/nhóm đã chỉnh sửa hoặc cải tiến
+
+```text
+Chủ động yêu cầu AI kiểm tra build TypeScript cẩn thận để không có unused variables, tự test lại giao diện.
+```
+
+#### 5.6. Đánh giá chất lượng prompt
+
+- [x] Prompt rõ ràng
+- [x] Prompt có đủ bối cảnh
+- [x] Prompt tạo ra kết quả tốt
+
+#### 5.7. Minh chứng liên quan
+
+| Loại minh chứng | Nội dung |
+|---|---|
+| Link commit | daa19af |
+| File liên quan | JobsController.cs, EmailService.cs, PaymentSuccess.tsx, WorkoutExerciseModal.tsx, WorkoutResults.tsx, workoutExercises.ts |
+| Screenshot | N/A |
+| Kết quả chạy/test | npm run build pass 100%, backend pass 100% |
+| Link tài liệu/báo cáo | N/A |
+| Ghi chú khác | N/A |
