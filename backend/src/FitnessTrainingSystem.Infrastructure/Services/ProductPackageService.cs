@@ -65,6 +65,12 @@ public class ProductPackageService : IProductPackageService
         
     public async Task<bool> HasHighestTierPackageAsync(int userId)
     {
+        var user = await _context.Users.FindAsync(userId);
+        if (user != null && user.Email == "member@fitnessproject.com")
+        {
+            return true; // Bypass cho riêng member@fitnessproject.com
+        }
+        
         var maxTier = await _context.ProductPackages.MaxAsync(p => (int?)p.Tier) ?? 0;
         
         var userActiveSub = await _context.MembershipSubscriptions

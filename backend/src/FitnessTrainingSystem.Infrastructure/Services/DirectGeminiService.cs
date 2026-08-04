@@ -255,7 +255,11 @@ Yêu cầu thuật toán phân bổ (RẤT QUAN TRỌNG - PHẢI CHÍNH XÁC V�
 
         if (!string.IsNullOrWhiteSpace(injuredMuscleGroups))
         {
-            userPrompt += $"\n\n[LƯU Ý QUAN TRỌNG VỀ CHẤN THƯƠNG]\nHội viên đang bị đau hoặc chấn thương ở các vị trí và mức độ (1-5) như sau: {injuredMuscleGroups}.\nYÊU CẦU BẮT BUỘC:\n- Nếu mức độ chấn thương từ 1 đến 2: Bố trí khoảng 2 bài tập nhẹ nhàng cho nhóm cơ bị đau đó.\n- Nếu mức độ chấn thương là 3: Bố trí khoảng 1 bài tập nhẹ nhàng cho nhóm cơ bị đau đó.\n- Nếu có BẤT KỲ vị trí nào có mức độ chấn thương từ 4 đến 5: TUYỆT ĐỐI BỎ HẲN, KHÔNG CHỌN bất kỳ bài tập nào tác động trực tiếp vào các nhóm cơ bị chấn thương này. ĐỒNG THỜI, TUYỆT ĐỐI KHÔNG CHỌN CÁC BÀI TẬP TOÀN THÂN (Full Body). Nếu mục tiêu của hội viên là tập 'Full Body', hãy tự động chuyển sang chọn phối hợp các bài tập an toàn từ các nhóm cơ khác (trừ vùng chấn thương) để tạo thành một buổi tập đa nhóm cơ.";
+            userPrompt += $"\n\n[LƯU Ý CỰC KỲ QUAN TRỌNG VỀ CHẤN THƯƠNG - ƯU TIÊN HÀNG ĐẦU]\nHội viên đang bị đau hoặc chấn thương ở các vị trí và mức độ (1-5) như sau: {injuredMuscleGroups}.\nĐÂY LÀ YÊU CẦU BẮT BUỘC ĐỂ ĐẢM BẢO AN TOÀN Y TẾ:\n" +
+                          "- Đánh giá mức độ 1-2 (Nhẹ): Vẫn có thể tập nhưng cần thận trọng. Hãy ưu tiên chọn các bài tập với máy (machine-based) thay vì tạ tự do (free weights) cho vị trí này để đảm bảo an toàn. Bố trí tối đa 1-2 bài tập cường độ nhẹ cho nhóm cơ bị đau. Giảm số hiệp (sets) và tăng thời gian nghỉ ngơi (rest_seconds).\n" +
+                          "- Đánh giá mức độ 3 (Trung bình): Hạn chế tối đa tác động. Chỉ bố trí 1 bài tập rất nhẹ nhàng (ví dụ: giãn cơ, bài tập bodyweight nhẹ) cho nhóm cơ này nếu thực sự cần thiết, hoặc tốt nhất là tránh hoàn toàn bài tập nặng tác động vào vị trí này.\n" +
+                          "- Đánh giá mức độ 4-5 (Nặng/Nghiêm trọng): TUYỆT ĐỐI CẤM MỌI BÀI TẬP tác động trực tiếp hay gián tiếp vào vùng chấn thương này. Không sử dụng các bài tập toàn thân (Full Body) có nguy cơ ảnh hưởng. Hãy chuyển hướng hoàn toàn sang tập luyện các nhóm cơ khác không bị ảnh hưởng (ví dụ: chấn thương chân thì chỉ tập thân trên).\n" +
+                          "- BẮT BUỘC: Trong phần 'goal' (Mục tiêu buổi tập) của kết quả trả về, bạn phải ghi rõ lời nhắc nhở an toàn về chấn thương của họ, khuyên họ lắng nghe cơ thể và dừng ngay nếu thấy đau nhói.";
         }
 
         var resultJson = await CallGeminiWithRetryAsync(systemInstruction, userPrompt);
@@ -334,7 +338,11 @@ Yêu cầu thuật toán phân bổ (RẤT QUAN TRỌNG - PHẢI CHÍNH XÁC V�
 
         if (!string.IsNullOrWhiteSpace(injuredMuscleGroups))
         {
-            userPrompt += $"\n\n[LƯU Ý QUAN TRỌNG VỀ CHẤN THƯƠNG]\nHội viên đang bị đau hoặc chấn thương ở các vị trí và mức độ (1-5) như sau: {injuredMuscleGroups}.\nYÊU CẦU BẮT BUỘC:\n- Nếu mức độ chấn thương từ 1 đến 2: Bố trí khoảng 2 bài tập nhẹ nhàng cho nhóm cơ bị đau đó vào buổi 1 và buổi 3.\n- Nếu mức độ chấn thương là 3: Bố trí khoảng 1 bài tập nhẹ nhàng cho nhóm cơ bị đau đó vào buổi 3.\n- Nếu có BẤT KỲ vị trí nào có mức độ chấn thương từ 4 đến 5: TUYỆT ĐỐI BỎ HẲN, KHÔNG CHỌN bất kỳ bài tập nào tác động trực tiếp vào các nhóm cơ bị chấn thương này. ĐỒNG THỜI, TUYỆT ĐỐI KHÔNG CHỌN CÁC BÀI TẬP TOÀN THÂN (Full Body). Nếu mục tiêu của hội viên là tập 'Full Body', hãy tự động chuyển sang chọn phối hợp các bài tập an toàn từ các nhóm cơ khác (trừ vùng chấn thương) để tạo thành một buổi tập đa nhóm cơ.";
+            userPrompt += $"\n\n[LƯU Ý CỰC KỲ QUAN TRỌNG VỀ CHẤN THƯƠNG - ƯU TIÊN HÀNG ĐẦU]\nHội viên đang bị đau hoặc chấn thương ở các vị trí và mức độ (1-5) như sau: {injuredMuscleGroups}.\nĐÂY LÀ YÊU CẦU BẮT BUỘC ĐỂ ĐẢM BẢO AN TOÀN Y TẾ TRONG SUỐT QUÁ TRÌNH TẬP TUẦN:\n" +
+                          "- Đánh giá mức độ 1-2 (Nhẹ): Có thể tập nhẹ để duy trì vận động. Bố trí tối đa 1-2 bài tập nhẹ/giãn cơ cho vị trí này vào 1-2 buổi trong tuần (không xếp liên tiếp). Ưu tiên các bài tập máy an toàn, tránh tạ nặng.\n" +
+                          "- Đánh giá mức độ 3 (Trung bình): Xếp lịch tập để vị trí này được nghỉ ngơi nhiều nhất có thể. Nếu tập, chỉ bố trí tối đa 1 bài tập cực nhẹ vào 1 buổi duy nhất trong tuần để kích thích lưu thông máu, hoàn toàn không ép KPI cường độ.\n" +
+                          "- Đánh giá mức độ 4-5 (Nặng/Nghiêm trọng): TUYỆT ĐỐI LOẠI BỎ TOÀN BỘ các bài tập (kể cả trực tiếp hay gián tiếp) ảnh hưởng đến vị trí này trong TOÀN BỘ lịch tập của tuần. Chuyển đổi toàn bộ giáo án sang tập trung vào các nhóm cơ khỏe mạnh khác (ví dụ: chấn thương thân dưới thì cả tuần chỉ tập thân trên và core).\n" +
+                          "- BẮT BUỘC: Trong phần 'goal' (Mục tiêu) của ít nhất 2 buổi tập đầu tuần, bạn phải ghi rõ lời nhắc nhở an toàn về chấn thương, khuyên hội viên lắng nghe cơ thể và dừng ngay nếu thấy đau nhói.";
         }
 
         var resultJson = await CallGeminiWithRetryAsync(systemInstruction, userPrompt);
