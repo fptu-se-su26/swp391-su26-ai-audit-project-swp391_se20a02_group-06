@@ -18,7 +18,6 @@ import {
 import useSWR from 'swr'
 import apiClient from '../../lib/axios'
 import AdminLayout from '../../components/shared/Layout/AdminLayout.tsx'
-import AppButton from '../../components/shared/Button/AppButton'
 
 interface PtDto {
     id: number;
@@ -86,7 +85,6 @@ const AdminPTs: React.FC = () => {
                     <Heading fontSize="24px" fontWeight="800" color="white">
                         PT Management
                     </Heading>
-                    <AppButton label="Add Trainer" size="sm" />
                 </Flex>
 
                 <Box bg="#141720" border="1px solid" borderColor="#1e2028" borderRadius="16px" overflow="hidden">

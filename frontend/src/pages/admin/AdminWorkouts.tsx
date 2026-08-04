@@ -79,8 +79,7 @@ const AdminWorkouts: React.FC = () => {
     const { data: packages } = useSWR<ProductPackageDto[]>('/product-packages', fetcher)
     const { data: creators } = useSWR<CreatorDto[]>('/user/creators', fetcher)
     const roleId = useAuthStore(state => state.roleId)
-    const roleName = useAuthStore(state => state.roleName)
-    const Layout = (roleName === 'PT' || roleId === 2) ? PTLayout : AdminLayout
+    const Layout = roleId === 2 ? PTLayout : AdminLayout
     const [isSubmitting, setIsSubmitting] = useState(false)
     const [isUploadingVideo, setIsUploadingVideo] = useState(false)
     const [editingExercise, setEditingExercise] = useState<ExerciseDto | null>(null)

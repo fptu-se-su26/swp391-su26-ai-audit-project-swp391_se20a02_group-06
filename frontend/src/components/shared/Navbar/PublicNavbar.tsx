@@ -16,7 +16,7 @@ const PublicNavbar: React.FC = () => {
   const navigate = useNavigate()
   const location = useLocation()
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
-  const { isAuthenticated, logout } = useAuthStore()
+  const { isAuthenticated, logout, roleId } = useAuthStore()
 
   const handleLoginClick = () => navigate('/login')
 

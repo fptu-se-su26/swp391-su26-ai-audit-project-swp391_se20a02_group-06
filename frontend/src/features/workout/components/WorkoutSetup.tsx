@@ -32,7 +32,6 @@ import {
 import { muscleShapes } from '../data/muscleShapes'
 import { getMuscleGroups } from '../../../api/muscleGroups'
 import { getProfile } from '../../../api/user'
-import { getProductPackages } from '../../../api/productPackages'
 
 interface WorkoutSetupProps {
     onComplete: (data: WorkoutFormData) => void

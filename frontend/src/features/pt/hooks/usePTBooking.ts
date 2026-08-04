@@ -36,6 +36,7 @@ interface PTBookingContext {
     onNotesChange: (notes: string) => void
     onConfirm: () => void
     onCancel: () => void
+    onSimulate: () => void
     getSessionDate: () => string
 }
 
@@ -298,6 +299,7 @@ export const usePTBooking = (ptId: number | null): PTBookingContext => {
         onNotesChange,
         onConfirm,
         onCancel,
+        onSimulate,
         getSessionDate,
     }
 }

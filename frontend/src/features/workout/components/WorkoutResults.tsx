@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
     AspectRatio,
@@ -172,8 +172,6 @@ const WorkoutResults: React.FC = () => {
     const currentDay = data?.planType === 'weekly' ? (weeklyPlans ? weeklyPlans[currentDayIndex] : null) : null
     const dayExercises = (currentDay ? currentDay.exercises : exercises) || []
     const dayActiveSessionId = currentDay ? currentDay.activeSessionId : activeSessionId
-
-    const hasStartedRef = useRef(false)
 
     useEffect(() => {
         if (data?.planType === 'weekly' && currentDay) {

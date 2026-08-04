@@ -685,7 +685,7 @@ const AIChat: React.FC = () => {
 
                                 {/* Meals List */}
                                 <Stack spacing="4" className="print-meals">
-                                    {activeDietPlan.meals.map((meal, index) => (
+                                    {activeDietPlan.meals?.map((meal: any, index: number) => (
                                         <Box
                                             key={index}
                                             bg="#0B0D14"
@@ -708,7 +708,7 @@ const AIChat: React.FC = () => {
                                             </Flex>
 
                                             <Stack spacing="2">
-                                                {meal.foods.map((food, foodIdx) => (
+                                                {meal.foods?.map((food: any, foodIdx: number) => (
                                                     <Box
                                                         key={foodIdx}
                                                         bg="#141720"

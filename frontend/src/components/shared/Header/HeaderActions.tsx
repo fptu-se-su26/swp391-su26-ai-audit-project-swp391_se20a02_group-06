@@ -7,7 +7,7 @@ import NotificationBell from './NotificationBell'
 
 const HeaderActions: React.FC = () => {
     const navigate = useNavigate()
-    const [profile, setProfile] = useState<UserProfile | null>(null)
+    const [profile, setProfile] = useState<{name: string, avatarUrl: string | null} | null>(null)
 
     useEffect(() => {
         const fetchProfile = async () => {

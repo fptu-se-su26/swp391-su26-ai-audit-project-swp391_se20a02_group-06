@@ -40,4 +40,19 @@ export const updateReminderSettings = async (startTime: string, endTime: string)
 }
 
 
-export interface DietPlanResponse { recommendation: { plan_type: string; target_calories: number; meals: any[]; shopping_list: string[]; meal_prep_tips: string[]; disclaimer: string; }; }
+export interface DietPlanResponse {
+    diet_title?: string;
+    daily_calories?: number;
+    protein_target_g?: number;
+    carbs_target_g?: number;
+    fat_target_g?: number;
+    meals?: any[];
+    recommendation?: {
+        plan_type: string;
+        target_calories: number;
+        meals: any[];
+        shopping_list: string[];
+        meal_prep_tips: string[];
+        disclaimer: string;
+    };
+}

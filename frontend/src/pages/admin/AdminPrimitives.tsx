@@ -18,7 +18,6 @@ import {
     FiMoreVertical,
     FiPlus,
     FiSearch,
-    FiSettings,
     FiTrendingUp,
 } from 'react-icons/fi'
 import NotificationBell from '../../components/shared/Header/NotificationBell'
@@ -184,7 +183,6 @@ export const TopbarActions: React.FC = () => {
     return (
         <HStack spacing="8px">
             <NotificationBell />
-            <AdminIconButton icon={FiSettings} label="Settings" />
             <Menu>
                 <MenuButton as={Box} cursor="pointer" borderRadius="full">
                     <Avatar name="Admin Profile" src={adminAvatar} size="32px" />
