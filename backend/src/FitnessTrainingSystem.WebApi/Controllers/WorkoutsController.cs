@@ -21,11 +21,13 @@ public class WorkoutsController : ControllerBase
 {
     private readonly IWorkoutService _workoutService;
     private readonly IMediator _mediator;
+    private readonly IProductPackageService _packageService;
 
-    public WorkoutsController(IWorkoutService workoutService, IMediator mediator)
+    public WorkoutsController(IWorkoutService workoutService, IMediator mediator, IProductPackageService packageService)
     {
         _workoutService = workoutService;
         _mediator = mediator;
+        _packageService = packageService;
     }
 
     private int GetCurrentUserId()
@@ -52,6 +54,20 @@ public class WorkoutsController : ControllerBase
             };
             var result = await _mediator.Send(command);
             return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
+    }
+    [HttpGet("weekly-access")]
+    public async Task<IActionResult> GetWeeklyAccess()
+    {
+        try
+        {
+            var userId = GetCurrentUserId();
+            var (hasAccess, requiredPackageName) = await _packageService.GetWeeklyPlanAccessAsync(userId);
+            return Ok(new { hasAccess, requiredPackageName });
         }
         catch (Exception ex)
         {

@@ -138,3 +138,12 @@ export const generateAiWeeklyWorkoutPlan = async (data: AiWeeklyWorkoutPlanReque
     return response.data
 }
 
+export interface WeeklyAccessDto {
+    hasAccess: boolean
+    requiredPackageName?: string | null
+}
+
+export const getWeeklyPlanAccess = async (): Promise<WeeklyAccessDto> => {
+    const response = await apiClient.get<WeeklyAccessDto>('/workouts/weekly-access')
+    return response.data
+}
