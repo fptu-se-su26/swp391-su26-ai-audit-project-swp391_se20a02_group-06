@@ -1619,4 +1619,68 @@ Không có (chấp nhận kết quả AI sửa đổi).
 | Link tài liệu/báo cáo | N/A |
 | Ghi chú khác | N/A |
 
+---
+
+### Prompt số 23
+
+| Nội dung | Thông tin |
+|---|---|
+| Ngày sử dụng | 04/08/2026 |
+| Công cụ AI | Antigravity |
+| Mục đích | Tích hợp Groq AI Nutrition Chat, loại bỏ code thừa HungCD, đồng bộ AI từ main & fix lỗi Cloudinary Upload Signature |
+| Phần việc liên quan | Coding / Debug / AI Integration |
+| Mức độ sử dụng | Hỏi sinh code & debug |
+
+#### 5.1. Prompt nguyên văn
+
+```text
+- commit and push lên nhánh, trước khi làm thì hãy check lại kĩ còn lỗi nào không
+- ở main tôi đã deploy lên phần AI nên những phần liên quan lấy của nhánh main nghe
+- fix lỗi GET http://localhost:5007/api/upload/signature?folder=fitness-training%2Fexercises 500 (Internal Server Error)
+```
+
+#### 5.2. Bối cảnh khi viết prompt
+
+```text
+Cần tích hợp Groq AI Nutrition Chat vào hệ thống, hủy bỏ việc merge nhánh feature/AIworkout/HungCD, đồng bộ lại các file AI chuẩn từ origin/main và giải quyết triệt để lỗi 500 khi upload video bài tập do thiếu cấu hình Cloudinary.
+```
+
+#### 5.3. Kết quả AI trả về
+
+```text
+- Tạo nhánh sạch không chứa code HungCD, tích hợp Groq AI Nutrition với FlexibleStringConverter.
+- Đồng bộ hoàn toàn AI từ origin/main, đăng ký đầy đủ IGroqAiService/IGeminiAiService.
+- Bổ sung cấu hình Cloudinary vào .env và appsettings giải quyết lỗi 500 Upload Signature.
+```
+
+#### 5.4. Kết quả đã áp dụng vào bài
+
+```text
+Toàn bộ code backend .NET Core và frontend React TypeScript biên dịch không lỗi (0 error), server backend và frontend chạy ổn định.
+```
+
+#### 5.5. Phần sinh viên/nhóm đã chỉnh sửa hoặc cải tiến
+
+```text
+Kiểm thử lại bằng curl các endpoint PT, Groq AI và Upload Signature, yêu cầu kiểm tra kỹ build và ghi nhận audit log trước khi push.
+```
+
+#### 5.6. Đánh giá chất lượng prompt
+
+- [x] Prompt rõ ràng
+- [x] Prompt có đủ bối cảnh
+- [x] Prompt tạo ra kết quả tốt
+
+#### 5.7. Minh chứng liên quan
+
+| Loại minh chứng | Nội dung |
+|---|---|
+| Link commit | 37be2f0 |
+| File liên quan | GroqAiService.cs, AIChatService.cs, CloudinaryService.cs, DependencyInjection.cs, appsettings.json |
+| Screenshot | N/A |
+| Kết quả chạy/test | dotnet build pass, npx tsc --noEmit pass |
+| Link tài liệu/báo cáo | N/A |
+| Ghi chú khác | N/A |
+
+
 

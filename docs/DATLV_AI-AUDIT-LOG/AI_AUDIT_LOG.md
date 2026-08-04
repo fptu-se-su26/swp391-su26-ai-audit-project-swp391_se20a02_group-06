@@ -2153,4 +2153,66 @@ AI phân tích nguyên nhân và thực hiện các bước khắc phục:
 Rút kinh nghiệm về việc kiểm tra tính liên tục của luồng dữ liệu giữa các bước Setup -> Results -> History. Luôn cần có cơ chế Fallback (tự động tạo Session nếu bị khuyết) để tránh việc dữ liệu người dùng bị rơi rụng im lặng (Silent Drop).
 ```
 
+---
+
+### Lần sử dụng AI số 26
+
+| Nội dung | Thông tin |
+|---|---|
+| Ngày sử dụng | 04/08/2026 |
+| Công cụ AI | Antigravity |
+| Mục đích sử dụng | Tích hợp Groq AI Nutrition Chat, đồng bộ AI từ main, fix lỗi Cloudinary upload 500 |
+| Phần việc liên quan | Fullstack / AI Integration |
+| Mức độ sử dụng | Hỗ trợ nhiều |
+
+#### 4.1. Prompt đã sử dụng
+
+```text
+- merge nhánh origin/AI_NUTRITION_BACKUP vào cho tôi, bỏ key Groq vào env và test thật kỹ phần AI dinh dưỡng
+- xoá merge nhánh feature/AIworkout/HungCD
+- pull nhánh origin/main về rồi chạy lại
+- ở main tôi đã deploy phần AI nên những phần liên quan lấy của nhánh main
+- fix lỗi GET /api/upload/signature 500 (Internal Server Error)
+```
+
+#### 4.2. Kết quả AI gợi ý
+
+```text
+- Tích hợp Groq AI Nutrition Chat & Diet Plan Generation sử dụng model llama-3.3-70b-versatile.
+- Thêm FlexibleStringConverter xử lý linh hoạt food_id (chuỗi/số) tránh lỗi deserialization.
+- Ánh xạ đúng tên cột CSDL sender trong ai_chat_messages và raw_json trong ai_diet_histories.
+- Đồng bộ hoàn toàn AI từ origin/main và đăng ký đầy đủ IGroqAiService/IGeminiAiService trong DependencyInjection.
+- Cấu hình bổ sung Cloudinary (CloudName, ApiKey, ApiSecret) giải quyết triệt để lỗi 500 Upload Signature.
+```
+
+#### 4.3. Phần sinh viên/nhóm đã sử dụng từ AI
+
+```text
+Sử dụng các đoạn code xử lý Groq AI Chat, FlexibleStringConverter, Entity Mapping trong ApplicationDbContext, và cấu hình CloudinaryService.
+```
+
+#### 4.4. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
+
+```text
+Yêu cầu loại bỏ nhánh feature/AIworkout/HungCD, chỉ định giữ lại luồng PT Booking chuẩn, đồng bộ AI từ main và yêu cầu kiểm thử lại 100% build trước khi commit/push.
+```
+
+#### 4.5. Minh chứng
+
+| Loại minh chứng | Nội dung |
+|---|---|
+| Link commit | 37be2f0 |
+| File liên quan | `GroqAiService.cs`, `AIChatService.cs`, `CloudinaryService.cs`, `DependencyInjection.cs`, `appsettings.json` |
+| Screenshot | Đã kiểm thử `curl` các endpoint PT, Groq AI và Upload Signature thành công |
+| Kết quả chạy/test | `dotnet build` Pass 0 Error, `npx tsc --noEmit` Pass 0 Error |
+| Link video demo | N/A |
+| Ghi chú khác | N/A |
+
+#### 4.6. Nhận xét cá nhân/nhóm
+
+```text
+Nắm vững quy trình xử lý xung đột git merge, phân tách rõ ràng các tính năng AI Nutrition với các nhánh feature cũ, đồng thời hiểu rõ nguyên nhân lỗi 500 do thiếu cấu hình biến môi trường của các dịch vụ bên thứ ba như Cloudinary.
+```
+
+
 

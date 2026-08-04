@@ -256,6 +256,7 @@ DD/MM/YYYY
 | 18 | Đồng bộ Logic Dashboard Suggested Routine với Core Workout Engine & Cấu hình Global Decimal Rounding JSON Backend | Đạt | Dashboard.tsx, workoutExercises.ts, DoubleRoundingJsonConverter.cs | Commit 4fd1dce |
 | 19 | Sửa lỗi nạp file .env Backend, resolution Gemini API Key và type mapping useWorkoutStore | Đạt | DirectGeminiService.cs, Program.cs, useWorkoutStore.ts | Commit a95bf1c |
 | 20 | Fix lỗi không lưu Workout History (khởi tạo Plan/Session tự động & fallback complete) | Đạt | Workouts.tsx, WorkoutResults.tsx, useWorkoutStore.ts | Commit f8e943d |
+| 21 | Tích hợp Groq AI Nutrition, đồng bộ AI main & Fix lỗi Cloudinary Upload Signature | Đạt | GroqAiService.cs, CloudinaryService.cs, appsettings.json | Commit 37be2f0 |
 
 ## AI có hỗ trợ không?
 
