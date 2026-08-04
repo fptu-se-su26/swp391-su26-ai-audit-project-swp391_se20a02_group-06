@@ -1,5 +1,6 @@
 using FitnessTrainingSystem.Application.Interfaces;
 using FitnessTrainingSystem.Infrastructure.Persistence;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -17,18 +18,6 @@ public class JobsController : ControllerBase
         _context = context;
         _emailService = emailService;
     }
-
-    [HttpPost("apply-sql")]
-    public async Task<IActionResult> ApplySql()
-    {
-        var sql = @"
-ALTER TABLE schedules
-ADD COLUMN description VARCHAR(255) NULL;
-";
-        await _context.Database.ExecuteSqlRawAsync(sql);
-        return Ok(new { message = "SQL Applied" });
-    }
-
 
     [HttpPost("notify-expirations")]
     public async Task<IActionResult> NotifyExpirations()
@@ -77,34 +66,8 @@ ADD COLUMN description VARCHAR(255) NULL;
         return Ok(new { message = $"Sent expiration notification to {count} users." });
     }
 
-    [HttpPost("verify-email")]
-    public async Task<IActionResult> VerifyEmail([FromQuery] string email)
-    {
-        var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
-        if (user != null)
-        {
-            user.Status = "ACTIVE";
-            await _context.SaveChangesAsync();
-            return Ok();
-        }
-        return NotFound();
-    }
-
-    [HttpPost("set-subscription-date")]
-    public async Task<IActionResult> SetSubscriptionDate([FromQuery] int userId, [FromQuery] int daysLeft)
-    {
-        var activeSub = await _context.MembershipSubscriptions
-            .FirstOrDefaultAsync(s => s.UserId == userId && s.Status == "ACTIVE");
-        if (activeSub != null)
-        {
-            activeSub.EndDate = DateTime.UtcNow.AddDays(daysLeft);
-            await _context.SaveChangesAsync();
-            return Ok();
-        }
-        return NotFound();
-    }
-
     [HttpPost("simulate-payment")]
+    [Authorize]
     public async Task<IActionResult> SimulatePayment([FromQuery] long orderCode)
     {
         try
@@ -170,6 +133,7 @@ ADD COLUMN description VARCHAR(255) NULL;
     }
 
     [HttpPost("simulate-schedule-payment")]
+    [Authorize]
     public async Task<IActionResult> SimulateSchedulePayment([FromQuery] long orderCode)
     {
         try
@@ -182,7 +146,7 @@ ADD COLUMN description VARCHAR(255) NULL;
             
             // Auto generate a mock meeting URL
             var meetingId = Guid.NewGuid().ToString("N").Substring(0, 10);
-            schedule.MeetingUrl = $"https://meet.google.com/{meetingId.Substring(0,3)}-{meetingId.Substring(3,4)}-{meetingId.Substring(7,3)}";
+            schedule.MeetingUrl = $"https://meet.google.com/{meetingId.Substring(0, 3)}-{meetingId.Substring(3, 4)}-{meetingId.Substring(7, 3)}";
 
             if (schedule.Pt != null && !string.IsNullOrEmpty(schedule.Pt.Email))
             {
@@ -220,6 +184,7 @@ ADD COLUMN description VARCHAR(255) NULL;
     }
 
     [HttpPost("cancel-payment")]
+    [Authorize]
     public async Task<IActionResult> CancelPayment([FromQuery] long orderCode)
     {
         try

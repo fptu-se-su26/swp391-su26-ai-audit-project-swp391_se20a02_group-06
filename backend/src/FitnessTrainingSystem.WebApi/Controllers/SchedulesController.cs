@@ -183,10 +183,22 @@ public class SchedulesController : ControllerBase
                         continue;
                     }
 
-                    var startDateTime = date.Add(startSpan);
-                    var endDateTime = date.Add(endSpan);
+                    // Nếu endSpan <= startSpan thì skip slot đó
+                    if (endSpan <= startSpan)
+                    {
+                        continue;
+                    }
 
-                    if (startDateTime < DateTime.Now) continue;
+                    // date là ngày local (VN). startDateTime local = date.Add(startSpan)
+                    // Quy đổi từ VN time (UTC+7) sang UTC (trừ 7 giờ) trước khi lưu vào DB
+                    var localStartDateTime = date.Add(startSpan);
+                    var localEndDateTime = date.Add(endSpan);
+
+                    var startDateTime = localStartDateTime.AddHours(-7);
+                    var endDateTime = localEndDateTime.AddHours(-7);
+
+                    if (endDateTime <= startDateTime) continue;
+                    if (startDateTime < DateTime.UtcNow) continue;
 
                     var conflict = await _context.Schedules.AnyAsync(s => 
                         s.PtId == ptId && 
@@ -202,7 +214,7 @@ public class SchedulesController : ControllerBase
                             StartTime = startDateTime,
                             EndTime = endDateTime,
                             Status = ScheduleStatus.Available,
-                            Description = "Bulk Available Slot"
+                            Description = string.IsNullOrWhiteSpace(timeSlot.Description) ? "Bulk Available Slot" : timeSlot.Description
                         });
                     }
                 }
@@ -270,4 +282,5 @@ public class TimeSlotDto
 {
     public string StartTime { get; set; } = string.Empty;
     public string EndTime { get; set; } = string.Empty;
+    public string? Description { get; set; }
 }
