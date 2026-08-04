@@ -123,6 +123,22 @@ if (app.Environment.IsDevelopment())
             INDEX `IX_EmailOTP_ExpiredAt` (`expired_at`)
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
     ");
+
+    // Auto-upgrade member@fitnessproject.com to highest tier for testing weekly plans
+    db.Database.ExecuteSqlRaw(@"
+        INSERT INTO membership_subscriptions (user_id, package_id, start_date, end_date, status, created_at, updated_at)
+        SELECT u.id, (SELECT id FROM product_packages ORDER BY tier DESC LIMIT 1), NOW(), '2030-01-01', 'ACTIVE', NOW(), NOW()
+        FROM users u
+        WHERE u.email = 'member@fitnessproject.com'
+        AND NOT EXISTS (SELECT 1 FROM membership_subscriptions ms WHERE ms.user_id = u.id AND ms.status = 'ACTIVE');
+        
+        UPDATE membership_subscriptions ms
+        JOIN users u ON ms.user_id = u.id
+        SET ms.package_id = (SELECT id FROM product_packages ORDER BY tier DESC LIMIT 1),
+            ms.status = 'ACTIVE',
+            ms.end_date = '2030-01-01'
+        WHERE u.email = 'member@fitnessproject.com';
+    ");
     }
     
 // Configure the HTTP request pipeline.
