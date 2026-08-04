@@ -2,6 +2,7 @@ using System.Text;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 using FitnessTrainingSystem.Application.DTOs.Nutrition;
+using FitnessTrainingSystem.Application.DTOs.Workouts;
 using FitnessTrainingSystem.Application.Common.Interfaces;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -246,4 +247,164 @@ LỊCH SỬ CHAT:
 
         return string.Empty;
     }
+    public async Task<AiWorkoutPlanResponseDto> GenerateWorkoutPlanAsync(int userId, string muscleGroup, int targetCalories, int durationMinutes, string availableExercisesJson, string? injuredMuscleGroups = null)
+    {
+        var systemInstruction = @"You are an elite AI Personal Trainer and a strict mathematician. You build safe workout plans using ONLY the provided input exercises. Your calculations for calories and duration MUST be mathematically flawless.
+[ĐỊNH DẠNG ĐẦU RA BẮT BUỘC]
+Bạn bắt buộc phải trả về chuỗi định dạng JSON thuần khớp hoàn toàn với cấu trúc sau mà không kèm theo bất kỳ ký tự markdown nào:
+{
+  ""title"": ""Tiêu đề giáo án tập luyện hấp dẫn."",
+  ""goal"": ""Mục tiêu cụ thể ngắn gọn của giáo án."",
+  ""target_calories"": 0,
+  ""target_duration_minutes"": 0,
+  ""exercises"": [
+    {
+      ""exercise_id"": 0,
+      ""exercise_title"": ""Tên bài tập"",
+      ""sets"": 3,
+      ""reps"": 12,
+      ""duration_seconds"": 0,
+      ""rest_seconds"": 60,
+      ""exercise_order"": 1,
+      ""calories_burned"": 30
+    }
+  ]
+}";
+
+        var userPrompt = $@"Hãy thiết kế một kế hoạch bài tập (Workout Plan) tối ưu cho hội viên dựa trên các thông số sau:
+- Nhóm cơ đích cần tập: {muscleGroup}
+- Mục tiêu tiêu hao năng lượng hướng tới: {targetCalories} kcal
+- Tổng thời gian giới hạn: {durationMinutes} phút
+
+BẮT BUỘC CHỈ ĐƯỢC CHỌN CÁC BÀI TẬP CÓ TRONG DANH SÁCH DƯỚI ĐÂY (Tuyệt đối không tự bịa ra bài tập ngoài danh sách này):
+{availableExercisesJson}
+
+Yêu cầu thuật toán phân bổ (RẤT QUAN TRỌNG - PHẢI CHÍNH XÁC VỀ MẶT TOÁN HỌC):
+1. Tổng calories_burned của tất cả bài tập CỘNG LẠI phải bằng ĐÚNG {targetCalories} kcal (du di tối đa +-10%).
+2. Tổng duration_seconds của tất cả bài tập (tính cả thời gian nghỉ rest_seconds) CỘNG LẠI phải bằng ĐÚNG {durationMinutes * 60} giây (du di tối đa +-10%).
+3. Tính toán logic cho MỖI BÀI TẬP:
+   - Thời gian tập mỗi hiệp (phút) = (reps * 3 giây)/60 HOẶC (duration_seconds)/60.
+   - Tổng thời gian tập bài đó (phút) = (Thời gian tập mỗi hiệp) * sets.
+   - Lượng calo đốt của bài (calories_burned) = (Tổng thời gian tập bài đó) * calories_burn_per_min.
+   => BẠN PHẢI TỰ ĐIỀU CHỈNH sets, reps, duration_seconds ĐỂ ĐẠT ĐƯỢC CON SỐ CALO VÀ THỜI GIAN MONG MUỐN!
+4. TUYỆT ĐỐI CHỈ ĐƯỢC CHỌN bài tập từ danh sách được cung cấp. Danh sách này đã được lọc chính xác cho nhóm cơ: {muscleGroup}. KHÔNG được chọn các bài tập thuộc nhóm cơ khác ngoài danh sách này.";
+
+        if (!string.IsNullOrWhiteSpace(injuredMuscleGroups))
+        {
+            userPrompt += $"\n\n[LƯU Ý CỰC KỲ QUAN TRỌNG VỀ CHẤN THƯƠNG - ƯU TIÊN HÀNG ĐẦU]\nHội viên đang bị đau hoặc chấn thương ở các vị trí và mức độ (1-5) như sau: {injuredMuscleGroups}.\nĐÂY LÀ YÊU CẦU BẮT BUỘC ĐỂ ĐẢM BẢO AN TOÀN Y TẾ:\n" +
+                          "- Đánh giá mức độ 1-2 (Nhẹ): Vẫn có thể tập nhưng cần thận trọng. Hãy ưu tiên chọn các bài tập với máy (machine-based) thay vì tạ tự do (free weights) cho vị trí này để đảm bảo an toàn. Bố trí tối đa 1-2 bài tập cường độ nhẹ cho nhóm cơ bị đau. Giảm số hiệp (sets) và tăng thời gian nghỉ ngơi (rest_seconds).\n" +
+                          "- Đánh giá mức độ 3 (Trung bình): Hạn chế tối đa tác động. Chỉ bố trí 1 bài tập rất nhẹ nhàng (ví dụ: giãn cơ, bài tập bodyweight nhẹ) cho nhóm cơ này nếu thực sự cần thiết, hoặc tốt nhất là tránh hoàn toàn bài tập nặng tác động vào vị trí này.\n" +
+                          "- Đánh giá mức độ 4-5 (Nặng/Nghiêm trọng): TUYỆT ĐỐI CẤM MỌI BÀI TẬP tác động trực tiếp hay gián tiếp vào vùng chấn thương này. Không sử dụng các bài tập toàn thân (Full Body) có nguy cơ ảnh hưởng. Hãy chuyển hướng hoàn toàn sang tập luyện các nhóm cơ khác không bị ảnh hưởng (ví dụ: chấn thương chân thì chỉ tập thân trên).\n" +
+                          "- BẮT BUỘC: Trong phần 'goal' (Mục tiêu buổi tập) của kết quả trả về, bạn phải ghi rõ lời nhắc nhở an toàn về chấn thương của họ, khuyên họ lắng nghe cơ thể và dừng ngay nếu thấy đau nhói.";
+        }
+
+        var resultJson = await CallGroqWithRetryAsync(systemInstruction, userPrompt, isJsonMode: true);
+        
+        // Clean up markdown block and extra text
+        int firstBrace = resultJson.IndexOf('{');
+        int lastBrace = resultJson.LastIndexOf('}');
+        if (firstBrace >= 0 && lastBrace >= firstBrace)
+        {
+            resultJson = resultJson.Substring(firstBrace, lastBrace - firstBrace + 1);
+        }
+        else
+        {
+            throw new Exception("Không tìm thấy JSON hợp lệ trong phản hồi của AI.");
+        }
+
+        var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+        var planOutput = JsonSerializer.Deserialize<WorkoutPlanOutput>(resultJson, options);
+
+        return new AiWorkoutPlanResponseDto
+        {
+            Success = planOutput != null,
+            UserId = userId,
+            Model = _model,
+            Recommendation = planOutput!
+        };
+    }
+
+    public async Task<AiWeeklyWorkoutPlanResponseDto> GenerateWeeklyWorkoutPlanAsync(int userId, string muscleGroup, int targetCaloriesPerDay, int durationMinutesPerDay, int frequency, string availableExercisesJson, string? injuredMuscleGroups = null)
+    {
+        var systemInstruction = @"You are an elite AI Personal Trainer and a strict mathematician. You build safe, mathematically accurate weekly split workout plans using ONLY the provided input exercises. Your calculations for calories and duration MUST be mathematically flawless.
+[ĐỊNH DẠNG ĐẦU RA BẮT BUỘC]
+Bạn bắt buộc phải trả về chuỗi định dạng JSON thuần khớp hoàn toàn với cấu trúc sau mà không kèm theo bất kỳ ký tự markdown nào:
+{
+  ""days"": [
+    {
+      ""title"": ""Tiêu đề buổi tập"",
+      ""goal"": ""Mục tiêu buổi tập"",
+      ""target_calories"": 0,
+      ""target_duration_minutes"": 0,
+      ""exercises"": [
+        {
+          ""exercise_id"": 0,
+          ""exercise_title"": ""Tên bài tập"",
+          ""sets"": 3,
+          ""reps"": 12,
+          ""duration_seconds"": 0,
+          ""rest_seconds"": 60,
+          ""exercise_order"": 1,
+          ""calories_burned"": 30
+        }
+      ]
+    }
+  ]
+}";
+
+        var userPrompt = $@"Hãy thiết kế một lịch tập luyện hàng tuần (Weekly Workout Plan) gồm {frequency} buổi tập tối ưu cho hội viên dựa trên các thông số sau:
+- Nhóm cơ đích tập trung: {muscleGroup}
+- Mục tiêu tiêu hao năng lượng mỗi buổi: {targetCaloriesPerDay} kcal
+- Tổng thời gian giới hạn mỗi buổi: {durationMinutesPerDay} phút
+- Số buổi tập trong tuần: {frequency} buổi.
+
+BẮT BUỘC CHỈ ĐƯỢC CHỌN CÁC BÀI TẬP CÓ TRONG DANH SÁCH DƯỚI ĐÂY (Tuyệt đối không tự bịa ra bài tập ngoài danh sách này):
+{availableExercisesJson}
+
+Yêu cầu thuật toán phân bổ (RẤT QUAN TRỌNG - PHẢI CHÍNH XÁC VỀ MẶT TOÁN HỌC):
+1. XÂY DỰNG LỊCH TẬP SPLIT KHOA HỌC: Lịch tập này có trọng tâm chính là nhóm cơ '{muscleGroup}' (hãy ưu tiên số lượng bài tập hoặc tần suất tập cho nhóm cơ này). TUY NHIÊN, bắt buộc phải phân bổ các nhóm cơ khác (Ngực, Lưng, Chân, Vai, Tay, Bụng) vào các ngày khác nhau trong tuần để đảm bảo sự cân bằng và phục hồi. TUYỆT ĐỐI KHÔNG lặp đi lặp lại cùng một nhóm cơ hoặc cùng một bài tập y hệt nhau mỗi ngày. Hãy đa dạng hóa bài tập giữa các ngày trong tuần.
+2. Mỗi ngày trong danh sách 'days' đại diện cho 1 buổi tập riêng biệt, có đầy đủ tiêu đề (title), mục tiêu (goal), và mảng bài tập (exercises).
+3. Tính toán logic calo cho TỪNG BUỔI TẬP:
+   - Tổng calories_burned của tất cả bài tập trong 1 buổi CỘNG LẠI phải bằng ĐÚNG {targetCaloriesPerDay} kcal (du di tối đa +-10%).
+   - Tổng duration_seconds của tất cả bài tập trong 1 buổi (tính cả thời gian nghỉ rest_seconds) CỘNG LẠI phải bằng ĐÚNG {durationMinutesPerDay * 60} giây (du di tối đa +-10%).
+   - Thời gian tập mỗi hiệp (phút) = (reps * 3 giây)/60 HOẶC (duration_seconds)/60.
+   - Tổng thời gian tập bài đó (phút) = (Thời gian tập mỗi hiệp) * sets.
+   - Lượng calo đốt của bài (calories_burned) = (Tổng thời gian tập bài đó) * calories_burn_per_min.
+   => BẠN PHẢI TỰ ĐIỀU CHỈNH sets, reps, duration_seconds ĐỂ ĐẠT ĐƯỢC CON SỐ CALO VÀ THỜI GIAN MONG MUỐN!";
+
+        if (!string.IsNullOrWhiteSpace(injuredMuscleGroups))
+        {
+            userPrompt += $"\n\n[LƯU Ý CỰC KỲ QUAN TRỌNG VỀ CHẤN THƯƠNG - ƯU TIÊN HÀNG ĐẦU]\nHội viên đang bị đau hoặc chấn thương ở các vị trí và mức độ (1-5) như sau: {injuredMuscleGroups}.\nĐÂY LÀ YÊU CẦU BẮT BUỘC ĐỂ ĐẢM BẢO AN TOÀN Y TẾ TRONG SUỐT QUÁ TRÌNH TẬP TUẦN:\n" +
+                          "- Đánh giá mức độ 1-2 (Nhẹ): Có thể tập nhẹ để duy trì vận động. Bố trí tối đa 1-2 bài tập nhẹ/giãn cơ cho vị trí này vào 1-2 buổi trong tuần (không xếp liên tiếp). Ưu tiên các bài tập máy an toàn, tránh tạ nặng.\n" +
+                          "- Đánh giá mức độ 3 (Trung bình): Xếp lịch tập để vị trí này được nghỉ ngơi nhiều nhất có thể. Nếu tập, chỉ bố trí tối đa 1 bài tập cực nhẹ vào 1 buổi duy nhất trong tuần để kích thích lưu thông máu, hoàn toàn không ép KPI cường độ.\n" +
+                          "- Đánh giá mức độ 4-5 (Nặng/Nghiêm trọng): TUYỆT ĐỐI LOẠI BỎ TOÀN BỘ các bài tập (kể cả trực tiếp hay gián tiếp) ảnh hưởng đến vị trí này trong TOÀN BỘ lịch tập của tuần. Chuyển đổi toàn bộ giáo án sang tập trung vào các nhóm cơ khỏe mạnh khác (ví dụ: chấn thương thân dưới thì cả tuần chỉ tập thân trên và core).\n" +
+                          "- BẮT BUỘC: Trong phần 'goal' (Mục tiêu) của ít nhất 2 buổi tập đầu tuần, bạn phải ghi rõ lời nhắc nhở an toàn về chấn thương, khuyên hội viên lắng nghe cơ thể và dừng ngay nếu thấy đau nhói.";
+        }
+
+        var resultJson = await CallGroqWithRetryAsync(systemInstruction, userPrompt, isJsonMode: true);
+        
+        // Clean up markdown block and extra text
+        int firstBrace = resultJson.IndexOf('{');
+        int lastBrace = resultJson.LastIndexOf('}');
+        if (firstBrace >= 0 && lastBrace >= firstBrace)
+        {
+            resultJson = resultJson.Substring(firstBrace, lastBrace - firstBrace + 1);
+        }
+        else
+        {
+            throw new Exception("Không tìm thấy JSON hợp lệ trong phản hồi của AI.");
+        }
+
+        var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+        var planOutput = JsonSerializer.Deserialize<WeeklyWorkoutPlanOutput>(resultJson, options);
+
+        return new AiWeeklyWorkoutPlanResponseDto
+        {
+            Success = planOutput != null,
+            UserId = userId,
+            Model = _model,
+            Recommendation = planOutput!
+        };
+    }
 }
+

@@ -15,13 +15,13 @@ namespace FitnessTrainingSystem.Application.Features.AiRecommendations.Commands.
 
 public class GenerateWeeklyWorkoutPlanCommandHandler : IRequestHandler<GenerateWeeklyWorkoutPlanCommand, AiWeeklyWorkoutPlanResponseDto>
 {
-    private readonly IGeminiAiService _geminiAiService;
+    private readonly IGroqAiService _groqAiService;
     private readonly IExerciseService _exerciseService;
     private readonly IProductPackageService _packageService;
 
-    public GenerateWeeklyWorkoutPlanCommandHandler(IGeminiAiService geminiAiService, IExerciseService exerciseService, IProductPackageService packageService)
+    public GenerateWeeklyWorkoutPlanCommandHandler(IGroqAiService groqAiService, IExerciseService exerciseService, IProductPackageService packageService)
     {
-        _geminiAiService = geminiAiService;
+        _groqAiService = groqAiService;
         _exerciseService = exerciseService;
         _packageService = packageService;
     }
@@ -65,7 +65,7 @@ public class GenerateWeeklyWorkoutPlanCommandHandler : IRequestHandler<GenerateW
 
         var availableExercisesJson = JsonSerializer.Serialize(availableExercises);
 
-        var aiResult = await _geminiAiService.GenerateWeeklyWorkoutPlanAsync(request.UserId, request.MuscleGroup, request.TargetCaloriesPerDay, request.DurationMinutesPerDay, request.Frequency, availableExercisesJson, request.InjuredMuscleGroups);
+        var aiResult = await _groqAiService.GenerateWeeklyWorkoutPlanAsync(request.UserId, request.MuscleGroup, request.TargetCaloriesPerDay, request.DurationMinutesPerDay, request.Frequency, availableExercisesJson, request.InjuredMuscleGroups);
 
         if (aiResult == null || !aiResult.Success)
         {

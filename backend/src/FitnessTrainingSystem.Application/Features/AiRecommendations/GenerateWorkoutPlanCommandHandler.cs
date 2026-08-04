@@ -16,12 +16,12 @@ namespace FitnessTrainingSystem.Application.Features.AiRecommendations.Commands.
 
 public class GenerateWorkoutPlanCommandHandler : IRequestHandler<GenerateWorkoutPlanCommand, AiWorkoutPlanResponseDto>
 {
-    private readonly IGeminiAiService _geminiAiService;
+    private readonly IGroqAiService _groqAiService;
     private readonly IExerciseService _exerciseService;
 
-    public GenerateWorkoutPlanCommandHandler(IGeminiAiService geminiAiService, IExerciseService exerciseService)
+    public GenerateWorkoutPlanCommandHandler(IGroqAiService groqAiService, IExerciseService exerciseService)
     {
-        _geminiAiService = geminiAiService;
+        _groqAiService = groqAiService;
         _exerciseService = exerciseService;
     }
 
@@ -68,7 +68,7 @@ public class GenerateWorkoutPlanCommandHandler : IRequestHandler<GenerateWorkout
         var availableExercisesJson = JsonSerializer.Serialize(availableExercises);
 
         // 3. Bắn request sang service C# Gemini
-        var aiResult = await _geminiAiService.GenerateWorkoutPlanAsync(request.UserId, request.MuscleGroup, request.TargetCalories, request.DurationMinutes, availableExercisesJson, request.InjuredMuscleGroups);
+        var aiResult = await _groqAiService.GenerateWorkoutPlanAsync(request.UserId, request.MuscleGroup, request.TargetCalories, request.DurationMinutes, availableExercisesJson, request.InjuredMuscleGroups);
 
         if (aiResult == null || !aiResult.Success)
         {
