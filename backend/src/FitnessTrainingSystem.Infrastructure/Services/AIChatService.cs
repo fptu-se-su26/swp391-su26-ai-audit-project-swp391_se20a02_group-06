@@ -312,10 +312,10 @@ Conversation:
             UserId = userId,
             SessionId = sessionId,
             DietTitle = response.DietTitle ?? "AI Diet Plan",
-            TotalCalories = response.DailyCalories,
-            Protein = response.ProteinTargetG,
-            Carbs = response.CarbsTargetG,
-            Fat = response.FatTargetG,
+            TotalCalories = (int)response.DailyCalories,
+            Protein = (int)response.ProteinTargetG,
+            Carbs = (int)response.CarbsTargetG,
+            Fat = (int)response.FatTargetG,
             DietJson = System.Text.Json.JsonSerializer.Serialize(response),
             CreatedAt = DateTime.UtcNow
         };
@@ -328,7 +328,7 @@ Conversation:
         {
             UserId = userId,
             ScheduleName = response.DietTitle ?? "AI Diet Plan",
-            TotalCaloriesTarget = response.DailyCalories,
+            TotalCaloriesTarget = (int)response.DailyCalories,
             CreatedAt = DateTime.UtcNow
         };
 
