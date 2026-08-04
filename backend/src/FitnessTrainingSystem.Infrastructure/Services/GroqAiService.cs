@@ -24,7 +24,7 @@ public class GroqAiService : IGroqAiService
     {
         _httpClient = httpClient;
         _apiKey = configuration["Groq:ApiKey"] ?? configuration["GROQ_API_KEY"] ?? "";
-        _model = configuration["Groq:Model"] ?? "llama-3.3-70b-versatile";
+        _model = configuration["Groq:Model"] ?? "openai/gpt-oss-120b";
         _logger = logger;
     }
 
