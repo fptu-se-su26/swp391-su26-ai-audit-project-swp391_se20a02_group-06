@@ -93,22 +93,27 @@ const PTManageSchedule: React.FC = () => {
             return
         }
         
-        // Auto-calculate 1 hour duration and convert to UTC for backend
-        const timeSlotsPayload = validSlots.map(slot => {
+        // Send original LOCAL time strings (slot.startTime and startTime + 1 hour)
+        // If end time >= 24h, validate and notify user
+        const timeSlotsPayload = [];
+        for (const slot of validSlots) {
             const [hours, minutes] = slot.startTime.split(':').map(Number);
-            const startLocal = new Date(2000, 0, 1, hours, minutes);
-            const endLocal = new Date(2000, 0, 1, hours + 1, minutes);
-            
-            // Extract HH:mm from UTC ISO string
-            const utcStartTimeStr = startLocal.toISOString().substring(11, 16);
-            const utcEndTimeStr = endLocal.toISOString().substring(11, 16);
-            
-            return {
-                startTime: utcStartTimeStr,
-                endTime: utcEndTimeStr,
+            if (isNaN(hours) || isNaN(minutes)) continue;
+
+            if (hours + 1 >= 24) {
+                toast({ title: 'Invalid time slot', description: `Time slot starting at ${slot.startTime} must end before 24:00`, status: 'error', duration: 3000 });
+                return;
+            }
+
+            const startTimeStr = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
+            const endTimeStr = `${String(hours + 1).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
+
+            timeSlotsPayload.push({
+                startTime: startTimeStr,
+                endTime: endTimeStr,
                 description: slot.description
-            };
-        });
+            });
+        }
 
         setIsBulkSubmitting(true)
         try {

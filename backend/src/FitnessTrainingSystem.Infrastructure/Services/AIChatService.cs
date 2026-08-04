@@ -10,14 +10,14 @@ namespace FitnessTrainingSystem.Infrastructure.Services;
 public class AIChatService : IAIChatService
 {
     private readonly ApplicationDbContext _context;
-    private readonly IGroqAiService _gemmaService;
+    private readonly IGeminiAiService _geminiService;
 
     public AIChatService(
         ApplicationDbContext context,
-        IGroqAiService gemmaService)
+        IGeminiAiService geminiService)
     {
         _context = context;
-        _gemmaService = gemmaService;
+        _geminiService = geminiService;
     }
 
     public async Task<AIChatResponse> SendMessageAsync(int userId, AIChatRequest request)
@@ -96,13 +96,13 @@ Weight: {metric?.Weight ?? 65}
         string aiReply;
         try
         {
-            aiReply = await _gemmaService.ChatAsync(conversation, userInfo);
+            aiReply = await _geminiService.ChatAsync(conversation, userInfo);
         }
         catch (Exception ex)
         {
-            Console.WriteLine("================ [GROQ CHAT API CRASH] ================");
-            Console.WriteLine($"Lỗi kết nối hoặc xử lý từ Groq API: {ex.Message}");
-            Console.WriteLine("=======================================================");
+            Console.WriteLine("================ [PYTHON CHAT API CRASH] ================");
+            Console.WriteLine($"Lỗi kết nối hoặc xử lý từ API Python: {ex.Message}");
+            Console.WriteLine("=========================================================");
             
             aiReply = "Xin lỗi bạn, kết nối với trí tuệ nhân tạo đang bị gián đoạn một chút. Bạn có thể thử gửi lại tin nhắn vừa rồi không?";
         }
@@ -242,26 +242,18 @@ Weight: {metric?.Weight ?? 65}
             metric = new BodyMetric { Height = 170, Weight = 65 };
         }
 
-        var foods = await _context.Foods.ToListAsync();
+        var foods = await _context.Foods
+            .AsNoTracking()
+            .Select(x => new { x.Id, x.Name, x.Calories, x.Protein, x.Carbs, x.Fat })
+            .Take(100)
+            .ToListAsync();
 
-        var foodObj = new
-        {
-            food_list = foods.Select(x => new
-            {
-                food_id = x.Id,
-                food_name = x.Name,
-                calories = x.Calories,
-                protein = Convert.ToDouble(x.Protein),
-                carbs = Convert.ToDouble(x.Carbs),
-                fat = Convert.ToDouble(x.Fat)
-            }).ToList()
-        };
-
-        var foodJson = System.Text.Json.JsonSerializer.Serialize(foodObj);
+        var foodLines = foods.Select(x => $"{x.Id},{x.Name},{x.Calories},{x.Protein},{x.Carbs},{x.Fat}");
+        var foodJson = string.Join("\n", foodLines);
 
         var historyMessages = session.Messages
             .OrderByDescending(x => x.CreatedAt)
-            .Take(6)
+            .Take(10)
             .Reverse()
             .ToList();
 
@@ -287,7 +279,7 @@ Conversation:
 
         try 
         {
-            var planResult = await _gemmaService.GenerateDietPlanAsync(userInfo, foodJson);
+            var planResult = await _geminiService.GenerateDietPlanAsync(userInfo, foodJson);
             if (planResult == null)
             {
                 Console.WriteLine("================ [DIET PLAN LỖI] ================");
@@ -320,10 +312,10 @@ Conversation:
             UserId = userId,
             SessionId = sessionId,
             DietTitle = response.DietTitle ?? "AI Diet Plan",
-            TotalCalories = (int)response.DailyCalories,
-            Protein = (int)response.ProteinTargetG,
-            Carbs = (int)response.CarbsTargetG,
-            Fat = (int)response.FatTargetG,
+            TotalCalories = response.DailyCalories,
+            Protein = response.ProteinTargetG,
+            Carbs = response.CarbsTargetG,
+            Fat = response.FatTargetG,
             DietJson = System.Text.Json.JsonSerializer.Serialize(response),
             CreatedAt = DateTime.UtcNow
         };
@@ -336,7 +328,7 @@ Conversation:
         {
             UserId = userId,
             ScheduleName = response.DietTitle ?? "AI Diet Plan",
-            TotalCaloriesTarget = (int?)response.DailyCalories,
+            TotalCaloriesTarget = response.DailyCalories,
             CreatedAt = DateTime.UtcNow
         };
 
