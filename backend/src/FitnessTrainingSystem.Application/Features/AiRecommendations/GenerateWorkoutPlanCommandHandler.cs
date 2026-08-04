@@ -70,7 +70,37 @@ public class GenerateWorkoutPlanCommandHandler : IRequestHandler<GenerateWorkout
         decimal totalCalories = 0;
         int totalDuration = 0;
 
-        foreach (var ex in availableExercises.Take(5))
+        var allExercisesForWarmup = await _exerciseService.GetAllAsync();
+        var warmupEx = allExercisesForWarmup.FirstOrDefault(e => 
+            e.Title.Contains("warm", StringComparison.OrdinalIgnoreCase) || 
+            e.Title.Contains("khởi động", StringComparison.OrdinalIgnoreCase) ||
+            e.Title.Contains("stretching", StringComparison.OrdinalIgnoreCase));
+
+        var finalExercises = new List<AvailableExerciseDto>();
+
+        if (warmupEx != null)
+        {
+            finalExercises.Add(new AvailableExerciseDto
+            {
+                Id = warmupEx.Id,
+                Title = warmupEx.Title,
+                Description = warmupEx.Description,
+                MuscleGroupId = warmupEx.MuscleGroupId,
+                MuscleGroupName = warmupEx.MuscleGroup,
+                Equipment = "None",
+                DurationMinutes = warmupEx.Duration ?? 5,
+                CaloriesBurnPerMin = 5.0,
+                Difficulty = warmupEx.Difficulty.ToString()
+            });
+            
+            // Loại bỏ bài khởi động này khỏi danh sách tập chính nếu bị trùng
+            availableExercises = availableExercises.Where(x => x.Id != warmupEx.Id).ToList();
+        }
+
+        int exercisesToTake = warmupEx != null ? 4 : 5;
+        finalExercises.AddRange(availableExercises.Take(exercisesToTake));
+
+        foreach (var ex in finalExercises)
         {
             var sets = 3;
             var reps = 12;
