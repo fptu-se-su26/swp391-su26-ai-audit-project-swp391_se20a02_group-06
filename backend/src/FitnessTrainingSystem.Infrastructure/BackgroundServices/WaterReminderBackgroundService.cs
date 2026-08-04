@@ -27,8 +27,15 @@ public class WaterReminderBackgroundService : BackgroundService
     {
         _logger.LogInformation("Water Reminder Background Service started.");
 
-        // Initial delay so it doesn't fire immediately upon startup
-        await Task.Delay(TimeSpan.FromMinutes(2), stoppingToken);
+        try
+        {
+            // Initial delay so it doesn't fire immediately upon startup
+            await Task.Delay(TimeSpan.FromMinutes(2), stoppingToken);
+        }
+        catch (OperationCanceledException)
+        {
+            return;
+        }
 
         while (!stoppingToken.IsCancellationRequested)
         {
@@ -41,9 +48,16 @@ public class WaterReminderBackgroundService : BackgroundService
                 _logger.LogError(ex, "Error occurred while sending water reminders.");
             }
 
-            _logger.LogInformation("Water reminder scan cycle completed at {Time}", DateTime.Now);
-            // Scan every 5 minutes
-            await Task.Delay(TimeSpan.FromMinutes(5), stoppingToken);
+            try
+            {
+                _logger.LogInformation("Water reminder scan cycle completed at {Time}", DateTime.Now);
+                // Scan every 5 minutes
+                await Task.Delay(TimeSpan.FromMinutes(5), stoppingToken);
+            }
+            catch (OperationCanceledException)
+            {
+                // Ignore, application is shutting down
+            }
         }
     }
 

@@ -40,3 +40,9 @@ obj/
 # Superpowers Plugin (Local Only)
 .agents/skills/superpowers/
 docs/superpowers_guide.md
+
+# Python
+**/venv/
+**/__pycache__/
+*.pyc
+

@@ -13,9 +13,9 @@ namespace FitnessTrainingSystem.Application.Features.Nutrition;
 public class CreateDietPlanCommandHandler : IRequestHandler<CreateDietPlanCommand, DietPlanResponse>
 {
     private readonly ApplicationDbContext _context;
-    private readonly IGeminiAiService _aiService;
+    private readonly IGroqAiService _aiService;
 
-    public CreateDietPlanCommandHandler(ApplicationDbContext context, IGeminiAiService aiService)
+    public CreateDietPlanCommandHandler(ApplicationDbContext context, IGroqAiService aiService)
     {
         _context = context;
         _aiService = aiService;
@@ -43,7 +43,7 @@ public class CreateDietPlanCommandHandler : IRequestHandler<CreateDietPlanComman
         var foodsInDb = await _context.Foods.ToListAsync(cancellationToken);
         string foodListJson = JsonSerializer.Serialize(foodsInDb);
 
-        // 3. Gọi sang Python Service (Đã được cấu hình snake_case chuẩn xác) để lấy JSON từ Gemini AI
+        // 3. Gọi sang Groq AI Service để lấy JSON kết quả thực đơn
         DietPlanResponse aiPlan = await _aiService.GenerateDietPlanAsync(userInfo, foodListJson);
 
         // 4. Lưu vết kết quả AI trả về vào bảng AiRecommendations công khai của hệ thống

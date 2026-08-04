@@ -32,7 +32,7 @@ public class PythonAiService : IGeminiAiService
             "application/json");
 
         var response = await _httpClient.PostAsync(
-            "http://localhost:8000/api/ai/generate-diet-plan",
+            "/api/ai/generate-diet-plan",
             content);
 
         response.EnsureSuccessStatusCode();
@@ -99,7 +99,7 @@ public class PythonAiService : IGeminiAiService
         "application/json");
 
     var response = await _httpClient.PostAsync(
-        "http://localhost:8000/api/ai/chat",
+        "/api/ai/chat",
         content);
 
     response.EnsureSuccessStatusCode();
