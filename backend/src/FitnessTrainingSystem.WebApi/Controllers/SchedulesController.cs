@@ -108,7 +108,7 @@ public class SchedulesController : ControllerBase
 
         try
         {
-            var (checkoutUrl, qrCode) = await _payOsService.CreatePaymentLinkAsync(orderCode, amountVnd, description, buyerName);
+            var (checkoutUrl, qrCode) = await _payOsService.CreatePaymentLinkAsync(orderCode, amountVnd, description, buyerName, request.ReturnUrl, request.CancelUrl);
             return Ok(new { checkoutUrl, scheduleId = schedule.Id, orderCode = orderCode });
         }
         catch (Exception ex)
@@ -256,6 +256,8 @@ public class CheckoutScheduleRequest
     public int? ScheduleId { get; set; }
     public DateTime StartTime { get; set; }
     public DateTime EndTime { get; set; }
+    public string? ReturnUrl { get; set; }
+    public string? CancelUrl { get; set; }
 }
 
 public class CreateBulkAvailabilityRequest

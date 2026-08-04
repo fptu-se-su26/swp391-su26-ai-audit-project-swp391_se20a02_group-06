@@ -22,7 +22,7 @@ import {
 import { FiEdit2, FiCheck, FiLogOut, FiUpload } from 'react-icons/fi'
 import { useNavigate } from 'react-router-dom'
 import { useAuthStore } from '../../store/useAuthStore'
-import AdminLayout from '../../components/shared/Layout/AdminLayout'
+import PTLayout from '../../components/shared/Layout/PTLayout'
 import { getPTProfile, updatePTProfile, type PTProfile, type UpdatePTProfilePayload } from '../../api/ptProfile'
 import { getLatestBodyMetric, addBodyMetric, type BodyMetric } from '../../api/bodyMetrics'
 import BodyMetricsModal from '../member/components/BodyMetricsModal'
@@ -157,7 +157,7 @@ const PTProfilePage: React.FC = () => {
     }
 
     return (
-        <AdminLayout title="PT Profile">
+        <PTLayout title="PT Profile">
             <Box w="full" minH="100vh" bg="#0A0C10" p="6" pb="24">
                 {/* Header */}
                 <Flex justify="space-between" align="center" mb="8">
@@ -494,7 +494,7 @@ const PTProfilePage: React.FC = () => {
                 onClose={() => setIsPasswordModalOpen(false)}
                 onSuccess={handlePasswordSuccess}
             />
-        </AdminLayout>
+        </PTLayout>
     )
 }
 

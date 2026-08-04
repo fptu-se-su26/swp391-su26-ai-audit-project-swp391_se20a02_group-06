@@ -128,11 +128,9 @@ const Register: React.FC = () => {
       duration: 4000,
       isClosable: true,
     })
-    if (response.roleId === 1 || response.roleId === 2) {
-      navigate('/admin')
-    } else {
-      navigate('/dashboard')
-    }
+    if (response.roleId === 1) navigate('/admin')
+      else if (response.roleId === 2) navigate('/pt/dashboard')
+      else navigate('/dashboard')
   }
 
   const handleResendOtp = async () => {

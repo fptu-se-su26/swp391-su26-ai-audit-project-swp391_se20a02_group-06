@@ -35,7 +35,7 @@ import {
 } from '@chakra-ui/react'
 import useSWR from 'swr'
 import apiClient from '../../lib/axios'
-import AdminLayout from '../../components/shared/Layout/AdminLayout.tsx'
+import PTLayout from '../../components/shared/Layout/PTLayout'
 import { submitExercise, type ExerciseRequestDto } from '../../api/exerciseRequests'
 import { uploadVideo } from '../../api/upload'
 
@@ -184,7 +184,7 @@ const PtExerciseRequests: React.FC = () => {
     }
 
     return (
-        <AdminLayout title="PT Exercise Requests">
+        <PTLayout title="PT Exercise Requests">
             <Box maxW="1200px" mx="auto" pt="4">
                 <Box mb="6">
                     <Heading fontSize="24px" fontWeight="800" color="white" mb="2">
@@ -408,7 +408,7 @@ const PtExerciseRequests: React.FC = () => {
                     </ModalFooter>
                 </ModalContent>
             </Modal>
-        </AdminLayout>
+        </PTLayout>
     )
 }
 

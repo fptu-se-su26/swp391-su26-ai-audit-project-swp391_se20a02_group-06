@@ -45,7 +45,12 @@ const Pricing: React.FC = () => {
 
     setPurchasingPlan(pkgId)
     try {
-      const result = await orderService.purchasePackage(pkgId)
+      const isProd = import.meta.env.PROD;
+      const baseUrl = isProd ? `${window.location.origin}/#` : window.location.origin;
+      const returnUrl = `${baseUrl}/payment/success`;
+      const cancelUrl = `${baseUrl}/payment/cancel`;
+
+      const result = await orderService.purchasePackage(pkgId, returnUrl, cancelUrl)
       
       if (result && result.checkoutUrl) {
         // Redirect to PayOS checkout page

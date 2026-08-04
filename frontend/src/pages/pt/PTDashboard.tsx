@@ -5,7 +5,7 @@ import useSWR from 'swr'
 import apiClient from '../../lib/axios'
 
 const fetcher = (url: string) => apiClient.get(url).then(res => res.data)
-import AdminLayout from '../../components/shared/Layout/AdminLayout'
+import PTLayout from '../../components/shared/Layout/PTLayout'
 import StatCard from '../../features/pt/components/StatCard'
 import ScheduleTimeline from '../../features/pt/components/ScheduleTimeline'
 import EarningsChart from '../../features/pt/components/EarningsChart'
@@ -40,7 +40,7 @@ const PTDashboard: React.FC = () => {
     ]
 
     return (
-    <AdminLayout title="PT Portal">
+    <PTLayout title="PT Portal">
         <Box maxW="1440px" mx="auto">
             <Flex justify="space-between" align="flex-end" mb="6">
                 <Box>
@@ -73,7 +73,7 @@ const PTDashboard: React.FC = () => {
                 <ContentLibrary />
             </Grid>
         </Box>
-    </AdminLayout>
+    </PTLayout>
     )
 }
 

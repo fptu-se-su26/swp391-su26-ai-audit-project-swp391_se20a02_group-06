@@ -23,7 +23,7 @@ public class PayOSService : IPayOSService
         _logger = logger;
     }
 
-    public async Task<(string checkoutUrl, string qrCode)> CreatePaymentLinkAsync(long orderCode, int amountVnd, string description, string buyerName)
+    public async Task<(string checkoutUrl, string qrCode)> CreatePaymentLinkAsync(long orderCode, int amountVnd, string description, string buyerName, string? returnUrl = null, string? cancelUrl = null)
     {
         // Truncate description to 25 chars max (PayOS limit)
         var desc = description.Length > 25 ? description[..25] : description;
@@ -35,8 +35,8 @@ public class PayOSService : IPayOSService
             OrderCode = orderCode,
             Amount = amountVnd,
             Description = desc,
-            CancelUrl = _cancelUrl,
-            ReturnUrl = _returnUrl
+            CancelUrl = cancelUrl ?? _cancelUrl,
+            ReturnUrl = returnUrl ?? _returnUrl
         };
 
         var paymentLink = await _payOS.PaymentRequests.CreateAsync(paymentData);

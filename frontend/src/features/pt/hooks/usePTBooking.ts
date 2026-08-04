@@ -198,11 +198,16 @@ export const usePTBooking = (ptId: number | null): PTBookingContext => {
             
             const end = new Date(start.getTime() + 60 * 60 * 1000) // 1 hr later
 
+            const isProd = import.meta.env.PROD;
+            const baseUrl = isProd ? `${window.location.origin}/#` : window.location.origin;
+
             const res = await apiClient.post('/schedules/checkout', {
                 ptId,
                 scheduleId: parseInt(pendingSession.id, 10),
                 startTime: start.toISOString(),
-                endTime: end.toISOString()
+                endTime: end.toISOString(),
+                returnUrl: `${baseUrl}/payment/success`,
+                cancelUrl: `${baseUrl}/payment/cancel`
             })
 
             if (res.data.checkoutUrl) {

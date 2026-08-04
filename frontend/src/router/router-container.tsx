@@ -11,6 +11,8 @@ import About from "../pages/public/About";
 import Login from "../pages/auth/Login";
 import Register from "../pages/auth/Register";
 import ForgotPassword from "../pages/auth/ForgotPassword";
+import PaymentCancel from "../pages/public/PaymentCancel";
+import PaymentSuccess from "../pages/public/PaymentSuccess";
 
 // Pages - Member Area
 import Dashboard from "../pages/member/Dashboard";
@@ -70,6 +72,8 @@ const RouterContainer = () => {
             {/* Public Marketing Pages */}
             <Route path="/pricing" element={<Pricing />} />
             <Route path="/about" element={<About />} />
+            <Route path="/payment/cancel" element={<PaymentCancel />} />
+            <Route path="/payment/success" element={<PaymentSuccess />} />
 
             {/* Admin Area Routes */}
             <Route path="/admin" element={<AdminRoute><AdminDashboard /></AdminRoute>} />

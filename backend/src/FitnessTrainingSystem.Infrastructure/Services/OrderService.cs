@@ -69,7 +69,7 @@ public class OrderService : IOrderService
 
         try
         {
-            var (checkoutUrl, qrCode) = await _payOsService.CreatePaymentLinkAsync(orderCode, amountVnd, description, buyerName);
+            var (checkoutUrl, qrCode) = await _payOsService.CreatePaymentLinkAsync(orderCode, amountVnd, description, buyerName, dto.ReturnUrl, dto.CancelUrl);
             orderDto.CheckoutUrl = checkoutUrl;
             orderDto.QrCode = qrCode;
         }

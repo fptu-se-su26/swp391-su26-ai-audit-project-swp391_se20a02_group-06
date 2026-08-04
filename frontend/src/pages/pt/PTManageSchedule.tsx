@@ -4,7 +4,7 @@ import { FiTrash2 } from 'react-icons/fi'
 import apiClient from '../../lib/axios'
 import useSWR from 'swr'
 import { getPTProfile } from '../../api/ptProfile'
-import AdminLayout from '../../components/shared/Layout/AdminLayout'
+import PTLayout from '../../components/shared/Layout/PTLayout'
 
 const fetcher = (url: string) => apiClient.get(url).then(res => res.data)
 
@@ -143,7 +143,7 @@ const PTManageSchedule: React.FC = () => {
     }
 
     return (
-        <AdminLayout title="Schedule">
+        <PTLayout title="Schedule">
             <Box p="6">
                 <Heading size="lg" mb="6" color="white">Manage Availability</Heading>
 
@@ -304,7 +304,7 @@ const PTManageSchedule: React.FC = () => {
                 )}
             </Box>
         </Box>
-        </AdminLayout>
+        </PTLayout>
     )
 }
 

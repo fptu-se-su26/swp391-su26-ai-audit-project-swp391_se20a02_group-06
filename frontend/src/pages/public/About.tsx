@@ -21,7 +21,9 @@ const About: React.FC = () => {
 
   const handleLoginClick = () => {
     if (isAuthenticated) {
-      navigate(roleId === 1 ? '/admin' : '/dashboard')
+      if (roleId === 1) navigate('/admin')
+      else if (roleId === 2) navigate('/pt/dashboard')
+      else navigate('/dashboard')
     } else {
       navigate('/login')
     }

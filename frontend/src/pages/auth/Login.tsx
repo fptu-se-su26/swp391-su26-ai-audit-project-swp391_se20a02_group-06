@@ -59,8 +59,10 @@ const Login: React.FC = () => {
         const response = await authService.googleLogin(credentialResponse.credential!)
         setTokens(response.token, '', response.roleId)
         toast({ title: 'Login Successful', description: `Welcome, ${response.fullname}!`, status: 'success', duration: 3000, isClosable: true, position: 'top-right' })
-        if (response.roleId === 1 || response.roleId === 2) {
+        if (response.roleId === 1) {
           navigate('/admin')
+        } else if (response.roleId === 2) {
+          navigate('/pt/dashboard')
         } else {
           navigate('/dashboard')
         }
@@ -78,8 +80,10 @@ const Login: React.FC = () => {
       const response = await authService.login(data)
       setTokens(response.token, '', response.roleId)
       toast({ title: 'Login Successful', description: `Welcome back, ${response.fullname}!`, status: 'success', duration: 3000, isClosable: true, position: 'top-right' })
-      if (response.roleId === 1 || response.roleId === 2) {
+      if (response.roleId === 1) {
         navigate('/admin')
+      } else if (response.roleId === 2) {
+        navigate('/pt/dashboard')
       } else {
         navigate('/dashboard')
       }
