@@ -352,7 +352,7 @@ Conversation:
                 var item = new MealScheduleItem
                 {
                     MealScheduleId = mealSchedule.Id,
-                    FoodId = food.FoodId,
+                    FoodId = int.TryParse(food.FoodId, out int fid) ? fid : 0,
                     // Kết hợp Tên Bữa Ăn và Khối lượng để UI dễ hiển thị sau này (ví dụ: "Breakfast: 100g")
                     Amount = $"{meal.Name} - {food.Amount}",
                     IsEaten = false,

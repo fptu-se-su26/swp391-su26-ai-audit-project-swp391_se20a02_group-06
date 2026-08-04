@@ -3,6 +3,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using FitnessTrainingSystem.Application.DTOs.Nutrition;
 using FitnessTrainingSystem.Application.Common.Interfaces;
+using FitnessTrainingSystem.Application.Interfaces;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
@@ -208,5 +209,10 @@ LỊCH SỬ CHAT
             .GetString();
 
         return text ?? "{}";
+    }
+
+    public async Task<string> GenerateContentAsync(string prompt)
+    {
+        return await CallGeminiAsync("You are a helpful fitness AI assistant.", prompt, isJsonMode: false);
     }
 }
