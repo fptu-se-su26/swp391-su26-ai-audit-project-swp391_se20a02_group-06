@@ -390,13 +390,16 @@ const WorkoutResults: React.FC = () => {
                             <AspectRatio ratio={16 / 9} w="100%">
                                 {selectedExercise?.videoUrl ? (
                                     selectedExercise.videoUrl.match(/\.(gif|jpe?g|tiff?|png|webp|bmp)$/i) ? (
-                                        <Image 
-                                            src={selectedExercise.videoUrl} 
-                                            alt={selectedExercise.name} 
-                                            objectFit="contain" 
-                                            w="100%" 
-                                            h="100%"
-                                        />
+                                        <Box w="100%" h="100%" display="flex" alignItems="center" justifyContent="center">
+                                            <Image 
+                                                src={selectedExercise.videoUrl} 
+                                                alt={selectedExercise.name} 
+                                                objectFit="contain" 
+                                                w="100%" 
+                                                h="100%"
+                                                style={{ objectFit: 'contain' }}
+                                            />
+                                        </Box>
                                     ) : (
                                         <iframe
                                             title={selectedExercise.name}
