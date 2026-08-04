@@ -333,7 +333,8 @@ Yêu cầu thuật toán phân bổ (RẤT QUAN TRỌNG - PHẢI CHÍNH XÁC V�
    - Thời gian tập mỗi hiệp (phút) = (reps * 3 giây)/60 HOẶC (duration_seconds)/60.
    - Tổng thời gian tập bài đó (phút) = (Thời gian tập mỗi hiệp) * sets.
    - Lượng calo đốt của bài (calories_burned) = (Tổng thời gian tập bài đó) * calories_burn_per_min.
-   => BẠN PHẢI TỰ ĐIỀU CHỈNH sets, reps, duration_seconds ĐỂ ĐẠT ĐƯỢC CON SỐ CALO VÀ THỜI GIAN MONG MUỐN!";
+   => BẠN PHẢI TỰ ĐIỀU CHỈNH sets, reps, duration_seconds ĐỂ ĐẠT ĐƯỢC CON SỐ CALO VÀ THỜI GIAN MONG MUỐN!
+4. BẮT BUỘC: MỖI BUỔI TẬP phải luôn luôn bắt đầu bằng ít nhất 1 bài tập Khởi động (Warm Up) ở vị trí đầu tiên (exercise_order = 1) được chọn từ danh sách.";
 
         if (!string.IsNullOrWhiteSpace(injuredMuscleGroups))
         {
