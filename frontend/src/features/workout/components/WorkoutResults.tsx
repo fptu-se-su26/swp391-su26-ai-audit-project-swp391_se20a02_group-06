@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
     AspectRatio,
@@ -68,6 +68,7 @@ const ExerciseCard: React.FC<ExerciseCardProps> = ({
     onMarkDone
 }) => {
     // Determine the overall status for styling
+    const safeTags = Array.isArray(tags) ? tags : (tags ? [tags] : ['Full Body'])
     const isPast = isDone || isSkipped
     const statusColor = isActive ? '#E03030' : '#1e2028'
     const statusOpacity = isPast ? 0.4 : 1
@@ -110,7 +111,7 @@ const ExerciseCard: React.FC<ExerciseCardProps> = ({
             <Box flex="1">
                 <Text fontSize="15px" fontWeight="700" color={isLocked ? '#8A8A93' : 'white'} mb="1">{name}</Text>
                 <HStack spacing="2" flexWrap="wrap">
-                    {tags.map((t, ti) => (
+                    {safeTags.map((t, ti) => (
                         <Badge key={ti} bg="#1e2028" color="#8A8A93" fontSize="9px" fontWeight="600" px="2" py="0.5" borderRadius="5px" textTransform="uppercase" letterSpacing="wider">
                             {t}
                         </Badge>
@@ -168,9 +169,11 @@ const WorkoutResults: React.FC = () => {
     const [selectedExercise, setSelectedExercise] = useState<(ExerciseCardData & { arrayIndex: number }) | null>(null)
     const navigate = useNavigate()
 
-    const currentDay = data?.planType === 'weekly' ? weeklyPlans[currentDayIndex] : null
-    const dayExercises = currentDay ? currentDay.exercises : exercises
+    const currentDay = data?.planType === 'weekly' ? (weeklyPlans ? weeklyPlans[currentDayIndex] : null) : null
+    const dayExercises = (currentDay ? currentDay.exercises : exercises) || []
     const dayActiveSessionId = currentDay ? currentDay.activeSessionId : activeSessionId
+
+    const hasStartedRef = useRef(false)
 
     useEffect(() => {
         if (data?.planType === 'weekly' && currentDay) {
@@ -180,8 +183,8 @@ const WorkoutResults: React.FC = () => {
                     .catch(console.error)
             }
         } else if (data?.planType === 'daily') {
-            if (!activeSessionId && activePlanId) {
-                startWorkoutSession({ workoutPlanId: activePlanId })
+            if (!activeSessionId) {
+                startWorkoutSession(activePlanId ? { workoutPlanId: activePlanId } : {})
                     .then(session => setActiveSessionId(session.id))
                     .catch(console.error)
             }
@@ -192,29 +195,29 @@ const WorkoutResults: React.FC = () => {
         const targetSessionId = data?.planType === 'weekly' ? dayActiveSessionId : activeSessionId
         const targetExercises = data?.planType === 'weekly' ? dayExercises : exercises
 
-        if (!targetSessionId) {
-            resetWorkout()
-            navigate('/nutrition')
-            return
-        }
-
         const doneExercises = targetExercises.filter(e => e.isDone)
         const totalDuration = currentDay ? currentDay.targetDurationMinutes : (data?.duration || 30)
         const totalCalories = doneExercises.reduce((sum, ex) => sum + (ex.caloriesBurned ?? 30), 0)
         
         try {
-            await completeWorkoutSession(targetSessionId, {
-                totalDurationMinutes: totalDuration,
-                totalCaloriesBurned: totalCalories,
-                details: doneExercises.map(ex => ({
-                    exerciseId: ex.id,
-                    setsDone: ex.setsCount ?? 3,
-                    repsDone: ex.repsCount ?? 12,
-                    durationSeconds: ex.durationSeconds ?? 0,
-                    caloriesBurned: ex.caloriesBurned ?? 30
-                }))
-
-            })
+            let sessionId = targetSessionId
+            if (!sessionId) {
+                const newSession = await startWorkoutSession(activePlanId ? { workoutPlanId: activePlanId } : {})
+                sessionId = newSession?.id || null
+            }
+            if (sessionId) {
+                await completeWorkoutSession(sessionId, {
+                    totalDurationMinutes: totalDuration,
+                    totalCaloriesBurned: totalCalories,
+                    details: doneExercises.map(ex => ({
+                        exerciseId: Number(ex.id) || 0,
+                        setsDone: ex.setsCount ?? 3,
+                        repsDone: ex.repsCount ?? 12,
+                        durationSeconds: ex.durationSeconds ?? 0,
+                        caloriesBurned: ex.caloriesBurned ?? 30
+                    }))
+                })
+            }
         } catch (error) {
             console.error("Failed to complete session:", error)
         } finally {

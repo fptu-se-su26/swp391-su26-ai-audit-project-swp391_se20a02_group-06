@@ -14,13 +14,17 @@ import {
     FiActivity,
     FiFileText,
     FiUser,
+    FiCalendar,
+    FiUploadCloud,
 } from 'react-icons/fi'
 
 const navItems = [
-    { label: 'Dashboard', icon: FiGrid, path: '/admin' },
-    { label: 'My Clients', icon: FiUsers, path: '/admin/users' },
-    { label: 'Workouts', icon: FiActivity, path: '/admin/workouts' },
-    { label: 'Exercise Requests', icon: FiFileText, path: '/admin/pt-requests' },
+    { label: 'Dashboard', icon: FiGrid, path: '/pt/dashboard' },
+    { label: 'Schedule', icon: FiCalendar, path: '/pt/schedule' },
+    { label: 'My Clients', icon: FiUsers, path: '/pt/clients' },
+    { label: 'My Content', icon: FiUploadCloud, path: '/pt/content-library' },
+    { label: 'Workouts', icon: FiActivity, path: '/pt/workouts' },
+    { label: 'Exercise Requests', icon: FiFileText, path: '/pt/exercise-requests' },
 ]
 
 const PTSidebar: React.FC = () => {

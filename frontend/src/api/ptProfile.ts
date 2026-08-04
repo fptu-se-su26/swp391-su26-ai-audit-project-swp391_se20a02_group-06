@@ -7,15 +7,17 @@ export interface PTProfile {
     avatarUrl: string | null
     bio: string | null
     experienceYears: number | null
-    hourlyRate: number | null
+    sessionRate: number | null
     rating: number | null
+    coachingPhilosophy: string | null
 }
 
 export interface UpdatePTProfilePayload {
     fullName?: string
     bio?: string
     experienceYears?: number
-    hourlyRate?: number
+    sessionRate?: number
+    coachingPhilosophy?: string
     avatarUrl?: string
     currentPassword?: string
     newPassword?: string

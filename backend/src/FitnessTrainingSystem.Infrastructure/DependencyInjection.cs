@@ -65,6 +65,11 @@ public static class DependencyInjection
         {
             client.Timeout = TimeSpan.FromMinutes(5);
         });
+        services.AddHttpClient<IGroqAiService, GroqAiService>(client =>
+        {
+            client.BaseAddress = new Uri("https://api.groq.com/");
+            client.Timeout = TimeSpan.FromMinutes(3);
+        });
         services.AddScoped<IAIChatService, AIChatService>();
 
         // PayOS

@@ -10,27 +10,29 @@ namespace FitnessTrainingSystem.Infrastructure.Services;
 public class AIChatService : IAIChatService
 {
     private readonly ApplicationDbContext _context;
-    private readonly IGeminiAiService _geminiService;
+    private readonly IGroqAiService _gemmaService;
 
     public AIChatService(
         ApplicationDbContext context,
-        IGeminiAiService geminiService)
+        IGroqAiService gemmaService)
     {
         _context = context;
-        _geminiService = geminiService;
+        _gemmaService = gemmaService;
     }
 
     public async Task<AIChatResponse> SendMessageAsync(int userId, AIChatRequest request)
     {
         AIChatSession session;
 
-        // 1. Lấy hoặc tạo mới Session
         if (request.SessionId.HasValue)
         {
             session = await _context.AIChatSessions
                 .Include(x => x.Messages)
                 .FirstOrDefaultAsync(x => x.Id == request.SessionId.Value)
                 ?? throw new Exception("Chat session not found.");
+                
+            if (session.UserId != userId) 
+                throw new UnauthorizedAccessException("Not your session.");
         }
         else
         {
@@ -94,13 +96,13 @@ Weight: {metric?.Weight ?? 65}
         string aiReply;
         try
         {
-            aiReply = await _geminiService.ChatAsync(conversation, userInfo);
+            aiReply = await _gemmaService.ChatAsync(conversation, userInfo);
         }
         catch (Exception ex)
         {
-            Console.WriteLine("================ [PYTHON CHAT API CRASH] ================");
-            Console.WriteLine($"Lỗi kết nối hoặc xử lý từ API Python: {ex.Message}");
-            Console.WriteLine("=========================================================");
+            Console.WriteLine("================ [GROQ CHAT API CRASH] ================");
+            Console.WriteLine($"Lỗi kết nối hoặc xử lý từ Groq API: {ex.Message}");
+            Console.WriteLine("=======================================================");
             
             aiReply = "Xin lỗi bạn, kết nối với trí tuệ nhân tạo đang bị gián đoạn một chút. Bạn có thể thử gửi lại tin nhắn vừa rồi không?";
         }
@@ -165,8 +167,12 @@ Weight: {metric?.Weight ?? 65}
     }
 
 
-    public async Task<List<AIChatResponse>> GetMessagesAsync(int sessionId)
+    public async Task<List<AIChatResponse>> GetMessagesAsync(int userId, int sessionId)
     {
+        var session = await _context.AIChatSessions.FirstOrDefaultAsync(x => x.Id == sessionId);
+        if (session == null || session.UserId != userId)
+            throw new UnauthorizedAccessException("Not your session.");
+
         var messages = await _context.AIChatMessages
             .Where(x => x.SessionId == sessionId)
             .OrderBy(x => x.CreatedAt)
@@ -255,7 +261,7 @@ Weight: {metric?.Weight ?? 65}
 
         var historyMessages = session.Messages
             .OrderByDescending(x => x.CreatedAt)
-            .Take(10)
+            .Take(6)
             .Reverse()
             .ToList();
 
@@ -281,7 +287,7 @@ Conversation:
 
         try 
         {
-            var planResult = await _geminiService.GenerateDietPlanAsync(userInfo, foodJson);
+            var planResult = await _gemmaService.GenerateDietPlanAsync(userInfo, foodJson);
             if (planResult == null)
             {
                 Console.WriteLine("================ [DIET PLAN LỖI] ================");
@@ -314,7 +320,7 @@ Conversation:
             UserId = userId,
             SessionId = sessionId,
             DietTitle = response.DietTitle ?? "AI Diet Plan",
-            TotalCalories = response.DailyCalories,
+            TotalCalories = (int)response.DailyCalories,
             Protein = (int)response.ProteinTargetG,
             Carbs = (int)response.CarbsTargetG,
             Fat = (int)response.FatTargetG,
@@ -330,7 +336,7 @@ Conversation:
         {
             UserId = userId,
             ScheduleName = response.DietTitle ?? "AI Diet Plan",
-            TotalCaloriesTarget = response.DailyCalories,
+            TotalCaloriesTarget = (int?)response.DailyCalories,
             CreatedAt = DateTime.UtcNow
         };
 

@@ -1018,3 +1018,605 @@ Yêu cầu AI điều chỉnh lại routing để nhảy thẳng sang màn hình
 | Link tài liệu/báo cáo | N/A |
 | Ghi chú khác | N/A |
 
+
+
+---
+
+### Prompt số 13
+
+| Nội dung | Thông tin |
+|---|---|
+| Ngày sử dụng | 28/07/2026 |
+| Công cụ AI | Antigravity |
+| Mục đích | Debug lỗi hệ thống AI Chat trả về kết quả dự phòng |
+| Phần việc liên quan | Debug |
+| Mức độ sử dụng | Hỏi debug |
+
+#### 5.1. Prompt nguyên văn
+
+```text
+nguyên nhân tại sao chat không dùng được vậy, nó trả lừoi xin lỗi là sao
+gắn log vào để tooi xem lỗi AI trả lời như thế này là vì sao là do hết limit hay sao. check lại cho toi
+```
+
+#### 5.2. Bối cảnh khi viết prompt
+
+```text
+Chat UI liên tục báo lỗi do kết nối AI bị gián đoạn, nghi ngờ hết limit API.
+```
+
+#### 5.3. Kết quả AI trả về
+
+```text
+AI phân tích log Backend (.NET Core) và tìm thấy lỗi `BadRequest` do dùng sai placeholder key thay vì biến môi trường thực.
+```
+
+#### 5.4. Kết quả đã áp dụng vào bài
+
+```text
+Xóa key ảo trong `appsettings.json` để khôi phục cơ chế đọc từ file `.env`.
+```
+
+#### 5.5. Phần sinh viên/nhóm đã chỉnh sửa hoặc cải tiến
+
+```text
+Chủ động yêu cầu AI đóng gói commit mà không bao gồm key thật nhằm chia sẻ source code an toàn cho team.
+```
+
+#### 5.6. Đánh giá chất lượng prompt
+
+- [x] Prompt rõ ràng
+- [x] Prompt có đủ bối cảnh
+- [x] Prompt tạo ra kết quả tốt
+
+#### 5.7. Minh chứng liên quan
+
+| Loại minh chứng | Nội dung |
+|---|---|
+| Link commit | 6213363 |
+| File liên quan | appsettings.json, appsettings.Development.json |
+| Screenshot | N/A |
+| Kết quả chạy/test | Fix lỗi chat thành công |
+| Link tài liệu/báo cáo | N/A |
+| Ghi chú khác | N/A |
+
+
+---
+
+### Prompt số 14
+
+| Nội dung | Thông tin |
+|---|---|
+| Ngày sử dụng | 28/07/2026 |
+| Công cụ AI | Antigravity |
+| Mục đích | Khắc phục lỗi GitHub Pages (Exit Code 2) khi Deploy |
+| Phần việc liên quan | Debug |
+| Mức độ sử dụng | Hỏi debug |
+
+#### 5.1. Prompt nguyên văn
+
+```text
+Error: src/components/shared/Header/HeaderActions.tsx(6,27): error TS6133: 'UserProfile' is declared but its value is never read.
+...
+github page deploy lên trả lỗi này
+```
+
+#### 5.2. Bối cảnh khi viết prompt
+
+```text
+Mã nguồn bị từ chối khi thực thi Workflow Deploy của GitHub Pages do gặp phải lỗi TS6133 và TS2552.
+```
+
+#### 5.3. Kết quả AI trả về
+
+```text
+Dọn dẹp lại cấu trúc các tệp tin Frontend, xoá các import dư thừa và gọi đúng hàm cập nhật cache của thư viện dữ liệu SWR (thay vì tự gán state sai).
+```
+
+#### 5.4. Kết quả đã áp dụng vào bài
+
+```text
+Sửa chữa thành công Frontend và giúp việc Push mã nguồn lên Production trở nên mượt mà.
+```
+
+#### 5.5. Phần sinh viên/nhóm đã chỉnh sửa hoặc cải tiến
+
+```text
+Chỉ đạo trực tiếp cho AI xử lý luôn phần lưu vết lịch sử thông qua workflow `/commit`.
+```
+
+#### 5.6. Đánh giá chất lượng prompt
+
+- [x] Prompt rõ ràng
+- [x] Prompt có đủ bối cảnh
+- [x] Prompt tạo ra kết quả tốt
+
+#### 5.7. Minh chứng liên quan
+
+| Loại minh chứng | Nội dung |
+|---|---|
+| Link commit | 15cbfba |
+| File liên quan | Frontend Components |
+| Screenshot | Bảng log từ GitHub Actions |
+| Kết quả chạy/test | Build pass |
+| Link tài liệu/báo cáo | N/A |
+| Ghi chú khác | N/A |
+
+---
+
+### Prompt số 16
+
+| Nội dung | Thông tin |
+|---|---|
+| Ngày sử dụng | 28/07/2026 |
+| Công cụ AI | Antigravity |
+| Mục đích | Sửa lỗi Water Race Condition và AI Session Ownership |
+| Phần việc liên quan | Coding / Debug |
+| Mức độ sử dụng | Hỏi debug / code |
+
+#### 5.1. Prompt nguyên văn
+
+```text
+đây là test của member team tôi, hãy check và test lại 1 lần nưã nếu có lỗi hãy tổng hợp và cho tôi 1 plan của bạn fix những lỗi đó tôi sẽ duyệt
+```
+
+#### 5.2. Bối cảnh khi viết prompt
+
+```text
+Team vừa test xong có report một số bug liên quan đến bảo mật session của AI chat và lỗi race condition ở API log water. Cần AI đọc report và fix code.
+```
+
+#### 5.3. Kết quả AI trả về
+
+```text
+Xác nhận bug có thật và đưa ra Kế hoạch. Sau khi được duyệt, đã bọc transaction DB cho hàm LogWater, và thêm xác thực Session.UserId vào API Chat.
+```
+
+#### 5.4. Kết quả đã áp dụng vào bài
+
+```text
+Giữ nguyên toàn bộ code backend từ AI vì đã build pass.
+```
+
+#### 5.5. Phần sinh viên/nhóm đã chỉnh sửa hoặc cải tiến
+
+```text
+Duyệt plan.
+```
+
+#### 5.6. Đánh giá chất lượng prompt
+
+- [x] Prompt rõ ràng
+- [x] Prompt có đủ bối cảnh
+- [x] Prompt tạo ra kết quả tốt
+
+#### 5.7. Minh chứng liên quan
+
+| Loại minh chứng | Nội dung |
+|---|---|
+| Link commit | 1d23144 |
+| File liên quan | Backend Services/Controllers |
+| Screenshot | N/A |
+| Kết quả chạy/test | Build pass |
+| Link tài liệu/báo cáo | N/A |
+| Ghi chú khác | N/A |
+
+---
+
+### Prompt số 17
+
+| Nội dung | Thông tin |
+|---|---|
+| Ngày sử dụng | 28/07/2026 |
+| Công cụ AI | Antigravity |
+| Mục đích | Dọn dẹp code thừa ở giao diện MemberLayout |
+| Phần việc liên quan | Coding |
+| Mức độ sử dụng | Hỏi sinh code / xóa code |
+
+#### 5.1. Prompt nguyên văn
+
+```text
+cái này không dùng xoá đi vì không cần phần này... file này luôn... commit and push lại cho tôi
+```
+
+#### 5.2. Bối cảnh khi viết prompt
+
+```text
+Sau khi hoàn thiện code, thấy dư thừa một số chức năng (PT Booking) và Tabs trong Member Layout nên cần xóa đi cho sạch sẽ.
+```
+
+#### 5.3. Kết quả AI trả về
+
+```text
+AI đã xóa phần code tương ứng ở file MemberLayout.tsx.
+```
+
+#### 5.4. Kết quả đã áp dụng vào bài
+
+```text
+Giữ nguyên toàn bộ chỉnh sửa.
+```
+
+#### 5.5. Phần sinh viên/nhóm đã chỉnh sửa hoặc cải tiến
+
+```text
+N/A
+```
+
+#### 5.6. Đánh giá chất lượng prompt
+
+- [x] Prompt rõ ràng
+- [x] Prompt có đủ bối cảnh
+- [x] Prompt tạo ra kết quả tốt
+
+#### 5.7. Minh chứng liên quan
+
+| Loại minh chứng | Nội dung |
+|---|---|
+| Link commit | 16ce2d8 |
+| File liên quan | MemberLayout.tsx |
+| Screenshot | N/A |
+| Kết quả chạy/test | Build pass |
+| Link tài liệu/báo cáo | N/A |
+| Ghi chú khác | N/A |
+
+---
+
+### Prompt số 18
+
+| Nội dung | Thông tin |
+|---|---|
+| Ngày sử dụng | 28/07/2026 |
+| Công cụ AI | Antigravity |
+| Mục đích | Dọn dẹp nút test và đồng nhất ngôn ngữ UI, commit code |
+| Phần việc liên quan | Coding / Refactor |
+| Mức độ sử dụng | Yêu cầu làm trọn gói (Plan + Execute) |
+
+#### 5.1. Prompt nguyên văn
+
+```text
+chắc chắn nó ổn định nhé tôi có button test thông báo nước, xoá cho tôi luôn đi, đảm bảo trang web tôi đồng nhất 1 ngôn ngữ là tiếng anh chứ không phải nơi tiếng anh, nơi tiếng việt... /commit
+```
+
+#### 5.2. Bối cảnh khi viết prompt
+
+```text
+Sau khi test AI trả về dữ liệu thành công, phát hiện giao diện còn rác (nút test) và ngôn ngữ lộn xộn (nửa Tây nửa Ta), cần dọn dẹp trước khi merge/commit.
+```
+
+#### 5.3. Kết quả AI trả về
+
+```text
+AI đề xuất plan: xoá component thừa, dùng Regex tìm các chữ Việt, viết script Python để replace toàn bộ sang tiếng Anh, rồi tự động commit + ghi log.
+```
+
+#### 5.4. Kết quả đã áp dụng vào bài
+
+```text
+Sử dụng 100% các script replace và code commit của AI.
+```
+
+#### 5.5. Phần sinh viên/nhóm đã chỉnh sửa hoặc cải tiến
+
+```text
+Giám sát việc AI không được đổi định dạng VND (giá tiền).
+```
+
+#### 5.6. Đánh giá chất lượng prompt
+
+- [x] Prompt rõ ràng
+- [x] Prompt có đủ bối cảnh
+- [x] Prompt tạo ra kết quả tốt
+
+#### 5.7. Minh chứng liên quan
+
+| Loại minh chứng | Nội dung |
+|---|---|
+| Link commit | 0c4a7c5 |
+| File liên quan | AIChat.tsx, Nutrition.tsx |
+| Screenshot | N/A |
+| Kết quả chạy/test | Build thành công |
+| Link tài liệu/báo cáo | N/A |
+| Ghi chú khác | N/A |
+
+---
+
+### Prompt số 19
+
+| Nội dung | Thông tin |
+|---|---|
+| Ngày sử dụng | 28/07/2026 |
+| Công cụ AI | Antigravity |
+| Mục đích | Tạo file cấu hình deploy Docker |
+| Phần việc liên quan | DevOps / Setup |
+| Mức độ sử dụng | Yêu cầu viết cấu hình từ đầu |
+
+#### 5.1. Prompt nguyên văn
+
+```text
+chưa có docker file đúng không deploy BE lên đi
+```
+
+#### 5.2. Bối cảnh khi viết prompt
+
+```text
+Đang thực hiện thao tác setup trên nền tảng Render nhưng phát hiện project BE thiếu file cấu hình Docker.
+```
+
+#### 5.3. Kết quả AI trả về
+
+```text
+AI cung cấp 1 file Dockerfile 2-stage cho .NET 9 và file ignore chuẩn xác.
+```
+
+#### 5.4. Kết quả đã áp dụng vào bài
+
+```text
+- Copy trực tiếp vào project.
+```
+
+#### 5.5. Phần sinh viên/nhóm đã chỉnh sửa hoặc cải tiến
+
+```text
+- Không có.
+```
+
+#### 5.6. Đánh giá chất lượng prompt
+
+- [x] Prompt rõ ràng
+- [x] Prompt có đủ bối cảnh
+- [x] Prompt tạo ra kết quả tốt
+
+#### 5.7. Minh chứng liên quan
+
+| Loại minh chứng | Nội dung |
+|---|---|
+| Link commit | N/A |
+| File liên quan | Dockerfile |
+| Screenshot | N/A |
+| Kết quả chạy/test | N/A |
+| Link tài liệu/báo cáo | N/A |
+| Ghi chú khác | N/A |
+
+---
+
+### Prompt số 20
+
+| Nội dung | Thông tin |
+|---|---|
+| Ngày sử dụng | 28/07/2026 |
+| Công cụ AI | Antigravity |
+| Mục đích | Sửa Github workflow để deploy trang Github Pages |
+| Phần việc liên quan | DevOps |
+| Mức độ sử dụng | Hỏi cách xử lý tiếp theo |
+
+#### 5.1. Prompt nguyên văn
+
+```text
+còn phần ở phần gitpage làm sao nữa
+```
+
+#### 5.2. Bối cảnh khi viết prompt
+
+```text
+Sau khi cấu hình Render, cần setup tiếp Github Pages để gọi qua Render.
+```
+
+#### 5.3. Kết quả AI trả về
+
+```text
+AI đề xuất đổi file deploy-pages.yml để nhúng biến môi trường.
+```
+
+#### 5.4. Kết quả đã áp dụng vào bài
+
+```text
+- Tích hợp trực tiếp step bash script giải mã base64 của AI.
+```
+
+#### 5.5. Phần sinh viên/nhóm đã chỉnh sửa hoặc cải tiến
+
+```text
+- Không có.
+```
+
+#### 5.6. Đánh giá chất lượng prompt
+
+- [x] Prompt rõ ràng
+- [x] Prompt có đủ bối cảnh
+- [x] Prompt tạo ra kết quả tốt
+
+#### 5.7. Minh chứng liên quan
+
+| Loại minh chứng | Nội dung |
+|---|---|
+| Link commit | N/A |
+| File liên quan | deploy-pages.yml |
+| Screenshot | N/A |
+| Kết quả chạy/test | N/A |
+| Link tài liệu/báo cáo | N/A |
+| Ghi chú khác | N/A |
+
+---
+
+### Prompt số 20
+
+| Nội dung | Thông tin |
+|---|---|
+| Ngày sử dụng | 28/07/2026 |
+| Công cụ AI | Antigravity |
+| Mục đích | Sửa Github workflow để deploy trang Github Pages |
+| Phần việc liên quan | DevOps |
+| Mức độ sử dụng | Hỏi cách xử lý tiếp theo |
+
+#### 5.1. Prompt nguyên văn
+
+```text
+còn phần ở phần gitpage làm sao nữa
+```
+
+#### 5.2. Bối cảnh khi viết prompt
+
+```text
+Sau khi cấu hình Render, cần setup tiếp Github Pages để gọi qua Render.
+```
+
+#### 5.3. Kết quả AI trả về
+
+```text
+AI đề xuất đổi file deploy-pages.yml để nhúng biến môi trường.
+```
+
+#### 5.4. Kết quả đã áp dụng vào bài
+
+```text
+- Tích hợp trực tiếp step bash script giải mã base64 của AI.
+```
+
+#### 5.5. Phần sinh viên/nhóm đã chỉnh sửa hoặc cải tiến
+
+```text
+- Không có.
+```
+
+#### 5.6. Đánh giá chất lượng prompt
+
+- [x] Prompt rõ ràng
+- [x] Prompt có đủ bối cảnh
+- [x] Prompt tạo ra kết quả tốt
+
+#### 5.7. Minh chứng liên quan
+
+| Loại minh chứng | Nội dung |
+|---|---|
+| Link commit | N/A |
+| File liên quan | deploy-pages.yml |
+| Screenshot | N/A |
+| Kết quả chạy/test | N/A |
+| Link tài liệu/báo cáo | N/A |
+| Ghi chú khác | N/A |
+
+---
+
+### Prompt số 21
+
+| Nội dung | Thông tin |
+|---|---|
+| Ngày sử dụng | 29/07/2026 |
+| Công cụ AI | Antigravity |
+| Mục đích | Sửa lỗi build TypeScript FE, sửa logic nạp `.env` Backend & fallback Gemini API Key |
+| Phần việc liên quan | Fullstack (Frontend & Backend) |
+| Mức độ sử dụng | Hỏi debug & yêu cầu chạy server local |
+
+#### 5.1. Prompt nguyên văn
+
+```text
+npm run build và chạyBE, FE local tôi test đi nào
+backend/.env bỏ key gemini vào ch
+appsettings.Development.json appsettings.json gắn vào đây thì AI mới chạy đưuojc chứ
+backend/src/FitnessTrainingSystem.WebApi/.env bạn điền cho tôi luôn, bị sao vậy
+chạy lại cho tôi
+```
+
+#### 5.2. Bối cảnh khi viết prompt
+
+```text
+Cần build dự án Frontend và chạy đồng thời BE/FE local để kiểm thử, đồng thời xử lý triệt để việc Backend không tự động đọc Gemini API key từ file .env.
+```
+
+#### 5.3. Kết quả AI trả về
+
+```text
+AI fix lỗi TS trong useWorkoutStore.ts, sửa DirectGeminiService.cs để tự động fallback đọc .env khi appsettings chứa placeholder string, cập nhật Program.cs nạp .env đa cấp thư mục, và chạy 2 server local.
+```
+
+#### 5.4. Kết quả đã áp dụng vào bài
+
+```text
+Áp dụng toàn bộ code sửa đổi và cấu hình mới cho dự án.
+```
+
+#### 5.5. Phần sinh viên/nhóm đã chỉnh sửa hoặc cải tiến
+
+```text
+Không có (chấp nhận kết quả AI sửa đổi).
+```
+
+#### 5.6. Đánh giá chất lượng prompt
+
+- [x] Prompt rõ ràng
+- [x] Prompt có đủ bối cảnh
+- [x] Prompt tạo ra kết quả tốt
+
+#### 5.7. Minh chứng liên quan
+
+| Loại minh chứng | Nội dung |
+|---|---|
+| Link commit | a95bf1c |
+| File liên quan | useWorkoutStore.ts, DirectGeminiService.cs, Program.cs, appsettings.Development.json |
+| Screenshot | N/A |
+| Kết quả chạy/test | npm run build pass, BE & FE running |
+| Link tài liệu/báo cáo | N/A |
+| Ghi chú khác | N/A |
+
+---
+
+### Prompt số 22
+
+| Nội dung | Thông tin |
+|---|---|
+| Ngày sử dụng | 29/07/2026 |
+| Công cụ AI | Antigravity |
+| Mục đích | Debug và fix lỗi không lưu lịch sử bài tập vào trang Progress |
+| Phần việc liên quan | Frontend / Fullstack |
+| Mức độ sử dụng | Hỏi debug & yêu cầu commit |
+
+#### 5.1. Prompt nguyên văn
+
+```text
+hiệnt tại nó không lưu lịch sử vào đây, nguyên nhân là tại sao, lúc trước đã ônr định nhưng tại sao lại bị như vậy
+ok /commit
+```
+
+#### 5.2. Bối cảnh khi viết prompt
+
+```text
+Sau khi tập xong buổi tập, trang Progress không cập nhật lịch sử bài tập mới do luồng khởi tạo Session bị thiếu activePlanId và bị return sớm.
+```
+
+#### 5.3. Kết quả AI trả về
+
+```text
+AI phân tích 3 nguyên nhân chính, cập nhật Workouts.tsx tự lưu plan, cập nhật WorkoutResults.tsx tự khởi tạo session linh hoạt & fallback complete session, ép kiểu ID bài tập hợp lệ.
+```
+
+#### 5.4. Kết quả đã áp dụng vào bài
+
+```text
+Áp dụng 100% mã nguồn sửa đổi cho Frontend.
+```
+
+#### 5.5. Phần sinh viên/nhóm đã chỉnh sửa hoặc cải tiến
+
+```text
+Không có (chấp nhận kết quả AI sửa đổi).
+```
+
+#### 5.6. Đánh giá chất lượng prompt
+
+- [x] Prompt rõ ràng
+- [x] Prompt có đủ bối cảnh
+- [x] Prompt tạo ra kết quả tốt
+
+#### 5.7. Minh chứng liên quan
+
+| Loại minh chứng | Nội dung |
+|---|---|
+| Link commit | f8e943d |
+| File liên quan | Workouts.tsx, WorkoutResults.tsx, useWorkoutStore.ts |
+| Screenshot | N/A |
+| Kết quả chạy/test | npm run build pass, workout session saved to DB |
+| Link tài liệu/báo cáo | N/A |
+| Ghi chú khác | N/A |
+
+

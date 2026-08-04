@@ -65,12 +65,12 @@ export const useWorkoutStore = create<WorkoutState>()(
                 )
             })),
             markExerciseDone: (index) => set((state) => ({
-                exercises: state.exercises.map((ex, i) => 
+                exercises: state.exercises.map((ex, i) =>
                     i === index ? { ...ex, isDone: true, isSkipped: false } : ex
                 )
             })),
             skipExercise: (index) => set((state) => ({
-                exercises: state.exercises.map((ex, i) => 
+                exercises: state.exercises.map((ex, i) =>
                     i === index ? { ...ex, isSkipped: true, isDone: false } : ex
                 )
             })),

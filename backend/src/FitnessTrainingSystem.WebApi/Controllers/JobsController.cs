@@ -18,6 +18,18 @@ public class JobsController : ControllerBase
         _emailService = emailService;
     }
 
+    [HttpPost("apply-sql")]
+    public async Task<IActionResult> ApplySql()
+    {
+        var sql = @"
+ALTER TABLE schedules
+ADD COLUMN description VARCHAR(255) NULL;
+";
+        await _context.Database.ExecuteSqlRawAsync(sql);
+        return Ok(new { message = "SQL Applied" });
+    }
+
+
     [HttpPost("notify-expirations")]
     public async Task<IActionResult> NotifyExpirations()
     {
@@ -95,8 +107,8 @@ public class JobsController : ControllerBase
     [HttpPost("simulate-payment")]
     public async Task<IActionResult> SimulatePayment([FromQuery] long orderCode)
     {
-        var order = await _context.Orders.Include(o => o.Package).FirstOrDefaultAsync(o => o.Id == (int)orderCode);
-        if (order == null || order.PaymentStatus == FitnessTrainingSystem.Domain.Enums.PaymentStatus.Paid) return BadRequest();
+        var order = await _context.Orders.Include(o => o.Package).FirstOrDefaultAsync(o => o.OrderCode == orderCode || (orderCode <= int.MaxValue && o.Id == (int)orderCode));
+        if (order == null || order.PaymentStatus == FitnessTrainingSystem.Domain.Enums.PaymentStatus.Paid) return BadRequest(new { message = "Order not found or already paid." });
 
         order.PaymentStatus = FitnessTrainingSystem.Domain.Enums.PaymentStatus.Paid;
         
@@ -128,5 +140,97 @@ public class JobsController : ControllerBase
 
         await _context.SaveChangesAsync();
         return Ok();
+    }
+
+    [HttpPost("simulate-schedule-payment")]
+    public async Task<IActionResult> SimulateSchedulePayment([FromQuery] long orderCode)
+    {
+        try
+        {
+            var schedule = await _context.Schedules.Include(s => s.Pt).Include(s => s.Member).FirstOrDefaultAsync(s => s.OrderCode == orderCode);
+            if (schedule == null || schedule.Status == FitnessTrainingSystem.Domain.Enums.ScheduleStatus.Confirmed)
+                return BadRequest(new { message = "Schedule not found or already confirmed." });
+
+            schedule.Status = FitnessTrainingSystem.Domain.Enums.ScheduleStatus.Confirmed;
+            
+            // Auto generate a mock meeting URL
+            var meetingId = Guid.NewGuid().ToString("N").Substring(0, 10);
+            schedule.MeetingUrl = $"https://meet.google.com/{meetingId.Substring(0,3)}-{meetingId.Substring(3,4)}-{meetingId.Substring(7,3)}";
+
+            if (schedule.Pt != null && !string.IsNullOrEmpty(schedule.Pt.Email))
+            {
+                var subject = $"New Session Booked with {schedule.Member?.Fullname ?? "a client"}!";
+                var body = $"<html><body><h2>You have a new PT session booked!</h2><p><strong>Time:</strong> {schedule.StartTime.AddHours(7).ToString("yyyy-MM-dd HH:mm")} (VN Time)</p><p><strong>Meeting Link:</strong> <a href=\"{schedule.MeetingUrl}\">{schedule.MeetingUrl}</a></p></body></html>";
+                try { await _emailService.SendEmailAsync(schedule.Pt.Email, subject, body); } catch { }
+
+                var notification = new FitnessTrainingSystem.Domain.Entities.Notification
+                {
+                    UserId = schedule.PtId.Value,
+                    Title = "New Session Booked",
+                    Content = $"You have a new PT session booked with {schedule.Member?.Fullname ?? "a client"} at {schedule.StartTime.AddHours(7):yyyy-MM-dd HH:mm} (VN Time).",
+                    Type = "SESSION_BOOKED",
+                    IsRead = false,
+                    CreatedAt = DateTime.UtcNow
+                };
+                _context.Notifications.Add(notification);
+            }
+
+            if (schedule.Member != null && !string.IsNullOrEmpty(schedule.Member.Email))
+            {
+                var subject = $"Your PT Session with {schedule.Pt?.Fullname ?? "your PT"} is confirmed!";
+                var body = $"<html><body><h2>Your booking is confirmed!</h2><p><strong>Time:</strong> {schedule.StartTime.AddHours(7).ToString("yyyy-MM-dd HH:mm")} (VN Time)</p><p><strong>Meeting Link:</strong> <a href=\"{schedule.MeetingUrl}\">{schedule.MeetingUrl}</a></p></body></html>";
+                try { await _emailService.SendEmailAsync(schedule.Member.Email, subject, body); } catch { }
+            }
+
+            await _context.SaveChangesAsync();
+            
+            return Ok(new { message = "Payment successful and schedule confirmed." });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { message = $"Error confirming payment: {ex.Message}" });
+        }
+    }
+
+    [HttpPost("cancel-payment")]
+    public async Task<IActionResult> CancelPayment([FromQuery] long orderCode)
+    {
+        try
+        {
+            // Check if it's a schedule payment
+            var schedule = await _context.Schedules.FirstOrDefaultAsync(s => s.OrderCode == orderCode);
+            if (schedule != null)
+            {
+                if (schedule.Status == FitnessTrainingSystem.Domain.Enums.ScheduleStatus.Pending)
+                {
+                    schedule.Status = FitnessTrainingSystem.Domain.Enums.ScheduleStatus.Available;
+                    schedule.MemberId = null;
+                    schedule.OrderCode = null;
+                    schedule.Price = null;
+                    await _context.SaveChangesAsync();
+                    return Ok(new { type = "PT_SESSION" });
+                }
+                return Ok(new { type = "PT_SESSION", message = "Schedule was not pending." });
+            }
+
+            // Check if it's a subscription payment
+            var order = await _context.Orders.FirstOrDefaultAsync(o => o.OrderCode == orderCode);
+            if (order != null)
+            {
+                if (order.PaymentStatus == FitnessTrainingSystem.Domain.Enums.PaymentStatus.Pending)
+                {
+                    order.PaymentStatus = FitnessTrainingSystem.Domain.Enums.PaymentStatus.Cancelled;
+                    await _context.SaveChangesAsync();
+                    return Ok(new { type = "SUBSCRIPTION" });
+                }
+                return Ok(new { type = "SUBSCRIPTION", message = "Order was not pending." });
+            }
+
+            return NotFound(new { message = "Order code not found." });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { message = $"Error cancelling payment: {ex.Message}" });
+        }
     }
 }

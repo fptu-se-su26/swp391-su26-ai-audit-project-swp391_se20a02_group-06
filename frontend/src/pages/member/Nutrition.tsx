@@ -38,7 +38,6 @@ import {
     MealSection,
 } from '../../features/nutrition/components/NutritionWidgets'
 import { logWater, updateReminderSettings } from '../../api/nutrition'
-import { triggerTestWaterReminder } from '../../api/notifications'
 import { useAuthStore } from '../../store/useAuthStore'
 
 const fetcher = (url: string) => apiClient.get(url).then((res) => res.data)
@@ -314,12 +313,11 @@ const Nutrition: React.FC = () => {
                             onRemind={() => {
                                 toast({
                                     title: 'Time to drink water! 🥛',
-                                    description: `Còn ${Math.max(0, waterTotal - waterCurrent)} cốc nước cần uống.`,
+                                    description: `You need to drink ${Math.max(0, waterTotal - waterCurrent)} more cups of water.`,
                                     status: 'success',
                                     duration: 5000,
                                     isClosable: true,
                                 })
-                                triggerTestWaterReminder()
                             }}
                         />
 
@@ -329,8 +327,7 @@ const Nutrition: React.FC = () => {
                             endTime={summary?.waterReminderEndTime || '22:00'}
                         />
 
-                        {/* Test Water Reminder Button */}
-                        <TestWaterReminderButton />
+
 
                         {/* AI Recommendation */}
                         <AIDietPlanCard 
@@ -446,54 +443,6 @@ const WaterReminderSettings: React.FC<{ startTime: string; endTime: string }> = 
     )
 }
 
-/* ── Test Water Reminder Button ─────────────── */
-const TestWaterReminderButton: React.FC = () => {
-    const toast = useToast()
-    const [loading, setLoading] = useState(false)
 
-    const handleClick = async () => {
-        setLoading(true)
-        try {
-            await triggerTestWaterReminder()
-            toast({
-                title: 'Water Reminder Sent! 🥛',
-                description: 'Check your notifications to log water.',
-                status: 'success',
-                duration: 3000,
-                isClosable: true,
-            })
-        } catch {
-            toast({
-                title: 'Failed to send reminder',
-                status: 'error',
-                duration: 2000,
-                isClosable: true,
-            })
-        } finally {
-            setLoading(false)
-        }
-    }
-
-    return (
-        <Box
-            as="button"
-            w="full"
-            bg="#141720"
-            border="1px dashed"
-            borderColor="#2e3040"
-            borderRadius="14px"
-            p="3"
-            textAlign="center"
-            cursor="pointer"
-            _hover={{ borderColor: '#E03030', bg: '#1a1c24' }}
-            transition="all 0.2s"
-            onClick={handleClick}
-        >
-            <Text fontSize="12px" fontWeight="600" color={loading ? '#E03030' : '#8A8A93'}>
-                {loading ? 'Sending...' : '🔔 Test Water Reminder Notification'}
-            </Text>
-        </Box>
-    )
-}
 
 export default Nutrition

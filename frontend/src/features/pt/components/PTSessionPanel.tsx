@@ -23,7 +23,6 @@ interface SessionCardProps {
 
 const SessionCard: React.FC<SessionCardProps> = ({ session, onBookClick }) => {
     const isAvailable = session.status === 'available'
-    const isFeatured = session.label === 'Elite Mobility Peak' && isAvailable
 
     return (
         <Flex
@@ -34,7 +33,7 @@ const SessionCard: React.FC<SessionCardProps> = ({ session, onBookClick }) => {
             p={{ base: '4', md: '5' }}
             bg="#1a1b22"
             border="1px solid"
-            borderColor={isFeatured ? '#E03030' : '#262626'}
+            borderColor="#262626"
             borderRadius="12px"
             opacity={isAvailable ? 1 : 0.52}
             transition="all 0.18s ease"
@@ -54,7 +53,7 @@ const SessionCard: React.FC<SessionCardProps> = ({ session, onBookClick }) => {
                     minW="70px"
                     h="38px"
                     px="4"
-                    bg={isFeatured ? '#E03030' : '#262626'}
+                    bg="#262626"
                     color="white"
                     borderRadius="10px"
                     fontSize="14px"

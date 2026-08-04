@@ -17,8 +17,7 @@ import type { BookingState, Session, SessionType } from '../types/pt'
 
 const SESSION_TYPE_OPTIONS: SessionType[] = [
     'Video Call',
-    'In-Person at Elite Lab',
-    'Recovery Review',
+    'In-Person',
 ]
 
 interface PTBookingModalProps {
@@ -27,8 +26,11 @@ interface PTBookingModalProps {
     bookingForm: BookingState | null
     onSessionTypeChange: (type: SessionType) => void
     onNotesChange: (notes: string) => void
+
     onConfirm: () => void
+    onSimulate: () => void
     onCancel: () => void
+    isSubmitting?: boolean
 }
 
 const PTBookingModal: React.FC<PTBookingModalProps> = ({
@@ -38,7 +40,9 @@ const PTBookingModal: React.FC<PTBookingModalProps> = ({
     onSessionTypeChange,
     onNotesChange,
     onConfirm,
+    onSimulate,
     onCancel,
+    isSubmitting = false,
 }) => {
     if (!session || !bookingForm) {
         return null
@@ -141,8 +145,26 @@ const PTBookingModal: React.FC<PTBookingModalProps> = ({
                                 fontWeight="800"
                                 _hover={{ bg: '#c92a2a' }}
                                 onClick={onConfirm}
+                                isLoading={isSubmitting}
+                                loadingText="Redirecting..."
+                                isDisabled={bookingForm.sessionType === 'In-Person'}
                             >
-                                Confirm Booking
+                                {bookingForm.sessionType === 'In-Person' ? 'Coming Soon' : 'Confirm Booking'}
+                            </Button>
+                            <Button
+                                h="48px"
+                                bg="#2b6cb0"
+                                color="white"
+                                borderRadius="full"
+                                fontSize="14px"
+                                fontWeight="800"
+                                _hover={{ bg: '#2c5282' }}
+                                onClick={onSimulate}
+                                isLoading={isSubmitting}
+                                loadingText="Processing..."
+                                isDisabled={bookingForm.sessionType === 'In-Person'}
+                            >
+                                Simulate Payment (Dev Only)
                             </Button>
                             <Button
                                 h="48px"

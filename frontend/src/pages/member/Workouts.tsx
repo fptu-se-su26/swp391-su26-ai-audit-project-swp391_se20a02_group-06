@@ -1,13 +1,12 @@
 import React, { useEffect } from 'react'
 import { useToast } from '@chakra-ui/react'
-import WorkoutIntro from '../../features/workout/components/WorkoutIntro.tsx'
-import WorkoutLoading from '../../features/workout/components/WorkoutLoading.tsx'
-import WorkoutResults from '../../features/workout/components/WorkoutResults.tsx'
-import WorkoutSetup from '../../features/workout/components/WorkoutSetup.tsx'
-import { generateExercises, generateWeeklyExercises } from '../../features/workout/data/workoutExercises.ts'
-import { useWorkoutStore } from '../../store/useWorkoutStore.ts'
-
-import { createWorkoutPlan } from '../../api/workouts.ts'
+import WorkoutIntro from '../../features/workout/components/WorkoutIntro'
+import WorkoutLoading from '../../features/workout/components/WorkoutLoading'
+import WorkoutResults from '../../features/workout/components/WorkoutResults'
+import WorkoutSetup from '../../features/workout/components/WorkoutSetup'
+import { generateExercises, generateWeeklyExercises } from '../../features/workout/data/workoutExercises'
+import { useWorkoutStore } from '../../store/useWorkoutStore'
+import { createWorkoutPlan } from '../../api/workouts'
 
 const Workouts: React.FC = () => {
     const { phase, formData, setPhase, setFormData, setExercises, setActivePlanId, setWeeklyPlans } = useWorkoutStore()
@@ -27,7 +26,7 @@ const Workouts: React.FC = () => {
                                 targetCalories: day.targetCalories,
                                 targetDurationMinutes: day.targetDurationMinutes,
                                 exercises: day.exercises.map((ex, index) => ({
-                                    exerciseId: ex.id,
+                                    exerciseId: Number(ex.id) || 0,
                                     sets: ex.setsCount ?? 3,
                                     reps: ex.repsCount ?? 12,
                                     durationSeconds: ex.durationSeconds ?? 0,
@@ -62,7 +61,6 @@ const Workouts: React.FC = () => {
                     setPhase('setup')
                 })
             } else {
-                // Start fetching when we enter loading phase
                 generateExercises(formData).then(async (exercises) => {
                     // Save the generated plan to the backend FIRST
                     try {
@@ -73,7 +71,7 @@ const Workouts: React.FC = () => {
                             targetCalories: formData.targetCalories,
                             targetDurationMinutes: formData.duration,
                             exercises: exercises.map((ex, index) => ({
-                                exerciseId: ex.id,
+                                exerciseId: Number(ex.id) || 0,
                                 sets: ex.setsCount ?? 3,
                                 reps: ex.repsCount ?? 12,
                                 durationSeconds: ex.durationSeconds ?? 0,
@@ -83,7 +81,9 @@ const Workouts: React.FC = () => {
                         }
 
                         const savedPlan = await createWorkoutPlan(planDto)
-                        setActivePlanId(savedPlan.id)
+                        if (savedPlan?.id) {
+                            setActivePlanId(savedPlan.id)
+                        }
                     } catch (error: any) {
                         const data = error.response?.data;
                         const errorMsg = data?.message || (data?.errors ? JSON.stringify(data.errors) : data?.title) || error.message;

@@ -75,6 +75,7 @@ public partial class ApplicationDbContext : DbContext
         configurationBuilder.Properties<FitnessTrainingSystem.Domain.Enums.ExerciseDifficulty>().HaveConversion<string>();
         configurationBuilder.Properties<FitnessTrainingSystem.Domain.Enums.PackageType>().HaveConversion<string>();
         configurationBuilder.Properties<FitnessTrainingSystem.Domain.Enums.ScheduleStatus>().HaveConversion<string>();
+        configurationBuilder.Properties<FitnessTrainingSystem.Domain.Enums.PaymentStatus>().HaveConversion<string>();
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -158,6 +159,17 @@ public partial class ApplicationDbContext : DbContext
                 v => v.ToString().ToUpper(),
                 v => (FitnessTrainingSystem.Domain.Enums.ExerciseDifficulty)System.Enum.Parse(typeof(FitnessTrainingSystem.Domain.Enums.ExerciseDifficulty), v, true)
             );
+        modelBuilder.Entity<AIChatMessage>(entity =>
+        {
+            entity.ToTable("ai_chat_messages");
+            entity.Property(e => e.Role).HasColumnName("sender");
+        });
+
+        modelBuilder.Entity<AIDietHistory>(entity =>
+        {
+            entity.ToTable("ai_diet_histories");
+            entity.Property(e => e.DietJson).HasColumnName("raw_json");
+        });
     }
 }
 

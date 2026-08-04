@@ -5,5 +5,6 @@ public enum ScheduleStatus
     Pending,
     Confirmed,
     Completed,
-    Cancelled
+    Cancelled,
+    Available
 }

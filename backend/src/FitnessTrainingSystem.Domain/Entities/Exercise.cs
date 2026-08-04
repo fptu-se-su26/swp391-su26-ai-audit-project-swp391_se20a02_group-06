@@ -23,5 +23,10 @@ public class Exercise : BaseAuditableEntity
 
     [ForeignKey("PackageId")]
     public ProductPackage? Package { get; set; }
+
+    /// <summary>PT-only: true when the exercise is saved as a draft and not yet published.</summary>
+    public bool IsDraft { get; set; } = false;
+
     public ICollection<WorkoutSessionDetail> WorkoutSessionDetails { get; set; } = new List<WorkoutSessionDetail>();
 }
+

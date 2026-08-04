@@ -29,7 +29,10 @@ public class PtService : IPtService
             Email = u.Email,
             Rating = u.PtProfile?.Rating,
             Experience = u.PtProfile?.ExperienceYears != null ? $"{u.PtProfile.ExperienceYears} years" : "N/A",
-            Status = u.Status ?? "Inactive"
+            Status = u.Status ?? "Inactive",
+            AvatarUrl = u.AvatarUrl,
+            CoachingPhilosophy = u.PtProfile?.CoachingPhilosophy,
+            SessionRate = u.PtProfile?.SessionRate
         });
     }
 

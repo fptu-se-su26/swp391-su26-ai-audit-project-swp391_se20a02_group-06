@@ -15,6 +15,7 @@ import ForgotPassword from "../pages/auth/ForgotPassword";
 // Pages - Member Area
 import Dashboard from "../pages/member/Dashboard";
 import Workouts from "../pages/member/Workouts";
+import ExerciseLibrary from "../pages/member/exercises/ExerciseLibrary";
 import Nutrition from "../pages/member/Nutrition";
 import Progress from "../pages/member/Progress";
 import PTBooking from "../pages/member/PTBooking";
@@ -23,6 +24,7 @@ import Profile from "../pages/member/Profile";
 
 // Admin & PT Area
 import AdminRoute from "./AdminRoute";
+import PTRoute from "./PTRoute";
 import PrivateRoute from "./PrivateRoute";
 import AdminDashboard from "../pages/admin/AdminDashboard";
 import AdminUsers from "../pages/admin/AdminUsers";
@@ -33,6 +35,11 @@ import AdminPayments from "../pages/admin/AdminPayments";
 import AdminPackages from "../pages/admin/AdminPackages";
 import AdminExerciseRequests from "../pages/admin/AdminExerciseRequests";
 import PtExerciseRequests from "../pages/pt/PtExerciseRequests";
+import PTDashboard from "../pages/pt/PTDashboard";
+import PTClients from "../pages/pt/PTClients";
+import PTProfilePage from "../pages/pt/PTProfilePage";
+import PTManageSchedule from "../pages/pt/PTManageSchedule";
+import PTContentLibrary from "../pages/pt/PTContentLibrary";
 
 const RouterContainer = () => {
     const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
@@ -64,83 +71,30 @@ const RouterContainer = () => {
             <Route path="/pricing" element={<Pricing />} />
             <Route path="/about" element={<About />} />
 
-            {/* Admin & PT Area Routes */}
-            <Route
-                path="/admin"
-                element={
-                    <AdminRoute>
-                        <AdminDashboard />
-                    </AdminRoute>
-                }
-            />
-            <Route
-                path="/admin/users"
-                element={
-                    <AdminRoute>
-                        <AdminUsers />
-                    </AdminRoute>
-                }
-            />
-            <Route
-                path="/admin/workouts"
-                element={
-                    <AdminRoute>
-                        <AdminWorkouts />
-                    </AdminRoute>
-                }
-            />
-            <Route
-                path="/admin/exercise-requests"
-                element={
-                    <AdminRoute>
-                        <AdminExerciseRequests />
-                    </AdminRoute>
-                }
-            />
-            <Route
-                path="/admin/pt-requests"
-                element={
-                    <AdminRoute>
-                        <PtExerciseRequests />
-                    </AdminRoute>
-                }
-            />
-            <Route
-                path="/admin/pts"
-                element={
-                    <AdminRoute>
-                        <AdminPTs />
-                    </AdminRoute>
-                }
-            />
-            <Route
-                path="/admin/platform"
-                element={
-                    <AdminRoute>
-                        <AdminPlatform />
-                    </AdminRoute>
-                }
-            />
-            <Route
-                path="/admin/payments"
-                element={
-                    <AdminRoute>
-                        <AdminPayments />
-                    </AdminRoute>
-                }
-            />
-            <Route
-                path="/admin/packages"
-                element={
-                    <AdminRoute>
-                        <AdminPackages />
-                    </AdminRoute>
-                }
-            />
+            {/* Admin Area Routes */}
+            <Route path="/admin" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
+            <Route path="/admin/users" element={<AdminRoute><AdminUsers /></AdminRoute>} />
+            <Route path="/admin/workouts" element={<AdminRoute><AdminWorkouts /></AdminRoute>} />
+            <Route path="/admin/exercise-requests" element={<AdminRoute><AdminExerciseRequests /></AdminRoute>} />
+            <Route path="/admin/pt-requests" element={<AdminRoute><PtExerciseRequests /></AdminRoute>} />
+            <Route path="/admin/pts" element={<AdminRoute><AdminPTs /></AdminRoute>} />
+            <Route path="/admin/platform" element={<AdminRoute><AdminPlatform /></AdminRoute>} />
+            <Route path="/admin/payments" element={<AdminRoute><AdminPayments /></AdminRoute>} />
+            <Route path="/admin/packages" element={<AdminRoute><AdminPackages /></AdminRoute>} />
+
+            {/* PT Portal Routes */}
+            <Route path="/pt/dashboard" element={<PTRoute><PTDashboard /></PTRoute>} />
+            <Route path="/pt/schedule" element={<PTRoute><PTManageSchedule /></PTRoute>} />
+            <Route path="/pt/clients" element={<PTRoute><PTClients /></PTRoute>} />
+            <Route path="/pt/content-library" element={<PTRoute><PTContentLibrary /></PTRoute>} />
+            <Route path="/pt/workouts" element={<PTRoute><AdminWorkouts /></PTRoute>} />
+            <Route path="/pt/exercise-requests" element={<PTRoute><PtExerciseRequests /></PTRoute>} />
+            <Route path="/pt/profile" element={<PTRoute><PTProfilePage /></PTRoute>} />
 
             {/* Member Area Routes — Protected */}
             <Route path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
             <Route path="/workouts" element={<PrivateRoute><Workouts /></PrivateRoute>} />
+            <Route path="/exercises" element={<PrivateRoute><ExerciseLibrary /></PrivateRoute>} />
             <Route path="/nutrition" element={<PrivateRoute><Nutrition /></PrivateRoute>} />
             <Route path="/progress" element={<PrivateRoute><Progress /></PrivateRoute>} />
             <Route path="/pt-booking" element={<PrivateRoute><PTBooking /></PrivateRoute>} />

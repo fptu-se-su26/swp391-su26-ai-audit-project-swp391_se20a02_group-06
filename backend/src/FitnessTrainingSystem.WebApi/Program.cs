@@ -4,20 +4,20 @@ using FitnessTrainingSystem.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using FitnessTrainingSystem.Infrastructure.Hubs;
 
-// Load environment variables from .env file in the backend root directory
-var envPath = Path.Combine(Directory.GetCurrentDirectory(), "..", "..", ".env");
-if (File.Exists(envPath))
+// Load environment variables from .env files
+string[] envPaths = [
+    Path.Combine(Directory.GetCurrentDirectory(), "..", "..", ".env"),
+    Path.Combine(Directory.GetCurrentDirectory(), "..", ".env"),
+    Path.Combine(Directory.GetCurrentDirectory(), ".env")
+];
+
+foreach (var path in envPaths)
 {
-    DotNetEnv.Env.Load(envPath);
-}
-else
-{
-    // Fallback if running from backend root directly
-    var fallbackPath = Path.Combine(Directory.GetCurrentDirectory(), ".env");
-    if (File.Exists(fallbackPath))
+    if (File.Exists(path))
     {
-        DotNetEnv.Env.Load(fallbackPath);
+        DotNetEnv.Env.Load(path);
     }
 }
 
@@ -82,10 +82,16 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 
+// CORS: fixed origins + optional extras from config (comma-separated Cors:AllowedOrigins)
+var fixedOrigins = new[] { "http://localhost:5173", "https://fptu-se-su26.github.io", "https://swp391-su26-ai-audit-project-swp391-sigma.vercel.app" };
+var extraOrigins = (builder.Configuration["Cors:AllowedOrigins"] ?? "")
+    .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+var allOrigins = fixedOrigins.Concat(extraOrigins).Distinct().ToArray();
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", policy =>
-        policy.WithOrigins("http://localhost:5173", "https://fptu-se-su26.github.io")
+        policy.WithOrigins(allOrigins)
               .AllowAnyHeader()
               .AllowAnyMethod()
               .AllowCredentials());
@@ -117,8 +123,8 @@ if (app.Environment.IsDevelopment())
             INDEX `IX_EmailOTP_ExpiredAt` (`expired_at`)
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
     ");
-}
-
+    }
+    
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -151,6 +157,30 @@ app.MapGet("/weatherforecast", () =>
     return forecast;
 })
 .WithName("GetWeatherForecast");
+
+try
+{
+    using var scope = app.Services.CreateScope();
+    var dbContext = scope.ServiceProvider.GetRequiredService<FitnessTrainingSystem.Infrastructure.Persistence.ApplicationDbContext>();
+    
+    void SafeExecuteSql(string sql)
+    {
+        try { dbContext.Database.ExecuteSqlRaw(sql); } catch { }
+    }
+
+    SafeExecuteSql("ALTER TABLE users ADD COLUMN refresh_token longtext;");
+    SafeExecuteSql("ALTER TABLE users ADD COLUMN refresh_token_expiry_time datetime(6);");
+    
+    SafeExecuteSql("ALTER TABLE exercises ADD COLUMN is_draft tinyint(1) NOT NULL DEFAULT 0;");
+    
+    SafeExecuteSql("ALTER TABLE schedules ADD COLUMN order_code bigint NULL;");
+    SafeExecuteSql("ALTER TABLE schedules ADD COLUMN price decimal(18,2) NULL;");
+    SafeExecuteSql("ALTER TABLE schedules ADD COLUMN description longtext NULL;");
+    
+    SafeExecuteSql("ALTER TABLE pt_profiles ADD COLUMN coaching_philosophy varchar(1000) NULL;");
+    SafeExecuteSql("ALTER TABLE pt_profiles ADD COLUMN session_rate decimal(18,2) NULL;");
+}
+catch { }
 
 app.Run();
 

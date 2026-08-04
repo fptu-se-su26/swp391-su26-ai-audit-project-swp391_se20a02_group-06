@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { HStack, IconButton, Icon, Avatar } from '@chakra-ui/react'
 import { FiSettings } from 'react-icons/fi'
 import { useNavigate } from 'react-router-dom'
-import { getProfile, type UserProfile } from '../../../api/user'
+import { getProfile } from '../../../api/user'
 import NotificationBell from './NotificationBell'
 
 const HeaderActions: React.FC = () => {

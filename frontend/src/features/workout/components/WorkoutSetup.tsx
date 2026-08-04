@@ -80,16 +80,9 @@ const WorkoutSetup: React.FC<WorkoutSetupProps> = ({ onComplete }) => {
                 setMuscleZones(mappedZones)
 
                 // Check user tier for Weekly plan access
-                const [packages, profile] = await Promise.all([
-                    getProductPackages(),
-                    getProfile()
-                ])
-                if (packages && packages.length > 0 && profile) {
-                    const maxTier = Math.max(...packages.map(p => p.tier || 0))
-                    const userPackage = packages.find(p => p.name === profile.tier)
-                    if (userPackage && userPackage.tier >= maxTier) {
-                        setHasWeeklyAccess(true)
-                    }
+                const profile = await getProfile()
+                if (profile && profile.tier && profile.tier !== 'Free' && profile.tier !== 'None') {
+                    setHasWeeklyAccess(true)
                 }
             } catch (err) {
                 console.error("Failed to fetch data:", err)

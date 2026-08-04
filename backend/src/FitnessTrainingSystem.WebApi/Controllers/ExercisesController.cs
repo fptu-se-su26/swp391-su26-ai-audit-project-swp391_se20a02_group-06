@@ -94,6 +94,10 @@ public class ExercisesController : ControllerBase
             return Unauthorized(new { message = "Invalid user identifier." });
         }
 
+        // Drafts are PT-exclusive: admins always publish immediately
+        var isAdmin = User.IsInRole("Admin") || User.IsInRole("ADMIN");
+        if (isAdmin) dto.IsDraft = false;
+
         var createdExercise = await _exerciseService.CreateAsync(dto, userId);
         return CreatedAtAction(nameof(GetById), new { id = createdExercise.Id }, createdExercise);
     }

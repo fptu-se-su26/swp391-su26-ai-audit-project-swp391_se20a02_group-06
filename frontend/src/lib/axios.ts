@@ -30,17 +30,24 @@ apiClient.interceptors.request.use(
   }
 )
 
-// Response interceptor — auto-logout on 401 Unauthorized
+// Response interceptor to handle 401 Unauthorized globally
 apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      const { isAuthenticated, logout } = useAuthStore.getState()
-      if (isAuthenticated) {
-        console.info('[Auth] Received 401 — session expired. Logging out.')
-        logout()
-        // Redirect to login page (works outside React context)
-        window.location.href = window.location.origin + '/login'
+      const requestUrl = error.config?.url || ''
+      const isAuthApi = requestUrl.includes('/auth/login') || requestUrl.includes('/auth/register') || requestUrl.includes('/auth/refresh')
+      const currentPath = window.location.pathname
+      const isAuthPage = currentPath === '/login' || currentPath === '/register' || currentPath === '/forgot-password'
+
+      if (!isAuthApi && !isAuthPage) {
+        try {
+          const { logout } = useAuthStore.getState()
+          logout()
+        } catch {
+          // Ignore storage errors
+        }
+        window.location.href = '/login'
       }
     }
     return Promise.reject(error)
