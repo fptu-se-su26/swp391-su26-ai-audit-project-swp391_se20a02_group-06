@@ -65,17 +65,52 @@ public class GenerateWorkoutPlanCommandHandler : IRequestHandler<GenerateWorkout
             throw new Exception($"Không có bài tập nào khả dụng trong hệ thống cho nhóm cơ '{request.MuscleGroup}'. Vui lòng chọn nhóm cơ khác hoặc thêm bài tập vào hệ thống trước.");
         }
 
-        var availableExercisesJson = JsonSerializer.Serialize(availableExercises);
+        var exerciseItems = new List<ExerciseItemOutput>();
+        int order = 1;
+        decimal totalCalories = 0;
+        int totalDuration = 0;
 
-        // 3. Bắn request sang service C# Gemini
-        var aiResult = await _groqAiService.GenerateWorkoutPlanAsync(request.UserId, request.MuscleGroup, request.TargetCalories, request.DurationMinutes, availableExercisesJson, request.InjuredMuscleGroups);
-
-        if (aiResult == null || !aiResult.Success)
+        foreach (var ex in availableExercises)
         {
-            throw new Exception("Xử lý tạo lịch tập từ Gemini AI thất bại hoặc dữ liệu trả về bị rỗng.");
+            var sets = 3;
+            var reps = 12;
+            var durationSecs = 60; // 1 min
+            var restSecs = 30; // 30 sec
+            
+            var totalExDurationMins = (durationSecs + restSecs) * sets / 60;
+            var calsBurned = (decimal)(totalExDurationMins * ex.CaloriesBurnPerMin);
+
+            exerciseItems.Add(new ExerciseItemOutput
+            {
+                ExerciseId = ex.Id,
+                ExerciseTitle = ex.Title,
+                Sets = sets,
+                Reps = reps,
+                DurationSeconds = durationSecs,
+                RestSeconds = restSecs,
+                ExerciseOrder = order++,
+                CaloriesBurned = calsBurned
+            });
+            
+            totalCalories += calsBurned;
+            totalDuration += totalExDurationMins;
         }
 
-        // 5. Trả kết quả DTO sạch sẽ về cho WebApi Controller để hiển thị lên Swagger/Frontend
-        return aiResult;
+        var planOutput = new WorkoutPlanOutput
+        {
+            Title = $"Buổi tập {request.MuscleGroup}",
+            Goal = $"Tập trung phát triển cơ {request.MuscleGroup}",
+            TargetCalories = totalCalories,
+            TargetDurationMinutes = totalDuration,
+            Exercises = exerciseItems
+        };
+
+        return new AiWorkoutPlanResponseDto
+        {
+            Success = true,
+            UserId = request.UserId,
+            Model = "Manual (No AI)",
+            Recommendation = planOutput
+        };
     }
 }
