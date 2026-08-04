@@ -255,7 +255,7 @@ Yêu cầu thuật toán phân bổ (RẤT QUAN TRỌNG - PHẢI CHÍNH XÁC V�
 
         if (!string.IsNullOrWhiteSpace(injuredMuscleGroups))
         {
-            userPrompt += $"\n\n[LƯU Ý QUAN TRỌNG VỀ CHẤN THƯƠNG]\nHội viên đang bị đau hoặc chấn thương ở các vị trí và mức độ (1-5) như sau: {injuredMuscleGroups}.\nYÊU CẦU BẮT BUỘC:\n- Nếu mức độ chấn thương từ 1 đến 3: Hãy giảm số lượng bài tập cho nhóm cơ đó xuống tối đa 1 bài tập nhẹ nhàng.\n- Nếu có BẤT KỲ vị trí nào có mức độ chấn thương từ 4 đến 5: TUYỆT ĐỐI BỎ HẲN, KHÔNG CHỌN bất kỳ bài tập nào tác động trực tiếp vào các nhóm cơ bị chấn thương này. ĐỒNG THỜI, TUYỆT ĐỐI KHÔNG CHỌN CÁC BÀI TẬP TOÀN THÂN (Full Body). Nếu mục tiêu của hội viên là tập 'Full Body', hãy tự động chuyển sang chọn phối hợp các bài tập an toàn từ các nhóm cơ khác (trừ vùng chấn thương) để tạo thành một buổi tập đa nhóm cơ.";
+            userPrompt += $"\n\n[LƯU Ý QUAN TRỌNG VỀ CHẤN THƯƠNG]\nHội viên đang bị đau hoặc chấn thương ở các vị trí và mức độ (1-5) như sau: {injuredMuscleGroups}.\nYÊU CẦU BẮT BUỘC:\n- Nếu mức độ chấn thương từ 1 đến 2: Bố trí khoảng 2 bài tập nhẹ nhàng cho nhóm cơ bị đau đó.\n- Nếu mức độ chấn thương là 3: Bố trí khoảng 1 bài tập nhẹ nhàng cho nhóm cơ bị đau đó.\n- Nếu có BẤT KỲ vị trí nào có mức độ chấn thương từ 4 đến 5: TUYỆT ĐỐI BỎ HẲN, KHÔNG CHỌN bất kỳ bài tập nào tác động trực tiếp vào các nhóm cơ bị chấn thương này. ĐỒNG THỜI, TUYỆT ĐỐI KHÔNG CHỌN CÁC BÀI TẬP TOÀN THÂN (Full Body). Nếu mục tiêu của hội viên là tập 'Full Body', hãy tự động chuyển sang chọn phối hợp các bài tập an toàn từ các nhóm cơ khác (trừ vùng chấn thương) để tạo thành một buổi tập đa nhóm cơ.";
         }
 
         var resultJson = await CallGeminiWithRetryAsync(systemInstruction, userPrompt);
@@ -334,7 +334,7 @@ Yêu cầu thuật toán phân bổ (RẤT QUAN TRỌNG - PHẢI CHÍNH XÁC V�
 
         if (!string.IsNullOrWhiteSpace(injuredMuscleGroups))
         {
-            userPrompt += $"\n\n[LƯU Ý QUAN TRỌNG VỀ CHẤN THƯƠNG]\nHội viên đang bị đau hoặc chấn thương ở các vị trí và mức độ (1-5) như sau: {injuredMuscleGroups}.\nYÊU CẦU BẮT BUỘC:\n- Nếu mức độ chấn thương từ 1 đến 3: Hãy giảm số lượng bài tập cho nhóm cơ đó xuống tối đa 1 bài tập nhẹ nhàng.\n- Nếu có BẤT KỲ vị trí nào có mức độ chấn thương từ 4 đến 5: TUYỆT ĐỐI BỎ HẲN, KHÔNG CHỌN bất kỳ bài tập nào tác động trực tiếp vào các nhóm cơ bị chấn thương này. ĐỒNG THỜI, TUYỆT ĐỐI KHÔNG CHỌN CÁC BÀI TẬP TOÀN THÂN (Full Body). Nếu mục tiêu của hội viên là tập 'Full Body', hãy tự động chuyển sang chọn phối hợp các bài tập an toàn từ các nhóm cơ khác (trừ vùng chấn thương) để tạo thành một buổi tập đa nhóm cơ.";
+            userPrompt += $"\n\n[LƯU Ý QUAN TRỌNG VỀ CHẤN THƯƠNG]\nHội viên đang bị đau hoặc chấn thương ở các vị trí và mức độ (1-5) như sau: {injuredMuscleGroups}.\nYÊU CẦU BẮT BUỘC:\n- Nếu mức độ chấn thương từ 1 đến 2: Bố trí khoảng 2 bài tập nhẹ nhàng cho nhóm cơ bị đau đó vào buổi 1 và buổi 3.\n- Nếu mức độ chấn thương là 3: Bố trí khoảng 1 bài tập nhẹ nhàng cho nhóm cơ bị đau đó vào buổi 3.\n- Nếu có BẤT KỲ vị trí nào có mức độ chấn thương từ 4 đến 5: TUYỆT ĐỐI BỎ HẲN, KHÔNG CHỌN bất kỳ bài tập nào tác động trực tiếp vào các nhóm cơ bị chấn thương này. ĐỒNG THỜI, TUYỆT ĐỐI KHÔNG CHỌN CÁC BÀI TẬP TOÀN THÂN (Full Body). Nếu mục tiêu của hội viên là tập 'Full Body', hãy tự động chuyển sang chọn phối hợp các bài tập an toàn từ các nhóm cơ khác (trừ vùng chấn thương) để tạo thành một buổi tập đa nhóm cơ.";
         }
 
         var resultJson = await CallGeminiWithRetryAsync(systemInstruction, userPrompt);

@@ -131,7 +131,8 @@ const WorkoutSetup: React.FC<WorkoutSetupProps> = ({ onComplete }) => {
         if (step < TOTAL - 1) {
             setStep((s) => s + 1)
         } else {
-            if (form.injuries.length >= 2) {
+            const hasSevereInjury = form.injuries.some(i => i.severity >= 4)
+            if (form.injuries.length >= 2 || (form.injuries.length === 1 && hasSevereInjury)) {
                 setShowInjuryWarning(true)
             } else {
                 onComplete(form)
@@ -561,14 +562,39 @@ const WorkoutSetup: React.FC<WorkoutSetupProps> = ({ onComplete }) => {
                         </Text>
                     </ModalBody>
                     <ModalFooter>
-                        <Button
-                            bg="#E03030"
-                            color="white"
-                            _hover={{ bg: '#C02020' }}
-                            onClick={() => navigate('/dashboard')}
-                        >
-                            Exit
-                        </Button>
+                        {form.injuries.length >= 2 ? (
+                            <Button
+                                bg="#E03030"
+                                color="white"
+                                _hover={{ bg: '#C02020' }}
+                                onClick={() => navigate('/dashboard')}
+                            >
+                                Exit
+                            </Button>
+                        ) : (
+                            <>
+                                <Button
+                                    variant="ghost"
+                                    color="#8A8A93"
+                                    _hover={{ bg: '#1e2028', color: 'white' }}
+                                    mr={3}
+                                    onClick={() => navigate('/dashboard')}
+                                >
+                                    Exit
+                                </Button>
+                                <Button
+                                    bg="#E03030"
+                                    color="white"
+                                    _hover={{ bg: '#C02020' }}
+                                    onClick={() => {
+                                        setShowInjuryWarning(false)
+                                        onComplete(form)
+                                    }}
+                                >
+                                    Continue
+                                </Button>
+                            </>
+                        )}
                     </ModalFooter>
                 </ModalContent>
             </Modal>
