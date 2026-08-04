@@ -221,8 +221,13 @@ const WorkoutResults: React.FC = () => {
         } catch (error) {
             console.error("Failed to complete session:", error)
         } finally {
-            resetWorkout()
-            navigate('/nutrition')
+            if (data?.planType === 'weekly' && weeklyPlans && currentDayIndex < weeklyPlans.length - 1) {
+                setCurrentDayIndex(currentDayIndex + 1)
+                window.scrollTo({ top: 0, behavior: 'smooth' })
+            } else {
+                resetWorkout()
+                navigate('/nutrition')
+            }
         }
     }
 
