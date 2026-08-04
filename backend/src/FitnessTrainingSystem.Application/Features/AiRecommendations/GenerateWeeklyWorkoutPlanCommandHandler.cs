@@ -66,45 +66,10 @@ public class GenerateWeeklyWorkoutPlanCommandHandler : IRequestHandler<GenerateW
             availableExercises = new List<AvailableExerciseDto>();
         }
 
-        // Nếu trong DB trống rỗng cho nhóm cơ yêu cầu, cố gắng lấy bất kỳ bài tập nào từ DB để tránh lỗi FK Constraint khi lưu
+        // Nếu vẫn trống rỗng (không có bài tập nào cho nhóm cơ này), quăng lỗi
         if (!availableExercises.Any())
         {
-            try
-            {
-                var allExercises = await _exerciseService.GetAllAsync();
-                if (allExercises.Any())
-                {
-                    availableExercises = allExercises.Select(e => new AvailableExerciseDto
-                    {
-                        Id = e.Id,
-                        Title = e.Title,
-                        Description = e.Description,
-                        MuscleGroupId = e.MuscleGroupId,
-                        MuscleGroupName = e.MuscleGroup,
-                        Equipment = "None",
-                        DurationMinutes = e.Duration ?? 10,
-                        CaloriesBurnPerMin = 5.0,
-                        Difficulty = e.Difficulty.ToString()
-                    }).ToList();
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Database fallback failed: {ex.Message}");
-            }
-        }
-
-        // Fallback mock exercises if DB is completely empty or connection failed
-        if (!availableExercises.Any())
-        {
-            availableExercises = new List<AvailableExerciseDto>
-            {
-                new() { Id = 1, Title = "Push Up", Description = "Standard Push Up", CaloriesBurnPerMin = 8.0, Difficulty = "BEGINNER" },
-                new() { Id = 2, Title = "Dumbbell Chest Press", Description = "Chest press with dumbbells", CaloriesBurnPerMin = 6.5, Difficulty = "INTERMEDIATE" },
-                new() { Id = 3, Title = "Chest Fly", Description = "Cable Chest Fly", CaloriesBurnPerMin = 5.5, Difficulty = "ADVANCED" },
-                new() { Id = 4, Title = "Squat", Description = "Bodyweight Squat", CaloriesBurnPerMin = 7.0, Difficulty = "BEGINNER" },
-                new() { Id = 5, Title = "Pull Up", Description = "Standard Pull Up", CaloriesBurnPerMin = 9.0, Difficulty = "INTERMEDIATE" }
-            };
+            throw new Exception($"Không có bài tập nào khả dụng trong hệ thống cho nhóm cơ '{request.MuscleGroup}'. Vui lòng chọn nhóm cơ khác hoặc thêm bài tập vào hệ thống trước.");
         }
 
         var availableExercisesJson = JsonSerializer.Serialize(availableExercises);

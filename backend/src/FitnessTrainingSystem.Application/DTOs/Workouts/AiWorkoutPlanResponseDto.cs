@@ -26,7 +26,7 @@ public class WorkoutPlanOutput
     public string Goal { get; set; } = null!;
 
     [JsonPropertyName("target_calories")]
-    public int TargetCalories { get; set; }
+    public decimal TargetCalories { get; set; }
 
     [JsonPropertyName("target_duration_minutes")]
     public int TargetDurationMinutes { get; set; }
@@ -59,7 +59,7 @@ public class ExerciseItemOutput
     public int ExerciseOrder { get; set; }
 
     [JsonPropertyName("calories_burned")]
-    public int CaloriesBurned { get; set; }
+    public decimal CaloriesBurned { get; set; }
 }
 
 public class AiWeeklyWorkoutPlanResponseDto

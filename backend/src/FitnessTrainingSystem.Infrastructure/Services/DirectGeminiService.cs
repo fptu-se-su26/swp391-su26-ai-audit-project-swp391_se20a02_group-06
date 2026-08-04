@@ -251,7 +251,7 @@ Yêu cầu thuật toán phân bổ (RẤT QUAN TRỌNG - PHẢI CHÍNH XÁC V�
    - Tổng thời gian tập bài đó (phút) = (Thời gian tập mỗi hiệp) * sets.
    - Lượng calo đốt của bài (calories_burned) = (Tổng thời gian tập bài đó) * calories_burn_per_min.
    => BẠN PHẢI TỰ ĐIỀU CHỈNH sets, reps, duration_seconds ĐỂ ĐẠT ĐƯỢC CON SỐ CALO VÀ THỜI GIAN MONG MUỐN!
-4. Chỉ được chọn bài tập từ danh sách được cung cấp. Khuyến khích chọn các bài tập thuộc các nhóm cơ sau: {muscleGroup} (hoặc lấy tất cả nếu là Full Body).";
+4. TUYỆT ĐỐI CHỈ ĐƯỢC CHỌN bài tập từ danh sách được cung cấp. Danh sách này đã được lọc chính xác cho nhóm cơ: {muscleGroup}. KHÔNG được chọn các bài tập thuộc nhóm cơ khác ngoài danh sách này.";
 
         if (!string.IsNullOrWhiteSpace(injuredMuscleGroups))
         {
@@ -260,11 +260,17 @@ Yêu cầu thuật toán phân bổ (RẤT QUAN TRỌNG - PHẢI CHÍNH XÁC V�
 
         var resultJson = await CallGeminiWithRetryAsync(systemInstruction, userPrompt);
         
-        // Clean up markdown block if API returns it
-        if (resultJson.StartsWith("```json")) resultJson = resultJson.Substring(7);
-        if (resultJson.StartsWith("```")) resultJson = resultJson.Substring(3);
-        if (resultJson.EndsWith("```")) resultJson = resultJson.Substring(0, resultJson.Length - 3);
-        resultJson = resultJson.Trim();
+        // Clean up markdown block and extra text
+        int firstBrace = resultJson.IndexOf('{');
+        int lastBrace = resultJson.LastIndexOf('}');
+        if (firstBrace >= 0 && lastBrace >= firstBrace)
+        {
+            resultJson = resultJson.Substring(firstBrace, lastBrace - firstBrace + 1);
+        }
+        else
+        {
+            throw new Exception("Không tìm thấy JSON hợp lệ trong phản hồi của AI.");
+        }
 
         var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
         var planOutput = JsonSerializer.Deserialize<WorkoutPlanOutput>(resultJson, options);
@@ -316,7 +322,7 @@ BẮT BUỘC CHỈ ĐƯỢC CHỌN CÁC BÀI TẬP CÓ TRONG DANH SÁCH DƯỚI 
 {availableExercisesJson}
 
 Yêu cầu thuật toán phân bổ (RẤT QUAN TRỌNG - PHẢI CHÍNH XÁC VỀ MẶT TOÁN HỌC):
-1. Chia đều hoặc luân phiên các nhóm cơ giữa các buổi (ví dụ: Buổi 1 tập Ngực/Vai, Buổi 2 tập Lưng/Tay, Buổi 3 tập Chân/Bụng...) tùy theo các bài tập có sẵn để tối ưu hóa phục hồi cơ bắp.
+1. CHỈ CHỌN CÁC BÀI TẬP PHÙ HỢP VỚI NHÓM CƠ '{muscleGroup}' (Dựa đúng theo danh sách đã cung cấp). Nếu '{muscleGroup}' là Split hoặc Full Body thì mới luân phiên các nhóm cơ giữa các buổi để tối ưu hóa phục hồi cơ bắp, nếu là một nhóm cơ cụ thể thì chỉ tập trung vào nhóm cơ đó.
 2. Mỗi ngày trong danh sách 'days' đại diện cho 1 buổi tập riêng biệt, có đầy đủ tiêu đề (title), mục tiêu (goal), và mảng bài tập (exercises).
 3. Tính toán logic calo cho TỪNG BUỔI TẬP:
    - Tổng calories_burned của tất cả bài tập trong 1 buổi CỘNG LẠI phải bằng ĐÚNG {targetCaloriesPerDay} kcal (du di tối đa +-10%).
@@ -333,11 +339,17 @@ Yêu cầu thuật toán phân bổ (RẤT QUAN TRỌNG - PHẢI CHÍNH XÁC V�
 
         var resultJson = await CallGeminiWithRetryAsync(systemInstruction, userPrompt);
         
-        // Clean up markdown block if API returns it
-        if (resultJson.StartsWith("```json")) resultJson = resultJson.Substring(7);
-        if (resultJson.StartsWith("```")) resultJson = resultJson.Substring(3);
-        if (resultJson.EndsWith("```")) resultJson = resultJson.Substring(0, resultJson.Length - 3);
-        resultJson = resultJson.Trim();
+        // Clean up markdown block and extra text
+        int firstBrace = resultJson.IndexOf('{');
+        int lastBrace = resultJson.LastIndexOf('}');
+        if (firstBrace >= 0 && lastBrace >= firstBrace)
+        {
+            resultJson = resultJson.Substring(firstBrace, lastBrace - firstBrace + 1);
+        }
+        else
+        {
+            throw new Exception("Không tìm thấy JSON hợp lệ trong phản hồi của AI.");
+        }
 
         var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
         var planOutput = JsonSerializer.Deserialize<WeeklyWorkoutPlanOutput>(resultJson, options);
