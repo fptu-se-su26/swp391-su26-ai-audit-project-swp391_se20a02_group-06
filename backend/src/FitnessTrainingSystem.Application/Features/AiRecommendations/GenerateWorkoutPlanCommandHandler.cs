@@ -70,7 +70,7 @@ public class GenerateWorkoutPlanCommandHandler : IRequestHandler<GenerateWorkout
         decimal totalCalories = 0;
         int totalDuration = 0;
 
-        foreach (var ex in availableExercises)
+        foreach (var ex in availableExercises.Take(5))
         {
             var sets = 3;
             var reps = 12;
