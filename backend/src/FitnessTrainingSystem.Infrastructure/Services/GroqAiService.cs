@@ -21,7 +21,12 @@ public class GroqAiService : IGeminiAiService
     public GroqAiService(HttpClient httpClient, IConfiguration configuration, ILogger<GroqAiService> logger)
     {
         _httpClient = httpClient;
-        _apiKey = configuration["Groq:ApiKey"] ?? configuration["GROQ_API_KEY"] ?? throw new InvalidOperationException("Missing Groq:ApiKey");
+        var apiKey = configuration["Groq:ApiKey"];
+        if (string.IsNullOrWhiteSpace(apiKey))
+        {
+            apiKey = configuration["GROQ_API_KEY"];
+        }
+        _apiKey = apiKey ?? throw new InvalidOperationException("Missing Groq:ApiKey");
         _model = configuration["Groq:Model"] ?? "llama-3.3-70b-versatile";
         _baseUrl = configuration["Groq:BaseUrl"] ?? "https://api.groq.com/openai/v1/chat/completions";
         _logger = logger;
