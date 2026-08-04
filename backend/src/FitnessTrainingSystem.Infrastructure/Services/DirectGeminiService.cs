@@ -27,7 +27,7 @@ public class DirectGeminiService : IGeminiAiService
             apiKey = configuration["GEMINI_API_KEY"] ?? configuration["Gemini__ApiKey"];
         }
         _apiKey = apiKey ?? "";
-        _model = configuration["Gemini:Model"] ?? "gemini-2.5-flash";
+        _model = configuration["Gemini:Model"] ?? "gemini-1.5-flash";
         _baseUrl = configuration["Gemini:BaseUrl"] ?? "https://generativelanguage.googleapis.com/v1beta/models/";
         _logger = logger;
     }
