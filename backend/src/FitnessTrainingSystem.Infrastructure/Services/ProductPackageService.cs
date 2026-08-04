@@ -83,4 +83,17 @@ public class ProductPackageService : IProductPackageService
 
         return userActiveSub.Package.Tier >= maxTier;
     }
+
+    public async Task<(bool HasAccess, string? RequiredPackageName)> GetWeeklyPlanAccessAsync(int userId)
+    {
+        var hasAccess = await HasHighestTierPackageAsync(userId);
+        
+        var requiredPackage = await _context.ProductPackages
+            .OrderByDescending(p => p.Tier)
+            .ThenByDescending(p => p.Price)
+            .Select(p => p.Name)
+            .FirstOrDefaultAsync();
+
+        return (hasAccess, requiredPackage);
+    }
 }

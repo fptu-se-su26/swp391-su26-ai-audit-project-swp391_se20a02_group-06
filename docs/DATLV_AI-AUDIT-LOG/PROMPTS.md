@@ -1746,3 +1746,68 @@ Chủ động yêu cầu AI kiểm tra build TypeScript cẩn thận để khôn
 | Kết quả chạy/test | npm run build pass 100%, backend pass 100% |
 | Link tài liệu/báo cáo | N/A |
 | Ghi chú khác | N/A |
+
+---
+
+### Prompt số 25
+
+| Nội dung | Thông tin |
+|---|---|
+| Ngày sử dụng | 05/08/2026 |
+| Công cụ AI | Antigravity |
+| Mục đích | Sửa lỗi gửi email trên Render (fallback Brevo) và fix UX Weekly Workout Plan |
+| Phần việc liên quan | Coding / Debug / Refactor |
+| Mức độ sử dụng | Hỏi sinh code & debug |
+
+#### 5.1. Prompt nguyên văn
+
+```text
+- Sửa lỗi không gửi được email trên production (Render). Nguyên nhân: Render free tier chặn outbound port 587. Thêm đường gửi mail qua HTTP API của Brevo làm provider chính.
+- Trong backend/src/FitnessTrainingSystem.WebApi/Controllers/JobsController.cs, đổi catch { } thành log lỗi bằng ILogger.
+- Sửa lỗi UX ở tính năng Weekly Workout Plan. frontend và backend kiểm tra hai điều kiện khác nhau.
+- Tạo endpoint duy nhất ở backend trả đúng quyền, rồi frontend dùng nó làm nguồn sự thật duy nhất, khoá hẳn thẻ "Weekly" ở Step 1.
+```
+
+#### 5.2. Bối cảnh khi viết prompt
+
+```text
+Chức năng thanh toán và forgot password bị chết trên production vì Render chặn port SMTP 587. Ngoài ra, UX của luồng tạo Workout bị lỗi, cho phép user click tới step cuối rồi mới báo lỗi phân quyền từ API AI Generate.
+```
+
+#### 5.3. Kết quả AI trả về
+
+```text
+- Cấu hình Brevo qua HttpClient trong EmailService.cs.
+- Xử lý Inject ILogger và bắt lỗi trong JobsController và OTPService.
+- Cập nhật IProductPackageService trả về tuple HasAccess và RequiredPackageName, expose qua GET /workouts/weekly-access.
+- Frontend gọi API này để update UI khoá thẻ Weekly và redirect sang trang pricing.
+```
+
+#### 5.4. Kết quả đã áp dụng vào bài
+
+```text
+Áp dụng toàn bộ, bypass OTP 123456 vẫn được giữ lại và luồng thanh toán hoạt động tốt trên production.
+```
+
+#### 5.5. Phần sinh viên/nhóm đã chỉnh sửa hoặc cải tiến
+
+```text
+Tự review log ở backend thông qua Render Dashboard và test giao diện redirect.
+```
+
+#### 5.6. Đánh giá chất lượng prompt
+
+- [x] Prompt rõ ràng
+- [x] Prompt có đủ bối cảnh
+- [x] Prompt tạo ra kết quả tốt
+
+#### 5.7. Minh chứng liên quan
+
+| Loại minh chứng | Nội dung |
+|---|---|
+| Link commit | 9fdf812 |
+| File liên quan | EmailService.cs, JobsController.cs, WorkoutsController.cs, WorkoutSetup.tsx |
+| Screenshot | N/A |
+| Kết quả chạy/test | npm run build pass 100%, backend pass 100% |
+| Link tài liệu/báo cáo | N/A |
+| Ghi chú khác | N/A |

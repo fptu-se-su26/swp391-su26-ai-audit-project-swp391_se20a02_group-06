@@ -31,7 +31,7 @@ import {
 } from './WorkoutSetupControls'
 import { muscleShapes } from '../data/muscleShapes'
 import { getMuscleGroups } from '../../../api/muscleGroups'
-import { getProfile } from '../../../api/user'
+import { getWeeklyPlanAccess } from '../../../api/workouts'
 
 interface WorkoutSetupProps {
     onComplete: (data: WorkoutFormData) => void
@@ -43,6 +43,7 @@ const WorkoutSetup: React.FC<WorkoutSetupProps> = ({ onComplete }) => {
     const TOTAL = 3
     const toast = useToast()
     const [hasWeeklyAccess, setHasWeeklyAccess] = useState(false)
+    const [requiredPackageName, setRequiredPackageName] = useState<string>('cao cấp nhất')
     const [showInjuryWarning, setShowInjuryWarning] = useState(false)
     const navigate = useNavigate()
 
@@ -78,11 +79,10 @@ const WorkoutSetup: React.FC<WorkoutSetupProps> = ({ onComplete }) => {
                 })
                 setMuscleZones(mappedZones)
 
-                // Check user tier for Weekly plan access
-                const profile = await getProfile()
-                if (profile && profile.tier && profile.tier !== 'Free' && profile.tier !== 'None') {
-                    setHasWeeklyAccess(true)
-                }
+                // Quyen truy cap Weekly Plan lay truc tiep tu backend (cung nguon voi check o API ai-generate-weekly)
+                const access = await getWeeklyPlanAccess()
+                setHasWeeklyAccess(access.hasAccess)
+                if (access.requiredPackageName) setRequiredPackageName(access.requiredPackageName)
             } catch (err) {
                 console.error("Failed to fetch data:", err)
             }
@@ -120,7 +120,10 @@ const WorkoutSetup: React.FC<WorkoutSetupProps> = ({ onComplete }) => {
     }
 
     const canNext = () => {
-        if (step === 0) return !!form.planType
+        if (step === 0) {
+            if (form.planType === 'weekly' && !hasWeeklyAccess) return false
+            return !!form.planType
+        }
         if (step === 1) return !!form.goal
         if (step === 2) return form.muscles.length > 0
         return true
@@ -480,18 +483,20 @@ const WorkoutSetup: React.FC<WorkoutSetupProps> = ({ onComplete }) => {
                                     border="1.5px solid"
                                     borderColor={form.planType === 'weekly' ? '#E03030' : '#2e3040'}
                                     borderRadius="16px"
-                                    cursor="pointer"
+                                    cursor={hasWeeklyAccess ? 'pointer' : 'not-allowed'}
+                                    opacity={hasWeeklyAccess ? 1 : 0.55}
                                     transition="all 0.2s"
                                     onClick={() => {
                                         if (!hasWeeklyAccess) {
                                             toast({
-                                                title: "Premium Feature",
-                                                description: "You need to upgrade to the highest tier package to unlock the Weekly Plan feature.",
-                                                status: "warning",
-                                                duration: 4000,
+                                                title: 'Tính năng Premium',
+                                                description: `Bạn cần đăng ký gói "${requiredPackageName}" để dùng Weekly Plan. Bấm để xem các gói.`,
+                                                status: 'warning',
+                                                duration: 5000,
                                                 isClosable: true,
-                                                position: 'top'
+                                                position: 'top',
                                             })
+                                            navigate('/pricing')
                                             return
                                         }
                                         set('planType', 'weekly')
@@ -502,7 +507,14 @@ const WorkoutSetup: React.FC<WorkoutSetupProps> = ({ onComplete }) => {
                                         <Heading fontSize="18px" fontWeight="800" color={form.planType === 'weekly' ? 'white' : '#E2E1EB'}>
                                             Weekly
                                         </Heading>
-                                        {!hasWeeklyAccess && <Icon as={FiLock} color="#E03030" />}
+                                        {!hasWeeklyAccess && (
+                                            <HStack spacing="1.5" px="2" py="0.5" bg="rgba(224,48,48,0.15)" borderRadius="full" border="1px solid" borderColor="#E03030">
+                                                <Icon as={FiLock} color="#E03030" boxSize="10px" />
+                                                <Text fontSize="9px" fontWeight="700" color="#E03030" textTransform="uppercase" letterSpacing="wider">
+                                                    {requiredPackageName}
+                                                </Text>
+                                            </HStack>
+                                        )}
                                     </Flex>
                                     <Text fontSize="13px" color="#8A8A93">
                                         Generate a personalized weekly plan aligned with your schedule.

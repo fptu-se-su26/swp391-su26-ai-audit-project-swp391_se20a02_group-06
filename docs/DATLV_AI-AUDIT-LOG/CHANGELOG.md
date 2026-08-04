@@ -258,6 +258,7 @@ DD/MM/YYYY
 | 20 | Fix lỗi không lưu Workout History (khởi tạo Plan/Session tự động & fallback complete) | Đạt | Workouts.tsx, WorkoutResults.tsx, useWorkoutStore.ts | Commit f8e943d |
 | 21 | Tích hợp Groq AI Nutrition, đồng bộ AI main & Fix lỗi Cloudinary Upload Signature | Đạt | GroqAiService.cs, CloudinaryService.cs, appsettings.json | Commit 37be2f0 |
 | 24 | Tối ưu độ trễ thanh toán, fix hiển thị Workout Modal và set/rep | Đạt | JobsController.cs, WorkoutExerciseModal.tsx, workoutExercises.ts | Commit daa19af |
+| 25 | Tối ưu fallback Brevo Email và đồng bộ quyền truy cập Weekly Workout | Đạt | EmailService.cs, ProductPackageService.cs, WorkoutSetup.tsx | Commit 9fdf812 |
 
 ## AI có hỗ trợ không?
 

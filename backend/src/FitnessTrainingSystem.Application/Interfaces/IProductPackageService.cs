@@ -10,4 +10,5 @@ public interface IProductPackageService
     Task<bool> UpdateAsync(int id, UpdateProductPackageDto dto);
     Task<bool> DeleteAsync(int id);
     Task<bool> HasHighestTierPackageAsync(int userId);
+    Task<(bool HasAccess, string? RequiredPackageName)> GetWeeklyPlanAccessAsync(int userId);
 }
