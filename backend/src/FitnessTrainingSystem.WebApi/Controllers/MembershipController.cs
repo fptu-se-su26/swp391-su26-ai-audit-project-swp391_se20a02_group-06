@@ -1,42 +1,59 @@
-using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using FitnessTrainingSystem.Application.Interfaces;
+using System.IdentityModel.Tokens.Jwt;
+using FitnessTrainingSystem.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace FitnessTrainingSystem.WebApi.Controllers;
 
 [ApiController]
 [Route("api/membership")]
+[Authorize]
 public class MembershipController : ControllerBase
 {
-    private readonly IMembershipService _membershipService;
+    private readonly ApplicationDbContext _context;
 
-    public MembershipController(IMembershipService membershipService)
+    public MembershipController(ApplicationDbContext context)
     {
-        _membershipService = membershipService;
+        _context = context;
     }
 
     [HttpGet("my")]
-    [Authorize]
-    public async Task<IActionResult> GetMySubscription()
+    public async Task<IActionResult> GetMyMembership()
     {
         var userIdString = User.FindFirstValue(JwtRegisteredClaimNames.Sub) ?? User.FindFirstValue(ClaimTypes.NameIdentifier);
-        if (!int.TryParse(userIdString, out var userId))
+        if (string.IsNullOrEmpty(userIdString) || !int.TryParse(userIdString, out var userId))
             return Unauthorized(new { message = "Invalid token." });
 
-        var sub = await _membershipService.GetCurrentSubscriptionAsync(userId);
-        if (sub == null)
-            return Ok(new { message = "No active subscription.", packageName = "Free", isActive = false });
+        var now = DateTime.UtcNow;
+        var activeSub = await _context.MembershipSubscriptions
+            .Include(m => m.Package)
+            .Where(m => m.UserId == userId && m.Status == "ACTIVE" && m.EndDate >= now)
+            .OrderByDescending(m => m.StartDate)
+            .FirstOrDefaultAsync();
 
-        return Ok(sub);
-    }
+        if (activeSub == null)
+        {
+            return Ok(new
+            {
+                packageName = "Free",
+                isActive = false,
+                packageId = (int?)null,
+                startDate = (DateTime?)null,
+                endDate = (DateTime?)null
+            });
+        }
 
-    [HttpGet("all")]
-    [Authorize(Roles = "Admin")]
-    public async Task<IActionResult> GetAll()
-    {
-        var subs = await _membershipService.GetAllSubscriptionsAsync();
-        return Ok(subs);
+        return Ok(new
+        {
+            id = activeSub.Id,
+            userId = activeSub.UserId,
+            packageId = activeSub.PackageId,
+            packageName = activeSub.Package?.Name ?? "Free",
+            isActive = true,
+            startDate = activeSub.StartDate,
+            endDate = activeSub.EndDate
+        });
     }
 }

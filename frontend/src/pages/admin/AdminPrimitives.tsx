@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 import {
     Box,
     Button,
@@ -18,6 +18,7 @@ import {
     FiMoreVertical,
     FiPlus,
     FiSearch,
+    FiSettings,
     FiTrendingUp,
 } from 'react-icons/fi'
 import NotificationBell from '../../components/shared/Header/NotificationBell'
@@ -170,48 +171,36 @@ export const AdminIconButton: React.FC<AdminIconButtonProps> = ({ icon, label })
 import { Menu, MenuButton, MenuList, MenuItem } from '@chakra-ui/react'
 import { useNavigate } from 'react-router-dom'
 import { useAuthStore } from '../../store/useAuthStore'
-import { getProfile } from '../../api/user'
 
 export const TopbarActions: React.FC = () => {
     const navigate = useNavigate()
     const logout = useAuthStore((state) => state.logout)
-    const [profile, setProfile] = useState<{ name: string; avatarUrl: string | null } | null>(null)
-
-    useEffect(() => {
-        getProfile().then(data => {
-            if (data) setProfile(data)
-        }).catch(() => {})
-    }, [])
 
     const handleLogout = () => {
         logout()
         navigate('/login')
     }
 
-    const displayName = profile?.name || 'Admin Profile'
-    const avatarSrc = profile?.avatarUrl || undefined
-
     return (
-        <>
-            <HStack spacing="8px">
-                <NotificationBell />
-                <Menu>
-                    <MenuButton as={Box} cursor="pointer" borderRadius="full">
-                        <Avatar name={displayName} src={avatarSrc} size="36px" />
-                    </MenuButton>
-                    <MenuList bg={adminColors.surfaceHigh} borderColor={adminColors.surfaceVariant} minW="150px">
-                        <MenuItem
-                            bg="transparent"
-                            _hover={{ bg: adminColors.surfaceVariant }}
-                            onClick={handleLogout}
-                            color={adminColors.error}
-                        >
-                            Logout
-                        </MenuItem>
-                    </MenuList>
-                </Menu>
-            </HStack>
-        </>
+        <HStack spacing="8px">
+            <NotificationBell />
+            <AdminIconButton icon={FiSettings} label="Settings" />
+            <Menu>
+                <MenuButton as={Box} cursor="pointer" borderRadius="full">
+                    <Avatar name="Admin Profile" src={adminAvatar} size="32px" />
+                </MenuButton>
+                <MenuList bg={adminColors.surfaceHigh} borderColor={adminColors.surfaceVariant} minW="150px">
+                    <MenuItem
+                        bg="transparent"
+                        _hover={{ bg: adminColors.surfaceVariant }}
+                        onClick={handleLogout}
+                        color={adminColors.error}
+                    >
+                        Logout
+                    </MenuItem>
+                </MenuList>
+            </Menu>
+        </HStack>
     )
 }
 

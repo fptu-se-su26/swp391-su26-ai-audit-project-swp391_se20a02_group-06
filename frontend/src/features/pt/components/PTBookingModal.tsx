@@ -28,7 +28,6 @@ interface PTBookingModalProps {
     onNotesChange: (notes: string) => void
 
     onConfirm: () => void
-    onSimulate: () => void
     onCancel: () => void
     isSubmitting?: boolean
 }
@@ -40,7 +39,6 @@ const PTBookingModal: React.FC<PTBookingModalProps> = ({
     onSessionTypeChange,
     onNotesChange,
     onConfirm,
-    onSimulate,
     onCancel,
     isSubmitting = false,
 }) => {
@@ -151,21 +149,7 @@ const PTBookingModal: React.FC<PTBookingModalProps> = ({
                             >
                                 {bookingForm.sessionType === 'In-Person' ? 'Coming Soon' : 'Confirm Booking'}
                             </Button>
-                            <Button
-                                h="48px"
-                                bg="#2b6cb0"
-                                color="white"
-                                borderRadius="full"
-                                fontSize="14px"
-                                fontWeight="800"
-                                _hover={{ bg: '#2c5282' }}
-                                onClick={onSimulate}
-                                isLoading={isSubmitting}
-                                loadingText="Processing..."
-                                isDisabled={bookingForm.sessionType === 'In-Person'}
-                            >
-                                Simulate Payment (Dev Only)
-                            </Button>
+
                             <Button
                                 h="48px"
                                 bg="transparent"

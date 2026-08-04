@@ -139,7 +139,12 @@ const PublicNavbar: React.FC = () => {
               fontSize="xs"
               px="5"
               h="9"
-              onClick={() => isAuthenticated ? navigate('/dashboard') : handleLoginClick()}
+              onClick={() => {
+                if (!isAuthenticated) handleLoginClick()
+                else if (roleId === 1) navigate('/admin')
+                else if (roleId === 2) navigate('/pt/dashboard')
+                else navigate('/dashboard')
+              }}
             />
 
             {/* Mobile Hamburger */}

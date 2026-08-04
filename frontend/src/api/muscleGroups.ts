@@ -11,6 +11,7 @@ export const getMuscleGroups = async (): Promise<MuscleGroup[]> => {
         const response = await apiClient.get('/muscle-groups')
         return response.data
     } catch (error: any) {
-        throw new Error(error.response?.data?.message || 'Failed to fetch muscle groups')
+        console.warn("Failed to fetch muscle groups from backend:", error)
+        return []
     }
 }

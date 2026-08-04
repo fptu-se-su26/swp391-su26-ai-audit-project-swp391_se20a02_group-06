@@ -1,4 +1,4 @@
-using FitnessTrainingSystem.Application.Common.Interfaces;
+using FitnessTrainingSystem.Application.Common.Interfaces; 
 using FitnessTrainingSystem.Application.Interfaces;
 using FitnessTrainingSystem.Infrastructure.Authentication;
 using FitnessTrainingSystem.Infrastructure.Persistence;
@@ -21,13 +21,15 @@ public static class DependencyInjection
             throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
         }
 
+        // We use a fixed MySqlServerVersion to avoid requiring a running database server during design-time migrations.
+        // Adjust the version (e.g. Version(8, 0, 36)) to match your production/local MySQL server version.
         var serverVersion = new MySqlServerVersion(new Version(8, 0, 36));
 
         services.AddDbContext<ApplicationDbContext>(options =>
             options.UseMySql(
                 connectionString,
                 serverVersion,
-                builder =>
+                builder => 
                 {
                     builder.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName);
                     builder.EnableRetryOnFailure();
@@ -49,22 +51,29 @@ public static class DependencyInjection
         services.AddScoped<INutritionService, NutritionService>();
         services.AddScoped<IExerciseRequestService, ExerciseRequestService>();
         services.AddScoped<INotificationService, NotificationService>();
-        services.AddScoped<IDashboardService, DashboardService>();
         services.AddScoped<IPTProfileService, PTProfileService>();
-        services.AddScoped<IMembershipService, MembershipService>();
 
+        // Register background hosted services
         services.AddHostedService<FitnessTrainingSystem.Infrastructure.BackgroundServices.ExerciseDeadlineReminderService>();
         services.AddHostedService<FitnessTrainingSystem.Infrastructure.BackgroundServices.WaterReminderBackgroundService>();
 
+        // ☁️ Cloudinary Video Upload
         services.AddScoped<ICloudinaryService, CloudinaryService>();
 
-        services.AddHttpClient<IGeminiAiService, GroqAiService>(client =>
+        // 🚀 ĐĂNG KÝ HỆ THỐNG TRUY CẬP AI DƯỚI ĐÂY
+        services.AddHttpClient<GeminiAiService>();
+        services.AddHttpClient<IGeminiAiService, DirectGeminiService>(client =>
         {
-            client.Timeout = TimeSpan.FromSeconds(60);
+            client.Timeout = TimeSpan.FromMinutes(5);
         });
-        services.AddScoped<IGroqAiService>(sp => (IGroqAiService)sp.GetRequiredService<IGeminiAiService>());
+        services.AddHttpClient<IGroqAiService, GroqAiService>(client =>
+        {
+            client.BaseAddress = new Uri("https://api.groq.com/");
+            client.Timeout = TimeSpan.FromMinutes(3);
+        });
         services.AddScoped<IAIChatService, AIChatService>();
 
+        // PayOS
         services.AddSingleton(new PayOSClient(new PayOSOptions
         {
             ClientId = configuration["PayOS:ClientId"] ?? "",

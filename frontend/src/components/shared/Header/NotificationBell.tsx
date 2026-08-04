@@ -16,7 +16,7 @@ import {
     HStack,
     Text,
 } from '@chakra-ui/react'
-import { FiBell, FiCheckCircle, FiTrash2 } from 'react-icons/fi'
+import { FiBell, FiCheckCircle } from 'react-icons/fi'
 import { useNotifications } from '../../../context/NotificationContext'
 import { useNavigate } from 'react-router-dom'
 import { useAuthStore } from '../../../store/useAuthStore'
@@ -24,7 +24,7 @@ import { useAuthStore } from '../../../store/useAuthStore'
 export const NotificationBell: React.FC = () => {
     const navigate = useNavigate()
     const roleId = useAuthStore((state) => state.roleId)
-    const { notifications, unreadCount, markRead, markAllRead, clearAll, drinkWaterFromNotification } = useNotifications()
+    const { notifications, unreadCount, markRead, markAllRead, drinkWaterFromNotification } = useNotifications()
 
     const getNotificationTypeColor = (type?: string) => {
         switch (type) {
@@ -125,42 +125,16 @@ export const NotificationBell: React.FC = () => {
                             )}
                         </HStack>
                         {unreadCount > 0 && (
-                            <HStack spacing="1">
-                                <Button
-                                    size="xs"
-                                    variant="ghost"
-                                    colorScheme="red"
-                                    fontSize="11px"
-                                    leftIcon={<FiCheckCircle />}
-                                    onClick={markAllRead}
-                                    _hover={{ bg: 'rgba(255,255,255,0.05)' }}
-                                >
-                                    Mark Read
-                                </Button>
-                                <Button
-                                    size="xs"
-                                    variant="ghost"
-                                    color="gray.400"
-                                    fontSize="11px"
-                                    leftIcon={<FiTrash2 />}
-                                    onClick={clearAll}
-                                    _hover={{ bg: 'rgba(255,255,255,0.05)' }}
-                                >
-                                    Clear All
-                                </Button>
-                            </HStack>
-                        )}
-                        {notifications.length > 0 && unreadCount === 0 && (
                             <Button
                                 size="xs"
                                 variant="ghost"
-                                color="gray.400"
+                                colorScheme="red"
                                 fontSize="11px"
-                                leftIcon={<FiTrash2 />}
-                                onClick={clearAll}
+                                leftIcon={<FiCheckCircle />}
+                                onClick={markAllRead}
                                 _hover={{ bg: 'rgba(255,255,255,0.05)' }}
                             >
-                                Clear All
+                                Mark Read
                             </Button>
                         )}
                     </Flex>

@@ -54,7 +54,6 @@ export interface WorkoutSessionDetailDto {
     exerciseName?: string
     setsDone?: number
     repsDone?: number
-    weight?: number
     durationSeconds?: number
     caloriesBurned?: number
 }
@@ -74,7 +73,68 @@ export const completeWorkoutSession = async (sessionId: number, data: CompleteWo
     return response.data
 }
 
-export const getWorkoutHistory = async (filter: string = 'all'): Promise<WorkoutSessionDto[]> => {
-    const response = await apiClient.get(`/workouts/history?filter=${filter}`)
+export const getWorkoutHistory = async (): Promise<WorkoutSessionDto[]> => {
+    const response = await apiClient.get('/workouts/history')
     return response.data
 }
+
+export interface AiWorkoutPlanRequestDto {
+    muscleGroup: string
+    injuredMuscleGroups?: string
+    targetCalories: number
+    durationMinutes: number
+}
+
+export interface AiWorkoutPlanResponseDto {
+    success: boolean
+    userId: number
+    model: string
+    recommendation: AiWorkoutPlanOutputDto
+}
+
+export interface AiWorkoutPlanOutputDto {
+    title: string
+    goal: string
+    targetCalories: number
+    targetDurationMinutes: number
+    exercises: AiExerciseItemOutputDto[]
+}
+
+export interface AiExerciseItemOutputDto {
+    exerciseId: number
+    exerciseTitle: string
+    sets: number
+    reps: number
+    durationSeconds: number
+    restSeconds: number
+    exerciseOrder: number
+    caloriesBurned: number
+}
+
+export const generateAiWorkoutPlan = async (data: AiWorkoutPlanRequestDto): Promise<AiWorkoutPlanResponseDto> => {
+    const response = await apiClient.post('/workouts/ai-generate', data)
+    return response.data
+}
+
+export interface AiWeeklyWorkoutPlanRequestDto {
+    muscleGroup: string
+    injuredMuscleGroups?: string
+    targetCaloriesPerDay: number
+    durationMinutesPerDay: number
+    frequency: number
+}
+
+export interface AiWeeklyWorkoutPlanResponseDto {
+    success: boolean
+    userId: number
+    model: string
+    recommendation: {
+        days: AiWorkoutPlanOutputDto[]
+    }
+}
+
+export const generateAiWeeklyWorkoutPlan = async (data: AiWeeklyWorkoutPlanRequestDto): Promise<AiWeeklyWorkoutPlanResponseDto> => {
+    const response = await apiClient.post('/workouts/ai-generate-weekly', data)
+    return response.data
+}
+
