@@ -302,8 +302,8 @@ const WorkoutSetup: React.FC<WorkoutSetupProps> = ({ onComplete }) => {
                                 )}
 
                                 {/* Selected injuries chips */}
-                                {form.injuries.length > 0 && (
-                                    <Box mt="4">
+                                {form.planType === 'weekly' && form.injuries.length > 0 && (
+                                    <Box mt="3">
                                         <Text fontSize="9px" fontWeight="700" color="#E03030" textTransform="uppercase" letterSpacing="wider" mb="2">
                                             Injuries / Pain
                                         </Text>
@@ -379,70 +379,74 @@ const WorkoutSetup: React.FC<WorkoutSetupProps> = ({ onComplete }) => {
                                     />
                                 </Flex>
 
-                                <Flex
-                                    justify="center"
-                                    mt="5"
-                                    align="center"
-                                    gap="2"
-                                    px="4"
-                                    py="2"
-                                    bg="rgba(224,48,48,0.1)"
-                                    borderRadius="full"
-                                    w="fit-content"
-                                    mx="auto"
-                                >
-                                    <Text fontSize="12px" color="#E03030" fontWeight="600">Are you experiencing pain or injury in any muscle group?</Text>
-                                </Flex>
+                                {form.planType === 'weekly' && (
+                                    <>
+                                        <Flex
+                                            justify="center"
+                                            mt="5"
+                                            align="center"
+                                            gap="2"
+                                            px="4"
+                                            py="2"
+                                            bg="rgba(224,48,48,0.1)"
+                                            borderRadius="full"
+                                            w="fit-content"
+                                            mx="auto"
+                                        >
+                                            <Text fontSize="12px" color="#E03030" fontWeight="600">Are you experiencing pain or injury in any muscle group?</Text>
+                                        </Flex>
 
-                                <Flex flexWrap="wrap" gap="2" justify="center" mt="3">
-                                    {muscleZones.map((z) => {
-                                        const injury = form.injuries.find((i) => i.id === z.id)
-                                        const isInjured = !!injury
-                                        return (
-                                            <Box key={z.id}>
-                                                <Box
-                                                    px="3"
-                                                    py="1.5"
-                                                    borderRadius="full"
-                                                    border="1px solid"
-                                                    borderColor={isInjured ? '#E03030' : '#2e3040'}
-                                                    bg={isInjured ? 'rgba(224,48,48,0.2)' : 'transparent'}
-                                                    color={isInjured ? 'white' : '#8A8A93'}
-                                                    fontSize="12px"
-                                                    cursor="pointer"
-                                                    transition="all 0.2s"
-                                                    _hover={{ borderColor: '#E03030' }}
-                                                    onClick={() => toggleInjury(z.id)}
-                                                >
-                                                    {z.label}
-                                                </Box>
-                                                {isInjured && (
-                                                    <HStack mt="2" spacing="1" justify="center">
-                                                        {[1, 2, 3, 4, 5].map(lvl => (
-                                                            <Box
-                                                                key={lvl}
-                                                                w="18px" h="18px"
-                                                                borderRadius="full"
-                                                                bg={injury.severity >= lvl ? '#E03030' : '#2e3040'}
-                                                                cursor="pointer"
-                                                                onClick={() => updateInjurySeverity(z.id, lvl)}
-                                                                fontSize="10px"
-                                                                fontWeight="bold"
-                                                                display="flex"
-                                                                alignItems="center"
-                                                                justifyContent="center"
-                                                                color="white"
-                                                                title={`Severity: ${lvl}`}
-                                                            >
-                                                                {lvl}
-                                                            </Box>
-                                                        ))}
-                                                    </HStack>
-                                                )}
-                                            </Box>
-                                        )
-                                    })}
-                                </Flex>
+                                        <Flex flexWrap="wrap" gap="2" justify="center" mt="3">
+                                            {muscleZones.map((z) => {
+                                                const injury = form.injuries.find((i) => i.id === z.id)
+                                                const isInjured = !!injury
+                                                return (
+                                                    <Box key={z.id}>
+                                                        <Box
+                                                            px="3"
+                                                            py="1.5"
+                                                            borderRadius="full"
+                                                            border="1px solid"
+                                                            borderColor={isInjured ? '#E03030' : '#2e3040'}
+                                                            bg={isInjured ? 'rgba(224,48,48,0.2)' : 'transparent'}
+                                                            color={isInjured ? 'white' : '#8A8A93'}
+                                                            fontSize="12px"
+                                                            cursor="pointer"
+                                                            transition="all 0.2s"
+                                                            _hover={{ borderColor: '#E03030' }}
+                                                            onClick={() => toggleInjury(z.id)}
+                                                        >
+                                                            {z.label}
+                                                        </Box>
+                                                        {isInjured && (
+                                                            <HStack mt="2" spacing="1" justify="center">
+                                                                {[1, 2, 3, 4, 5].map(lvl => (
+                                                                    <Box
+                                                                        key={lvl}
+                                                                        w="18px" h="18px"
+                                                                        borderRadius="full"
+                                                                        bg={injury.severity >= lvl ? '#E03030' : '#2e3040'}
+                                                                        cursor="pointer"
+                                                                        onClick={() => updateInjurySeverity(z.id, lvl)}
+                                                                        fontSize="10px"
+                                                                        fontWeight="bold"
+                                                                        display="flex"
+                                                                        alignItems="center"
+                                                                        justifyContent="center"
+                                                                        color="white"
+                                                                        title={`Severity: ${lvl}`}
+                                                                    >
+                                                                        {lvl}
+                                                                    </Box>
+                                                                ))}
+                                                            </HStack>
+                                                        )}
+                                                    </Box>
+                                                )
+                                            })}
+                                        </Flex>
+                                    </>
+                                )}
                             </Box>
                         </Flex>
                     )}
