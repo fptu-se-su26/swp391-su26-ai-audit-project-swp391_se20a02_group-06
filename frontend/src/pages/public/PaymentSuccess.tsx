@@ -40,21 +40,33 @@ const PaymentSuccess = () => {
         return
       }
 
+      const kind = localStorage.getItem('payment-kind') // 'PT_SESSION' | 'SUBSCRIPTION' | null
+      const opts = { timeout: 25000 }
+      
       try {
-        // Try PT Schedule Payment first
+        if (kind === 'SUBSCRIPTION') {
+          await apiClient.post(`/jobs/simulate-payment?orderCode=${orderCode}`, null, opts)
+          setStatus('success')
+          setMessage('Thanh toán thành công! Gói tập của bạn đã được kích hoạt.')
+          localStorage.removeItem('payment-kind')
+          setTimeout(() => navigate('/dashboard'), 1000)
+          return
+        }
+        
         try {
-          await apiClient.post(`/jobs/simulate-schedule-payment?orderCode=${orderCode}`)
+          await apiClient.post(`/jobs/simulate-schedule-payment?orderCode=${orderCode}`, null, opts)
           setStatus('success')
           setMessage('Thanh toán lịch tập PT thành công! Link Google Meet đã được tạo và gửi qua email cho bạn.')
-          setTimeout(() => navigate('/dashboard'), 3000)
+          localStorage.removeItem('payment-kind')
+          setTimeout(() => navigate('/dashboard'), 1000)
           return
         } catch (schedErr: any) {
-          // If error is not schedule-related, fall through to subscription package payment
           if (schedErr.response?.data?.message?.includes('Schedule not found')) {
-            await apiClient.post(`/jobs/simulate-payment?orderCode=${orderCode}`)
+            await apiClient.post(`/jobs/simulate-payment?orderCode=${orderCode}`, null, opts)
             setStatus('success')
             setMessage('Thanh toán thành công! Gói tập của bạn đã được kích hoạt.')
-            setTimeout(() => navigate('/dashboard'), 3000)
+            localStorage.removeItem('payment-kind')
+            setTimeout(() => navigate('/dashboard'), 1000)
             return
           }
           throw schedErr
@@ -63,7 +75,7 @@ const PaymentSuccess = () => {
         if (err.response?.status === 400) {
           setStatus('success')
           setMessage('Thanh toán đã được xác nhận trước đó.')
-          setTimeout(() => navigate('/dashboard'), 3000)
+          setTimeout(() => navigate('/dashboard'), 1000)
         } else {
           setStatus('error')
           setMessage(err.response?.data?.message || 'Xác nhận thanh toán thất bại. Vui lòng liên hệ hỗ trợ.')

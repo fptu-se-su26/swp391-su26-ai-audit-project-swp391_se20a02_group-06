@@ -92,17 +92,19 @@ public class JobsController : ControllerBase
         };
         _context.MembershipSubscriptions.Add(sub);
         
+        await _context.SaveChangesAsync();
+
         var user = await _context.Users.FindAsync(order.UserId);
-        if (user != null)
+        if (user != null && !string.IsNullOrEmpty(user.Email))
         {
-            var packageName = order.Package?.Name ?? "Membership Package";
-            var subject = $"Invoice for your purchase: {packageName}";
+            var toEmail = user.Email;
+            var subject = $"Invoice for your purchase: {order.Package?.Name}";
             var body = $"<html><body><h2>Thank you for your purchase!</h2><p><strong>Order Code:</strong> {orderCode}</p><p><strong>Amount Paid:</strong> {order.PricePaid} VND</p></body></html>";
-            await _emailService.SendEmailAsync(user.Email, subject, body);
+            var emailService = _emailService;
+            _ = Task.Run(async () => { try { await emailService.SendEmailAsync(toEmail, subject, body); } catch { } });
         }
 
-        await _context.SaveChangesAsync();
-        return Ok();
+        return Ok(new { message = "Payment confirmed and subscription activated.", orderId = order.Id });
     }
 
     [HttpPost("simulate-schedule-payment")]
@@ -124,33 +126,44 @@ public class JobsController : ControllerBase
                 + meetingId.Substring(3, 4) + "-"
                 + meetingId.Substring(7, 3);
 
-            if (schedule.Pt != null && !string.IsNullOrEmpty(schedule.Pt.Email))
+            var notification = new FitnessTrainingSystem.Domain.Entities.Notification
             {
-                var subject = $"New Session Booked with {schedule.Member?.Fullname ?? "a client"}!";
-                var body = $"<html><body><h2>You have a new PT session booked!</h2><p><strong>Time:</strong> {schedule.StartTime.AddHours(7).ToString("yyyy-MM-dd HH:mm")} (VN Time)</p><p><strong>Meeting Link:</strong> <a href=\"{schedule.MeetingUrl}\">{schedule.MeetingUrl}</a></p></body></html>";
-                try { await _emailService.SendEmailAsync(schedule.Pt.Email, subject, body); } catch { }
-
-                var notification = new FitnessTrainingSystem.Domain.Entities.Notification
-                {
-                    UserId = schedule.PtId.Value,
-                    Title = "New Session Booked",
-                    Content = $"You have a new PT session booked with {schedule.Member?.Fullname ?? "a client"} at {schedule.StartTime.AddHours(7):yyyy-MM-dd HH:mm} (VN Time).",
-                    Type = "SESSION_BOOKED",
-                    IsRead = false,
-                    CreatedAt = DateTime.UtcNow
-                };
-                _context.Notifications.Add(notification);
-            }
-
-            if (schedule.Member != null && !string.IsNullOrEmpty(schedule.Member.Email))
-            {
-                var subject = $"Your PT Session with {schedule.Pt?.Fullname ?? "your PT"} is confirmed!";
-                var body = $"<html><body><h2>Your booking is confirmed!</h2><p><strong>Time:</strong> {schedule.StartTime.AddHours(7).ToString("yyyy-MM-dd HH:mm")} (VN Time)</p><p><strong>Meeting Link:</strong> <a href=\"{schedule.MeetingUrl}\">{schedule.MeetingUrl}</a></p></body></html>";
-                try { await _emailService.SendEmailAsync(schedule.Member.Email, subject, body); } catch { }
-            }
+                UserId = schedule.PtId.Value,
+                Title = "New Session Booked",
+                Content = $"You have a new PT session booked with {schedule.Member?.Fullname ?? "a client"} at {schedule.StartTime.AddHours(7):yyyy-MM-dd HH:mm} (VN Time).",
+                Type = "SESSION_BOOKED",
+                IsRead = false,
+                CreatedAt = DateTime.UtcNow
+            };
+            _context.Notifications.Add(notification);
 
             await _context.SaveChangesAsync();
-            
+
+            var ptEmail = schedule.Pt?.Email;
+            var memberEmail = schedule.Member?.Email;
+            var meetingUrl = schedule.MeetingUrl;
+            var vnTime = schedule.StartTime.AddHours(7).ToString("yyyy-MM-dd HH:mm");
+            var ptName = schedule.Pt?.Fullname ?? "your PT";
+            var memberName = schedule.Member?.Fullname ?? "a client";
+            var emailService = _emailService;
+
+            _ = Task.Run(async () =>
+            {
+                if (!string.IsNullOrEmpty(ptEmail))
+                {
+                    var subjectPt = $"New Session Booked with {memberName}!";
+                    var bodyPt = $"<html><body><h2>You have a new PT session booked!</h2><p><strong>Time:</strong> {vnTime} (VN Time)</p><p><strong>Meeting Link:</strong> <a href=\"{meetingUrl}\">{meetingUrl}</a></p></body></html>";
+                    try { await emailService.SendEmailAsync(ptEmail, subjectPt, bodyPt); } catch { }
+                }
+
+                if (!string.IsNullOrEmpty(memberEmail))
+                {
+                    var subjectMember = $"Your PT Session with {ptName} is confirmed!";
+                    var bodyMember = $"<html><body><h2>Your booking is confirmed!</h2><p><strong>Time:</strong> {vnTime} (VN Time)</p><p><strong>Meeting Link:</strong> <a href=\"{meetingUrl}\">{meetingUrl}</a></p></body></html>";
+                    try { await emailService.SendEmailAsync(memberEmail, subjectMember, bodyMember); } catch { }
+                }
+            });
+
             return Ok(new { message = "Payment successful and schedule confirmed." });
         }
         catch (Exception ex)

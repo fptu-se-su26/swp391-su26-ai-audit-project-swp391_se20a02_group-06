@@ -10,7 +10,8 @@ export interface ModalExerciseData {
     videoUrl?: string
     description?: string
     tags: string[]
-    duration?: number
+    duration?: number      // phút
+    restSeconds?: number   // THÊM MỚI
 }
 
 interface WorkoutExerciseModalProps {
@@ -18,6 +19,8 @@ interface WorkoutExerciseModalProps {
     isOpen: boolean
     onClose: () => void
     onComplete: () => void
+    currentStep?: number
+    totalSteps?: number
 }
 
 const formatTime = (seconds: number): string => {
@@ -26,7 +29,7 @@ const formatTime = (seconds: number): string => {
     return `${m}:${s.toString().padStart(2, '0')}`
 }
 
-const WorkoutExerciseModal: React.FC<WorkoutExerciseModalProps> = ({ exercise, isOpen, onClose, onComplete }) => {
+const WorkoutExerciseModal: React.FC<WorkoutExerciseModalProps> = ({ exercise, isOpen, onClose, onComplete, currentStep, totalSteps }) => {
     const [started, setStarted] = useState(false)
     const [elapsedSeconds, setElapsedSeconds] = useState(0)
     const [isCompleted, setIsCompleted] = useState(false)
@@ -55,6 +58,18 @@ const WorkoutExerciseModal: React.FC<WorkoutExerciseModalProps> = ({ exercise, i
             }
         }
     }, [isOpen])
+
+    // Reset state when switching to a different exercise while modal stays open
+    useEffect(() => {
+        setStarted(false)
+        setElapsedSeconds(0)
+        setIsCompleted(false)
+        setModalBreak(false)
+        setBreakRemaining(0)
+        if (timerRef.current) clearInterval(timerRef.current)
+        if (breakTimerRef.current) clearInterval(breakTimerRef.current)
+        if (videoRef.current) { videoRef.current.pause(); videoRef.current.currentTime = 0 }
+    }, [exercise?.name])
 
     // Timer tick
     useEffect(() => {
@@ -98,7 +113,7 @@ const WorkoutExerciseModal: React.FC<WorkoutExerciseModalProps> = ({ exercise, i
     const handleComplete = () => {
         setIsCompleted(true)
         setModalBreak(true)
-        setBreakRemaining(30)
+        setBreakRemaining(exercise?.restSeconds && exercise.restSeconds > 0 ? exercise.restSeconds : 30)
         if (videoRef.current) {
             videoRef.current.pause()
         }
@@ -130,6 +145,11 @@ const WorkoutExerciseModal: React.FC<WorkoutExerciseModalProps> = ({ exercise, i
             <ModalContent bg="#111318" border="1px solid" borderColor="#1e2028" borderRadius="24px" overflow="hidden">
                 <ModalHeader color="white" pt="6" pb="4" pr="12">
                     <Text fontSize="20px" fontWeight="700" noOfLines={1}>{exercise.name}</Text>
+                    {currentStep && totalSteps && (
+                        <Text fontSize="12px" fontWeight="600" color="#8A8A93" mt="1">
+                            Bài {currentStep} / {totalSteps}
+                        </Text>
+                    )}
                 </ModalHeader>
                 <ModalCloseButton color="white" top="4" right="4" />
 
@@ -203,6 +223,10 @@ const WorkoutExerciseModal: React.FC<WorkoutExerciseModalProps> = ({ exercise, i
 
                     {/* Actions */}
                     {modalBreak ? (
+                        <>
+                        <Text textAlign="center" fontSize="13px" fontWeight="700" color="#22C55E" mb="3" textTransform="uppercase" letterSpacing="wider">
+                            Break Time
+                        </Text>
                         <AppButton
                             label={breakRemaining > 0 ? `Skip Break (${formatTime(breakRemaining)})` : 'Continue'}
                             variant="solid"
@@ -211,6 +235,7 @@ const WorkoutExerciseModal: React.FC<WorkoutExerciseModalProps> = ({ exercise, i
                             _hover={{ bg: '#16A34A' }}
                             onClick={skipBreak}
                         />
+                        </>
                     ) : started && !isCompleted ? (
                         <AppButton
                             label="Complete"

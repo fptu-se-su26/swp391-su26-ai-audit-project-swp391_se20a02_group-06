@@ -53,6 +53,7 @@ const Pricing: React.FC = () => {
       const result = await orderService.purchasePackage(pkgId, returnUrl, cancelUrl)
       
       if (result && result.checkoutUrl) {
+        localStorage.setItem('payment-kind', 'SUBSCRIPTION')
         // Redirect to PayOS checkout page
         window.location.href = result.checkoutUrl
       } else {

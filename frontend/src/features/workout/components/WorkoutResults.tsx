@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
-    AspectRatio,
     Badge,
     Box,
     Checkbox,
@@ -11,15 +10,10 @@ import {
     Stack,
     Text,
     Image,
-    Modal,
-    ModalOverlay,
-    ModalContent,
-    ModalHeader,
-    ModalBody,
-    ModalCloseButton
 } from '@chakra-ui/react'
 import AppButton from '../../../components/shared/Button/AppButton'
 import MemberLayout from '../../../components/shared/Layout/MemberLayout.tsx'
+import WorkoutExerciseModal from './WorkoutExerciseModal'
 import type { ExerciseCardData } from '../types/workout'
 import { useWorkoutStore } from '../../../store/useWorkoutStore.ts'
 import { startWorkoutSession, completeWorkoutSession } from '../../../api/workouts.ts'
@@ -229,6 +223,27 @@ const WorkoutResults: React.FC = () => {
         }
     }
 
+    const handleModalExerciseComplete = () => {
+        if (!selectedExercise) return
+        const idx = selectedExercise.arrayIndex
+
+        if (data?.planType === 'weekly') {
+            markWeeklyExerciseDone(currentDayIndex, idx)
+        } else {
+            markExerciseDone(idx)
+        }
+
+        // Tìm bài tiếp theo chưa done và chưa skip (bỏ qua bài vừa xong)
+        const nextIdx = dayExercises.findIndex((ex, i) => i !== idx && !ex.isDone && !ex.isSkipped)
+
+        if (nextIdx === -1) {
+            setSelectedExercise(null)   // hết bài -> đóng popup
+            return
+        }
+        // Giữ popup mở, chuyển sang bài tiếp theo
+        setSelectedExercise({ ...dayExercises[nextIdx], arrayIndex: nextIdx })
+    }
+
     if (!data) return null
 
     const goalNames: Record<string, string> = {
@@ -376,81 +391,25 @@ const WorkoutResults: React.FC = () => {
                 </Box>
             </Box>
 
-            {/* Exercise Details Modal */}
-            <Modal isOpen={!!selectedExercise} onClose={() => setSelectedExercise(null)} isCentered size="3xl">
-                <ModalOverlay backdropFilter="blur(4px)" bg="blackAlpha.800" />
-                <ModalContent bg="#111318" border="1px solid" borderColor="#1e2028" borderRadius="24px" overflow="hidden">
-                    <ModalHeader color="white" pt="6" pb="4">{selectedExercise?.name}</ModalHeader>
-                    <ModalCloseButton color="white" top="4" right="4" />
-                    <ModalBody pb="6">
-                        {/* Video Player */}
-                        <Box mb="6" borderRadius="16px" overflow="hidden" position="relative" bg="#0A0C10" border="1px solid" borderColor="#1e2028">
-                            <AspectRatio ratio={16 / 9} w="100%">
-                                {selectedExercise?.videoUrl ? (
-                                    selectedExercise.videoUrl.match(/\.(gif|jpe?g|tiff?|png|webp|bmp)$/i) ? (
-                                        <Box w="100%" h="100%" display="flex" alignItems="center" justifyContent="center">
-                                            <Image 
-                                                src={selectedExercise.videoUrl} 
-                                                alt={selectedExercise.name} 
-                                                objectFit="contain" 
-                                                w="100%" 
-                                                h="100%"
-                                                style={{ objectFit: 'contain' }}
-                                            />
-                                        </Box>
-                                    ) : (
-                                        <iframe
-                                            title={selectedExercise.name}
-                                            src={selectedExercise.videoUrl}
-                                            allowFullScreen
-                                            style={{ border: 'none' }}
-                                        />
-                                    )
-                                ) : (
-                                    <Box display="flex" alignItems="center" justifyContent="center">
-                                        <Text color="#8A8A93">No video available</Text>
-                                    </Box>
-                                )}
-                            </AspectRatio>
-                        </Box>
-
-                        <HStack spacing="2" mb="4" flexWrap="wrap">
-                            {selectedExercise?.tags.map((t, ti) => (
-                                <Badge key={ti} bg="#1e2028" color="#8A8A93" fontSize="10px" fontWeight="600" px="2" py="1" borderRadius="5px" textTransform="uppercase" letterSpacing="wider">
-                                    {t}
-                                </Badge>
-                            ))}
-                        </HStack>
-                        
-                        <Flex justify="space-between" align="center" bg="#0A0C10" p="4" borderRadius="12px" border="1px solid" borderColor="#1e2028" mb="6">
-                            <Box>
-                                <Text fontSize="12px" color="#8A8A93" mb="1">Target Goal</Text>
-                                <Text fontSize="18px" fontWeight="800" color="#E03030">{selectedExercise?.sets}</Text>
-                                <Text fontSize="10px" fontWeight="600" color="#8A8A93" textTransform="uppercase">{selectedExercise?.setsLabel}</Text>
-                            </Box>
-                        </Flex>
-
-                        <Text fontSize="14px" color="#E2E1EB" mb="6" lineHeight="1.6">
-                            {selectedExercise?.description || "No detailed instructions available."}
-                        </Text>
-                        
-                        <AppButton 
-                            label="Complete this exercise" 
-                            variant="solid" w="full" h="48px" fontSize="15px"
-                            onClick={() => {
-                                if (selectedExercise) {
-                                    if (data.planType === 'weekly') {
-                                        markWeeklyExerciseDone(currentDayIndex, selectedExercise.arrayIndex)
-                                    } else {
-                                        markExerciseDone(selectedExercise.arrayIndex)
-                                    }
-                                    setSelectedExercise(null)
-                                }
-                            }}
-                        />
-                    </ModalBody>
-                </ModalContent>
-            </Modal>
+            <WorkoutExerciseModal
+                isOpen={!!selectedExercise}
+                onClose={() => setSelectedExercise(null)}
+                onComplete={handleModalExerciseComplete}
+                currentStep={selectedExercise ? selectedExercise.arrayIndex + 1 : undefined}
+                totalSteps={dayExercises.length}
+                exercise={selectedExercise ? {
+                    name: selectedExercise.name,
+                    videoUrl: selectedExercise.videoUrl,
+                    description: selectedExercise.description,
+                    tags: Array.isArray(selectedExercise.tags) ? selectedExercise.tags : [],
+                    duration: selectedExercise.durationSeconds && selectedExercise.durationSeconds > 0
+                        ? Math.max(1, Math.round(selectedExercise.durationSeconds / 60))
+                        : 2,
+                    restSeconds: selectedExercise.restSeconds && selectedExercise.restSeconds > 0
+                        ? selectedExercise.restSeconds
+                        : 60,
+                } : null}
+            />
         </MemberLayout>
     )
 }

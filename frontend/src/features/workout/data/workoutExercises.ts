@@ -68,9 +68,12 @@ export const generateExercises = async (data: WorkoutFormData): Promise<Exercise
             }
             
             // Format sets and reps
-            let setsStr = `${aiEx.sets} x ${aiEx.reps}`
+            // Luôn ưu tiên hiển thị Sets x Reps. Chỉ fallback sang thời gian
+            // khi AI thực sự không trả về reps (bài tập tính theo thời gian như Plank).
+            const repsCount = Number(aiEx.reps) || 0
+            let setsStr = `${aiEx.sets} x ${repsCount}`
             let setsLabelStr = 'Sets / Reps'
-            if (durationSeconds > 0) {
+            if (repsCount <= 0 && durationSeconds > 0) {
                 setsStr = `${aiEx.sets} x ${durationSeconds}s`
                 setsLabelStr = 'Sets / Time'
             }
@@ -161,9 +164,12 @@ export const generateWeeklyExercises = async (data: WorkoutFormData): Promise<We
                     console.warn(`AI hallucinated an exercise not in DB: ${exerciseTitle} (ID: ${exerciseId}). Filtering it out.`)
                     return undefined
                 }
-                let setsStr = `${aiEx.sets} x ${aiEx.reps}`
+                // Luôn ưu tiên hiển thị Sets x Reps. Chỉ fallback sang thời gian
+                // khi AI thực sự không trả về reps (bài tập tính theo thời gian như Plank).
+                const repsCount = Number(aiEx.reps) || 0
+                let setsStr = `${aiEx.sets} x ${repsCount}`
                 let setsLabelStr = 'Sets / Reps'
-                if (durationSeconds > 0) {
+                if (repsCount <= 0 && durationSeconds > 0) {
                     setsStr = `${aiEx.sets} x ${durationSeconds}s`
                     setsLabelStr = 'Sets / Time'
                 }

@@ -63,6 +63,7 @@ public class EmailService : IEmailService
             email.Body = builder.ToMessageBody();
 
             using var smtp = new SmtpClient();
+            smtp.Timeout = 10000; // 10s
             smtp.ServerCertificateValidationCallback = (s, c, ch, e) => true;
             
             if (enableSsl)
