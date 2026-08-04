@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React from 'react'
 import {
     Box,
     Flex,
@@ -11,28 +11,17 @@ import {
     Th,
     Td,
     Spinner,
-    useToast,
-    Modal,
-    ModalOverlay,
-    ModalContent,
-    ModalHeader,
-    ModalCloseButton,
-    ModalBody,
-    ModalFooter,
-    FormControl,
-    FormLabel,
-    Input,
-    useDisclosure,
-    Icon,
-    IconButton,
     HStack,
     Circle,
     Menu,
     MenuButton,
     MenuList,
     MenuItem,
+    useToast,
+    Icon,
+    IconButton,
 } from '@chakra-ui/react'
-import { FiStar, FiMoreVertical, FiPlus } from 'react-icons/fi'
+import { FiStar, FiMoreVertical } from 'react-icons/fi'
 import useSWR from 'swr'
 import apiClient from '../../lib/axios'
 import AdminLayout from '../../components/shared/Layout/AdminLayout.tsx'
@@ -52,39 +41,6 @@ const fetcher = (url: string) => apiClient.get(url).then(res => res.data)
 const AdminPTs: React.FC = () => {
     const { data: pts, error, isLoading, mutate } = useSWR<PtDto[]>('/pt', fetcher)
     const toast = useToast()
-    const { isOpen, onOpen, onClose } = useDisclosure()
-    const [form, setForm] = useState({ fullname: '', email: '', password: '', phone: '', experienceYears: '' })
-    const [submitting, setSubmitting] = useState(false)
-
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setForm(prev => ({ ...prev, [e.target.name]: e.target.value }))
-    }
-
-    const handleAddTrainer = async () => {
-        if (!form.fullname || !form.email || !form.password) {
-            toast({ title: 'Validation', description: 'Fullname, Email, and Password are required.', status: 'warning', duration: 3000, isClosable: true })
-            return
-        }
-        setSubmitting(true)
-        try {
-            await apiClient.post('/pt', {
-                fullname: form.fullname,
-                email: form.email,
-                password: form.password,
-                phone: form.phone || null,
-                experienceYears: form.experienceYears ? parseInt(form.experienceYears) : null
-            })
-            toast({ title: 'Success', description: 'PT created successfully.', status: 'success', duration: 3000, isClosable: true })
-            onClose()
-            setForm({ fullname: '', email: '', password: '', phone: '', experienceYears: '' })
-            mutate()
-        } catch (err: any) {
-            const msg = err?.response?.data?.message || 'Failed to create PT.'
-            toast({ title: 'Error', description: msg, status: 'error', duration: 3000, isClosable: true })
-        } finally {
-            setSubmitting(false)
-        }
-    }
 
     const handleToggleStatus = async (id: number, currentStatus: string) => {
         const isActive = currentStatus === 'ACTIVE'
@@ -121,28 +77,6 @@ const AdminPTs: React.FC = () => {
                     <Heading fontSize="22px" fontWeight="800" color="white">
                         Personal Trainers
                     </Heading>
-                </Flex>
-
-                <Flex justify="flex-end" mb="6">
-                    <Box
-                        as="button"
-                        onClick={onOpen}
-                        bg="#E03030"
-                        color="white"
-                        borderRadius="full"
-                        h="40px"
-                        px="24px"
-                        fontSize="14px"
-                        fontWeight="600"
-                        display="inline-flex"
-                        alignItems="center"
-                        gap="8px"
-                        _hover={{ bg: '#C92424' }}
-                        _active={{ transform: 'scale(0.98)' }}
-                    >
-                        <Icon as={FiPlus} boxSize="16px" />
-                        Add New PT
-                    </Box>
                 </Flex>
 
                 <Box
@@ -278,71 +212,6 @@ const AdminPTs: React.FC = () => {
                     )}
                 </Box>
             </Box>
-
-            <Modal isOpen={isOpen} onClose={onClose} isCentered>
-                <ModalOverlay />
-                <ModalContent bg="#141720" border="1px solid" borderColor="#262626">
-                    <ModalHeader color="white">Add New Trainer</ModalHeader>
-                    <ModalCloseButton color="white" />
-                    <ModalBody>
-                        <input type="text" name="fake_email" style={{ position: 'absolute', left: '-9999px' }} tabIndex={-1} autoComplete="email" />
-                        <input type="password" name="fake_password" style={{ position: 'absolute', left: '-9999px' }} tabIndex={-1} autoComplete="current-password" />
-                        <FormControl mb="4" isRequired>
-                            <FormLabel color="#8A8A93">Fullname</FormLabel>
-                            <Input name="fullname" value={form.fullname} onChange={handleChange} h="44px" borderRadius="md" bg="#0A0C10" borderColor="#262626" color="white" _hover={{ borderColor: '#E03030' }} _focus={{ borderColor: '#E03030', boxShadow: 'none' }} />
-                        </FormControl>
-                        <FormControl mb="4" isRequired>
-                            <FormLabel color="#8A8A93">Email</FormLabel>
-                            <Input name="email" type="email" value={form.email} onChange={handleChange} h="44px" borderRadius="md" bg="#0A0C10" borderColor="#262626" color="white" _hover={{ borderColor: '#E03030' }} _focus={{ borderColor: '#E03030', boxShadow: 'none' }} />
-                        </FormControl>
-                        <FormControl mb="4" isRequired>
-                            <FormLabel color="#8A8A93">Password</FormLabel>
-                            <Input name="password" type="password" autoComplete="new-password" readOnly onFocus={(e) => e.target.removeAttribute('readOnly')} value={form.password} onChange={handleChange} h="44px" borderRadius="md" bg="#0A0C10" borderColor="#262626" color="white" _hover={{ borderColor: '#E03030' }} _focus={{ borderColor: '#E03030', boxShadow: 'none' }} />
-                        </FormControl>
-                        <FormControl mb="4">
-                            <FormLabel color="#8A8A93">Phone</FormLabel>
-                            <Input name="phone" value={form.phone} onChange={handleChange} h="44px" borderRadius="md" bg="#0A0C10" borderColor="#262626" color="white" _hover={{ borderColor: '#E03030' }} _focus={{ borderColor: '#E03030', boxShadow: 'none' }} />
-                        </FormControl>
-                        <FormControl mb="4">
-                            <FormLabel color="#8A8A93">Experience (years)</FormLabel>
-                            <Input name="experienceYears" type="number" value={form.experienceYears} onChange={handleChange} h="44px" borderRadius="md" bg="#0A0C10" borderColor="#262626" color="white" _hover={{ borderColor: '#E03030' }} _focus={{ borderColor: '#E03030', boxShadow: 'none' }} />
-                        </FormControl>
-                    </ModalBody>
-                    <ModalFooter>
-                        <Box
-                            as="button"
-                            onClick={onClose}
-                            bg="transparent"
-                            color="#8A8A93"
-                            h="40px"
-                            px="20px"
-                            borderRadius="full"
-                            fontSize="14px"
-                            fontWeight="600"
-                            mr="3"
-                            _hover={{ color: 'white' }}
-                        >
-                            Cancel
-                        </Box>
-                        <Box
-                            as="button"
-                            onClick={handleAddTrainer}
-                            bg="#E03030"
-                            color="white"
-                            h="40px"
-                            px="24px"
-                            borderRadius="full"
-                            fontSize="14px"
-                            fontWeight="600"
-                            opacity={submitting ? 0.7 : 1}
-                            _hover={{ bg: '#C92424' }}
-                            _active={{ transform: 'scale(0.98)' }}
-                        >
-                            {submitting ? 'Creating...' : 'Create'}
-                        </Box>
-                    </ModalFooter>
-                </ModalContent>
-            </Modal>
         </AdminLayout>
     )
 }
