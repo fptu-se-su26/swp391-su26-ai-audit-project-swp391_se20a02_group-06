@@ -562,24 +562,12 @@ const WorkoutSetup: React.FC<WorkoutSetupProps> = ({ onComplete }) => {
                     </ModalBody>
                     <ModalFooter>
                         <Button
-                            variant="ghost"
-                            color="#8A8A93"
-                            _hover={{ bg: '#1e2028', color: 'white' }}
-                            mr={3}
-                            onClick={() => navigate('/dashboard')}
-                        >
-                            Exit
-                        </Button>
-                        <Button
                             bg="#E03030"
                             color="white"
                             _hover={{ bg: '#C02020' }}
-                            onClick={() => {
-                                setShowInjuryWarning(false)
-                                onComplete(form)
-                            }}
+                            onClick={() => navigate('/dashboard')}
                         >
-                            Continue
+                            Exit
                         </Button>
                     </ModalFooter>
                 </ModalContent>
