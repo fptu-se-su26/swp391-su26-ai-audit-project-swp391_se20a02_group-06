@@ -106,7 +106,7 @@ const PTBooking: React.FC = () => {
                 )}
             </Box>
 
-            <PTBookingModal isOpen={booking.isModalOpen} session={booking.pendingSession} bookingForm={booking.bookingForm} onSessionTypeChange={booking.onSessionTypeChange} onNotesChange={booking.onNotesChange} onConfirm={booking.onConfirm} onSimulate={booking.onSimulate} onCancel={booking.onCancel} isSubmitting={booking.isSubmitting} />
+            <PTBookingModal isOpen={booking.isModalOpen} session={booking.pendingSession} bookingForm={booking.bookingForm} onSessionTypeChange={booking.onSessionTypeChange} onNotesChange={booking.onNotesChange} onConfirm={booking.onConfirm} onCancel={booking.onCancel} isSubmitting={booking.isSubmitting} />
         </MemberLayout>
     )
 }
