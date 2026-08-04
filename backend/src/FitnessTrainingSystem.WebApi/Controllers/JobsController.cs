@@ -146,7 +146,10 @@ public class JobsController : ControllerBase
             
             // Auto generate a mock meeting URL
             var meetingId = Guid.NewGuid().ToString("N").Substring(0, 10);
-            schedule.MeetingUrl = $"https://meet.google.com/{meetingId.Substring(0, 3)}-{meetingId.Substring(3, 4)}-{meetingId.Substring(7, 3)}";
+            schedule.MeetingUrl = "https://meet.google.com/"
+                + meetingId.Substring(0, 3) + "-"
+                + meetingId.Substring(3, 4) + "-"
+                + meetingId.Substring(7, 3);
 
             if (schedule.Pt != null && !string.IsNullOrEmpty(schedule.Pt.Email))
             {
