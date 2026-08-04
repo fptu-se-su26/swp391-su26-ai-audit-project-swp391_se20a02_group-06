@@ -15,11 +15,11 @@ namespace FitnessTrainingSystem.Application.Features.AiRecommendations.Commands.
 
 public class GenerateWeeklyWorkoutPlanCommandHandler : IRequestHandler<GenerateWeeklyWorkoutPlanCommand, AiWeeklyWorkoutPlanResponseDto>
 {
-    private readonly IGroqAiService _groqAiService;
+    private readonly IGroqWorkoutAiService _groqAiService;
     private readonly IExerciseService _exerciseService;
     private readonly IProductPackageService _packageService;
 
-    public GenerateWeeklyWorkoutPlanCommandHandler(IGroqAiService groqAiService, IExerciseService exerciseService, IProductPackageService packageService)
+    public GenerateWeeklyWorkoutPlanCommandHandler(IGroqWorkoutAiService groqAiService, IExerciseService exerciseService, IProductPackageService packageService)
     {
         _groqAiService = groqAiService;
         _exerciseService = exerciseService;
@@ -42,7 +42,7 @@ public class GenerateWeeklyWorkoutPlanCommandHandler : IRequestHandler<GenerateW
             {
                 Id = e.Id,
                 Title = e.Title,
-                Description = e.Description,
+                Description = "", // Omit description to reduce token usage
                 MuscleGroupId = e.MuscleGroupId,
                 MuscleGroupName = e.MuscleGroup,
                 Equipment = "None",
@@ -63,7 +63,12 @@ public class GenerateWeeklyWorkoutPlanCommandHandler : IRequestHandler<GenerateW
             throw new Exception($"Không có bài tập nào khả dụng trong hệ thống cho nhóm cơ '{request.MuscleGroup}'. Vui lòng chọn nhóm cơ khác hoặc thêm bài tập vào hệ thống trước.");
         }
 
-        var availableExercisesJson = JsonSerializer.Serialize(availableExercises);
+        // Limit exercises to reduce token count (Groq free tier: 12k TPM)
+        var trimmedExercises = availableExercises
+            .Take(30)
+            .Select(e => new { e.Id, e.Title, e.MuscleGroupName, e.DurationMinutes, e.CaloriesBurnPerMin, e.Difficulty })
+            .ToList();
+        var availableExercisesJson = JsonSerializer.Serialize(trimmedExercises);
 
         var aiResult = await _groqAiService.GenerateWeeklyWorkoutPlanAsync(request.UserId, request.MuscleGroup, request.TargetCaloriesPerDay, request.DurationMinutesPerDay, request.Frequency, availableExercisesJson, request.InjuredMuscleGroups);
 

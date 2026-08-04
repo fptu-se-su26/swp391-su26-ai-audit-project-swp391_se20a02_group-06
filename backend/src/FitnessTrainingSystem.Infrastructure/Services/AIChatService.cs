@@ -10,14 +10,14 @@ namespace FitnessTrainingSystem.Infrastructure.Services;
 public class AIChatService : IAIChatService
 {
     private readonly ApplicationDbContext _context;
-    private readonly IGeminiAiService _geminiService;
+    private readonly IGroqNutritionAiService _aiService;
 
     public AIChatService(
         ApplicationDbContext context,
-        IGeminiAiService geminiService)
+        IGroqNutritionAiService aiService)
     {
         _context = context;
-        _geminiService = geminiService;
+        _aiService = aiService;
     }
 
     public async Task<AIChatResponse> SendMessageAsync(int userId, AIChatRequest request)
@@ -96,7 +96,7 @@ Weight: {metric?.Weight ?? 65}
         string aiReply;
         try
         {
-            aiReply = await _geminiService.ChatAsync(conversation, userInfo);
+            aiReply = await _aiService.ChatAsync(conversation, userInfo);
         }
         catch (Exception ex)
         {
@@ -279,7 +279,7 @@ Conversation:
 
         try 
         {
-            var planResult = await _geminiService.GenerateDietPlanAsync(userInfo, foodJson);
+            var planResult = await _aiService.GenerateDietPlanAsync(userInfo, foodJson);
             if (planResult == null)
             {
                 Console.WriteLine("================ [DIET PLAN LỖI] ================");

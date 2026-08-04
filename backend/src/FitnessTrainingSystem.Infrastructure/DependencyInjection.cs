@@ -61,12 +61,12 @@ public static class DependencyInjection
         services.AddScoped<ICloudinaryService, CloudinaryService>();
 
         // 🚀 ĐĂNG KÝ HỆ THỐNG TRUY CẬP AI DƯỚI ĐÂY
-        services.AddHttpClient<GeminiAiService>();
-        services.AddHttpClient<IGeminiAiService, DirectGeminiService>(client =>
+        services.AddHttpClient<IGroqNutritionAiService, GroqNutritionAiService>(client =>
         {
-            client.Timeout = TimeSpan.FromMinutes(5);
+            client.BaseAddress = new Uri("https://api.groq.com/");
+            client.Timeout = TimeSpan.FromMinutes(3);
         });
-        services.AddHttpClient<IGroqAiService, GroqAiService>(client =>
+        services.AddHttpClient<IGroqWorkoutAiService, GroqWorkoutAiService>(client =>
         {
             client.BaseAddress = new Uri("https://api.groq.com/");
             client.Timeout = TimeSpan.FromMinutes(3);

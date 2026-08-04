@@ -20,11 +20,11 @@ public class GroqAiService : IGroqAiService
     // Groq API endpoint
     private const string GroqBaseUrl = "https://api.groq.com/openai/v1/chat/completions";
 
-    public GroqAiService(HttpClient httpClient, IConfiguration configuration, ILogger<GroqAiService> logger)
+    public GroqAiService(HttpClient httpClient, string apiKey, string model, ILogger<GroqAiService> logger)
     {
         _httpClient = httpClient;
-        _apiKey = configuration["Groq:ApiKey"] ?? configuration["GROQ_API_KEY"] ?? "";
-        _model = configuration["Groq:Model"] ?? "openai/gpt-oss-120b";
+        _apiKey = apiKey;
+        _model = model;
         _logger = logger;
     }
 
@@ -407,4 +407,18 @@ Yêu cầu thuật toán phân bổ (RẤT QUAN TRỌNG - PHẢI CHÍNH XÁC V�
     }
 }
 
+public class GroqNutritionAiService : GroqAiService, IGroqNutritionAiService
+{
+    public GroqNutritionAiService(HttpClient httpClient, IConfiguration configuration, ILogger<GroqAiService> logger)
+        : base(httpClient, configuration["GROQ_NUTRITION_API_KEY"] ?? configuration["Groq:NutritionApiKey"] ?? "", configuration["GROQ_MODEL"] ?? configuration["Groq:Model"] ?? "llama-3.3-70b-versatile", logger)
+    {
+    }
+}
 
+public class GroqWorkoutAiService : GroqAiService, IGroqWorkoutAiService
+{
+    public GroqWorkoutAiService(HttpClient httpClient, IConfiguration configuration, ILogger<GroqAiService> logger)
+        : base(httpClient, configuration["GROQ_WORKOUT_API_KEY"] ?? configuration["Groq:WorkoutApiKey"] ?? "", configuration["GROQ_MODEL"] ?? configuration["Groq:Model"] ?? "llama-3.3-70b-versatile", logger)
+    {
+    }
+}
