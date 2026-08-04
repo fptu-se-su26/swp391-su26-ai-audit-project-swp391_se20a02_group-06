@@ -37,28 +37,19 @@ public class GenerateWeeklyWorkoutPlanCommandHandler : IRequestHandler<GenerateW
         List<AvailableExerciseDto> availableExercises;
         try
         {
-            // Lấy danh sách bài tập cho nhóm cơ yêu cầu. Nếu là Split hoặc Full Body, có thể lấy nhiều nhóm cơ hơn.
-            // Để đơn giản, ta sẽ lấy các bài tập thuộc nhóm cơ yêu cầu, hoặc tất cả bài tập nếu chọn "Full Body"
-            if (request.MuscleGroup.Equals("Full Body", StringComparison.OrdinalIgnoreCase) || request.MuscleGroup.Equals("Split", StringComparison.OrdinalIgnoreCase))
+            var allExercises = await _exerciseService.GetAllAsync();
+            availableExercises = allExercises.Select(e => new AvailableExerciseDto
             {
-                var allExercises = await _exerciseService.GetAllAsync();
-                availableExercises = allExercises.Select(e => new AvailableExerciseDto
-                {
-                    Id = e.Id,
-                    Title = e.Title,
-                    Description = e.Description,
-                    MuscleGroupId = e.MuscleGroupId,
-                    MuscleGroupName = e.MuscleGroup,
-                    Equipment = "None",
-                    DurationMinutes = e.Duration ?? 10,
-                    CaloriesBurnPerMin = 5.0,
-                    Difficulty = e.Difficulty.ToString()
-                }).ToList();
-            }
-            else
-            {
-                availableExercises = await _exerciseService.GetAvailableExercisesByMuscleGroupAsync(request.MuscleGroup, cancellationToken);
-            }
+                Id = e.Id,
+                Title = e.Title,
+                Description = e.Description,
+                MuscleGroupId = e.MuscleGroupId,
+                MuscleGroupName = e.MuscleGroup,
+                Equipment = "None",
+                DurationMinutes = e.Duration ?? 10,
+                CaloriesBurnPerMin = 5.0,
+                Difficulty = e.Difficulty.ToString()
+            }).ToList();
         }
         catch (Exception ex)
         {
