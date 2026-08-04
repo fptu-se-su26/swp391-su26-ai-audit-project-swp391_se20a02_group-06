@@ -63,7 +63,7 @@ public static class DependencyInjection
             client.BaseAddress = new Uri("https://api.groq.com/");
             client.Timeout = TimeSpan.FromMinutes(3);
         });
-services.AddScoped<IAIChatService, AIChatService>();
+        services.AddScoped<IAIChatService, AIChatService>();
         services.AddSingleton(new PayOSClient(new PayOSOptions
         {
             ClientId = configuration["PayOS:ClientId"] ?? "",
