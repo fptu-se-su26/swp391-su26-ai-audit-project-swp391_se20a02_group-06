@@ -389,12 +389,22 @@ const WorkoutResults: React.FC = () => {
                         <Box mb="6" borderRadius="16px" overflow="hidden" position="relative" bg="#0A0C10" border="1px solid" borderColor="#1e2028">
                             <AspectRatio ratio={16 / 9} w="100%">
                                 {selectedExercise?.videoUrl ? (
-                                    <iframe
-                                        title={selectedExercise.name}
-                                        src={selectedExercise.videoUrl}
-                                        allowFullScreen
-                                        style={{ border: 'none' }}
-                                    />
+                                    selectedExercise.videoUrl.match(/\.(gif|jpe?g|tiff?|png|webp|bmp)$/i) ? (
+                                        <Image 
+                                            src={selectedExercise.videoUrl} 
+                                            alt={selectedExercise.name} 
+                                            objectFit="contain" 
+                                            w="100%" 
+                                            h="100%"
+                                        />
+                                    ) : (
+                                        <iframe
+                                            title={selectedExercise.name}
+                                            src={selectedExercise.videoUrl}
+                                            allowFullScreen
+                                            style={{ border: 'none' }}
+                                        />
+                                    )
                                 ) : (
                                     <Box display="flex" alignItems="center" justifyContent="center">
                                         <Text color="#8A8A93">No video available</Text>
