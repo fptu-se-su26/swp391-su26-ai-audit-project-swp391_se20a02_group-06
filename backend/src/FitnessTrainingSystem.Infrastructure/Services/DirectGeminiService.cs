@@ -325,7 +325,7 @@ BẮT BUỘC CHỈ ĐƯỢC CHỌN CÁC BÀI TẬP CÓ TRONG DANH SÁCH DƯỚI 
 {availableExercisesJson}
 
 Yêu cầu thuật toán phân bổ (RẤT QUAN TRỌNG - PHẢI CHÍNH XÁC VỀ MẶT TOÁN HỌC):
-1. XÂY DỰNG LỊCH TẬP SPLIT KHOA HỌC: Lịch tập này có trọng tâm chính là nhóm cơ '{muscleGroup}' (hãy ưu tiên số lượng bài tập hoặc tần suất tập cho nhóm cơ này). TUY NHIÊN, bắt buộc phải phân bổ các nhóm cơ khác (Ngực, Lưng, Chân, Vai, Tay, Bụng) vào các ngày khác nhau trong tuần để đảm bảo sự cân bằng và phục hồi. TUYỆT ĐỐI KHÔNG lặp đi lặp lại cùng một nhóm cơ hoặc cùng một bài tập y hệt nhau mỗi ngày. Hãy đa dạng hóa bài tập giữa các ngày trong tuần.
+1. CHỈ CHỌN CÁC BÀI TẬP PHÙ HỢP VỚI NHÓM CƠ '{muscleGroup}' (Dựa đúng theo danh sách đã cung cấp). Nếu '{muscleGroup}' là Split hoặc Full Body thì mới luân phiên các nhóm cơ giữa các buổi để tối ưu hóa phục hồi cơ bắp, nếu là một nhóm cơ cụ thể thì chỉ tập trung vào nhóm cơ đó.
 2. Mỗi ngày trong danh sách 'days' đại diện cho 1 buổi tập riêng biệt, có đầy đủ tiêu đề (title), mục tiêu (goal), và mảng bài tập (exercises).
 3. Tính toán logic calo cho TỪNG BUỔI TẬP:
    - Tổng calories_burned của tất cả bài tập trong 1 buổi CỘNG LẠI phải bằng ĐÚNG {targetCaloriesPerDay} kcal (du di tối đa +-10%).
