@@ -156,8 +156,9 @@ public class ExerciseRequestService : IExerciseRequestService
             }
 
             // Look up MuscleGroup by Name (since MuscleGroup in Exercise is an entity relationship)
+            var muscleGroupName = request.MuscleGroup?.ToLower() ?? "";
             var muscleGroupEntity = await _context.MuscleGroups
-                .FirstOrDefaultAsync(m => m.Name.Equals(request.MuscleGroup, StringComparison.OrdinalIgnoreCase));
+                .FirstOrDefaultAsync(m => m.Name.ToLower() == muscleGroupName);
 
             // Create new Exercise
             var exercise = new Exercise
