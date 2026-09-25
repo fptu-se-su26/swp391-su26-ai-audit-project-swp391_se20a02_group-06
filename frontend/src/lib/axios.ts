@@ -5,6 +5,7 @@ const apiClient = axios.create({
   baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5007/api',
   headers: {
     'Content-Type': 'application/json',
+    'ngrok-skip-browser-warning': 'true',
   },
 })
 
@@ -23,6 +24,7 @@ apiClient.interceptors.request.use(
     } catch {
       // Ignore parse errors
     }
+    config.headers['ngrok-skip-browser-warning'] = 'true'
     return config
   },
   (error) => {

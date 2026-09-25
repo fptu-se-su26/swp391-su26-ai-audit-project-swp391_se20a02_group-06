@@ -83,7 +83,12 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     });
 
 // CORS: fixed origins + optional extras from config (comma-separated Cors:AllowedOrigins)
-var fixedOrigins = new[] { "http://localhost:5173", "https://fptu-se-su26.github.io", "https://swp391-su26-ai-audit-project-swp391-sigma.vercel.app" };
+var fixedOrigins = new[] { 
+    "http://localhost:5173", 
+    "https://fptu-se-su26.github.io", 
+    "https://swp391-su26-ai-audit-project-swp391-sigma.vercel.app",
+    "https://net-fit-rho.vercel.app" 
+};
 var extraOrigins = (builder.Configuration["Cors:AllowedOrigins"] ?? "")
     .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
 var allOrigins = fixedOrigins.Concat(extraOrigins).Distinct().ToArray();
@@ -91,7 +96,7 @@ var allOrigins = fixedOrigins.Concat(extraOrigins).Distinct().ToArray();
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", policy =>
-        policy.WithOrigins(allOrigins)
+        policy.SetIsOriginAllowed(_ => true)
               .AllowAnyHeader()
               .AllowAnyMethod()
               .AllowCredentials());
@@ -139,6 +144,12 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 app.MapHub<FitnessTrainingSystem.Infrastructure.Hubs.NotificationHub>("/r/notifications");
+
+app.MapGet("/", () => Results.Ok(new {
+    status = "healthy",
+    message = "Fitness Training System WebAPI is running!",
+    timestamp = DateTime.UtcNow
+}));
 
 var summaries = new[]
 {
