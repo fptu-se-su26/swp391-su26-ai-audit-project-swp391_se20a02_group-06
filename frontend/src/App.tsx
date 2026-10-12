@@ -10,7 +10,7 @@ const Router = import.meta.env.PROD ? HashRouter : BrowserRouter
 
 const googleClientId =
   import.meta.env.VITE_GOOGLE_CLIENT_ID ||
-  '916356717531-klok2ck49pggi156ockpp72f5s5mkf3i.apps.googleusercontent.com'
+  '72625663972-6j5ncv7smsmduij6q4tugs261vmajihe.apps.googleusercontent.com'
 
 function App() {
   return (

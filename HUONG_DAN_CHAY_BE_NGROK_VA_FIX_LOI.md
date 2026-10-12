@@ -23,7 +23,7 @@ lsof -i :3306
 ---
 
 ### Bước 2: Khởi động Backend (.NET WebApi)
-Chạy Backend tại cổng **5007**:
+Chạy Backend tại cổng **5007**
 ```bash
 cd /Users/mac/Subject/SWP-projectFitness/swp391-su26-ai-audit-project-swp391_se20a02_group-06/backend/src/FitnessTrainingSystem.WebApi
 
