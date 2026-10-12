@@ -2214,5 +2214,64 @@ Yêu cầu loại bỏ nhánh feature/AIworkout/HungCD, chỉ định giữ lạ
 Nắm vững quy trình xử lý xung đột git merge, phân tách rõ ràng các tính năng AI Nutrition với các nhánh feature cũ, đồng thời hiểu rõ nguyên nhân lỗi 500 do thiếu cấu hình biến môi trường của các dịch vụ bên thứ ba như Cloudinary.
 ```
 
+---
+
+### Lần sử dụng AI số 27
+
+| Nội dung | Thông tin |
+|---|---|
+| Ngày sử dụng | 12/10/2026 |
+| Công cụ AI | Antigravity |
+| Mục đích sử dụng | Cập nhật Google OAuth Client ID mới, chuyển đổi cổng Frontend sang 5175 & cấu hình proxy API |
+| Phần việc liên quan | Fullstack / Authentication & Config |
+| Mức độ sử dụng | Hỗ trợ nhiều |
+
+#### 4.1. Prompt đã sử dụng
+
+```text
+- chạy dự án cho tôi và tôi muốn đổi đăng nhập gg sang này: {"web":{"client_id":"72625663972-6j5ncv7smsmduij6q4tugs261vmajihe.apps.googleusercontent.com", ...}}
+- oke đẩy lên github cho tôi check lại và đẩy lên cho tôi
+```
+
+#### 4.2. Kết quả AI gợi ý
+
+```text
+- Cập nhật GoogleAuth:ClientId mới trong appsettings.json và appsettings.Development.json của WebApi.
+- Cập nhật biến môi trường VITE_GOOGLE_CLIENT_ID trong frontend/.env và fallback trong App.tsx.
+- Cấu hình server port 5175 trong vite.config.ts nhằm khớp 100% với JavaScript Origins được cấp phép trên Google Cloud Console (tránh lỗi origin_mismatch).
+- Thêm reverse proxy trong vite.config.ts để chuyển tiếp các request /api và /r sang backend localhost:5007.
+- Khởi động lại dịch vụ Backend (.NET) và Frontend (Vite), kiểm thử luồng đăng nhập Google trên trình duyệt.
+```
+
+#### 4.3. Phần sinh viên/nhóm đã sử dụng từ AI
+
+```text
+Sử dụng toàn bộ cấu hình mới cho Google OAuth, thiết lập cổng mạng và reverse proxy trên Frontend Vite, quy trình kiểm thử và audit log.
+```
+
+#### 4.4. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
+
+```text
+Cung cấp JSON credentials chính thức từ Google Cloud Console, yêu cầu chạy lại dự án và kiểm tra toàn diện trước khi đẩy lên GitHub.
+```
+
+#### 4.5. Minh chứng
+
+| Loại minh chứng | Nội dung |
+|---|---|
+| Link commit | b237cac2576ab57998d8338ca757ea2d4e190d78 |
+| File liên quan | `appsettings.json`, `appsettings.Development.json`, `App.tsx`, `vite.config.ts`, `HUONG_DAN_CHAY_BE_NGROK_VA_FIX_LOI.md` |
+| Screenshot | Đã kiểm thử giao diện `http://localhost:5175/login`, nút Đăng nhập bằng Google hiển thị chuẩn xác không lỗi origin |
+| Kết quả chạy/test | `npm run build` Pass 100%, `dotnet build` Pass 0 Error 0 Warning |
+| Link video demo | N/A |
+| Ghi chú khác | N/A |
+
+#### 4.6. Nhận xét cá nhân/nhóm
+
+```text
+Hiểu rõ cơ chế bảo mật của Google Identity Services: Origin của ứng dụng Frontend gọi xác thực phải khớp chính xác với danh sách JavaScript Origins đã khai báo trên Google Cloud Console, nếu sai cổng (ví dụ 5173 so với 5175) sẽ bị Google từ chối ngay lập tức.
+```
+
+
 
 

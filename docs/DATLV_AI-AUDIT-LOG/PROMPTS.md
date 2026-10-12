@@ -1811,3 +1811,66 @@ Tự review log ở backend thông qua Render Dashboard và test giao diện red
 | Kết quả chạy/test | npm run build pass 100%, backend pass 100% |
 | Link tài liệu/báo cáo | N/A |
 | Ghi chú khác | N/A |
+
+---
+
+### Prompt số 26
+
+| Nội dung | Thông tin |
+|---|---|
+| Ngày sử dụng | 12/10/2026 |
+| Công cụ AI | Antigravity |
+| Mục đích | Đổi cấu hình Google OAuth Client ID mới, chuyển port sang 5175 và chạy hệ thống |
+| Phần việc liên quan | Coding / Config / Authentication |
+| Mức độ sử dụng | Hỏi debug & yêu cầu chạy server |
+
+#### 5.1. Prompt nguyên văn
+
+```text
+- chạy dự án cho tôi và tôi muốn đổi đăng nhập gg sang này: {"web":{"client_id":"72625663972-6j5ncv7smsmduij6q4tugs261vmajihe.apps.googleusercontent.com", ...}}
+- oke đẩy lên github cho tôi check lại và đẩy lên cho tôi
+```
+
+#### 5.2. Bối cảnh khi viết prompt
+
+```text
+Cần đổi Client ID Google OAuth sang credentials của dự án Google Cloud Console mới. Cần xử lý vấn đề Origin mismatch vì danh sách JavaScript Origins cấp phép trên Google Console là http://localhost:5175 thay vì 5173.
+```
+
+#### 5.3. Kết quả AI trả về
+
+```text
+- Đổi ClientId trong backend appsettings.json và appsettings.Development.json.
+- Đổi VITE_GOOGLE_CLIENT_ID trong frontend/.env và App.tsx fallback.
+- Đổi server port thành 5175 trong vite.config.ts và bổ sung reverse proxy /api và /r sang backend :5007.
+- Khởi động lại WebApi và Vite Dev Server, kiểm tra nút đăng nhập Google qua trình duyệt.
+```
+
+#### 5.4. Kết quả đã áp dụng vào bài
+
+```text
+Áp dụng toàn bộ cấu hình, hệ thống Backend và Frontend biên dịch và chạy thành công không có lỗi.
+```
+
+#### 5.5. Phần sinh viên/nhóm đã chỉnh sửa hoặc cải tiến
+
+```text
+Cung cấp JSON cấu hình chuẩn từ Google Cloud Console và kiểm tra tính năng trên trình duyệt trước khi push lên GitHub.
+```
+
+#### 5.6. Đánh giá chất lượng prompt
+
+- [x] Prompt rõ ràng
+- [x] Prompt có đủ bối cảnh
+- [x] Prompt tạo ra kết quả tốt
+
+#### 5.7. Minh chứng liên quan
+
+| Loại minh chứng | Nội dung |
+|---|---|
+| Link commit | b237cac2576ab57998d8338ca757ea2d4e190d78 |
+| File liên quan | appsettings.json, appsettings.Development.json, App.tsx, vite.config.ts |
+| Screenshot | N/A |
+| Kết quả chạy/test | npm run build pass 100%, dotnet build pass 100% |
+| Link tài liệu/báo cáo | N/A |
+| Ghi chú khác | N/A |

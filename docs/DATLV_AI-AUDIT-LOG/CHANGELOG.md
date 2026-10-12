@@ -259,6 +259,7 @@ DD/MM/YYYY
 | 21 | Tích hợp Groq AI Nutrition, đồng bộ AI main & Fix lỗi Cloudinary Upload Signature | Đạt | GroqAiService.cs, CloudinaryService.cs, appsettings.json | Commit 37be2f0 |
 | 24 | Tối ưu độ trễ thanh toán, fix hiển thị Workout Modal và set/rep | Đạt | JobsController.cs, WorkoutExerciseModal.tsx, workoutExercises.ts | Commit daa19af |
 | 25 | Tối ưu fallback Brevo Email và đồng bộ quyền truy cập Weekly Workout | Đạt | EmailService.cs, ProductPackageService.cs, WorkoutSetup.tsx | Commit 9fdf812 |
+| 26 | Cập nhật Google OAuth Client ID mới và chuyển port Frontend 5175 | Đạt | appsettings.json, App.tsx, vite.config.ts | Commit b237cac |
 
 ## AI có hỗ trợ không?
 
