@@ -56,7 +56,8 @@ export const OTPModal: React.FC<OTPModalProps> = ({ isOpen, onClose, email, onVe
         description: error.response?.data?.message || 'Invalid OTP',
         status: 'error',
         duration: 3000,
-        isClosable: true
+        isClosable: true,
+        position: 'top',
       })
     } finally {
       setIsLoading(false)
@@ -74,7 +75,8 @@ export const OTPModal: React.FC<OTPModalProps> = ({ isOpen, onClose, email, onVe
         description: 'Please check your email.',
         status: 'info',
         duration: 3000,
-        isClosable: true
+        isClosable: true,
+        position: 'top',
       })
     } catch (error: any) {
       toast({
@@ -82,7 +84,8 @@ export const OTPModal: React.FC<OTPModalProps> = ({ isOpen, onClose, email, onVe
         description: error.response?.data?.message || 'Try again later',
         status: 'error',
         duration: 3000,
-        isClosable: true
+        isClosable: true,
+        position: 'top',
       })
     } finally {
       setIsLoading(false)

@@ -31,10 +31,11 @@ public class AuthService : IAuthService
 
     public async Task<AuthResponseDto> RegisterAsync(RegisterRequestDto request)
     {
-        var existingUser = await _context.Users.Include(u => u.Role).FirstOrDefaultAsync(u => u.Email == request.Email);
+        var normalizedEmail = request.Email?.Trim().ToLower();
+        var existingUser = await _context.Users.Include(u => u.Role).FirstOrDefaultAsync(u => u.Email.ToLower() == normalizedEmail);
         if (existingUser != null)
         {
-            throw new Exception("User with this email already exists.");
+            throw new Exception("Email đã được sử dụng");
         }
 
         if (request.Password != request.ConfirmPassword)

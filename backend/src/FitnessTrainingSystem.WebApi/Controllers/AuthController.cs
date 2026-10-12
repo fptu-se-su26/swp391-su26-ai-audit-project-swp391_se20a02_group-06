@@ -77,7 +77,19 @@ public class AuthController : ControllerBase
     [HttpPost("send-register-otp")]
     public async Task<IActionResult> SendRegisterOTP([FromBody] SendOTPDto request)
     {
-        var otpCode = await _otpService.SendRegisterOTPAsync(request.Email);
+        if (string.IsNullOrWhiteSpace(request?.Email))
+        {
+            return BadRequest(new { message = "Email không được để trống." });
+        }
+
+        var normalizedEmail = request.Email.Trim().ToLower();
+        var userExists = await _context.Users.AnyAsync(u => u.Email.ToLower() == normalizedEmail);
+        if (userExists)
+        {
+            return BadRequest(new { message = "Email đã được sử dụng" });
+        }
+
+        var otpCode = await _otpService.SendRegisterOTPAsync(request.Email.Trim());
         if (!string.IsNullOrEmpty(otpCode))
         {
             var isDev = string.IsNullOrEmpty(_configuration["SMTP_USER"]) || string.IsNullOrEmpty(_configuration["SMTP_PASS"]);

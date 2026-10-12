@@ -52,11 +52,14 @@ const Register: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false)
   const [isOtpModalOpen, setIsOtpModalOpen] = useState(false)
   const [registerData, setRegisterData] = useState<RegisterFormInputs | null>(null)
+  const [formError, setFormError] = useState<string | null>(null)
 
   const {
     register,
     handleSubmit,
     watch,
+    setError,
+    clearErrors,
     formState: { errors },
   } = useForm<RegisterFormInputs>({
     resolver: zodResolver(registerSchema),
@@ -89,17 +92,37 @@ const Register: React.FC = () => {
 
   const onSubmit = async (data: RegisterFormInputs) => {
     setIsLoading(true)
+    setFormError(null)
     try {
-      await authApi.sendRegisterOTP({ email: data.email })
+      await authApi.sendRegisterOTP({ email: data.email.trim() })
       setRegisterData(data)
       setIsOtpModalOpen(true)
     } catch (error: any) {
+      const errorMessage = error.response?.data?.message || 'Gửi mã OTP thất bại'
+      const isEmailAlreadyInUse =
+        errorMessage.toLowerCase().includes('sử dụng') ||
+        errorMessage.toLowerCase().includes('already exists') ||
+        errorMessage.toLowerCase().includes('already in use')
+
+      const displayMessage = isEmailAlreadyInUse ? 'Email đã được sử dụng' : errorMessage
+      setFormError(displayMessage)
+
+      if (isEmailAlreadyInUse) {
+        setError('email', {
+          type: 'manual',
+          message: 'Email đã được sử dụng',
+        })
+      }
+
       toast({
-        title: 'Failed to send OTP',
-        description: error.response?.data?.message || 'Please try again later.',
+        title: isEmailAlreadyInUse ? 'Email đã được sử dụng' : 'Gửi mã OTP thất bại',
+        description: isEmailAlreadyInUse
+          ? 'Email này đã có tài khoản trên hệ thống. Vui lòng đăng nhập hoặc sử dụng email khác.'
+          : errorMessage,
         status: 'error',
-        duration: 3000,
+        duration: 4000,
         isClosable: true,
+        position: 'top',
       })
     } finally {
       setIsLoading(false)
@@ -108,12 +131,12 @@ const Register: React.FC = () => {
 
   const handleVerifyOtp = async (otp: string) => {
     if (!registerData) return
-    await authApi.verifyRegisterOTP({ email: registerData.email, otpCode: otp })
+    await authApi.verifyRegisterOTP({ email: registerData.email.trim(), otpCode: otp })
     
     // Once verified, perform actual registration
     const response = await authService.register({
       fullname: registerData.fullName,
-      email: registerData.email,
+      email: registerData.email.trim(),
       password: registerData.password,
       confirmPassword: registerData.confirmPassword
     })
@@ -127,6 +150,7 @@ const Register: React.FC = () => {
       status: 'success',
       duration: 4000,
       isClosable: true,
+      position: 'top',
     })
     if (response.roleId === 1) navigate('/admin')
       else if (response.roleId === 2) navigate('/pt/dashboard')
@@ -135,7 +159,7 @@ const Register: React.FC = () => {
 
   const handleResendOtp = async () => {
     if (!registerData) return
-    await authApi.sendRegisterOTP({ email: registerData.email })
+    await authApi.sendRegisterOTP({ email: registerData.email.trim() })
   }
 
   return (
@@ -209,6 +233,27 @@ const Register: React.FC = () => {
           {/* Form */}
           <form onSubmit={handleSubmit(onSubmit)}>
             <Stack spacing="4">
+              {/* Top Error Alert */}
+              {formError && (
+                <Box
+                  bg="rgba(224, 48, 48, 0.15)"
+                  border="1px solid #e03030"
+                  borderRadius="12px"
+                  py="3"
+                  px="4"
+                  display="flex"
+                  alignItems="center"
+                  gap="2.5"
+                >
+                  <Box as="span" className="material-symbols-outlined" color="#ff6b6b" fontSize="20px">
+                    error
+                  </Box>
+                  <Text color="#ff8585" fontSize="13px" fontWeight="600">
+                    {formError}
+                  </Text>
+                </Box>
+              )}
+
               {/* Full Name */}
               <FormControl isInvalid={!!errors.fullName}>
                 <FormLabel fontSize="12px" color="#e2e1eb" mb="1">
@@ -250,7 +295,12 @@ const Register: React.FC = () => {
                     boxShadow: 'none',
                     bg: '#0c0e14',
                   }}
-                  {...register('email')}
+                  {...register('email', {
+                    onChange: () => {
+                      if (errors.email) clearErrors('email')
+                      if (formError) setFormError(null)
+                    },
+                  })}
                 />
                 <FormErrorMessage fontSize="xs">{errors.email?.message}</FormErrorMessage>
               </FormControl>
