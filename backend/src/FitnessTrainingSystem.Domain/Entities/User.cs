@@ -38,5 +38,7 @@ public class User : BaseAuditableEntity
     public ICollection<AIChatSession> AIChatSessions = new List<AIChatSession>();
     public ICollection<AIDietHistory> AIDietHistories = new List<AIDietHistory>();
 
+    public virtual WebsiteReview? WebsiteReview { get; set; }
+
     public string? FitnessGoal { get; set; }
 }

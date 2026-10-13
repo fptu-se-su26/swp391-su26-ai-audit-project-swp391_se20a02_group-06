@@ -129,7 +129,20 @@ if (app.Environment.IsDevelopment())
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
     ");
 
-    }
+    db.Database.ExecuteSqlRaw(@"
+        CREATE TABLE IF NOT EXISTS `website_reviews` (
+            `id` INT AUTO_INCREMENT PRIMARY KEY,
+            `user_id` INT NOT NULL,
+            `rating` INT NOT NULL,
+            `comment` TEXT NULL,
+            `is_hidden` TINYINT(1) NOT NULL DEFAULT 0,
+            `created_at` DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+            `updated_at` DATETIME(6) NULL ON UPDATE CURRENT_TIMESTAMP(6),
+            UNIQUE KEY `UQ_WebsiteReview_UserId` (`user_id`),
+            CONSTRAINT `FK_WebsiteReview_User` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+    ");
+}
     
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

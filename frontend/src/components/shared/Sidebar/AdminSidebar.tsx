@@ -58,6 +58,7 @@ const AdminSidebar: React.FC = () => {
                         <NavItem href="/admin/platform" label="Platform" />
                         <NavItem href="/admin/payments" label="Payments" />
                         <NavItem href="/admin/packages" label="Pricing & Packages" />
+                        <NavItem href="/admin/reviews" label="Reviews & Ratings" />
                     </>
                 )}
             </VStack>

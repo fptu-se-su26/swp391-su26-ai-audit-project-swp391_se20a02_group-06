@@ -35,6 +35,7 @@ import AdminPTs from "../pages/admin/AdminPTs";
 import AdminPlatform from "../pages/admin/AdminPlatform";
 import AdminPayments from "../pages/admin/AdminPayments";
 import AdminPackages from "../pages/admin/AdminPackages";
+import AdminReviews from "../pages/admin/AdminReviews";
 import AdminExerciseRequests from "../pages/admin/AdminExerciseRequests";
 import PtExerciseRequests from "../pages/pt/PtExerciseRequests";
 import PTDashboard from "../pages/pt/PTDashboard";
@@ -85,6 +86,7 @@ const RouterContainer = () => {
             <Route path="/admin/platform" element={<AdminRoute><AdminPlatform /></AdminRoute>} />
             <Route path="/admin/payments" element={<AdminRoute><AdminPayments /></AdminRoute>} />
             <Route path="/admin/packages" element={<AdminRoute><AdminPackages /></AdminRoute>} />
+            <Route path="/admin/reviews" element={<AdminRoute><AdminReviews /></AdminRoute>} />
 
             {/* PT Portal Routes */}
             <Route path="/pt/dashboard" element={<PTRoute><PTDashboard /></PTRoute>} />

@@ -14,9 +14,11 @@ import {
 import AppButton from '../../../components/shared/Button/AppButton'
 import MemberLayout from '../../../components/shared/Layout/MemberLayout.tsx'
 import WorkoutExerciseModal from './WorkoutExerciseModal'
+import WebsiteReviewModal from './WebsiteReviewModal'
 import type { ExerciseCardData } from '../types/workout'
 import { useWorkoutStore } from '../../../store/useWorkoutStore.ts'
 import { startWorkoutSession, completeWorkoutSession } from '../../../api/workouts.ts'
+import apiClient from '../../../lib/axios.ts'
 
 const MiniStat: React.FC<{ value: string; label: string }> = ({
     value,
@@ -161,7 +163,18 @@ const WorkoutResults: React.FC = () => {
         setPhase
     } = useWorkoutStore()
     const [selectedExercise, setSelectedExercise] = useState<(ExerciseCardData & { arrayIndex: number }) | null>(null)
+    const [isReviewModalOpen, setIsReviewModalOpen] = useState<boolean>(false)
     const navigate = useNavigate()
+
+    const finishWorkoutAndNavigate = () => {
+        if (data?.planType === 'weekly' && weeklyPlans && currentDayIndex < weeklyPlans.length - 1) {
+            setCurrentDayIndex(currentDayIndex + 1)
+            window.scrollTo({ top: 0, behavior: 'smooth' })
+        } else {
+            resetWorkout()
+            navigate('/nutrition')
+        }
+    }
 
     const currentDay = data?.planType === 'weekly' ? (weeklyPlans ? weeklyPlans[currentDayIndex] : null) : null
     const dayExercises = (currentDay ? currentDay.exercises : exercises) || []
@@ -210,17 +223,18 @@ const WorkoutResults: React.FC = () => {
                     }))
                 })
             }
+
+            // Kiểm tra xem tài khoản có đủ điều kiện đánh giá trang web không (sau bài tập đầu tiên & mỗi tài khoản 1 lần)
+            const statusRes = await apiClient.get('/website-reviews/status').catch(() => null)
+            if (statusRes?.data?.canReview) {
+                setIsReviewModalOpen(true)
+                return
+            }
         } catch (error) {
             console.error("Failed to complete session:", error)
-        } finally {
-            if (data?.planType === 'weekly' && weeklyPlans && currentDayIndex < weeklyPlans.length - 1) {
-                setCurrentDayIndex(currentDayIndex + 1)
-                window.scrollTo({ top: 0, behavior: 'smooth' })
-            } else {
-                resetWorkout()
-                navigate('/nutrition')
-            }
         }
+
+        finishWorkoutAndNavigate()
     }
 
     const handleModalExerciseComplete = () => {
@@ -409,6 +423,18 @@ const WorkoutResults: React.FC = () => {
                         ? selectedExercise.restSeconds
                         : 60,
                 } : null}
+            />
+
+            <WebsiteReviewModal
+                isOpen={isReviewModalOpen}
+                onClose={() => {
+                    setIsReviewModalOpen(false)
+                    finishWorkoutAndNavigate()
+                }}
+                onSuccess={() => {
+                    setIsReviewModalOpen(false)
+                    finishWorkoutAndNavigate()
+                }}
             />
         </MemberLayout>
     )

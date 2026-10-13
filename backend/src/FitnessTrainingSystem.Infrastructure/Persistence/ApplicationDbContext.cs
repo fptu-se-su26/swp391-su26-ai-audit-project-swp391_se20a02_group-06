@@ -64,6 +64,7 @@ public partial class ApplicationDbContext : DbContext
     public virtual DbSet<WorkoutSessionDetail> WorkoutSessionDetails { get; set; }
 
     public virtual DbSet<DailyNutritionLog> DailyNutritionLogs { get; set; }
+    public virtual DbSet<WebsiteReview> WebsiteReviews { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
@@ -169,6 +170,20 @@ public partial class ApplicationDbContext : DbContext
         {
             entity.ToTable("ai_diet_histories");
             entity.Property(e => e.DietJson).HasColumnName("raw_json");
+        });
+
+        modelBuilder.Entity<WebsiteReview>(entity =>
+        {
+            entity.ToTable("website_reviews");
+            entity.HasKey(e => e.Id);
+            entity.HasIndex(e => e.UserId).IsUnique();
+            entity.Property(e => e.Rating).IsRequired();
+            entity.Property(e => e.Comment).HasColumnType("text");
+            entity.Property(e => e.IsHidden).HasDefaultValue(false);
+            entity.HasOne(e => e.User)
+                .WithOne(u => u.WebsiteReview)
+                .HasForeignKey<WebsiteReview>(e => e.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
         });
     }
 }

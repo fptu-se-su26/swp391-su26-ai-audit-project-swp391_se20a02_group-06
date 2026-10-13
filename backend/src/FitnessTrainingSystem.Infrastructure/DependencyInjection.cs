@@ -52,6 +52,7 @@ public static class DependencyInjection
         services.AddScoped<IExerciseRequestService, ExerciseRequestService>();
         services.AddScoped<INotificationService, NotificationService>();
         services.AddScoped<IPTProfileService, PTProfileService>();
+        services.AddScoped<IWebsiteReviewService, WebsiteReviewService>();
 
         // Register background hosted services
         services.AddHostedService<FitnessTrainingSystem.Infrastructure.BackgroundServices.ExerciseDeadlineReminderService>();
