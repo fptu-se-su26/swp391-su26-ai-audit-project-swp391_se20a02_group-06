@@ -156,21 +156,25 @@ const WorkoutSetup: React.FC<WorkoutSetupProps> = ({ onComplete }) => {
             display="flex"
             alignItems="center"
             justifyContent="center"
-            p="4"
+            p={{ base: 0, md: '4' }}
         >
             {/* Card */}
             <Box
                 w="full"
                 maxW="680px"
+                minH={{ base: '100dvh', md: 'auto' }}
                 bg="#111318"
                 border="1px solid"
                 borderColor="#1e2028"
-                borderRadius="24px"
                 overflow="hidden"
-                boxShadow="0 32px 80px rgba(0,0,0,0.6)"
+                display={{ base: 'flex', md: 'block' }}
+                flexDirection="column"
+                borderWidth={{ base: 0, md: '1px' }}
+                borderRadius={{ base: 0, md: '24px' }}
+                boxShadow={{ base: 'none', md: '0 32px 80px rgba(0,0,0,0.6)' }}
             >
                 {/* Header */}
-                <Box px="8" pt="7" pb="2" textAlign="center">
+                <Box px={{ base: '5', sm: '8' }} pt={{ base: '6', sm: '7' }} pb="2" textAlign="center">
                     <Heading fontSize="22px" fontWeight="900" color="white" letterSpacing="-0.02em" mb="1">
                         AISTHEA
                     </Heading>
@@ -187,12 +191,12 @@ const WorkoutSetup: React.FC<WorkoutSetupProps> = ({ onComplete }) => {
                 </Box>
 
                 {/* Body */}
-                <Box px="8" pb="6">
+                <Box px={{ base: '5', sm: '8' }} pb="6" flex={{ base: 1, md: 'initial' }} display="flex" flexDirection="column" justifyContent={{ base: 'center', md: 'flex-start' }}>
                     {/* ── STEP 1: Goal selection ── */}
                     {step === 1 && (
                         <Stack spacing="5">
                             <SectionLabel>Select your goal</SectionLabel>
-                            <Grid templateColumns="repeat(2, 1fr)" gap="3">
+                            <Grid templateColumns="repeat(2, minmax(0, 1fr))" gap="3">
                                 {[
                                     { id: 'lose_weight', label: 'Lose Weight' },
                                     { id: 'build_muscle', label: 'Build Muscle' },
@@ -212,7 +216,7 @@ const WorkoutSetup: React.FC<WorkoutSetupProps> = ({ onComplete }) => {
 
                             <Box>
                                 <SectionLabel>Current Level</SectionLabel>
-                                <HStack spacing="2">
+                                <Flex gap="1" p="1" bg="#141820" border="1px solid" borderColor="#232936" borderRadius="16px">
                                     {['Beginner', 'Intermediate', 'Advanced'].map((lv) => (
                                         <LevelPill
                                             key={lv}
@@ -221,16 +225,16 @@ const WorkoutSetup: React.FC<WorkoutSetupProps> = ({ onComplete }) => {
                                             onClick={() => set('level', lv)}
                                         />
                                     ))}
-                                </HStack>
+                                </Flex>
                             </Box>
                         </Stack>
                     )}
 
                     {/* ── STEP 2: Target muscles ── */}
                     {step === 2 && (
-                        <Flex gap="5" h="100%">
+                        <Flex direction={{ base: 'column', md: 'row' }} gap="5" h="100%">
                             {/* Left: step sidebar */}
-                            <Box w="160px" flexShrink={0}>
+                            <Box w={{ base: 'full', md: '160px' }} flexShrink={0}>
                                 <Stack spacing="4" mb="5">
                                     {[
                                         { label: 'Plan', sub: 'Daily or Weekly', done: true },
@@ -343,7 +347,7 @@ const WorkoutSetup: React.FC<WorkoutSetupProps> = ({ onComplete }) => {
                             </Box>
 
                             {/* Right: body diagram */}
-                            <Box flex="1">
+                            <Box flex="1" minW="0">
                                 <BodyDiagram selected={form.muscles} onToggle={(id) => toggleMuscle(id)} muscleZones={muscleZones} />
                                 <Flex
                                     justify="center"
@@ -458,7 +462,7 @@ const WorkoutSetup: React.FC<WorkoutSetupProps> = ({ onComplete }) => {
                     {step === 0 && (
                         <Stack spacing="5">
                             <SectionLabel>Select plan type</SectionLabel>
-                            <Grid templateColumns="repeat(2, 1fr)" gap="4">
+                            <Grid templateColumns={{ base: '1fr', sm: 'repeat(2, minmax(0, 1fr))' }} gap="4">
                                 <Box
                                     p="5"
                                     bg={form.planType === 'daily' ? 'rgba(224,48,48,0.1)' : '#141720'}
@@ -529,7 +533,7 @@ const WorkoutSetup: React.FC<WorkoutSetupProps> = ({ onComplete }) => {
 
                 {/* Footer nav */}
                 <Flex
-                    px="8"
+                    px={{ base: '4', sm: '8' }}
                     py="5"
                     borderTop="1px solid"
                     borderColor="#1e2028"

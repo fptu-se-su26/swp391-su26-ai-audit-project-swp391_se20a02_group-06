@@ -40,7 +40,7 @@ export const GoalCard: React.FC<{
     onClick: () => void
 }> = ({ label, selected, onClick }) => (
     <Box
-        p="5"
+        p={{ base: '3', sm: '5' }}
         borderRadius="16px"
         border="1.5px solid"
         borderColor={selected ? '#E03030' : '#1e2028'}
@@ -51,12 +51,12 @@ export const GoalCard: React.FC<{
         alignItems="center"
         justifyContent="center"
         gap="2"
-        minH="110px"
+        minH={{ base: '80px', sm: '110px' }}
         transition="all 0.2s"
         _hover={{ borderColor: selected ? '#E03030' : '#3e4050', transform: 'translateY(-1px)' }}
         onClick={onClick}
     >
-        <Text fontSize="15px" fontWeight="700" color={selected ? 'white' : '#8A8A93'} textAlign="center">
+        <Text fontSize={{ base: '13px', sm: '15px' }} fontWeight="700" color={selected ? 'white' : '#8A8A93'} textAlign="center">
             {label}
         </Text>
     </Box>
@@ -68,18 +68,18 @@ export const LevelPill: React.FC<{ label: string; selected: boolean; onClick: ()
     onClick,
 }) => (
     <Box
-        px="5"
-        py="2"
-        borderRadius="full"
-        border="1.5px solid"
-        borderColor={selected ? '#E03030' : '#2e3040'}
+        flex="1"
+        px={{ base: '2', sm: '5' }}
+        py="2.5"
+        borderRadius="12px"
+        border="0"
         bg={selected ? '#E03030' : 'transparent'}
         cursor="pointer"
         transition="all 0.15s"
         _hover={{ borderColor: '#E03030' }}
         onClick={onClick}
     >
-        <Text fontSize="13px" fontWeight="700" color={selected ? 'white' : '#8A8A93'}>
+        <Text fontSize={{ base: '11px', sm: '13px' }} fontWeight="700" color={selected ? 'white' : '#8A8A93'} textAlign="center">
             {label}
         </Text>
     </Box>

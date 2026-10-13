@@ -11,7 +11,7 @@ interface WorkoutIntroProps {
 const WorkoutIntro: React.FC<WorkoutIntroProps> = ({ onStart }) => {
     return (
         <MemberLayout>
-            <Box p="7" display="flex" alignItems="center" justifyContent="center" minH="80vh">
+            <Box p={{ base: '4', md: '7' }} display="flex" alignItems="center" justifyContent="center" minH="80vh">
                 <Stack align="center" spacing="3">
                     <Box
                         borderRadius="16px"
@@ -35,6 +35,7 @@ const WorkoutIntro: React.FC<WorkoutIntroProps> = ({ onStart }) => {
                         variant="solid"
                         h="38px"
                         px="6"
+                        w={{ base: 'full', sm: 'auto' }}
                         fontSize="13px"
                         mt="2"
                         onClick={onStart}

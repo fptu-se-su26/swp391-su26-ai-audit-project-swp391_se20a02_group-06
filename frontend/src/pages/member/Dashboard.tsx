@@ -100,10 +100,10 @@ const Dashboard: React.FC = () => {
 
     return (
         <MemberLayout>
-            <Box p="7" maxW="1200px">
+            <Box w="full" minW="0" maxW="1200px" mx="auto" p={{ base: '4', md: '5', lg: '7' }}>
 
                 {/* Stat Cards Row */}
-                <Grid templateColumns="repeat(4, 1fr)" gap="4" mb="5">
+                <Grid templateColumns={{ base: '1fr', sm: 'repeat(2, 1fr)', xl: 'repeat(4, 1fr)' }} gap="4" mb="5">
                     {/* Active Calories */}
                     <StatCard
                         label="Active Calories"
@@ -231,7 +231,7 @@ const Dashboard: React.FC = () => {
                 </Grid>
 
                 {/* Middle Row */}
-                <Grid templateColumns="1fr 300px" gap="4" mb="5">
+                <Grid templateColumns={{ base: '1fr', lg: 'minmax(0, 1fr) 300px' }} gap="4" mb="5">
                     {/* Hypertrophy Block */}
                     <Box
                         bg="#141720"
@@ -274,7 +274,7 @@ const Dashboard: React.FC = () => {
                             Focus on controlled eccentrics and progressive overload on main compound lifts.
                         </Text>
 
-                        <Grid templateColumns="repeat(4, 1fr)" gap="4" mb="5">
+                        <Grid templateColumns={{ base: '1fr', sm: 'repeat(2, 1fr)', xl: 'repeat(4, 1fr)' }} gap="4" mb="5">
                             {[
                                 { label: 'Block 1', name: 'Barbell Squat', sets: '4 x 8–10' },
                                 { label: 'Block 2', name: 'Bulgarian Split', sets: '3 x 12 /leg' },
@@ -291,8 +291,13 @@ const Dashboard: React.FC = () => {
                             ))}
                         </Grid>
 
-                        <Flex align="center" justify="space-between">
-                            <HStack spacing="2">
+                        <Flex
+                            align={{ base: 'stretch', sm: 'center' }}
+                            direction={{ base: 'column', sm: 'row' }}
+                            justify="space-between"
+                            gap="3"
+                        >
+                            <HStack spacing="2" minW="0">
                                 <HStack spacing="-2">
                                     <Avatar size="xs" name="User 1" bg="#4a5068" fontSize="9px" />
                                     <Avatar size="xs" name="User 2" bg="#3a4058" fontSize="9px" />
@@ -308,7 +313,8 @@ const Dashboard: React.FC = () => {
                                 }
                                 variant="solid"
                                 size="md"
-                                px="6"
+                                px={{ base: '4', sm: '6' }}
+                                w={{ base: 'full', sm: 'auto' }}
                                 h="40px"
                                 fontSize="13px"
                             />
@@ -497,7 +503,7 @@ const Dashboard: React.FC = () => {
                 </Grid>
 
                 {/* Bottom Row */}
-                <Grid templateColumns="1fr 1fr 300px" gap="4">
+                <Grid templateColumns={{ base: '1fr', md: 'repeat(2, minmax(0, 1fr))', xl: 'minmax(0, 1fr) minmax(0, 1fr) 300px' }} gap="4">
                     {/* Weekly Volume */}
                     <Box
                         bg="#141720"

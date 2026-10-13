@@ -142,7 +142,7 @@ const WorkoutExerciseModal: React.FC<WorkoutExerciseModalProps> = ({ exercise, i
     return (
         <Modal isOpen={isOpen} onClose={onClose} isCentered size="3xl">
             <ModalOverlay backdropFilter="blur(4px)" bg="blackAlpha.800" />
-            <ModalContent bg="#111318" border="1px solid" borderColor="#1e2028" borderRadius="24px" overflow="hidden">
+            <ModalContent mx="3" bg="#111318" border="1px solid" borderColor="#1e2028" borderRadius={{ base: '16px', sm: '24px' }} overflow="hidden">
                 <ModalHeader color="white" pt="6" pb="4" pr="12">
                     <Text fontSize="20px" fontWeight="700" noOfLines={1}>{exercise.name}</Text>
                     {currentStep && totalSteps && (

@@ -62,8 +62,8 @@ const ChatInputArea = ({ onSend, sending, loadingHistory }: { onSend: (text: str
     }
 
     return (
-        <Box p="4" bg="#0B0D14">
-            <HStack align="flex-end" spacing="3">
+        <Box p={{ base: '3', sm: '4' }} bg="#0B0D14">
+            <HStack align="flex-end" spacing={{ base: '2', sm: '3' }}>
                 <Textarea
                     value={localText}
                     onChange={(e) => setLocalText(e.target.value)}
@@ -89,6 +89,7 @@ const ChatInputArea = ({ onSend, sending, loadingHistory }: { onSend: (text: str
                     px="4"
                     borderRadius="14px"
                     resize="none"
+                    minW="0"
                     disabled={sending || loadingHistory}
                 />
                 <IconButton
@@ -305,13 +306,13 @@ const AIChat: React.FC = () => {
 
     return (
         <MemberLayout>
-            <Box p="6" maxW="1280px" mx="auto" className="print-container">
+            <Box p={{ base: '4', md: '6' }} maxW="1280px" mx="auto" w="full" minW="0" className="print-container">
                 {/* Header */}
                 <Flex align="center" justify="space-between" mb="6" flexWrap="wrap" gap="4" className="no-print">
-                    <Flex align="center" gap="4">
+                    <Flex align="center" gap={{ base: '3', sm: '4' }} minW="0">
                         <Box
-                            w="52px"
-                            h="52px"
+                            w={{ base: '44px', sm: '52px' }}
+                            h={{ base: '44px', sm: '52px' }}
                             borderRadius="16px"
                             bg="rgba(224,48,48,0.1)"
                             display="flex"
@@ -321,8 +322,8 @@ const AIChat: React.FC = () => {
                         >
                             <Icon as={FiMessageSquare} color="#E03030" boxSize="22px" />
                         </Box>
-                        <Box>
-                            <Heading fontSize="22px" color="white" fontWeight="800">
+                        <Box minW="0">
+                            <Heading fontSize={{ base: '18px', sm: '22px' }} color="white" fontWeight="800" noOfLines={1}>
                                 AI Nutrition Assistant
                             </Heading>
                             <HStack spacing="2" mt="0.5">
@@ -346,7 +347,7 @@ const AIChat: React.FC = () => {
                             </HStack>
                         </Box>
                     </Flex>
-                    <HStack spacing="3">
+                    <HStack spacing="2" flexWrap="wrap" justify={{ base: 'flex-start', sm: 'flex-end' }}>
                         {activeDietPlan && (
                             <Button
                                 leftIcon={<Icon as={FiPrinter} />}
@@ -394,17 +395,17 @@ const AIChat: React.FC = () => {
                         bg="#141720"
                         border="1px solid"
                         borderColor="#1e2028"
-                        borderRadius="20px"
+                        borderRadius={{ base: '16px', sm: '20px' }}
                         display="flex"
                         flexDirection="column"
-                        h={{ base: "520px", lg: "650px" }}
+                        h={{ base: '540px', lg: '650px' }}
                         overflow="hidden"
                         className="no-print"
                     >
                         {/* Conversation messages */}
                         <Box
                             flex="1"
-                            p="5"
+                            p={{ base: '3', sm: '5' }}
                             overflowY="auto"
                             css={{
                                 '&::-webkit-scrollbar': {
@@ -446,7 +447,8 @@ const AIChat: React.FC = () => {
                                                 />
                                             )}
                                             <Box
-                                                maxW="82%"
+                                                maxW={{ base: msg.role === 'user' ? '90%' : 'calc(100% - 44px)', sm: '82%' }}
+                                                minW="0"
                                                 bg={msg.role === 'user' ? 'linear-gradient(135deg, #E03030 0%, #B91C1C 100%)' : '#1e2230'}
                                                 color={msg.role === 'user' ? 'white' : '#E2E1EB'}
                                                 px="4"
@@ -465,6 +467,7 @@ const AIChat: React.FC = () => {
                                                     lineHeight="1.6"
                                                     whiteSpace="pre-line"
                                                     fontWeight={msg.role === 'user' ? '500' : '400'}
+                                                    overflowWrap="anywhere"
                                                 >
                                                     {msg.message}
                                                 </Text>
@@ -544,7 +547,7 @@ const AIChat: React.FC = () => {
 
                         {/* Quick Action Suggestions */}
                         {!sending && messages.length <= 3 && (
-                            <Box px="5" pb="2" pt="1">
+                            <Box px={{ base: '3', sm: '5' }} pb="2" pt="1">
                                 <Flex wrap="wrap" gap="2">
                                     {suggestions.map((suggestion) => (
                                         <Badge
@@ -585,8 +588,8 @@ const AIChat: React.FC = () => {
                         bg="#141720"
                         border="1px solid"
                         borderColor="#1e2028"
-                        borderRadius="20px"
-                        p="6"
+                        borderRadius={{ base: '16px', sm: '20px' }}
+                        p={{ base: '4', sm: '6' }}
                         display="flex"
                         flexDirection="column"
                         minH={{ base: "450px", lg: "650px" }}
@@ -655,7 +658,7 @@ const AIChat: React.FC = () => {
                                 </Box>
 
                                 {/* Macros distribution grid */}
-                                <Grid templateColumns="repeat(3, 1fr)" gap="4">
+                                <Grid templateColumns={{ base: '1fr', sm: 'repeat(3, minmax(0, 1fr))' }} gap="4">
                                     {[
                                         { label: 'Protein', val: `${activeDietPlan.protein_target_g}g`, color: '#E03030', icon: FiZap, pct: 30 },
                                         { label: 'Carbs', val: `${activeDietPlan.carbs_target_g}g`, color: '#3182CE', icon: FiActivity, pct: 50 },
@@ -698,7 +701,7 @@ const AIChat: React.FC = () => {
                                                 '@media print': { bg: 'white', color: 'black', borderColor: '#ccc' }
                                             }}
                                         >
-                                            <Flex justify="space-between" align="center" mb="3">
+                                            <Flex justify="space-between" align="center" mb="3" gap="2" minW="0">
                                                 <Heading fontSize="15px" color="white" fontWeight="700" sx={{ '@media print': { color: 'black' } }}>
                                                     {meal.name}
                                                 </Heading>
@@ -718,8 +721,8 @@ const AIChat: React.FC = () => {
                                                         borderColor="#1e2028"
                                                         sx={{ '@media print': { bg: 'white', color: 'black', borderColor: '#eee' } }}
                                                     >
-                                                        <Flex justify="space-between" align="center" mb="2">
-                                                            <Box>
+                                                        <Flex justify="space-between" align="center" mb="2" gap="2">
+                                                            <Box minW="0">
                                                                 <Text fontSize="13px" fontWeight="600" color="white" sx={{ '@media print': { color: 'black' } }}>
                                                                     {food.food_name}
                                                                 </Text>
@@ -731,7 +734,7 @@ const AIChat: React.FC = () => {
                                                                 {food.calories} kcal
                                                             </Text>
                                                         </Flex>
-                                                        <HStack spacing="2">
+                                                        <HStack spacing="2" flexWrap="wrap">
                                                             <Badge bg="rgba(224, 48, 48, 0.08)" color="#E03030" fontSize="10px" px="1.5" py="0.2">
                                                                 Protein: {food.protein}g
                                                             </Badge>

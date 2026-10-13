@@ -73,10 +73,11 @@ const WorkoutLoading: React.FC<WorkoutLoadingProps> = ({ onComplete }) => {
             alignItems="center"
             justifyContent="center"
             gap="10"
+            px={{ base: '6', sm: '8' }}
         >
             {/* Ring */}
-            <Box position="relative" w="220px" h="220px">
-                <svg width="220" height="220" style={{ transform: 'rotate(-90deg)' }}>
+            <Box position="relative" w={{ base: '180px', sm: '220px' }} h={{ base: '180px', sm: '220px' }}>
+                <svg viewBox="0 0 220 220" width="100%" height="100%" style={{ transform: 'rotate(-90deg)' }}>
                     {/* Outer thin ring */}
                     <circle
                         cx="110"

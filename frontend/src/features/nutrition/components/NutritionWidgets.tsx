@@ -139,15 +139,15 @@ export const FoodItem: React.FC<{
                 <Box w="full" h="full" bg="#2a2d38" />
             )}
         </Box>
-        <Box flex="1">
-            <Text fontSize="13px" fontWeight="600" color="white">
+        <Box flex="1" minW="0">
+            <Text fontSize="13px" fontWeight="600" color="white" noOfLines={1}>
                 {name}
             </Text>
             <Text fontSize="11px" color="#8A8A93">
                 {serving} • {kcal} kcal
             </Text>
         </Box>
-        <HStack spacing="4" flexShrink={0}>
+        <HStack spacing={{ base: '3', sm: '4' }} flexShrink={0}>
             {[
                 { label: 'PRO', val: pro },
                 { label: 'CARB', val: carb },
