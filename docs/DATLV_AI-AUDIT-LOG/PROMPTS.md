@@ -1874,3 +1874,67 @@ Cung cấp JSON cấu hình chuẩn từ Google Cloud Console và kiểm tra tí
 | Kết quả chạy/test | npm run build pass 100%, dotnet build pass 100% |
 | Link tài liệu/báo cáo | N/A |
 | Ghi chú khác | N/A |
+
+---
+
+### Prompt số 27
+
+| Nội dung | Thông tin |
+|---|---|
+| Ngày sử dụng | 13/10/2026 |
+| Công cụ AI | Antigravity |
+| Mục đích | Phát triển tính năng đánh giá website (1-5 sao) sau buổi tập đầu tiên và tab quản lý đánh giá trên trang Admin |
+| Phần việc liên quan | Fullstack (Database, Backend, Frontend) |
+| Mức độ sử dụng | Hỏi sinh code, thiết kế kiến trúc & thực hiện end-to-end |
+
+#### 5.1. Prompt nguyên văn
+
+```text
+- "ok hiện tại tôi muốn thêm phần đánh giá, sao trang web vì trang web này tôi đưa và chạy thử, thêm phần đánh giá nưã cho tôi mỗi tài khoản đánh giá 1 lần sau bài tập đầu tiên và trang admin sẽ có thêm 1 tab để quản lý điều đó, việc làm như vậy xem DB đã có cột chưa hay thiếu gì không, đánh giá và cho plan để triển khai cho tôi"
+- "ok thực hiẹn chuẩn"
+```
+
+#### 5.2. Bối cảnh khi viết prompt
+
+```text
+Hệ thống chuẩn bị đưa vào thử nghiệm người dùng thực tế nên cần thu thập phản hồi, đánh giá chất lượng (sao + nhận xét). Để tránh spam, mỗi tài khoản chỉ được đánh giá 1 lần duy nhất sau khi hoàn thành buổi tập đầu tiên. Quản trị viên cần có trang riêng để theo dõi điểm số trung bình, tỷ lệ hài lòng và ẩn/hiện hoặc xóa các phản hồi không phù hợp.
+```
+
+#### 5.3. Kết quả AI trả về
+
+```text
+- Kiểm tra DB, thiết kế và chạy DDL tạo bảng `website_reviews` trong MySQL với khóa duy nhất theo user_id.
+- Backend: Tạo Entity, mapping DbContext, DTOs, Service và 2 Controller (WebsiteReviewsController và AdminReviewsController).
+- Frontend: Tạo WebsiteReviewModal.tsx trong tính năng workout, tích hợp gọi API kiểm tra tính hợp lệ và tự bung modal trong WorkoutResults.tsx sau buổi tập đầu tiên.
+- Frontend Admin: Thêm tab "Reviews & Ratings" trong AdminSidebar.tsx, route và màn hình AdminReviews.tsx với đầy đủ bộ lọc, thẻ thống kê KPI và bảng dữ liệu phản hồi.
+- Kiểm thử end-to-end: Xác nhận API và kiểm thử trực quan giao diện admin qua browser subagent.
+```
+
+#### 5.4. Kết quả đã áp dụng vào bài
+
+```text
+Áp dụng toàn bộ kiến trúc và mã nguồn do AI tạo ra vào dự án.
+```
+
+#### 5.5. Phần sinh viên/nhóm đã chỉnh sửa hoặc cải tiến
+
+```text
+Nêu rõ yêu cầu nghiệp vụ và điều kiện kích hoạt đánh giá (chỉ sau buổi tập đầu tiên, mỗi user tối đa 1 lần), nghiệm thu plan và duyệt triển khai.
+```
+
+#### 5.6. Đánh giá chất lượng prompt
+
+- [x] Prompt rõ ràng
+- [x] Prompt có đủ bối cảnh
+- [x] Prompt tạo ra kết quả tốt
+
+#### 5.7. Minh chứng liên quan
+
+| Loại minh chứng | Nội dung |
+|---|---|
+| Link commit | d6b6c3a64bab606d7e396c669ef373949675a4fb |
+| File liên quan | WebsiteReviewsController.cs, AdminReviewsController.cs, WebsiteReviewModal.tsx, AdminReviews.tsx, WorkoutResults.tsx, AdminSidebar.tsx |
+| Screenshot | Đã test trực quan trang Admin Reviews hiển thị KPI và bảng đánh giá |
+| Kết quả chạy/test | Backend dotnet build pass 0 error, Frontend npm run build pass 100% |
+| Link tài liệu/báo cáo | N/A |
+| Ghi chú khác | N/A |

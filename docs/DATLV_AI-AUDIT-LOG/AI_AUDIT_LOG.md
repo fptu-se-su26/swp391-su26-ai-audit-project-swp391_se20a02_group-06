@@ -2272,6 +2272,59 @@ Cung cấp JSON credentials chính thức từ Google Cloud Console, yêu cầu 
 Hiểu rõ cơ chế bảo mật của Google Identity Services: Origin của ứng dụng Frontend gọi xác thực phải khớp chính xác với danh sách JavaScript Origins đã khai báo trên Google Cloud Console, nếu sai cổng (ví dụ 5173 so với 5175) sẽ bị Google từ chối ngay lập tức.
 ```
 
+---
 
+### Lần sử dụng AI số 28
 
+| Nội dung | Thông tin |
+|---|---|
+| Ngày sử dụng | 13/10/2026 |
+| Công cụ AI | Antigravity |
+| Mục đích sử dụng | Phát triển hệ thống Đánh giá Website (Website Reviews) tự động kích hoạt sau buổi tập đầu tiên & Trang quản trị Admin Reviews |
+| Phần việc liên quan | Fullstack (Database MySQL + .NET 9 WebApi + React Chakra UI) |
+| Mức độ sử dụng | Sinh chính nội dung |
 
+#### 4.1. Prompt đã sử dụng
+
+```text
+- "ok hiện tại tôi muốn thêm phần đánh giá, sao trang web vì trang web này tôi đưa và chạy thử, thêm phần đánh giá nưã cho tôi mỗi tài khoản đánh giá 1 lần sau bài tập đầu tiên và trang admin sẽ có thêm 1 tab để quản lý điều đó, việc làm như vậy xem DB đã có cột chưa hay thiếu gì không, đánh giá và cho plan để triển khai cho tôi"
+- "ok thực hiẹn chuẩn"
+```
+
+#### 4.2. Kết quả AI gợi ý
+
+```text
+- Database: Phân tích CSDL chưa có bảng lưu đánh giá website, tạo bảng mới `website_reviews` trong MySQL với ràng buộc UNIQUE(`user_id`) đảm bảo mỗi tài khoản chỉ đánh giá 1 lần duy nhất, hỗ trợ rating (1-5 sao), feedback comment, is_hidden và timestamps.
+- Backend (.NET 9): Tạo entity WebsiteReview, mapping Fluent API trong ApplicationDbContext, tạo các DTOs (CreateWebsiteReviewDto, WebsiteReviewDto, ReviewEligibilityDto, AdminReviewStatsDto), interface IWebsiteReviewService và implementation WebsiteReviewService. Thêm 2 Controller: WebsiteReviewsController (kiểm tra điều kiện & submit đánh giá) và AdminReviewsController (thống kê sao, danh sách phân trang, toggle ẩn/hiện, xoá đánh giá).
+- Frontend (React + Chakra UI): Tạo modal `WebsiteReviewModal.tsx` với tương tác chọn 1-5 sao và nhập nhận xét, tích hợp tự động kiểm tra điều kiện và mở modal sau khi hoàn thành buổi tập đầu tiên trong `WorkoutResults.tsx`.
+- Admin Dashboard: Thêm tab "Reviews & Ratings" trong `AdminSidebar.tsx`, route `/admin/reviews` và trang quản trị `AdminReviews.tsx` hiển thị KPI điểm trung bình, biểu đồ phân bố sao, bộ lọc theo số sao, tìm kiếm và thao tác ẩn/hiện review.
+```
+
+#### 4.3. Phần sinh viên/nhóm đã sử dụng từ AI
+
+```text
+Sử dụng toàn bộ schema DDL CSDL, mã nguồn Backend .NET Core và toàn bộ UI Component Frontend của AI phát triển.
+```
+
+#### 4.4. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
+
+```text
+Đưa ra yêu cầu nghiệp vụ rõ ràng (mỗi tài khoản đánh giá 1 lần duy nhất, kích hoạt đúng thời điểm sau bài tập đầu tiên, quản trị viên có tab riêng để giám sát phản hồi từ người dùng thử nghiệm), nghiệm thu và kiểm thử trực quan trên hệ thống.
+```
+
+#### 4.5. Minh chứng
+
+| Loại minh chứng | Nội dung |
+|---|---|
+| Link commit | d6b6c3a64bab606d7e396c669ef373949675a4fb |
+| File liên quan | `website_reviews` table, `WebsiteReview.cs`, `ApplicationDbContext.cs`, `WebsiteReviewsController.cs`, `AdminReviewsController.cs`, `WebsiteReviewModal.tsx`, `WorkoutResults.tsx`, `AdminReviews.tsx`, `AdminSidebar.tsx` |
+| Screenshot | Đã kiểm thử trực quan bằng Browser Subagent trên giao diện `/admin/reviews`: thống kê điểm 5.0, tổng đánh giá và bảng chi tiết phản hồi hiển thị đầy đủ |
+| Kết quả chạy/test | `dotnet build` Pass 0 Error 0 Warning, `npm run build` Pass 100% |
+| Link video demo | N/A |
+| Ghi chú khác | API chặn trùng lặp review (Unique Constraint) và cơ chế ẩn/hiện hoạt động chính xác. |
+
+#### 4.6. Nhận xét cá nhân/nhóm
+
+```text
+Nắm vững cách xây dựng trọn vẹn một tính năng từ Database Schema -> Entity/DTO/Service/Controller Backend -> Modal Trigger & Admin Dashboard Frontend theo Clean Architecture. Việc thiết kế ràng buộc UNIQUE ở tầng Database kết hợp với kiểm tra ở tầng Business Logic giúp dữ liệu không bao giờ bị trùng lặp.
+```
