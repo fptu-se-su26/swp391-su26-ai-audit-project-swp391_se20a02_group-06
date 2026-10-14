@@ -44,7 +44,8 @@ Mở một tab Terminal mới và chạy:
 ngrok http 5007
 ```
 Ngrok sẽ cung cấp một đường link công khai (Public URL) dạng:
-`https://hammeringly-xerophytic-marcelino.ngrok-free.dev`
+`https://quantum-swooned-thousand.ngrok-free.dev`
+<!-- Link cũ: `https://hammeringly-xerophytic-marcelino.ngrok-free.dev` -->
 
 ---
 
@@ -60,13 +61,21 @@ Sau khi bật xong 3 bước trên, bạn có thể mở Terminal gõ các lện
 
 2. **Kiểm tra kết nối qua Ngrok:**
    ```bash
+   # Link mới:
+   curl -H "ngrok-skip-browser-warning: 1" https://quantum-swooned-thousand.ngrok-free.dev/
+   <!-- Link cũ:
    curl -H "ngrok-skip-browser-warning: 1" https://hammeringly-xerophytic-marcelino.ngrok-free.dev/
+   -->
    # Kết quả: Trả về JSON status: healthy
    ```
 
 3. **Kiểm tra Database thông qua API:**
    ```bash
+   # Link mới:
+   curl https://quantum-swooned-thousand.ngrok-free.dev/api/product-packages
+   <!-- Link cũ:
    curl https://hammeringly-xerophytic-marcelino.ngrok-free.dev/api/product-packages
+   -->
    # Kết quả: Trả về danh sách 3 gói tập (1-Month, 3-Month, 1-Year)
    ```
 
@@ -104,7 +113,7 @@ Sau khi bật xong 3 bước trên, bạn có thể mở Terminal gõ các lện
     ```
     Sau đó push lên GitHub để Vercel build lại.
   - **Cách 2 (Mẹo kiểm tra nhanh trên máy):**
-    Mở một tab Chrome mới, dán link `https://hammeringly-xerophytic-marcelino.ngrok-free.dev/api/product-packages`. Nếu thấy trang Ngrok có nút xanh **"Visit Site"**, bấm vào đó một lần, rồi quay lại Vercel bấm **Cmd + Shift + R**.
+    Mở một tab Chrome mới, dán link `https://quantum-swooned-thousand.ngrok-free.dev/api/product-packages` (hoặc link cũ: `https://hammeringly-xerophytic-marcelino.ngrok-free.dev/api/product-packages`). Nếu thấy trang Ngrok có nút xanh **"Visit Site"**, bấm vào đó một lần, rồi quay lại Vercel bấm **Cmd + Shift + R**.
 
 ---
 

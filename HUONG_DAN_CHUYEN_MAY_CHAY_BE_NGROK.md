@@ -4,10 +4,14 @@ Tài liệu này hướng dẫn chi tiết từng bước để đưa Backend (.
 🌐 **Frontend Vercel:** [https://net-fit-rho.vercel.app](https://net-fit-rho.vercel.app)
 
 > [!IMPORTANT]
-> **Điểm mấu chốt quan trọng nhất:**  
-> Toàn bộ Frontend trên Vercel đang kết nối tới URL Backend cố định:  
-> `https://hammeringly-xerophytic-marcelino.ngrok-free.dev/api`  
-> Do đó, khi sang máy mới, bạn chỉ cần chạy Ngrok với **cùng domain tĩnh này**, Frontend Vercel sẽ tự động kết nối sang máy mới ngay lập tức mà **KHÔNG CẦN chỉnh sửa biến môi trường hay redeploy trên Vercel**.
+> **Đường dẫn Ngrok Backend kết nối với Vercel:**  
+> - 🌐 **Link Ngrok MỚI (Đang chạy trên máy 24/7):**  
+>   `https://quantum-swooned-thousand.ngrok-free.dev/api`  
+> <!-- Link Ngrok CŨ (Máy cá nhân cũ):
+>   https://hammeringly-xerophytic-marcelino.ngrok-free.dev/api
+> -->
+> *Lưu ý trên Vercel:* Vào **Vercel Settings** ➡️ **Environment Variables**, cập nhật `VITE_API_URL` thành `https://quantum-swooned-thousand.ngrok-free.dev/api` rồi bấm **Redeploy**.
+
 
 ---
 
@@ -80,8 +84,9 @@ git checkout main
 
 ---
 
-### Bước 5: Cấu hình Ngrok với Domain Cố Định
-Để Vercel tự động nhận Backend từ máy mới, bạn phải dùng chung tài khoản Ngrok có domain tĩnh `hammeringly-xerophytic-marcelino.ngrok-free.dev`.
+### Bước 5: Cấu hình Ngrok với Domain Mới (Máy 24/7)
+Tài khoản Ngrok trên máy mới (`lvd27012004@gmail.com`) phát hành URL:
+`https://quantum-swooned-thousand.ngrok-free.dev`
 
 1. **Thêm Authtoken tài khoản Ngrok vào máy mới:**
    ```bash
@@ -92,11 +97,17 @@ git checkout main
 2. **Khởi động Ngrok trỏ về cổng 5007:**
    Mở một cửa sổ Terminal riêng (Terminal 1) và chạy lệnh:
    ```bash
+   # Link Ngrok MỚI (Máy 24/7):
+   ngrok http --domain=quantum-swooned-thousand.ngrok-free.dev 5007
+
+   <!-- Link Ngrok CŨ:
    ngrok http --domain=hammeringly-xerophytic-marcelino.ngrok-free.dev 5007
+   -->
    ```
    Khi thấy dòng sau là thành công:
    ```text
-   Forwarding   https://hammeringly-xerophytic-marcelino.ngrok-free.dev -> http://localhost:5007
+   Forwarding   https://quantum-swooned-thousand.ngrok-free.dev -> http://localhost:5007
+   <!-- Cũ: https://hammeringly-xerophytic-marcelino.ngrok-free.dev -> http://localhost:5007 -->
    ```
    > ⚠️ **LƯU Ý:** Luôn giữ cửa sổ Terminal này mở để Ngrok duy trì đường truyền.
 
@@ -126,7 +137,11 @@ Sau khi hoàn tất Bước 5 và Bước 6 trên máy mới, mở một tab Ter
 
 1. **Kiểm tra Backend qua Ngrok:**
    ```bash
+   # Test link mới:
+   curl -H "ngrok-skip-browser-warning: 1" https://quantum-swooned-thousand.ngrok-free.dev/
+   <!-- Test link cũ:
    curl -H "ngrok-skip-browser-warning: 1" https://hammeringly-xerophytic-marcelino.ngrok-free.dev/
+   -->
    ```
    *Kết quả mong muốn:*
    ```json
@@ -135,7 +150,11 @@ Sau khi hoàn tất Bước 5 và Bước 6 trên máy mới, mở một tab Ter
 
 2. **Kiểm tra Database đã đọc được dữ liệu qua API chưa:**
    ```bash
+   # Test link mới:
+   curl https://quantum-swooned-thousand.ngrok-free.dev/api/product-packages
+   <!-- Test link cũ:
    curl https://hammeringly-xerophytic-marcelino.ngrok-free.dev/api/product-packages
+   -->
    ```
    *Kết quả mong muốn:* Trả về JSON danh sách các gói tập (1-Month, 3-Month, 1-Year).
 
