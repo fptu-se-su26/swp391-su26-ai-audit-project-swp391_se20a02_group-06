@@ -1938,3 +1938,69 @@ Nêu rõ yêu cầu nghiệp vụ và điều kiện kích hoạt đánh giá (c
 | Kết quả chạy/test | Backend dotnet build pass 0 error, Frontend npm run build pass 100% |
 | Link tài liệu/báo cáo | N/A |
 | Ghi chú khác | N/A |
+
+---
+
+### Prompt số 28
+
+| Nội dung | Thông tin |
+|---|---|
+| Ngày sử dụng | 14/10/2026 |
+| Công cụ AI | Antigravity |
+| Mục đích | Dọn dẹp giao diện Production: tạm ẩn AI Chat, Food Library mock, và đưa tính năng Nước & Nhắc nhở uống nước ra Dashboard |
+| Phần việc liên quan | Coding / Refactor UI / UX Optimization |
+| Mức độ sử dụng | Hỏi sinh code, tối ưu trải nghiệm và sửa routing |
+
+#### 5.1. Prompt nguyên văn
+
+```text
+- "command các phần này lại cho tôi vì nó chưa hoạt đọng tốt để tôi đưa lên môi trường production cho người dùng nên tạm thời command lại : 1 .AI chat - hình 1, 2. Food Library (trong tab nutrition cái nào mock thì command lại. ) - hình 2. Cho tôi plan của bạn đi"
+- "ok"
+- "trống trải quá nên tôi nghĩ là để nution ra ngoài dashboard ở hình thứ 2 sao cho hợp lí trong 2 ô đó, xòn tab nutrition ẩn luôn (command.)."
+- "commit lại cho tôi."
+```
+
+#### 5.2. Bối cảnh khi viết prompt
+
+```text
+Chuẩn bị đưa ứng dụng lên môi trường Production cho người dùng trải nghiệm thực tế. Cần tạm ẩn các tính năng chưa hoàn thiện (AI Chat, Food Library mock) và tối ưu hóa không gian hiển thị bằng cách chuyển tính năng theo dõi nước (đã kết nối DB thật) ra Dashboard thay cho các ô mock.
+```
+
+#### 5.3. Kết quả AI trả về
+
+```text
+- Lên plan chi tiết các thành phần cần ẩn và xin phê duyệt từ sinh viên.
+- Thực hiện comment code trong MemberSidebar.tsx (ẩn AI Chat & Nutrition) và router-container.tsx (chuyển hướng an toàn về Dashboard).
+- Trong Dashboard.tsx: thay thế 2 ô mock ("Live PT Session" và "Recovery Deficit Detected") bằng 2 thẻ "Daily Hydration" và "Water Reminder & Schedule" kết nối API thật.
+- Kiểm tra TypeScript (tsc -b && vite build) đảm bảo không còn lỗi biến không sử dụng (TS6133).
+```
+
+#### 5.4. Kết quả đã áp dụng vào bài
+
+```text
+Toàn bộ mã nguồn giao diện Dashboard, Sidebar và Router Container được cập nhật đồng bộ, bản build frontend đạt chuẩn 100%.
+```
+
+#### 5.5. Phần sinh viên/nhóm đã chỉnh sửa hoặc cải tiến
+
+```text
+Sinh viên phân tích tính thẩm mỹ của giao diện và ra quyết định chuyển đổi trải nghiệm: gom các widget nước về Dashboard thay vì để riêng một trang Nutrition trống trải, sau đó yêu cầu AI triển khai và commit theo đúng chuẩn quy trình.
+```
+
+#### 5.6. Đánh giá chất lượng prompt
+
+- [x] Prompt rõ ràng
+- [x] Prompt có đủ bối cảnh
+- [x] Prompt tạo ra kết quả tốt
+
+#### 5.7. Minh chứng liên quan
+
+| Loại minh chứng | Nội dung |
+|---|---|
+| Link commit | 7aa9cb1 |
+| File liên quan | Dashboard.tsx, MemberSidebar.tsx, Nutrition.tsx, router-container.tsx |
+| Screenshot | Đã kiểm thử giao diện Dashboard và Menu trên local |
+| Kết quả chạy/test | Frontend npm run build pass 100% |
+| Link tài liệu/báo cáo | N/A |
+| Ghi chú khác | N/A |
+

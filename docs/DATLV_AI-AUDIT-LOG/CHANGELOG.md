@@ -261,6 +261,7 @@ DD/MM/YYYY
 | 25 | Tối ưu fallback Brevo Email và đồng bộ quyền truy cập Weekly Workout | Đạt | EmailService.cs, ProductPackageService.cs, WorkoutSetup.tsx | Commit 9fdf812 |
 | 26 | Cập nhật Google OAuth Client ID mới và chuyển port Frontend 5175 | Đạt | appsettings.json, App.tsx, vite.config.ts | Commit b237cac |
 | 27 | Xây dựng hệ thống Đánh giá Website (Website Reviews), trigger sau buổi tập đầu tiên và trang quản trị Admin Reviews | Đạt | WebsiteReviewsController.cs, AdminReviewsController.cs, WebsiteReviewModal.tsx, AdminReviews.tsx | Commit d6b6c3a |
+| 28 | Tích hợp theo dõi Nước & Nhắc nhở uống nước ra Dashboard, tạm ẩn AI Chat và tab Nutrition cho Production | Đạt | Dashboard.tsx, MemberSidebar.tsx, Nutrition.tsx, router-container.tsx | Commit 7aa9cb1 |
 
 ## AI có hỗ trợ không?
 

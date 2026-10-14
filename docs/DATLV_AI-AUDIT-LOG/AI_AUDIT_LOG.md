@@ -2328,3 +2328,63 @@ Sử dụng toàn bộ schema DDL CSDL, mã nguồn Backend .NET Core và toàn 
 ```text
 Nắm vững cách xây dựng trọn vẹn một tính năng từ Database Schema -> Entity/DTO/Service/Controller Backend -> Modal Trigger & Admin Dashboard Frontend theo Clean Architecture. Việc thiết kế ràng buộc UNIQUE ở tầng Database kết hợp với kiểm tra ở tầng Business Logic giúp dữ liệu không bao giờ bị trùng lặp.
 ```
+
+---
+
+### Lần sử dụng AI số 29
+
+| Nội dung | Thông tin |
+|---|---|
+| Ngày sử dụng | 14/10/2026 |
+| Công cụ AI | Antigravity |
+| Mục đích sử dụng | Tích hợp theo dõi Nước & Nhắc nhở uống nước ra Dashboard, tạm thời comment (ẩn) tính năng AI Chat và tab Nutrition chưa hoàn thiện để chuẩn bị cho môi trường Production |
+| Phần việc liên quan | Frontend (React TypeScript, Layout & Router Navigation) |
+| Mức độ sử dụng | Hỗ trợ nhiều |
+
+#### 4.1. Prompt đã sử dụng
+
+```text
+- "command các phần này lại cho tôi vì nó chưa hoạt đọng tốt để tôi đưa lên môi trường production cho người dùng nên tạm thời command lại : 1 .AI chat - hình 1, 2. Food Library (trong tab nutrition cái nào mock thì command lại. ) - hình 2. Cho tôi plan của bạn đi"
+- "ok"
+- "trống trải quá nên tôi nghĩ là để nution ra ngoài dashboard ở hình thứ 2 sao cho hợp lí trong 2 ô đó, xòn tab nutrition ẩn luôn (command.)."
+- "commit lại cho tôi."
+```
+
+#### 4.2. Kết quả AI gợi ý
+
+```text
+- Lập kế hoạch ẩn các tính năng chưa hoàn thiện và dữ liệu mock, chỉ giữ lại các tính năng đã kết nối cơ sở dữ liệu thật.
+- Sidebar & Router: Comment out mục "AI Chat" và "Nutrition" trong MemberSidebar.tsx, chuyển hướng an toàn các route /ai-chat và /nutrition về /dashboard trong router-container.tsx để ngăn người dùng truy cập trực tiếp bằng URL.
+- Nutrition Page: Comment out các phần mock gồm Food Library, các bữa ăn Breakfast/Lunch tĩnh, chỉ số Calo/Macro cứng trong Nutrition.tsx.
+- Dashboard Page: Đưa toàn bộ tính năng theo dõi nước và nhắc nhở uống nước thực tế (Hydration Tracker, Countdown đếm ngược, và Water Reminder Schedule) vào 2 ô card ở Dashboard thay thế cho 2 ô mock ("Live PT Session" và "Recovery Deficit Detected"), đảm bảo người dùng tương tác lưu trực tiếp vào CSDL qua API.
+```
+
+#### 4.3. Phần sinh viên/nhóm đã sử dụng từ AI
+
+```text
+Sử dụng mã nguồn tái cấu trúc UI trên Dashboard, logic tích hợp SWR API /nutrition/daily & /nutrition/water, xử lý điều hướng router và kỹ thuật comment code chuẩn TypeScript không gây lỗi TS6133 unreferenced variables.
+```
+
+#### 4.4. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
+
+```text
+Nhận thấy việc để riêng tab Nutrition chỉ có mỗi phần nước sẽ làm trang bị trống trải, sinh viên đã chủ động đề xuất giải pháp UX tối ưu hơn: chuyển trực tiếp các widget nước ra Dashboard vào 2 vị trí thẻ mock để Dashboard vừa sinh động, vừa 100% dữ liệu thực tế, đồng thời ẩn tab Nutrition khỏi menu.
+```
+
+#### 4.5. Minh chứng
+
+| Loại minh chứng | Nội dung |
+|---|---|
+| Link commit | 7aa9cb15ed1d963df61b44e0fcf79fdcb90f99e6 |
+| File liên quan | `MemberSidebar.tsx`, `Dashboard.tsx`, `Nutrition.tsx`, `router-container.tsx` |
+| Screenshot | Đã kiểm thử trực tiếp trên local giao diện Dashboard tích hợp 2 widget nước và kiểm tra thanh sidebar đã ẩn 2 tab AI Chat & Nutrition |
+| Kết quả chạy/test | `npm run build` (`tsc -b && vite build`) Pass 100% 0 error |
+| Link video demo | N/A |
+| Ghi chú khác | N/A |
+
+#### 4.6. Nhận xét cá nhân/nhóm
+
+```text
+Khi chuẩn bị đưa dự án lên môi trường Production cho người dùng trải nghiệm thực tế, việc sàng lọc và ẩn đi các tính năng còn đang dang dở (mock, AI chat chưa ổn định) là bước đi cần thiết để tránh tạo trải nghiệm xấu cho người dùng. Đưa các chức năng đã hoạt động tốt ra vị trí trung tâm (Dashboard) giúp tối ưu hóa giá trị của sản phẩm.
+```
+
