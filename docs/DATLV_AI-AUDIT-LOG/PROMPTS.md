@@ -2004,3 +2004,72 @@ Sinh viên phân tích tính thẩm mỹ của giao diện và ra quyết địn
 | Link tài liệu/báo cáo | N/A |
 | Ghi chú khác | N/A |
 
+---
+
+### Prompt số 29
+
+| Nội dung | Thông tin |
+|---|---|
+| Ngày sử dụng | 14/10/2026 |
+| Công cụ AI | Antigravity |
+| Mục đích | Merge nhánh anhtai, sửa lỗi build pnpm-lock.yaml trên Vercel và fix lỗi 401 invalid_client Google Login |
+| Phần việc liên quan | Coding / DevOps / Authentication & CI/CD |
+| Mức độ sử dụng | Hỗ trợ debug, sửa lỗi deploy và tối ưu mã nguồn |
+
+#### 5.1. Prompt nguyên văn
+
+```text
+- "merge nhánh anhtai vào cho tôi"
+- "push lên cho tôi"
+- "ủa sao đăng nhập gmail lại bị chặn như này là sao, hôm qua tôi nhớ đã làm rồi mà"
+- "ERR_PNPM_OUTDATED_LOCKFILE Cannot install with 'frozen-lockfile' because pnpm-lock.yaml is not up to date with <ROOT>/package.json build lên lỗi nè"
+- "đây đúng mà . fixx lại cho tôi"
+- "ok được rồi commit và đẩy lên cho tôi"
+```
+
+#### 5.2. Bối cảnh khi viết prompt
+
+```text
+Sau khi dọn dẹp các tính năng cho bản Production, cần merge nhánh anhtai để bổ sung tính năng Responsive cho điện thoại và kiểm tra trùng lặp email trước khi gửi OTP. Khi đẩy lên deploy Vercel thì gặp lỗi ERR_PNPM_OUTDATED_LOCKFILE và đăng nhập Google bị lỗi 401 invalid_client do dính ký tự xuống dòng trong biến môi trường Vercel.
+```
+
+#### 5.3. Kết quả AI trả về
+
+```text
+- Tích hợp 2 commit từ nhánh anhtai bảo đảm giữ nguyên các tính năng vừa phát triển.
+- Chạy pnpm install đồng bộ lại pnpm-lock.yaml giúp vượt qua kiểm tra frozen-lockfile trên Vercel.
+- Tìm ra nguyên nhân gốc rễ lỗi invalid_client do biến môi trường VITE_GOOGLE_CLIENT_ID trên Vercel bị dính ký tự xuống dòng (\n).
+- Thêm hàm .trim() vào App.tsx để làm sạch giá trị Client ID trước khi truyền vào GoogleOAuthProvider.
+- Kiểm thử và đồng bộ commit lên cả origin/production và netfit/main.
+```
+
+#### 5.4. Kết quả đã áp dụng vào bài
+
+```text
+Toàn bộ mã nguồn và lockfile được build chuẩn xác, Vercel deploy thành công và tính năng Đăng nhập Google hoạt động bình thường trên môi trường Production.
+```
+
+#### 5.5. Phần sinh viên/nhóm đã chỉnh sửa hoặc cải tiến
+
+```text
+Cung cấp log lỗi và ảnh chụp chi tiết từ Vercel, trực tiếp chỉnh sửa biến môi trường trên Vercel Dashboard và kiểm thử tính năng đăng nhập trên trình duyệt.
+```
+
+#### 5.6. Đánh giá chất lượng prompt
+
+- [x] Prompt rõ ràng
+- [x] Prompt có đủ bối cảnh
+- [x] Prompt tạo ra kết quả tốt
+
+#### 5.7. Minh chứng liên quan
+
+| Loại minh chứng | Nội dung |
+|---|---|
+| Link commit | af29681 |
+| File liên quan | App.tsx, pnpm-lock.yaml, MemberLayout.tsx, Register.tsx |
+| Screenshot | Đã kiểm thử đăng nhập Google thành công và Vercel deploy xanh |
+| Kết quả chạy/test | npm run build pass 100%, dotnet build pass 100% |
+| Link tài liệu/báo cáo | N/A |
+| Ghi chú khác | N/A |
+
+

@@ -2388,3 +2388,71 @@ Nhận thấy việc để riêng tab Nutrition chỉ có mỗi phần nước s
 Khi chuẩn bị đưa dự án lên môi trường Production cho người dùng trải nghiệm thực tế, việc sàng lọc và ẩn đi các tính năng còn đang dang dở (mock, AI chat chưa ổn định) là bước đi cần thiết để tránh tạo trải nghiệm xấu cho người dùng. Đưa các chức năng đã hoạt động tốt ra vị trí trung tâm (Dashboard) giúp tối ưu hóa giá trị của sản phẩm.
 ```
 
+---
+
+### Lần sử dụng AI số 30
+
+| Nội dung | Thông tin |
+|---|---|
+| Ngày sử dụng | 14/10/2026 |
+| Công cụ AI | Antigravity |
+| Mục đích sử dụng | Merge nhánh anhtai (Mobile responsive layout, validate existing email), fix lỗi ERR_PNPM_OUTDATED_LOCKFILE trên Vercel và khắc phục lỗi 401 invalid_client khi đăng nhập Google |
+| Phần việc liên quan | Fullstack / Git Operations, CI/CD Deployment & Google OAuth Security |
+| Mức độ sử dụng | Hỗ trợ nhiều |
+
+#### 4.1. Prompt đã sử dụng
+
+```text
+- "merge nhánh anhtai vào cho tôi"
+- "push lên cho tôi"
+- "ủa sao đăng nhập gmail lại bị chặn như này là sao, hôm qua tôi nhớ đã làm rồi mà"
+- "ERR_PNPM_OUTDATED_LOCKFILE Cannot install with 'frozen-lockfile' because pnpm-lock.yaml is not up to date with <ROOT>/package.json build lên lỗi nè"
+- "đây đúng mà . fixx lại cho tôi"
+- "ok được rồi commit và đẩy lên cho tôi"
+```
+
+#### 4.2. Kết quả AI gợi ý
+
+```text
+- Tích hợp thành công 2 commit từ nhánh anhtai (netfit/anhtai): commit c05ffa0 (validate email tồn tại trước khi gửi OTP ở AuthService/Register) và commit 4f3c07e (thêm Mobile Drawer, responsive breakpoints cho MemberLayout, MemberSidebar, Workouts và Dashboard).
+- Giải quyết conflict cú pháp JSX comment trong Nutrition.tsx và bảo toàn toàn bộ tính năng Dashboard Hydration mới làm.
+- Phân tích và sửa triệt để lỗi ERR_PNPM_OUTDATED_LOCKFILE trên Vercel: chạy pnpm install để đồng bộ pnpm-lock.yaml khớp 100% với package.json, kiểm thử pnpm install --frozen-lockfile và npm run build pass 100%.
+- Phân tích root-cause lỗi 401 invalid_client Google OAuth từ ảnh chụp Vercel: phát hiện ô Value của biến VITE_GOOGLE_CLIENT_ID bị dính ký tự xuống dòng (\n) ở đuôi làm Google không nhận diện được Client ID.
+- Cập nhật App.tsx bọc String(rawClientId).trim() để tự động loại bỏ mọi khoảng trắng và ký tự xuống dòng thừa, đồng thời hướng dẫn sinh viên xoá ký tự xuống dòng trên Vercel Environment Variables.
+- Đồng bộ và push code lên cả 2 remote: origin/production và netfit/main (Vercel).
+```
+
+#### 4.3. Phần sinh viên/nhóm đã sử dụng từ AI
+
+```text
+Sử dụng quy trình xử lý cherry-pick tích hợp nhánh anhtai không gây xung đột giả, bản vá pnpm-lock.yaml giải quyết lỗi CI/CD Vercel, hàm sanitize trim Google Client ID trong App.tsx và kiến thức phân tích lỗi Google Identity Services.
+```
+
+#### 4.4. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
+
+```text
+- Yêu cầu merge nhánh anhtai vào production để đồng bộ các cải tiến responsive cho thiết bị di động.
+- Cung cấp ảnh chụp lỗi build Vercel và màn hình cấu hình biến môi trường Vercel giúp AI phát hiện ngay lập tức lỗi ký tự xuống dòng ẩn.
+- Trực tiếp chỉnh sửa loại bỏ ký tự xuống dòng thừa trên giao diện Vercel Dashboard và xác nhận đăng nhập Google thành công trên môi trường thực tế.
+```
+
+#### 4.5. Minh chứng
+
+| Loại minh chứng | Nội dung |
+|---|---|
+| Link commit | af29681 |
+| File liên quan | `App.tsx`, `pnpm-lock.yaml`, `MemberLayout.tsx`, `MemberSidebar.tsx`, `Register.tsx`, `AuthController.cs` |
+| Screenshot | Đã kiểm thử đăng nhập Google thành công trên Vercel và xác nhận Vercel build xanh |
+| Kết quả chạy/test | Frontend npm run build pass 100%, dotnet build pass 0 error |
+| Link video demo | N/A |
+| Ghi chú khác | N/A |
+
+#### 4.6. Nhận xét cá nhân/nhóm
+
+```text
+Qua sự cố này, nhóm học được bài học rất sâu sắc về:
+1. Cơ chế quản lý package của pnpm trên CI/CD: khi thay đổi package.json thì bắt buộc phải chạy pnpm install để cập nhật pnpm-lock.yaml, nếu không cờ --frozen-lockfile trên môi trường Cloud sẽ lập tức đánh fail toàn bộ tiến trình deploy.
+2. Các lỗi tiềm ẩn khi copy/paste biến môi trường: ký tự xuống dòng (trailing newline) rất khó phát hiện bằng mắt thường nhưng sẽ làm sai lệch toàn bộ giá trị OAuth Client ID gửi lên Google. Việc bổ sung cơ chế phòng vệ bằng hàm .trim() trực tiếp trong code frontend là kinh nghiệm thực chiến quý giá.
+```
+
+

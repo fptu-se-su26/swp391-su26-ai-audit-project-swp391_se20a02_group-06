@@ -262,6 +262,7 @@ DD/MM/YYYY
 | 26 | Cập nhật Google OAuth Client ID mới và chuyển port Frontend 5175 | Đạt | appsettings.json, App.tsx, vite.config.ts | Commit b237cac |
 | 27 | Xây dựng hệ thống Đánh giá Website (Website Reviews), trigger sau buổi tập đầu tiên và trang quản trị Admin Reviews | Đạt | WebsiteReviewsController.cs, AdminReviewsController.cs, WebsiteReviewModal.tsx, AdminReviews.tsx | Commit d6b6c3a |
 | 28 | Tích hợp theo dõi Nước & Nhắc nhở uống nước ra Dashboard, tạm ẩn AI Chat và tab Nutrition cho Production | Đạt | Dashboard.tsx, MemberSidebar.tsx, Nutrition.tsx, router-container.tsx | Commit 7aa9cb1 |
+| 29 | Merge nhánh anhtai (Mobile responsive, email validation), fix lỗi pnpm-lock.yaml trên Vercel & sanitize Google Client ID | Đạt | App.tsx, pnpm-lock.yaml, MemberLayout.tsx, Register.tsx | Commit af29681 |
 
 ## AI có hỗ trợ không?
 
