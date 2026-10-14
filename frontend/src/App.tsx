@@ -8,9 +8,11 @@ import { NotificationProvider } from './context/NotificationContext'
 
 const Router = import.meta.env.PROD ? HashRouter : BrowserRouter
 
-const googleClientId =
+const rawClientId =
   import.meta.env.VITE_GOOGLE_CLIENT_ID ||
   '72625663972-6j5ncv7smsmduij6q4tugs261vmajihe.apps.googleusercontent.com'
+
+const googleClientId = String(rawClientId).trim()
 
 function App() {
   return (
