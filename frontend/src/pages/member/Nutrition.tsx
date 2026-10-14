@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useEffect } from 'react'
-import { useLocation, useNavigate } from 'react-router-dom'
+import { useLocation } from 'react-router-dom'
 import {
     Box,
     Flex,
@@ -10,32 +10,32 @@ import {
     HStack,
     Icon,
     IconButton,
-    Spinner,
-    Input,
-    Badge,
+    // Spinner,
+    // Input,
+    // Badge,
     useToast,
 } from '@chakra-ui/react'
 import {
     FiChevronLeft,
     FiChevronRight,
-    FiPlus,
-    FiDroplet,
-    FiZap,
-    FiActivity,
-    FiSearch,
+    // FiPlus,
+    // FiDroplet,
+    // FiZap,
+    // FiActivity,
+    // FiSearch,
 } from 'react-icons/fi'
 import useSWR, { mutate as globalMutate } from 'swr'
 import apiClient from '../../lib/axios'
-import AppButton from '../../components/shared/Button/AppButton'
+// import AppButton from '../../components/shared/Button/AppButton'
 import MemberLayout from '../../components/shared/Layout/MemberLayout.tsx'
 import {
-    AIDietPlanCard,
-    DonutRing,
-    FoodItem,
+    // AIDietPlanCard,
+    // DonutRing,
+    // FoodItem,
     HydrationCountdown,
     HydrationTracker,
-    MacroCard,
-    MealSection,
+    // MacroCard,
+    // MealSection,
 } from '../../features/nutrition/components/NutritionWidgets'
 import { logWater, updateReminderSettings } from '../../api/nutrition'
 import { useAuthStore } from '../../store/useAuthStore'
@@ -47,21 +47,18 @@ const Nutrition: React.FC = () => {
     const today = new Date()
     const todayStr = today.toISOString().split('T')[0]
     const dateStr = today.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
-    const [searchQuery, setSearchQuery] = useState('')
+    // const [searchQuery, setSearchQuery] = useState('')
     const toast = useToast()
     const isAuthenticated = useAuthStore(state => state.isAuthenticated)
 
-    // Fetch foods from API
-    const { data: foods, isLoading, error } = useSWR(isAuthenticated ? '/foods' : null, fetcher)
+    // Temporarily hidden for production (Mock / Incomplete features):
+    // const { data: foods, isLoading, error } = useSWR(isAuthenticated ? '/foods' : null, fetcher)
+    // const { data: dietHistories } = useSWR(isAuthenticated ? '/AIChat/diet-history' : null, fetcher)
+    // const latestDiet = dietHistories && dietHistories.length > 0 ? dietHistories[0] : null
+    // const navigate = useNavigate()
 
-    // Fetch daily nutrition summary
+    // Fetch daily nutrition summary (Water tracking)
     const { data: summary } = useSWR(isAuthenticated ? `/nutrition/daily?date=${todayStr}` : null, fetcher)
-
-    // Fetch AI Diet Histories
-    const { data: dietHistories } = useSWR(isAuthenticated ? '/AIChat/diet-history' : null, fetcher)
-    const latestDiet = dietHistories && dietHistories.length > 0 ? dietHistories[0] : null
-
-    const navigate = useNavigate()
 
     const handleLogWater = useCallback(async () => {
         const key = `/nutrition/daily?date=${todayStr}`
@@ -86,11 +83,6 @@ const Nutrition: React.FC = () => {
         }
     }, [todayStr, toast])
 
-    const filteredFoods = foods?.filter((food: any) => {
-        const foodName = typeof food?.name === 'string' ? food.name : ''
-        return foodName.toLowerCase().includes(searchQuery.toLowerCase())
-    }) || []
-
     // Pre-filled water count when navigated from notification
     const location = useLocation()
     const waterFromNotification = (location.state as { waterConsumedGlasses?: number } | null)?.waterConsumedGlasses
@@ -98,7 +90,7 @@ const Nutrition: React.FC = () => {
         if (waterFromNotification) {
             globalMutate(`/nutrition/daily?date=${todayStr}`)
         }
-    }, [waterFromNotification])
+    }, [waterFromNotification, todayStr])
 
     const waterCurrent = summary?.waterConsumedGlasses ?? 0
     const waterTotal = summary?.waterTargetGlasses ?? 8
@@ -136,6 +128,7 @@ const Nutrition: React.FC = () => {
                             _hover={{ bg: '#1e2028', color: '#E2E1EB' }}
                         />
                     </HStack>
+                    {/* Temporarily hidden for production: Log Meal
                     <AppButton
                         label={
                             <HStack spacing="2">
@@ -147,16 +140,54 @@ const Nutrition: React.FC = () => {
                         h="38px"
                         px="5"
                         fontSize="13px"
-                    />
+                    /> */}
                 </Flex>
 
-                {/* Main Grid: left content + right panel */}
-                <Grid templateColumns={{ base: "1fr", lg: "1fr 280px" }} gap="5">
-                    {/* LEFT */}
+                {/* Active Nutrition Features: Hydration Tracking & Reminders */}
+                <Grid templateColumns={{ base: "1fr", md: "1fr 1fr" }} gap="6" maxW="900px">
                     <Stack spacing="5">
-                        {/* Calorie + Macros Row */}
+                        {/* Hydration */}
+                        <HydrationTracker current={waterCurrent} total={waterTotal} onLogWater={handleLogWater} />
+
+                        {/* Hydration Countdown */}
+                        <HydrationCountdown
+                            current={waterCurrent}
+                            target={waterTotal}
+                            startTime={summary?.waterReminderStartTime}
+                            endTime={summary?.waterReminderEndTime}
+                            onRemind={() => {
+                                toast({
+                                    title: 'Time to drink water! 🥛',
+                                    description: `You need to drink ${Math.max(0, waterTotal - waterCurrent)} more cups of water.`,
+                                    status: 'success',
+                                    duration: 5000,
+                                    isClosable: true,
+                                })
+                            }}
+                        />
+                    </Stack>
+
+                    <Stack spacing="5">
+                        {/* Water Reminder Schedule */}
+                        <WaterReminderSettings
+                            startTime={summary?.waterReminderStartTime || '07:00'}
+                            endTime={summary?.waterReminderEndTime || '22:00'}
+                        />
+                    </Stack>
+                </Grid>
+
+                {/* ========================================================
+                    Temporarily hidden for production:
+                    - Calories & Macros Donut Row
+                    - Breakfast & Lunch mock meal sections
+                    - Food Library search & list
+                    - AI Diet Plan recommendation card
+                    - Daily Macros summary
+                    ======================================================== */}
+                {/*
+                <Grid templateColumns={{ base: "1fr", lg: "1fr 280px" }} gap="5" mt="6">
+                    <Stack spacing="5">
                         <Grid templateColumns={{ base: "repeat(2, 1fr)", md: "1fr 1fr 1fr 1fr" }} gap="3">
-                            {/* Calories Donut */}
                             <Box
                                 bg="#141720"
                                 border="1px solid"
@@ -175,8 +206,6 @@ const Nutrition: React.FC = () => {
                                     550 kcal remaining
                                 </Text>
                             </Box>
-
-                            {/* Macro cards: Protein, Carbs, Fat */}
                             <MacroCard
                                 label="Protein"
                                 icon={FiZap}
@@ -203,7 +232,6 @@ const Nutrition: React.FC = () => {
                             />
                         </Grid>
 
-                        {/* Breakfast */}
                         <MealSection
                             label="Breakfast"
                             kcal={450}
@@ -219,7 +247,6 @@ const Nutrition: React.FC = () => {
                             }
                         />
 
-                        {/* Lunch */}
                         <MealSection
                             label="Lunch"
                             kcal={650}
@@ -235,7 +262,6 @@ const Nutrition: React.FC = () => {
                             }
                         />
 
-                        {/* Food Library */}
                         <Box bg="#141720" border="1px solid" borderColor="#1e2028" borderRadius="16px" p="6" mt="4">
                             <Flex justify="space-between" align="center" mb="4">
                                 <Heading fontSize="18px" fontWeight="700" color="white">
@@ -299,43 +325,12 @@ const Nutrition: React.FC = () => {
                         </Box>
                     </Stack>
 
-                    {/* RIGHT panel */}
                     <Stack spacing="4">
-                        {/* Hydration */}
-                        <HydrationTracker current={waterCurrent} total={waterTotal} onLogWater={handleLogWater} />
-
-                        {/* Hydration Countdown */}
-                        <HydrationCountdown
-                            current={waterCurrent}
-                            target={waterTotal}
-                            startTime={summary?.waterReminderStartTime}
-                            endTime={summary?.waterReminderEndTime}
-                            onRemind={() => {
-                                toast({
-                                    title: 'Time to drink water! 🥛',
-                                    description: `You need to drink ${Math.max(0, waterTotal - waterCurrent)} more cups of water.`,
-                                    status: 'success',
-                                    duration: 5000,
-                                    isClosable: true,
-                                })
-                            }}
-                        />
-
-                        {/* Water Reminder Schedule */}
-                        <WaterReminderSettings
-                            startTime={summary?.waterReminderStartTime || '07:00'}
-                            endTime={summary?.waterReminderEndTime || '22:00'}
-                        />
-
-
-
-                        {/* AI Recommendation */}
                         <AIDietPlanCard 
                             dietPlan={latestDiet?.dietPlan}
                             onNavigateToAI={() => navigate('/ai-chat')}
                         />
 
-                        {/* Quick Macros Summary */}
                         <Box
                             bg="#141720"
                             border="1px solid"
@@ -371,6 +366,7 @@ const Nutrition: React.FC = () => {
                         </Box>
                     </Stack>
                 </Grid>
+                */}
             </Box>
         </MemberLayout>
     )

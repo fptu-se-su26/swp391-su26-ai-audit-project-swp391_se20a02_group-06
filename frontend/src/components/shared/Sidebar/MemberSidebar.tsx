@@ -12,10 +12,10 @@ import {
     FiGrid,
     FiActivity,
     FiBookOpen,
-    FiShoppingCart,
+    // FiShoppingCart,
     FiBarChart2,
     FiCalendar,
-    FiMessageSquare,
+    // FiMessageSquare,
     FiUser,
 } from 'react-icons/fi'
 
@@ -23,10 +23,11 @@ const navItems = [
     { label: 'Dashboard', icon: FiGrid, path: '/dashboard' },
     { label: 'Workouts', icon: FiActivity, path: '/workouts' },
     { label: 'Exercises', icon: FiBookOpen, path: '/exercises' },
-    { label: 'Nutrition', icon: FiShoppingCart, path: '/nutrition' },
+    // Temporarily hidden for production:
+    // { label: 'Nutrition', icon: FiShoppingCart, path: '/nutrition' },
     { label: 'Progress', icon: FiBarChart2, path: '/progress' },
     { label: 'PT Booking', icon: FiCalendar, path: '/pt-booking' },
-    { label: 'AI Chat', icon: FiMessageSquare, path: '/ai-chat' },
+    // { label: 'AI Chat', icon: FiMessageSquare, path: '/ai-chat' },
 ]
 
 const MemberSidebar: React.FC = () => {
