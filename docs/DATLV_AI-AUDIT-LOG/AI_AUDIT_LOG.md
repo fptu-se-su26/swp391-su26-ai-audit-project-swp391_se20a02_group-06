@@ -2455,4 +2455,72 @@ Qua sự cố này, nhóm học được bài học rất sâu sắc về:
 2. Các lỗi tiềm ẩn khi copy/paste biến môi trường: ký tự xuống dòng (trailing newline) rất khó phát hiện bằng mắt thường nhưng sẽ làm sai lệch toàn bộ giá trị OAuth Client ID gửi lên Google. Việc bổ sung cơ chế phòng vệ bằng hàm .trim() trực tiếp trong code frontend là kinh nghiệm thực chiến quý giá.
 ```
 
+---
+
+### Lần sử dụng AI số 31
+
+| Nội dung | Thông tin |
+|---|---|
+| Ngày sử dụng | 15/10/2026 |
+| Công cụ AI | Antigravity |
+| Mục đích sử dụng | Khắc phục lỗi trang Quản lý thanh toán Admin không hiển thị dữ liệu thanh toán mới và cũ, kết nối doanh thu Dashboard với API payments và tối ưu nút Làm mới |
+| Phần việc liên quan | Fullstack / Payment Management, Entity Framework Core Auto-Sync & Admin Dashboard |
+| Mức độ sử dụng | Hỗ trợ nhiều |
+
+#### 4.1. Prompt đã sử dụng
+
+```text
+- "nguyên nhân tại sao phần payment admin quản lý lại không hiển thị gì dù tôi mứoi thanh toán và hệ thống ghi nhận thành công, đó là lỗi BE hay FE nguyên nhân ở đâu, các thanh toán báo cáo cũ cũng không có."
+- "tiếp tục cho tôi fixx tiếp đi"
+- "chạy dự án lên cho tôi"
+- "Failed to load resource: the server responded with a status of 404 (Not Found) server bạn chỉnh lại https://hammeringly-xerophytic-marcelino.ngrok-free.dev cho đúng máy này còn khi nào đẩy lên production thì đổi lại cái cũ vì BE chạy chỗ khác á."
+- "rồi còn revenue ở dashboard nữa. button làm mới chưa hoạt động được."
+- "commit và đẩy lên git cho tôi, nhớ là đổi link BE như cũ lại nhé."
+```
+
+#### 4.2. Kết quả AI gợi ý
+
+```text
+- Phân tích nguyên nhân gốc rễ: BE chưa hề có PaymentsController (endpoint /api/payments trả về 404), trong OrderService khi tạo đơn hàng chỉ lưu vào bảng orders mà không insert vào bảng payments dẫn đến bảng payments trong DB bị rỗng hoàn toàn.
+- Thiết kế và lập trình PaymentsController.cs chuẩn Clean Architecture với cơ chế Auto-Sync thông minh: tự động quét các đơn hàng trong bảng orders chưa có trong payments để đồng bộ hóa bản ghi ngay khi Admin truy cập.
+- Cập nhật OrderService.cs tự động tạo bản ghi Payment (PENDING/SUCCESS) khi người dùng khởi tạo đơn hàng mới.
+- Cập nhật JobsController.cs cập nhật trạng thái Payment sang SUCCESS khi thanh toán thành công và FAILED khi thanh toán bị hủy.
+- Nâng cấp AdminPayments.tsx: xử lý an toàn dữ liệu mảng, date filtering an toàn với null check, bổ sung hàm handleRefresh cưỡng chế mutate(undefined, { revalidate: true }), hiệu ứng visual loading spinner và Toast thông báo thành công.
+- Kết nối AdminDashboard.tsx với API /payments: tự động tính tổng doanh thu từ các giao dịch thành công (SUCCESS) hiển thị đúng format VND (₫1.725.000), hiển thị giao dịch gần nhất trong Recent Activities và thêm nút Làm mới cho toàn bộ Dashboard.
+- Cấu hình linh hoạt Ngrok giữa máy phát triển local và máy Production 24/7.
+```
+
+#### 4.3. Phần sinh viên/nhóm đã sử dụng từ AI
+
+```text
+Toàn bộ mã nguồn PaymentsController.cs, PaymentDto.cs, cơ chế tự động đồng bộ hóa đơn cũ sang payments, cập nhật OrderService/JobsController, logic tính doanh thu tự động trên AdminDashboard và UI nút Làm mới có trạng thái loading + Toast notification.
+```
+
+#### 4.4. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
+
+```text
+- Đặt câu hỏi đúng trọng tâm về nguyên nhân mất dữ liệu thanh toán (do BE hay FE) và yêu cầu sửa lỗi triệt để cả giao dịch mới lẫn cũ.
+- Kiểm thử thực tế trên giao diện Admin, phát hiện ô REVENUE ở Dashboard còn bị hardcode và nút Làm mới cần thêm phản hồi người dùng rõ ràng.
+- Yêu cầu cấu hình lại link Ngrok về server máy 24/7 trước khi commit đẩy lên production để đảm bảo Vercel hoạt động liền mạch.
+```
+
+#### 4.5. Minh chứng
+
+| Loại minh chứng | Nội dung |
+|---|---|
+| Link commit | dcc69b94fdd1d344d2c51013fb8daf631dc7223f |
+| File liên quan | `PaymentsController.cs`, `PaymentDto.cs`, `OrderService.cs`, `JobsController.cs`, `AdminPayments.tsx`, `AdminDashboard.tsx` |
+| Screenshot | Đã kiểm thử hiển thị thành công 15 giao dịch và số tiền Doanh thu ₫1.725.000 trên Dashboard & Payments page |
+| Kết quả chạy/test | npm run build pass 100%, dotnet build pass 0 error, API payments test curl 200 OK |
+| Link video demo | N/A |
+| Ghi chú khác | N/A |
+
+#### 4.6. Nhận xét cá nhân/nhóm
+
+```text
+Bài học rút ra từ phiên làm việc:
+1. Tính nhất quán dữ liệu giữa các bảng nghiệp vụ: Khi thực hiện flow thanh toán bên thứ ba (PayOS), việc chỉ tạo đơn hàng (Order) mà quên tạo dòng giao dịch (Payment) sẽ làm đứt gãy luồng báo cáo doanh thu. Cơ chế tự động quét bù (Auto-Sync) là giải pháp chữa lành dữ liệu cũ rất hiệu quả mà không cần chạy script migration thủ công phức tạp.
+2. Trải nghiệm người dùng (UX) đối với thao tác làm mới: Khi kích hoạt tác vụ bất đồng bộ (SWR mutate), bắt buộc phải có visual feedback (icon loading, disabled button, toast alert) để người dùng nhận biết hệ thống đang phản hồi, tránh hiểu lầm nút bấm bị liệt.
+```
+
 

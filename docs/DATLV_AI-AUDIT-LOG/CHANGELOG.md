@@ -263,6 +263,7 @@ DD/MM/YYYY
 | 27 | Xây dựng hệ thống Đánh giá Website (Website Reviews), trigger sau buổi tập đầu tiên và trang quản trị Admin Reviews | Đạt | WebsiteReviewsController.cs, AdminReviewsController.cs, WebsiteReviewModal.tsx, AdminReviews.tsx | Commit d6b6c3a |
 | 28 | Tích hợp theo dõi Nước & Nhắc nhở uống nước ra Dashboard, tạm ẩn AI Chat và tab Nutrition cho Production | Đạt | Dashboard.tsx, MemberSidebar.tsx, Nutrition.tsx, router-container.tsx | Commit 7aa9cb1 |
 | 29 | Merge nhánh anhtai (Mobile responsive, email validation), fix lỗi pnpm-lock.yaml trên Vercel & sanitize Google Client ID | Đạt | App.tsx, pnpm-lock.yaml, MemberLayout.tsx, Register.tsx | Commit af29681 |
+| 30 | Implement Payments API, Auto-Sync Orders sang Payments, hiển thị Doanh thu Dashboard và cải tiến nút Làm mới | Đạt | PaymentsController.cs, OrderService.cs, JobsController.cs, AdminPayments.tsx, AdminDashboard.tsx | Commit dcc69b9 |
 
 ## AI có hỗ trợ không?
 

@@ -2072,4 +2072,75 @@ Cung cấp log lỗi và ảnh chụp chi tiết từ Vercel, trực tiếp ch�
 | Link tài liệu/báo cáo | N/A |
 | Ghi chú khác | N/A |
 
+---
+
+### Prompt số 30
+
+| Nội dung | Thông tin |
+|---|---|
+| Ngày sử dụng | 15/10/2026 |
+| Công cụ AI | Antigravity |
+| Mục đích | Fix lỗi Payments Admin không hiển thị giao dịch, đồng bộ đơn hàng sang payments, kết nối Doanh thu Dashboard và cải tiến nút Làm mới dữ liệu |
+| Phần việc liên quan | Coding / Debug / Database / Fullstack |
+| Mức độ sử dụng | Hỏi debug, sinh code logic Clean Architecture và hoàn thiện UI/UX |
+
+#### 5.1. Prompt nguyên văn
+
+```text
+- "nguyên nhân tại sao phần payment admin quản lý lại không hiển thị gì dù tôi mứoi thanh toán và hệ thống ghi nhận thành công, đó là lỗi BE hay FE nguyên nhân ở đâu, các thanh toán báo cáo cũ cũng không có."
+- "tiếp tục cho tôi fixx tiếp đi"
+- "chạy dự án lên cho tôi"
+- "Failed to load resource: the server responded with a status of 404 (Not Found) server bạn chỉnh lại https://hammeringly-xerophytic-marcelino.ngrok-free.dev cho đúng máy này còn khi nào đẩy lên production thì đổi lại cái cũ vì BE chạy chỗ khác á."
+- "rồi còn revenue ở dashboard nữa. button làm mới chưa hoạt động được."
+- "commit và đẩy lên git cho tôi, nhớ là đổi link BE như cũ lại nhé."
+```
+
+#### 5.2. Bối cảnh khi viết prompt
+
+```text
+Sau khi người dùng thực hiện thanh toán thành công qua cổng PayOS, trang Quản lý thanh toán của Admin (AdminPayments) không hiển thị bất kỳ giao dịch nào và các báo cáo cũ cũng bị trống. Cần xác định lỗi nằm ở Backend hay Frontend, phục hồi toàn bộ dữ liệu giao dịch cũ, đảm bảo các giao dịch mới luôn được lưu trữ, đồng thời kết nối Doanh thu vào Dashboard của Admin và nâng cấp nút Làm mới có phản hồi người dùng rõ ràng.
+```
+
+#### 5.3. Kết quả AI trả về
+
+```text
+- Điều tra hệ thống: Phát hiện BE thiếu hoàn toàn PaymentsController và OrderService chưa có logic tạo bản ghi Payment khi tạo Order.
+- Xây dựng PaymentsController.cs với cơ chế Auto-Sync tự động quét và chèn bản ghi thanh toán từ bảng orders sang payments.
+- Cập nhật OrderService.cs và JobsController.cs duy trì tính nhất quán cho mọi giao dịch mới (PENDING, SUCCESS, FAILED).
+- Hoàn thiện AdminPayments.tsx: xử lý null an toàn cho Date/VND, thêm loading spinner và toast thông báo khi bấm nút Làm mới.
+- Cập nhật AdminDashboard.tsx: kết nối số liệu doanh thu thực tế từ API /payments (₫1.725.000) và thêm nút Làm mới cho toàn bộ Dashboard.
+- Cập nhật cấu hình URL API linh hoạt giữa môi trường dev và server 24/7 Production.
+```
+
+#### 5.4. Kết quả đã áp dụng vào bài
+
+```text
+Trang Admin Payments hiển thị đầy đủ 15 giao dịch thanh toán thành công, Admin Dashboard hiển thị chuẩn xác Doanh thu ₫1.725.000 và tính năng Làm mới hoạt động mượt mà với Toast thông báo.
+```
+
+#### 5.5. Phần sinh viên/nhóm đã chỉnh sửa hoặc cải tiến
+
+```text
+- Phát hiện kịp thời việc thiếu doanh thu trên Dashboard và yêu cầu visual feedback cho nút Làm mới.
+- Nhắc nhở chuyển lại cấu hình API về server máy 24/7 trước khi commit đẩy lên production để đảm bảo hệ thống Production luôn sẵn sàng.
+```
+
+#### 5.6. Đánh giá chất lượng prompt
+
+- [x] Prompt rõ ràng
+- [x] Prompt có đủ bối cảnh
+- [x] Prompt tạo ra kết quả tốt
+
+#### 5.7. Minh chứng liên quan
+
+| Loại minh chứng | Nội dung |
+|---|---|
+| Link commit | dcc69b94fdd1d344d2c51013fb8daf631dc7223f |
+| File liên quan | PaymentsController.cs, OrderService.cs, JobsController.cs, AdminPayments.tsx, AdminDashboard.tsx |
+| Screenshot | Đã kiểm thử hiển thị đầy đủ giao dịch trên Payments và Doanh thu trên Dashboard |
+| Kết quả chạy/test | npm run build pass 100%, dotnet build pass 0 error |
+| Link tài liệu/báo cáo | N/A |
+| Ghi chú khác | N/A |
+
+
 
