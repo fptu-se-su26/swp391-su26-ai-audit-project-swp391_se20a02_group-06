@@ -3,6 +3,9 @@
 Tài liệu này hướng dẫn chi tiết từng bước để đưa Backend (.NET 9), MySQL Database và Ngrok Tunnel sang một máy tính mới (máy luôn mở 24/7) để phục vụ Frontend đang chạy trên Vercel:
 🌐 **Frontend Vercel:** [https://net-fit-rho.vercel.app](https://net-fit-rho.vercel.app)
 
+
+> 📁 **Đường dẫn thư mục dự án trên máy Windows (máy 24/7):**  
+> `C:/Users/3DArchtech/.gemini/antigravity-ide/scratch/NetFit`
 > [!IMPORTANT]
 > **Đường dẫn Ngrok Backend kết nối với Vercel:**  
 > - 🌐 **Link Ngrok MỚI (Đang chạy trên máy 24/7):**  

@@ -76,7 +76,24 @@ public class JobsController : ControllerBase
         order.PaymentStatus = FitnessTrainingSystem.Domain.Enums.PaymentStatus.Paid;
         
         var payment = await _context.Payments.FirstOrDefaultAsync(p => p.OrderId == order.Id);
-        if (payment != null) { payment.Status = "SUCCESS"; payment.PaidAt = DateTime.UtcNow; }
+        if (payment == null)
+        {
+            payment = new FitnessTrainingSystem.Domain.Entities.Payment
+            {
+                OrderId = order.Id,
+                PaymentMethod = "PayOs",
+                TransactionCode = order.OrderCode.ToString(),
+                Amount = order.PricePaid,
+                Status = "SUCCESS",
+                PaidAt = DateTime.UtcNow
+            };
+            _context.Payments.Add(payment);
+        }
+        else
+        {
+            payment.Status = "SUCCESS";
+            payment.PaidAt = DateTime.UtcNow;
+        }
 
         var activeSub = await _context.MembershipSubscriptions.FirstOrDefaultAsync(s => s.UserId == order.UserId && s.Status == "ACTIVE");
         if (activeSub != null) activeSub.Status = "CANCELLED";
@@ -201,6 +218,11 @@ public class JobsController : ControllerBase
                 if (order.PaymentStatus == FitnessTrainingSystem.Domain.Enums.PaymentStatus.Pending)
                 {
                     order.PaymentStatus = FitnessTrainingSystem.Domain.Enums.PaymentStatus.Cancelled;
+                    var payment = await _context.Payments.FirstOrDefaultAsync(p => p.OrderId == order.Id);
+                    if (payment != null)
+                    {
+                        payment.Status = "FAILED";
+                    }
                     await _context.SaveChangesAsync();
                     return Ok(new { type = "SUBSCRIPTION" });
                 }

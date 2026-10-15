@@ -51,6 +51,18 @@ public class OrderService : IOrderService
         _context.Orders.Add(order);
         await _context.SaveChangesAsync();
 
+        var payment = new Payment
+        {
+            OrderId = order.Id,
+            PaymentMethod = "PayOs",
+            TransactionCode = orderCode.ToString(),
+            Amount = order.PricePaid,
+            Status = package.Price <= 0 ? "SUCCESS" : "PENDING",
+            PaidAt = package.Price <= 0 ? DateTime.UtcNow : null
+        };
+        _context.Payments.Add(payment);
+        await _context.SaveChangesAsync();
+
         var orderDto = _mapper.Map<OrderDto>(order);
 
         // If package is free or zero cost, just complete the order immediately

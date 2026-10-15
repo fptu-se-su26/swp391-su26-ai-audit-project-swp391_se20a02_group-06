@@ -20,10 +20,11 @@ import {
     VStack,
     Button,
     Spinner,
+    useToast,
     Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalFooter, IconButton
 } from '@chakra-ui/react'
 import AdminLayout from '../../components/shared/Layout/AdminLayout'
-import { FiSearch, FiCalendar, FiX } from 'react-icons/fi'
+import { FiSearch, FiCalendar, FiX, FiRefreshCw } from 'react-icons/fi'
 import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
 import { 
@@ -56,17 +57,45 @@ const AdminPayments: React.FC = () => {
     const [startDate, endDate] = dateRange
     const [activeQuickFilter, setActiveQuickFilter] = useState('All')
     const [selectedPayment, setSelectedPayment] = useState<any>(null)
+    const [isRefreshing, setIsRefreshing] = useState(false)
+    const toast = useToast()
 
-    const { data: payments, isLoading } = useSWR<any[]>('/payments', fetcher)
+    const { data: payments, isLoading, error, mutate } = useSWR<any[]>('/payments', fetcher)
+
+    const handleRefresh = async () => {
+        try {
+            setIsRefreshing(true)
+            await mutate(undefined, { revalidate: true })
+            toast({
+                title: 'Đã cập nhật',
+                description: 'Dữ liệu giao dịch đã được đồng bộ mới nhất.',
+                status: 'success',
+                duration: 2500,
+                isClosable: true,
+                position: 'top-right',
+            })
+        } catch (err) {
+            toast({
+                title: 'Không thể làm mới',
+                description: 'Có lỗi xảy ra khi đồng bộ dữ liệu giao dịch.',
+                status: 'error',
+                duration: 3000,
+                isClosable: true,
+                position: 'top-right',
+            })
+        } finally {
+            setIsRefreshing(false)
+        }
+    }
 
     const computedStats = useMemo(() => {
-        if (!payments) return null
+        if (!payments || !Array.isArray(payments)) return null
         const completed = payments.filter(p => p.status === 'SUCCESS')
-        const grossRevenue = completed.reduce((sum, p) => sum + p.amount, 0)
+        const grossRevenue = completed.reduce((sum, p) => sum + (Number(p.amount) || 0), 0)
         const pending = payments.filter(p => p.status === 'PENDING')
-        const pendingAmount = pending.reduce((sum, p) => sum + p.amount, 0)
+        const pendingAmount = pending.reduce((sum, p) => sum + (Number(p.amount) || 0), 0)
         const failed = payments.filter(p => p.status === 'FAILED')
-        const failedAmount = failed.reduce((sum, p) => sum + p.amount, 0)
+        const failedAmount = failed.reduce((sum, p) => sum + (Number(p.amount) || 0), 0)
         return { grossRevenue, pendingAmount, failedAmount, totalPayments: payments.length }
     }, [payments])
 
@@ -89,7 +118,7 @@ const AdminPayments: React.FC = () => {
     }
 
     const filteredTransactions = useMemo(() => {
-        if (!payments) return []
+        if (!payments || !Array.isArray(payments)) return []
         return payments.filter(t => {
             const searchStr = searchTerm.toLowerCase()
             const matchSearch = (t.orderCode?.toString() || '').includes(searchStr) || 
@@ -102,10 +131,15 @@ const AdminPayments: React.FC = () => {
 
             let matchDate = true
             if (startDate && endDate) {
-                try {
+                if (!t.paidAt) {
+                    matchDate = false
+                } else {
                     const tDate = new Date(t.paidAt)
-                    matchDate = isWithinInterval(tDate, { start: startDate, end: endDate })
-                } catch(e) {
+                    if (!isNaN(tDate.getTime())) {
+                        matchDate = isWithinInterval(tDate, { start: startDate, end: endDate })
+                    } else {
+                        matchDate = false
+                    }
                 }
             }
 
@@ -167,7 +201,7 @@ const AdminPayments: React.FC = () => {
         }
     `
 
-    const toVnd = (amount: number) => `₫${Math.round(amount).toLocaleString('vi-VN')}`
+    const toVnd = (amount?: number) => '₫' + Math.round(Number(amount) || 0).toLocaleString('vi-VN')
 
     const statWidgets = computedStats ? [
         { label: 'Gross Revenue (PayOS)', value: toVnd(computedStats.grossRevenue), color: 'white' },
@@ -185,10 +219,28 @@ const AdminPayments: React.FC = () => {
         <AdminLayout>
             <style>{datePickerStyles}</style>
             <Box p="7" maxW="1200px" mx="auto">
-                <Flex justify="space-between" align="center" mb="7">
-                    <Heading fontSize="28px" fontWeight="900" color="white" textTransform="uppercase">
-                        Payments & Revenue
-                    </Heading>
+                <Flex justify="space-between" align="center" mb="7" flexWrap="wrap" gap="4">
+                    <Box>
+                        <Heading fontSize="28px" fontWeight="900" color="white" textTransform="uppercase">
+                            Payments & Revenue
+                        </Heading>
+                        <Text fontSize="13px" color="#8A8A93" mt="1">
+                            Theo dõi và quản lý toàn bộ giao dịch thanh toán trên hệ thống
+                        </Text>
+                    </Box>
+                    <Button
+                        leftIcon={<FiRefreshCw />}
+                        size="sm"
+                        variant="outline"
+                        borderColor="#1e2028"
+                        color="white"
+                        _hover={{ bg: '#1e2028' }}
+                        isLoading={isRefreshing || isLoading}
+                        loadingText="Đang tải..."
+                        onClick={handleRefresh}
+                    >
+                        Làm mới
+                    </Button>
                 </Flex>
 
                 <Grid templateColumns="repeat(4, 1fr)" gap="4" mb="7">
@@ -288,6 +340,11 @@ const AdminPayments: React.FC = () => {
                     {isLoading ? (
                         <Flex justify="center" py="10">
                             <Spinner color="#E03030" />
+                        </Flex>
+                    ) : error ? (
+                        <Flex direction="column" align="center" justify="center" py="10">
+                            <Text color="red.400" mb="2" fontSize="13px">Không thể tải dữ liệu thanh toán. Vui lòng kiểm tra lại quyền Admin hoặc đăng nhập lại.</Text>
+                            <Button size="xs" colorScheme="red" variant="outline" onClick={() => mutate()}>Thử lại</Button>
                         </Flex>
                     ) : (
                     <Table variant="simple" size="sm">
