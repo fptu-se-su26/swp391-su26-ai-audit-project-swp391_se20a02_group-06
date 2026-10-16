@@ -43,7 +43,7 @@ const About: React.FC = () => {
     {
       icon: 'groups',
       title: 'Fitness for everyone',
-      desc: 'From first-time gym-goers to competitive athletes — AISTHEA adapts.',
+      desc: 'From first-time gym-goers to competitive athletes — NETFIT adapts.',
     },
   ]
 
@@ -110,7 +110,7 @@ const About: React.FC = () => {
           We Built the Fitness Platform We Always Wanted.
         </Heading>
         <Text fontSize={{ base: 'sm', md: 'md' }} color="#e5bdb9" maxW="2xl" mx="auto" lineHeight="1.6">
-          AISTHEA started with a simple belief: everyone deserves a personalized training system, not a generic PDF program.
+          NETFIT started with a simple belief: everyone deserves a personalized training system, not a generic PDF program.
         </Text>
       </Box>
 
@@ -185,7 +185,7 @@ const About: React.FC = () => {
       {/* ===================== TEAM SECTION ===================== */}
       <Box as="section" py="16" px="6" maxW="1200px" mx="auto" w="full">
         <Heading as="h2" fontSize="lg" fontWeight="600" color="white" mb="12" textAlign="center">
-          The Team Behind AISTHEA
+          The Team Behind NETFIT
         </Heading>
         <Grid templateColumns={{ base: '1fr', sm: 'repeat(2, 1fr)', lg: 'repeat(4, 1fr)' }} gap="6">
           {team.map((member, idx) => (

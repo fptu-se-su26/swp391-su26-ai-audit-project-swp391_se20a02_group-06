@@ -61,7 +61,7 @@ const PTSidebar: React.FC = () => {
                     cursor="pointer"
                     onClick={() => navigate('/')}
                 >
-                    AISTHEA
+                    NETFIT
                 </Heading>
                 <Text fontSize="9px" color="#E03030" fontWeight="600" textTransform="uppercase" letterSpacing="widest" mt="1">
                     PT Portal

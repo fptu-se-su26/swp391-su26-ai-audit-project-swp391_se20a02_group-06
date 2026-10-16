@@ -76,9 +76,9 @@ Mở file `backend/.env` của bạn lên và copy đoạn sau chèn vào cuối
 # ===========================
 SMTP_HOST=smtp.gmail.com
 SMTP_PORT=587
-SMTP_USER=ecodanarentcar@gmail.com
-SMTP_PASS=vubq phgb ytwf nrdf
-SMTP_FROM=AISTHEA <ecodanarentcar@gmail.com>
+SMTP_USER=hoanglan1912a@gmail.com
+SMTP_PASS=jhhu uvku klql zxyu
+SMTP_FROM=NETFIT <hoanglan1912a@gmail.com>
 SMTP_ENABLE_SSL=true
 
 # OTP Configs

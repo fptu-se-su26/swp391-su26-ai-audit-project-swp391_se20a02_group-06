@@ -191,7 +191,7 @@ const PtExerciseRequests: React.FC = () => {
                         Assigned Exercise Requests
                     </Heading>
                     <Text color="#8A8A93" fontSize="14px">
-                        Create and submit new movement patterns requested by AISTHEA Administrators.
+                        Create and submit new movement patterns requested by NETFIT Administrators.
                     </Text>
                 </Box>
 

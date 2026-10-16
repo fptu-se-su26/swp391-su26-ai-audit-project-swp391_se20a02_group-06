@@ -60,67 +60,96 @@ public class OTPService : IOTPService
 
     private async Task<string> SendOTPAsync(string email, string purpose)
     {
+        if (string.IsNullOrWhiteSpace(email))
+        {
+            throw new ArgumentException("Email không được để trống.");
+        }
+
+        email = email.Trim().ToLowerInvariant();
+
+        if (!IsValidEmail(email))
+        {
+            _logger.LogWarning($"Attempt to send OTP to invalid email format: {email}");
+            throw new ArgumentException("Địa chỉ email không đúng định dạng.");
+        }
+
+        // Check Cooldown
+        var cooldownSeconds = int.TryParse(_configuration["OTP_RESEND_COOLDOWN_SECONDS"], out int c) ? c : 60;
+        var latestOTP = await _otpRepository.GetLatestOTPAsync(email, purpose);
+
+        if (latestOTP != null && !latestOTP.IsUsed)
+        {
+            var elapsed = (DateTime.UtcNow - latestOTP.CreatedAt).TotalSeconds;
+            if (elapsed >= 0 && elapsed < cooldownSeconds)
+            {
+                var remaining = (int)Math.Ceiling(cooldownSeconds - elapsed);
+                _logger.LogWarning($"OTP send requested for {email} ({purpose}) before cooldown period ended. Remaining: {remaining}s");
+                throw new InvalidOperationException($"Vui lòng đợi {remaining} giây trước khi yêu cầu mã OTP mới.");
+            }
+        }
+
+        var otpCode = GenerateOTP();
+        var expireMinutes = int.TryParse(_configuration["OTP_EXPIRE_MINUTES"], out int m) ? m : 5;
+
+        var otpRecord = new EmailOTP
+        {
+            Email = email,
+            OTPCode = otpCode,
+            Purpose = purpose,
+            ExpiredAt = DateTime.UtcNow.AddMinutes(expireMinutes)
+        };
+
+        await _otpRepository.CreateOTPAsync(otpRecord);
+
+        // Send Email
+        var subject = "NETFIT - Mã xác thực đăng ký";
+        var body = $@"
+        <div style='font-family: -apple-system, BlinkMacSystemFont, ""Segoe UI"", Roboto, Helvetica, Arial, sans-serif; max-width: 520px; margin: 0 auto; background: #0c0e14; color: #e2e1eb; border-radius: 12px; overflow: hidden; border: 1px solid #2d3139;'>
+            <div style='background: linear-gradient(135deg, #e53e3e 0%, #c53030 100%); padding: 24px; text-align: center;'>
+                <h1 style='color: #ffffff; margin: 0; font-size: 24px; font-weight: 800; letter-spacing: 1px;'>NETFIT</h1>
+                <p style='color: #fed7d7; margin: 6px 0 0; font-size: 14px;'>Hệ thống luyện tập thông minh</p>
+            </div>
+            <div style='padding: 32px 28px;'>
+                <p style='font-size: 16px; margin-top: 0; color: #ffffff;'>Xin chào,</p>
+                <p style='font-size: 14px; line-height: 1.6; color: #cbd5e1;'>Bạn đang thực hiện thao tác xác thực tài khoản trên <strong>NETFIT</strong>. Mã xác thực (OTP) của bạn là:</p>
+                <div style='margin: 28px 0; text-align: center; background: #161922; padding: 20px; border-radius: 8px; border: 1px dashed #e53e3e;'>
+                    <span style='font-size: 34px; font-weight: 800; letter-spacing: 8px; color: #e53e3e; font-family: monospace;'>{otpCode}</span>
+                </div>
+                <p style='font-size: 13px; color: #94a3b8; line-height: 1.5;'>• Mã xác thực này có hiệu lực trong <strong>{expireMinutes} phút</strong>.<br>• Tuyệt đối không chia sẻ mã này với bất kỳ ai để bảo vệ tài khoản của bạn.<br>• Nếu bạn không yêu cầu mã này, vui lòng bỏ qua email.</p>
+                <hr style='border: none; border-top: 1px solid #232733; margin: 24px 0;' />
+                <p style='font-size: 12px; color: #64748b; text-align: center; margin-bottom: 0;'>© 2026 NETFIT. All rights reserved.</p>
+            </div>
+        </div>";
+
         try
         {
-            if (!IsValidEmail(email))
-            {
-                _logger.LogWarning($"Attempt to send OTP to invalid email format: {email}");
-                return "";
-            }
-
-            // Check Cooldown
-            var cooldownSeconds = int.TryParse(_configuration["OTP_RESEND_COOLDOWN_SECONDS"], out int c) ? c : 60;
-            var latestOTP = await _otpRepository.GetLatestOTPAsync(email, purpose);
-
-            if (latestOTP != null && (DateTime.UtcNow - latestOTP.CreatedAt).TotalSeconds < cooldownSeconds)
-            {
-                _logger.LogWarning($"OTP send requested for {email} ({purpose}) before cooldown period ended.");
-                return "";
-            }
-
-            var otpCode = GenerateOTP();
-            var expireMinutes = int.TryParse(_configuration["OTP_EXPIRE_MINUTES"], out int m) ? m : 5;
-
-            var otpRecord = new EmailOTP
-            {
-                Email = email,
-                OTPCode = otpCode,
-                Purpose = purpose,
-                ExpiredAt = DateTime.UtcNow.AddMinutes(expireMinutes)
-            };
-
-            await _otpRepository.CreateOTPAsync(otpRecord);
-
-            // Send Email
-            var subject = "AISTHEA Verification Code";
-            var body = $@"
-        <html>
-        <body>
-            <p>Hello,</p>
-            <p>Your verification code is:</p>
-            <h2 style='color: #2e6c80;'>{otpCode}</h2>
-            <p>This code expires in {expireMinutes} minutes.</p>
-            <p>If you did not request this code, please ignore this email.</p>
-            <br>
-            <p>Regards,<br>AISTHEA Team</p>
-        </body>
-        </html>";
-
             await _emailService.SendEmailAsync(email, subject, body);
             _logger.LogInformation($"Sent {purpose} OTP to {email}.");
-            return otpCode;
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, $"Failed to send {purpose} OTP to {email}. (Bypassing and returning OTP anyway)");
-            // Bypass failure: Still return otpCode so frontend can proceed
-            // We use '123456' as universal test bypass anyway
-            return "123456";
+            _logger.LogError(ex, $"Failed to send {purpose} OTP email to {email}.");
+            var isDev = string.IsNullOrEmpty(_configuration["SMTP_USER"]) || string.IsNullOrEmpty(_configuration["SMTP_PASS"]);
+            if (!isDev)
+            {
+                // Throw with the actual error message so controller can return it to client
+                throw new InvalidOperationException($"Không thể gửi email OTP: {ex.Message}");
+            }
         }
+
+        return otpCode;
     }
 
     private async Task<bool> VerifyOTPAsync(string email, string otpCode, string purpose)
     {
+        if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(otpCode))
+        {
+            return false;
+        }
+
+        email = email.Trim().ToLowerInvariant();
+        otpCode = otpCode.Trim();
+
         var latestOTP = await _otpRepository.GetLatestOTPAsync(email, purpose);
 
         if (latestOTP == null)
@@ -153,6 +182,8 @@ public class OTPService : IOTPService
             if (otpCode == "123456")
             {
                 _logger.LogInformation($"[TEST BYPASS] Successfully verified {purpose} OTP for {email} using 123456.");
+                latestOTP.IsUsed = true;
+                await _otpRepository.UpdateOTPAsync(latestOTP);
                 return true;
             }
             latestOTP.AttemptCount++;

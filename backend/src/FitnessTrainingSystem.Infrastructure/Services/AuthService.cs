@@ -77,7 +77,8 @@ public class AuthService : IAuthService
 
     public async Task<AuthResponseDto> LoginAsync(LoginRequestDto request)
     {
-        var user = await _context.Users.Include(u => u.Role).FirstOrDefaultAsync(u => u.Email == request.Email);
+        var normalizedEmail = request.Email?.Trim().ToLowerInvariant();
+        var user = await _context.Users.Include(u => u.Role).FirstOrDefaultAsync(u => u.Email.ToLower() == normalizedEmail);
         
         if (user == null)
         {

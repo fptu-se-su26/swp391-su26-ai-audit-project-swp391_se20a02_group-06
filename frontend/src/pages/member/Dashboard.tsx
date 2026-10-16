@@ -463,7 +463,7 @@ const Dashboard: React.FC = () => {
                         <HStack spacing="2" mb="4">
                             <Icon as={FiCpu} color="#E03030" boxSize="14px" />
                             <Text fontSize="10px" fontWeight="700" color="#E03030" textTransform="uppercase" letterSpacing="wider">
-                                AISTHEA Insight
+                                NETFIT Insight
                             </Text>
                         </HStack>
                         <Icon as={FiCpu} color="#2e3040" boxSize="40px" mb="3" />

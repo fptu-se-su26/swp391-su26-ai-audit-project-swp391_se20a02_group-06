@@ -127,7 +127,7 @@ const Login: React.FC = () => {
           <HStack spacing="2" cursor="pointer" onClick={() => navigate('/')}>
             <FiArrowLeft />
             <Heading fontSize="2xl" fontWeight="bold" letterSpacing="tighter">
-              AISTHEA
+              NETFIT
             </Heading>
           </HStack>
           <Link

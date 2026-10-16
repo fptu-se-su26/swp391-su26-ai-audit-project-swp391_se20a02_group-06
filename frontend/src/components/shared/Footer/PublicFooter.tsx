@@ -16,7 +16,7 @@ const PublicFooter: React.FC = () => {
       >
         <Stack spacing="3">
           <Heading as="h4" fontSize="lg" color="white" fontWeight="bold">
-            AISTHEA
+            NETFIT
           </Heading>
           <Text fontSize="xs" color="#8A8A93">
             Precision AI training for high-performance athletes.
@@ -49,7 +49,7 @@ const PublicFooter: React.FC = () => {
       </Grid>
       <Box maxW="1200px" mx="auto" px="8" mt="8" pt="4" borderTop="1px solid" borderColor="#33343c">
         <Text fontSize="xs" color="#8A8A93">
-          © 2024 AISTHEA AI. All rights reserved.
+          © 2026 NETFIT AI. All rights reserved.
         </Text>
       </Box>
     </Box>

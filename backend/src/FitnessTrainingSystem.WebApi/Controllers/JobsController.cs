@@ -47,7 +47,7 @@ public class JobsController : ControllerBase
                     <p>This is a reminder that your active subscription to <strong>{sub.Package.Name}</strong> will expire in 7 days on <strong>{sub.EndDate:yyyy-MM-dd}</strong>.</p>
                     <p>To ensure uninterrupted access to your professional features, please log in to your dashboard and renew your package.</p>
                     <br>
-                    <p>Regards,<br>AISTHEA Team</p>
+                    <p>Regards,<br>NETFIT Team</p>
                 </body>
                 </html>";
 

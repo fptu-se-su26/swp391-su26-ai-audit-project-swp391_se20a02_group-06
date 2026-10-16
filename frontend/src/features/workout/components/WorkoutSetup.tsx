@@ -146,7 +146,7 @@ const WorkoutSetup: React.FC<WorkoutSetupProps> = ({ onComplete }) => {
     const stepMeta = [
         { title: 'Plan Type', sub: 'Do you want a single day or a full week plan?' },
         { title: 'Training Goal', sub: 'Choose your main goal for the AI to adjust your program.' },
-        { title: 'Target Muscles', sub: 'Select the target muscles you want AISTHEA to focus on.' },
+        { title: 'Target Muscles', sub: 'Select the target muscles you want NETFIT to focus on.' },
     ]
 
     return (
@@ -176,7 +176,7 @@ const WorkoutSetup: React.FC<WorkoutSetupProps> = ({ onComplete }) => {
                 {/* Header */}
                 <Box px={{ base: '5', sm: '8' }} pt={{ base: '6', sm: '7' }} pb="2" textAlign="center">
                     <Heading fontSize="22px" fontWeight="900" color="white" letterSpacing="-0.02em" mb="1">
-                        AISTHEA
+                        NETFIT
                     </Heading>
                     <Text fontSize="12px" color="#8A8A93" mb="5">
                         Step {step + 1} of {TOTAL}

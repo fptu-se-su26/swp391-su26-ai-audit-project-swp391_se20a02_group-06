@@ -396,7 +396,7 @@ const AdminExerciseRequests: React.FC = () => {
                                 <Stack spacing="4" color="#8A8A93" fontSize="13px">
                                     <HStack align="start" spacing="3">
                                         <Text color="#E03030">✓</Text>
-                                        <Text>Ensure exercise names are clinically accurate and follow the AISTHEA naming convention.</Text>
+                                        <Text>Ensure exercise names are clinically accurate and follow the NETFIT naming convention.</Text>
                                     </HStack>
                                     <HStack align="start" spacing="3">
                                         <Text color="#E03030">✓</Text>

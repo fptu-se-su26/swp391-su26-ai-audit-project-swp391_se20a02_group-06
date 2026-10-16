@@ -68,7 +68,7 @@ const MemberSidebar: React.FC<MemberSidebarProps> = ({ mobile = false, onNavigat
                         onNavigate?.()
                     }}
                 >
-                    AISTHEA
+                    NETFIT
                 </Heading>
                 <Text fontSize="9px" color="#8A8A93" fontWeight="600" textTransform="uppercase" letterSpacing="widest" mt="1">
                     Elite Performance

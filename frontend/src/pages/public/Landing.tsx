@@ -467,7 +467,7 @@ const Landing: React.FC = () => {
           </Grid>
         </Stack>
 
-        {/* ===================== ABOUT AISTHEA SECTION ===================== */}
+        {/* ===================== ABOUT NETFIT SECTION ===================== */}
         <Flex
           id="about"
           maxW="1200px"
@@ -504,7 +504,7 @@ const Landing: React.FC = () => {
               </Heading>
             </Box>
             <Text fontSize="sm" color="#8A8A93">
-              AISTHEA combines AI-driven programming with human expertise to deliver personalized fitness at scale. No generic plans. No guesswork.
+              NETFIT combines AI-driven programming with human expertise to deliver personalized fitness at scale. No generic plans. No guesswork.
             </Text>
             <Text fontSize="xs" color="#8A8A93" fontStyle="italic">
               Founded in 2023, trusted by 50,000+ athletes worldwide.

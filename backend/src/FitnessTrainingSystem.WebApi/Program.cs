@@ -204,6 +204,7 @@ try
     
     SafeExecuteSql("ALTER TABLE pt_profiles ADD COLUMN coaching_philosophy varchar(1000) NULL;");
     SafeExecuteSql("ALTER TABLE pt_profiles ADD COLUMN session_rate decimal(18,2) NULL;");
+    SafeExecuteSql("ALTER TABLE EmailOTP ADD COLUMN attempt_count int NOT NULL DEFAULT 0;");
 }
 catch { }
 

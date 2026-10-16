@@ -146,7 +146,7 @@ const WorkoutLoading: React.FC<WorkoutLoadingProps> = ({ onComplete }) => {
                         letterSpacing="-0.02em"
                         textAlign="center"
                     >
-                        AISTHEA
+                        NETFIT
                     </Heading>
                     <Text fontSize="9px" fontWeight="700" color="#8A8A93" textTransform="uppercase" letterSpacing="widest">
                         ENGINE

@@ -76,7 +76,7 @@ const PublicNavbar: React.FC = () => {
             color="white"
             onClick={() => navigate('/')}
           >
-            AISTHEA
+            NETFIT
           </Heading>
 
           {/* Desktop Nav Links — Centered */}
