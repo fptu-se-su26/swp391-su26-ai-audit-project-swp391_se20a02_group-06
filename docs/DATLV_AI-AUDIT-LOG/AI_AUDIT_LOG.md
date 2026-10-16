@@ -2589,4 +2589,74 @@ Bài học rút ra:
 2. Phân quyền chặt chẽ giữa Backend và Frontend: Không chỉ ẩn/hiện nút bấm trên giao diện dựa theo RoleId, mà tầng Backend Controller bắt buộc phải áp dụng Authorize attribute tương ứng để ngăn chặn truy cập trái phép trực tiếp qua API.
 ```
 
+---
+
+### Lần sử dụng AI số 33
+
+| Nội dung | Thông tin |
+|---|---|
+| Ngày sử dụng | 17/10/2026 |
+| Công cụ AI | Antigravity |
+| Mục đích sử dụng | Thiết kế và tích hợp thanh trượt Marquee đánh giá 4-5 sao của hội viên trên Landing Page, hỗ trợ animation vô tận mượt mà và API lọc theo kiểm duyệt Admin |
+| Phần việc liên quan | Fullstack / Landing Page UI & Public Website Reviews API |
+| Mức độ sử dụng | Hỗ trợ nhiều |
+
+#### 4.1. Prompt đã sử dụng
+
+```text
+- "tôi muốn ở trang chính á, hình thứ 3 , thêm các thẻ đánh giá lấy đưuocj và có hiệu ứng trượt như hình 1 á, reuse code lại phần đó vào chỗ này( hình 3 ) lấy và hiển thị tất cả những đánh giá 4-5 sao, nếu ở trang admin cho phép hiển thị thì hiển đưuocj phép hiển thị ra ngoài này( chỉ 4-5 sao ) . cho tôi plan của bạn về việc thiết kế lại chỗ này."
+- "ok, làm cho tôi"
+```
+
+#### 4.2. Kết quả AI gợi ý
+
+```text
+- Backend API mở rộng:
+  + Thêm method GetPublicReviewsAsync trong IWebsiteReviewService và triển khai trong WebsiteReviewService.cs với bộ lọc Entity Framework: .Where(r => !r.IsHidden && r.Rating >= 4).OrderByDescending(r => r.CreatedAt).
+  + Khai báo endpoint công khai GET /api/website-reviews/public có gắn [AllowAnonymous] trong WebsiteReviewsController.cs để khách chưa đăng nhập vẫn tải được danh sách đánh giá mà không bị lỗi 401 Unauthorized.
+- Frontend Component Marquee:
+  + Tạo component ReviewMarquee.tsx tái sử dụng hiệu ứng trượt vô tận scrollReviews (35s linear infinite) từ PlanSidebar.
+  + Thêm cơ chế pause on hover giúp người dùng dễ dàng dừng lại đọc chi tiết đánh giá.
+  + Thiết kế thẻ đánh giá chuẩn phong cách Dark Luxury/Athletic: Huy hiệu Verified Member màu xanh neon lục bảo, điểm đánh giá sao vàng phát sáng, thẻ bọc kính mờ viền neon sang trọng.
+  + Cơ chế Fallback thông minh: Đảm bảo băng chuyền luôn có đủ dữ liệu lặp vô tận kể cả khi cơ sở dữ liệu ban đầu mới chỉ có 1-2 đánh giá.
+- Tích hợp Landing Page:
+  + Nhúng trực tiếp vào Landing.tsx ngay phía dưới khối "Our Mission" và phía trên các gói hội viên/tính năng tập luyện.
+- Kiểm thử toàn diện:
+  + dotnet build hoàn thành thành công 0 warning 0 error.
+  + pnpm build hoàn thành trong 567ms với 0 lỗi TypeScript hay ESLint.
+```
+
+#### 4.3. Phần sinh viên/nhóm đã sử dụng từ AI
+
+```text
+Toàn bộ mã nguồn ReviewMarquee.tsx, method backend GetPublicReviewsAsync, cấu hình endpoint [AllowAnonymous] và các thao tác build kiểm thử frontend/backend.
+```
+
+#### 4.4. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
+
+```text
+- Đưa ra yêu cầu trực quan kết hợp giữa 2 màn hình hiện có (PlanSidebar animation và Landing Our Mission layout).
+- Đặt ra điều kiện nghiệp vụ chặt chẽ: Chỉ các đánh giá chất lượng cao (4-5 sao) và được Admin phê duyệt (IsHidden == false) mới xuất hiện ngoài trang chủ.
+```
+
+#### 4.5. Minh chứng
+
+| Loại minh chứng | Nội dung |
+|---|---|
+| Link commit | c89839f3007f89155d683f8bb409e9921c6a3aaf |
+| File liên quan | `WebsiteReviewsController.cs`, `WebsiteReviewService.cs`, `IWebsiteReviewService.cs`, `ReviewMarquee.tsx`, `Landing.tsx` |
+| Screenshot | Đã kiểm thử thành công giao diện Landing Page với Marquee đánh giá trượt mượt mà |
+| Kết quả chạy/test | pnpm build pass 100%, dotnet build pass 0 error |
+| Link video demo | N/A |
+| Ghi chú khác | N/A |
+
+#### 4.6. Nhận xét cá nhân/nhóm
+
+```text
+Bài học rút ra:
+1. Public Endpoint và Bảo mật: Với các API phục vụ trang chủ Landing Page (cho khách vãng lai), Controller có gắn [Authorize] ở cấp độ class bắt buộc phải override bằng [AllowAnonymous] tại endpoint công khai, tránh việc khách truy cập bị lỗi 401 Unauthorized ngoài ý muốn.
+2. Thiết kế Animation vô tận (Infinite Looping CSS): Để hiệu ứng Marquee trượt mượt mà không bị khựng (stutter) khi kết thúc vòng lặp, mảng dữ liệu hiển thị phải được nhân đôi ([...items, ...items]) và chiều dài chuỗi card phải luôn đủ lớn hơn chiều rộng viewport.
+```
+
+
 

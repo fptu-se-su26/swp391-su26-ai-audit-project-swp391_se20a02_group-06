@@ -265,6 +265,7 @@ DD/MM/YYYY
 | 29 | Merge nhánh anhtai (Mobile responsive, email validation), fix lỗi pnpm-lock.yaml trên Vercel & sanitize Google Client ID | Đạt | App.tsx, pnpm-lock.yaml, MemberLayout.tsx, Register.tsx | Commit af29681 |
 | 30 | Implement Payments API, Auto-Sync Orders sang Payments, hiển thị Doanh thu Dashboard và cải tiến nút Làm mới | Đạt | PaymentsController.cs, OrderService.cs, JobsController.cs, AdminPayments.tsx, AdminDashboard.tsx | Commit dcc69b9 |
 | 31 | Khôi phục User Management Admin: Ban/Unban Switch, Edit User Modal, Add User Modal & Phân quyền Admin vs PT | Đạt | `AdminUsers.tsx`, `UserController.cs`, `AuthService.cs` | Commit ef7329a |
+| 32 | Hiển thị Marquee đánh giá 4-5 sao của hội viên trên Landing Page, hỗ trợ trượt vô tận và lọc kiểm duyệt Admin | Đạt | `WebsiteReviewsController.cs`, `WebsiteReviewService.cs`, `ReviewMarquee.tsx`, `Landing.tsx` | Commit c89839f |
 
 ## AI có hỗ trợ không?
 

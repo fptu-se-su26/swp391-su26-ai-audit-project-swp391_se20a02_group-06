@@ -2207,5 +2207,66 @@ Toàn bộ mã nguồn UserController.cs, AuthService.cs và AdminUsers.tsx đã
 | Link tài liệu/báo cáo | N/A |
 | Ghi chú khác | N/A |
 
+---
 
+### Prompt số 32
 
+| Nội dung | Thông tin |
+|---|---|
+| Ngày thực hiện | 17/10/2026 |
+| Người thực hiện | Lê Văn Đạt |
+| Công cụ AI | Antigravity |
+| Mục đích | Tích hợp thanh trượt Marquee vô tận hiển thị các đánh giá 4-5 sao từ hội viên ra trang chủ Landing Page, lọc theo trạng thái duyệt của Admin |
+| Giai đoạn | [Phase 04] Implementation |
+
+#### 5.1. Prompt đã sử dụng
+
+```text
+- "tôi muốn ở trang chính á, hình thứ 3 , thêm các thẻ đánh giá lấy đưuocj và có hiệu ứng trượt như hình 1 á, reuse code lại phần đó vào chỗ này( hình 3 ) lấy và hiển thị tất cả những đánh giá 4-5 sao, nếu ở trang admin cho phép hiển thị thì hiển đưuocj phép hiển thị ra ngoài này( chỉ 4-5 sao ) . cho tôi plan của bạn về việc thiết kế lại chỗ này."
+- "ok, làm cho tôi"
+```
+
+#### 5.2. Bối cảnh khi viết prompt
+
+```text
+Trang chủ Landing Page trước đây chỉ có các phần giới thiệu tĩnh, chưa có mục Testimonials/Reviews của hội viên thực tế để tạo sự tin tưởng (social proof) cho khách vãng lai. Hệ thống đã có cơ chế gửi đánh giá 1-5 sao và duyệt/ẩn đánh giá ở trang Admin Reviews. Yêu cầu đặt ra là tái sử dụng hiệu ứng Marquee trượt vô tận tự động (tương tự component PlanSidebar) ngay dưới phần "Our Mission" ở Landing Page, chỉ lấy những đánh giá 4-5 sao và không bị ẩn bởi Admin (!isHidden).
+```
+
+#### 5.3. Kết quả AI trả về
+
+```text
+- Thiết kế và bổ sung API Public: Tạo method GetPublicReviewsAsync trong WebsiteReviewService.cs lọc Where(!r.IsHidden && r.Rating >= 4) và mở endpoint GET /api/website-reviews/public với attribute [AllowAnonymous] trong WebsiteReviewsController.cs.
+- Xây dựng Component ReviewMarquee.tsx: Thiết kế animation marquee CSS mượt mà 35s vô tận, tự động tạm dừng khi rê chuột (pause on hover), hiển thị avatar hội viên, huy hiệu Verified Athlete, số sao vàng, thời gian và trích dẫn cảm nhận. Hỗ trợ dữ liệu dự phòng (fallback) tự động lặp mượt khi DB chưa có đủ số lượng review.
+- Nhúng vào Landing.tsx: Đặt ngay bên dưới khối "Our Mission" với giao diện sang trọng chuẩn Dark Athletic theme của NetFit.
+- Kiểm thử build: Cả Backend (dotnet build) và Frontend (pnpm build) đều đạt 100% không có lỗi.
+```
+
+#### 5.4. Kết quả đã áp dụng vào bài
+
+```text
+Toàn bộ mã nguồn backend và frontend đã được tích hợp thành công, đáp ứng chính xác yêu cầu hiển thị và lọc dữ liệu của sinh viên.
+```
+
+#### 5.5. Phần sinh viên/nhóm đã chỉnh sửa hoặc cải tiến
+
+```text
+- Xác định chính xác vị trí hiển thị tối ưu trên Landing Page (ngay dưới Our Mission) thông qua ảnh chụp màn hình thực tế.
+- Đặt ra nghiệp vụ lọc dữ liệu khắt khe: Chỉ cho phép hiển thị các đánh giá tích cực 4-5 sao và đã được Admin phê duyệt (không bị ẩn).
+```
+
+#### 5.6. Đánh giá chất lượng prompt
+
+- [x] Prompt rõ ràng
+- [x] Prompt có đủ bối cảnh
+- [x] Prompt tạo ra kết quả tốt
+
+#### 5.7. Minh chứng liên quan
+
+| Loại minh chứng | Nội dung |
+|---|---|
+| Link commit | c89839f3007f89155d683f8bb409e9921c6a3aaf |
+| File liên quan | `WebsiteReviewsController.cs`, `WebsiteReviewService.cs`, `IWebsiteReviewService.cs`, `ReviewMarquee.tsx`, `Landing.tsx` |
+| Screenshot | Đã kiểm thử giao diện Marquee trượt mượt mà trên Landing Page với các thẻ đánh giá 4-5 sao |
+| Kết quả chạy/test | pnpm build pass 100% (567ms), dotnet build pass 0 error |
+| Link tài liệu/báo cáo | N/A |
+| Ghi chú khác | N/A |
