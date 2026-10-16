@@ -75,7 +75,71 @@ public class UserController : ControllerBase
         return Ok(creators);
     }
 
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin,ADMIN")]
+    [HttpPost]
+    public async Task<IActionResult> CreateUser([FromBody] CreateUserRequest request)
+    {
+        if (string.IsNullOrWhiteSpace(request.Email) || string.IsNullOrWhiteSpace(request.Fullname))
+            return BadRequest(new { message = "Fullname and Email are required." });
+
+        var normalizedEmail = request.Email.Trim().ToLowerInvariant();
+        var existing = await _context.Users.AnyAsync(u => u.Email.ToLower() == normalizedEmail);
+        if (existing)
+            return BadRequest(new { message = "Email is already registered." });
+
+        var password = string.IsNullOrWhiteSpace(request.Password) ? "123456" : request.Password;
+        var user = new FitnessTrainingSystem.Domain.Entities.User
+        {
+            Fullname = request.Fullname.Trim(),
+            Email = normalizedEmail,
+            PasswordHash = BCrypt.Net.BCrypt.HashPassword(password),
+            Phone = request.Phone?.Trim(),
+            RoleId = 3, // Member
+            Status = "ACTIVE",
+            CreatedAt = DateTime.UtcNow
+        };
+
+        _context.Users.Add(user);
+        await _context.SaveChangesAsync();
+
+        return Ok(new { message = "User created successfully.", id = user.Id });
+    }
+
+    [Authorize(Roles = "Admin,ADMIN")]
+    [HttpPut("{id}")]
+    public async Task<IActionResult> UpdateUser(int id, [FromBody] UpdateUserRequest request)
+    {
+        var user = await _context.Users.FindAsync(id);
+        if (user == null) return NotFound(new { message = "User not found." });
+
+        if (!string.IsNullOrWhiteSpace(request.Fullname))
+            user.Fullname = request.Fullname.Trim();
+
+        if (!string.IsNullOrWhiteSpace(request.Email))
+        {
+            var normalizedEmail = request.Email.Trim().ToLowerInvariant();
+            if (user.Email.ToLower() != normalizedEmail)
+            {
+                var existing = await _context.Users.AnyAsync(u => u.Id != id && u.Email.ToLower() == normalizedEmail);
+                if (existing)
+                    return BadRequest(new { message = "Email is already in use by another user." });
+                user.Email = normalizedEmail;
+            }
+        }
+
+        if (request.Phone != null)
+            user.Phone = request.Phone.Trim();
+
+        if (!string.IsNullOrWhiteSpace(request.Status))
+            user.Status = request.Status;
+
+        user.UpdatedAt = DateTime.UtcNow;
+        await _context.SaveChangesAsync();
+
+        return Ok(new { message = "User updated successfully." });
+    }
+
+    [Authorize(Roles = "Admin,ADMIN")]
     [HttpPut("{id}/activate")]
     public async Task<IActionResult> Activate(int id)
     {
@@ -88,14 +152,14 @@ public class UserController : ControllerBase
         return Ok(new { message = "User activated successfully." });
     }
 
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin,ADMIN")]
     [HttpPut("{id}/deactivate")]
     public async Task<IActionResult> Deactivate(int id)
     {
         var user = await _context.Users.FindAsync(id);
         if (user == null) return NotFound(new { message = "User not found." });
 
-        user.Status = "Inactive";
+        user.Status = "BANNED";
         await _context.SaveChangesAsync();
 
         return Ok(new { message = "User deactivated successfully." });

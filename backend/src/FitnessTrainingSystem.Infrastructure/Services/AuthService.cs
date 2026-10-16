@@ -95,6 +95,12 @@ public class AuthService : IAuthService
             throw new Exception("Invalid email or password.");
         }
 
+        if (string.Equals(user.Status, "Inactive", StringComparison.OrdinalIgnoreCase) || 
+            string.Equals(user.Status, "BANNED", StringComparison.OrdinalIgnoreCase))
+        {
+            throw new Exception("Your account has been deactivated or banned. Please contact administrator.");
+        }
+
         var token = _jwtTokenGenerator.GenerateToken(user);
         var refreshToken = GenerateRefreshToken();
         user.RefreshToken = refreshToken;
@@ -171,6 +177,12 @@ public class AuthService : IAuthService
                 user.GoogleId = payload.Subject;
                 _context.Users.Update(user);
                 await _context.SaveChangesAsync();
+            }
+
+            if (string.Equals(user.Status, "Inactive", StringComparison.OrdinalIgnoreCase) || 
+                string.Equals(user.Status, "BANNED", StringComparison.OrdinalIgnoreCase))
+            {
+                throw new Exception("Your account has been deactivated or banned. Please contact administrator.");
             }
 
             // Ensure Role is loaded for token generation
