@@ -5,6 +5,7 @@ import theme from './lib/chakra-theme.ts'
 import RouterContainer from './router/router-container'
 
 import { NotificationProvider } from './context/NotificationContext'
+import ErrorBoundary from './components/shared/ErrorBoundary'
 
 const Router = import.meta.env.PROD ? HashRouter : BrowserRouter
 
@@ -21,9 +22,11 @@ function App() {
       <ChakraProvider theme={theme}>
         <GoogleOAuthProvider clientId={googleClientId}>
           <Router>
-            <NotificationProvider>
-              <RouterContainer />
-            </NotificationProvider>
+            <ErrorBoundary>
+              <NotificationProvider>
+                <RouterContainer />
+              </NotificationProvider>
+            </ErrorBoundary>
           </Router>
         </GoogleOAuthProvider>
       </ChakraProvider>

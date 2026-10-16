@@ -14,6 +14,9 @@ import ForgotPassword from "../pages/auth/ForgotPassword";
 import PaymentCancel from "../pages/public/PaymentCancel";
 import PaymentSuccess from "../pages/public/PaymentSuccess";
 
+// Error Page
+import ErrorPage from "../pages/ErrorPage";
+
 // Pages - Member Area
 import Dashboard from "../pages/member/Dashboard";
 import Workouts from "../pages/member/Workouts";
@@ -76,6 +79,9 @@ const RouterContainer = () => {
             <Route path="/payment/cancel" element={<PaymentCancel />} />
             <Route path="/payment/success" element={<PaymentSuccess />} />
 
+            {/* Error Page — programmatic navigation target */}
+            <Route path="/error" element={<ErrorPage />} />
+
             {/* Admin Area Routes */}
             <Route path="/admin" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
             <Route path="/admin/users" element={<AdminRoute><AdminUsers /></AdminRoute>} />
@@ -111,8 +117,8 @@ const RouterContainer = () => {
             <Route path="/ai-chat" element={<Navigate to="/dashboard" replace />} />
             <Route path="/profile" element={<PrivateRoute><Profile /></PrivateRoute>} />
 
-            {/* Default Route Redirect to Landing */}
-            <Route path="*" element={<Navigate to="/" replace />} />
+            {/* 404 Catch-all — Show error page instead of silent redirect */}
+            <Route path="*" element={<ErrorPage errorCode="404" />} />
         </Routes>
     );
 };
