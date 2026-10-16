@@ -2658,5 +2658,85 @@ Bài học rút ra:
 2. Thiết kế Animation vô tận (Infinite Looping CSS): Để hiệu ứng Marquee trượt mượt mà không bị khựng (stutter) khi kết thúc vòng lặp, mảng dữ liệu hiển thị phải được nhân đôi ([...items, ...items]) và chiều dài chuỗi card phải luôn đủ lớn hơn chiều rộng viewport.
 ```
 
+---
+
+### Lần sử dụng AI số 34
+
+| Nội dung | Thông tin |
+|---|---|
+| Ngày sử dụng | 17/10/2026 |
+| Công cụ AI | Antigravity |
+| Mục đích sử dụng | Xây dựng Universal ErrorPage chống lỗi màn hình trắng (White Screen) khi Backend gặp sự cố và bắt lỗi 404/400/500 theo phong cách Elite Membership Box |
+| Phần việc liên quan | Frontend / Error Handling, Routing & UI System |
+| Mức độ sử dụng | Hỗ trợ nhiều |
+
+#### 4.1. Prompt đã sử dụng
+
+```text
+- "hiện tại mình chưa có 1 trang errorpage để khi mà có sự cố BE, lỗi 404, 400 ... thì sẽ nhảy đến trang này thay vì trắng trang. trang errorpage thiết kế đơn giản, khong nhiều chữ và có design đồng nhất, có ảnh nền như phần /login#/forgot-password càng tốt, ảnh khác nhé và đẹp nha"
+- "tiếp tục"
+- "tôi muốn check xem như thế nào ở local trước giao diện ra sao thì vào đường dẫn nào"
+- "bỏ các icon kiểu này ở các trang bạn làm đi"
+- "tôi muốn đẹp hơn, ít chữ hơn nữa"
+- "viền đỏ mỏng thay cho viền trắng, viền đỏ như các thẻ card đồ á, ví dụ như hình thứ 2 nè."
+- "đó phong cách box như hình này nè,ví dụ nè."
+- "để các số ở chính giữa luôn thì sẽ đẹp hơn là ở góc phải."
+- "ở giữa button error 500 đồ thôi á, chữ không phải ở giữa cả 1 box. tôi chụp chỉ phần trên thôi mà"
+- "tăng khoảng cách chỗ text 'Lỗi kết nối máy chủ' với số ở trên ra , hiện tại nó xát nhau quá"
+- "ok, trước tiên pull main về, check và commit đẩy hết lên để redeploy vercel lại luôn."
+```
+
+#### 4.2. Kết quả AI gợi ý
+
+```text
+- Tạo mới Component ErrorPage.tsx:
+  + Tái hiện chuẩn xác phong cách Elite Membership Benefits Box từ Landing Page (#282a31, viền đỏ mảnh rgba(224, 48, 48, 0.3), bo góc 32px, bóng đổ tối sang trọng).
+  + Thẻ Badge Capsule đỏ (ERROR 404, ERROR 500...) có số mờ lớn 115px lồng ở tâm phía sau, tạo điểm nhấn 3D tinh tế ở phần trên.
+  + Tiêu đề in đậm chữ trắng thuần khiết, tối giản không có đoạn văn thừa, khoảng cách trên được tách rộng thoáng mát mắt.
+  + Nút điều hướng AppButton: "Về Trang Chủ" và nút thông minh "Tải Lại" (khi lỗi 500/mất mạng) hoặc "Quay Lại" (khi lỗi 404).
+  + Nền ảnh phòng tập boxing tối bí ẩn (error-bg.jpg) kết hợp lớp phủ vignette tối điện ảnh.
+- Tích hợp Global Error Boundary (ErrorBoundary.tsx & App.tsx):
+  + Bọc ứng dụng trong Error Boundary để bắt các runtime exception của React (nguyên nhân hàng đầu gây ra hiện tượng màn hình trắng xóa khi BE trả về dữ liệu rỗng hoặc sai cấu trúc).
+- Cập nhật Router (router-container.tsx):
+  + Bổ sung route /error hỗ trợ query param (?code=500, ?code=400...).
+  + Bắt tất cả đường dẫn không tồn tại (*) đưa về ErrorPage 404 thay vì chuyển hướng âm thầm.
+- Kiểm thử build:
+  + npm run build hoàn thành thành công 100% trong 524ms không có bất kỳ cảnh báo hay lỗi TypeScript nào.
+```
+
+#### 4.3. Phần sinh viên/nhóm đã sử dụng từ AI
+
+```text
+Toàn bộ mã nguồn ErrorPage.tsx, ErrorBoundary.tsx, ảnh tài nguyên error-bg.jpg và cấu hình tích hợp Router, App.tsx.
+```
+
+#### 4.4. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
+
+```text
+- Định hướng phong cách thiết kế tối giản, loại bỏ hoàn toàn các emoji không phù hợp.
+- Yêu cầu đồng bộ chính xác với giao diện Box của Landing Page (Elite Membership Benefits) và tinh chỉnh khoảng cách tỷ lệ thẩm mỹ cao.
+- Đưa ra yêu cầu kết nối chống trắng trang khi BE có sự cố.
+```
+
+#### 4.5. Minh chứng
+
+| Loại minh chứng | Nội dung |
+|---|---|
+| Link commit | 8eee557557e97fed8d0e40aa6f04dae4e3562e12 |
+| File liên quan | `ErrorPage.tsx`, `ErrorBoundary.tsx`, `App.tsx`, `router-container.tsx`, `error-bg.jpg` |
+| Screenshot | Đã kiểm thử thành công trên trình duyệt các màn hình /error và /error?code=500 |
+| Kết quả chạy/test | npm run build pass 100% (0 errors) |
+| Link video demo | N/A |
+| Ghi chú khác | N/A |
+
+#### 4.6. Nhận xét cá nhân/nhóm
+
+```text
+Bài học rút ra:
+1. Chống White Screen of Death trong Single Page Application: Trong React, việc thiếu Error Boundary sẽ khiến toàn bộ cây component bị unmount khi xảy ra lỗi render do dữ liệu Backend không khớp, dẫn đến màn hình trắng xóa gây trải nghiệm tồi tệ. Error Boundary giúp bắt lỗi duyên dáng và cung cấp nút thử lại cho người dùng.
+2. Tinh tế trong Visual Hierarchy: Bố cục UI càng tối giản thì khoảng cách (spacing/padding) giữa các phần tử càng quan trọng. Việc tách biệt rõ ràng giữa huy hiệu mã lỗi và dòng tiêu đề giúp người dùng nắm bắt thông điệp tức thì mà không cảm thấy rối mắt.
+```
+
+
 
 

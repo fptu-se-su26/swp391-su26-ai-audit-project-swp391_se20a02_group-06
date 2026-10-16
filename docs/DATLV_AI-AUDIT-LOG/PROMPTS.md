@@ -2270,3 +2270,78 @@ Toàn bộ mã nguồn backend và frontend đã được tích hợp thành cô
 | Kết quả chạy/test | pnpm build pass 100% (567ms), dotnet build pass 0 error |
 | Link tài liệu/báo cáo | N/A |
 | Ghi chú khác | N/A |
+
+---
+
+### Prompt số 33
+
+| Nội dung | Thông tin |
+|---|---|
+| Ngày thực hiện | 17/10/2026 |
+| Người thực hiện | Lê Văn Đạt |
+| Công cụ AI | Antigravity |
+| Mục đích | Xây dựng Universal ErrorPage chống lỗi màn hình trắng (White Screen) khi Backend gặp sự cố và bắt lỗi 404/400/500 theo phong cách Elite Membership Box |
+| Giai đoạn | [Phase 04] Implementation |
+
+#### 5.1. Prompt đã sử dụng
+
+```text
+- "hiện tại mình chưa có 1 trang errorpage để khi mà có sự cố BE, lỗi 404, 400 ... thì sẽ nhảy đến trang này thay vì trắng trang. trang errorpage thiết kế đơn giản, khong nhiều chữ và có design đồng nhất, có ảnh nền như phần /login#/forgot-password càng tốt, ảnh khác nhé và đẹp nha"
+- "tiếp tục"
+- "tôi muốn check xem như thế nào ở local trước giao diện ra sao thì vào đường dẫn nào"
+- "bỏ các icon kiểu này ở các trang bạn làm đi"
+- "tôi muốn đẹp hơn, ít chữ hơn nữa"
+- "viền đỏ mỏng thay cho viền trắng, viền đỏ như các thẻ card đồ á, ví dụ như hình thứ 2 nè."
+- "đó phong cách box như hình này nè,ví dụ nè."
+- "để các số ở chính giữa luôn thì sẽ đẹp hơn là ở góc phải."
+- "ở giữa button error 500 đồ thôi á, chữ không phải ở giữa cả 1 box. tôi chụp chỉ phần trên thôi mà"
+- "tăng khoảng cách chỗ text 'Lỗi kết nối máy chủ' với số ở trên ra , hiện tại nó xát nhau quá"
+- "ok, trước tiên pull main về, check và commit đẩy hết lên để redeploy vercel lại luôn."
+```
+
+#### 5.2. Bối cảnh khi viết prompt
+
+```text
+Trong các ứng dụng React SPA, khi máy chủ Backend gặp sự cố tạm thời (sập server, mất kết nối, lỗi 500) hoặc người dùng truy cập vào đường dẫn không hợp lệ (404), ứng dụng thường xuyên bị unmount toàn bộ giao diện và rơi vào tình trạng "White Screen of Death" (trắng trang) do lỗi runtime rendering. Cần tạo ra một trang ErrorPage toàn diện, tối giản, sang trọng theo đúng phong cách Dark Athletic của NetFit (đồng bộ với Box Elite Membership Benefits trên Landing Page) và bọc Global Error Boundary để bắt lỗi gracefully.
+```
+
+#### 5.3. Kết quả AI trả về
+
+```text
+- Tạo trang ErrorPage.tsx theo chuẩn thiết kế Elite Box: Nền hộp #282a31, viền đỏ thể thao mỏng 1px rgba(224,48,48,0.3), bo góc 32px, bóng đổ 3D sâu, huy hiệu đỏ ERROR 404/500 có số mờ 115px lồng ở tâm phía sau, tiêu đề trắng in đậm và nút AppButton điều hướng thông minh.
+- Thêm Global ErrorBoundary.tsx bọc quanh toàn bộ router trong App.tsx để chặn đứng mọi sự cố crash React runtime.
+- Cập nhật router-container.tsx: Mở route /error và định tuyến bắt mọi trang không tồn tại (*) về ErrorPage 404.
+- Đồng bộ và kiểm thử: npm run build đạt 100% không có lỗi.
+```
+
+#### 5.4. Kết quả đã áp dụng vào bài
+
+```text
+Toàn bộ mã nguồn trang lỗi và bộ bọc ErrorBoundary đã được tích hợp và hoạt động ổn định trên toàn bộ hệ thống.
+```
+
+#### 5.5. Phần sinh viên/nhóm đã chỉnh sửa hoặc cải tiến
+
+```text
+- Tinh chỉnh loại bỏ các icon emoji, đưa về chuẩn mực thiết kế tối giản không rườm rà.
+- Cung cấp ảnh chụp màn hình thực tế của Box Elite Membership Benefits để yêu cầu AI căn chỉnh màu nền #282a31, viền đỏ và vị trí số mờ 3D đối xứng chuẩn xác.
+- Yêu cầu tăng khoảng cách giữa số mờ và tiêu đề để tạo khoảng thở thị giác hoàn hảo.
+```
+
+#### 5.6. Đánh giá chất lượng prompt
+
+- [x] Prompt rõ ràng
+- [x] Prompt có đủ bối cảnh
+- [x] Prompt tạo ra kết quả tốt
+
+#### 5.7. Minh chứng liên quan
+
+| Loại minh chứng | Nội dung |
+|---|---|
+| Link commit | 8eee557557e97fed8d0e40aa6f04dae4e3562e12 |
+| File liên quan | `ErrorPage.tsx`, `ErrorBoundary.tsx`, `App.tsx`, `router-container.tsx`, `error-bg.jpg` |
+| Screenshot | Đã kiểm thử thành công trên trình duyệt các màn hình /error và /error?code=500 |
+| Kết quả chạy/test | npm run build pass 100% (0 errors) |
+| Link tài liệu/báo cáo | N/A |
+| Ghi chú khác | N/A |
+
