@@ -2142,5 +2142,70 @@ Trang Admin Payments hiển thị đầy đủ 15 giao dịch thanh toán thành
 | Link tài liệu/báo cáo | N/A |
 | Ghi chú khác | N/A |
 
+---
+
+### Prompt số 31
+
+| Nội dung | Thông tin |
+|---|---|
+| Ngày sử dụng | 16/10/2026 |
+| Công cụ AI | Antigravity |
+| Mục đích | Khôi phục chức năng Ban/Unban và Edit User trong trang Quản lý người dùng Admin, đồng bộ commit từ nhánh main và hoàn thiện phân quyền Admin vs PT |
+| Phần việc liên quan | Fullstack (Frontend & Backend, Role Permissions) |
+| Mức độ sử dụng | Hỏi debug nguyên nhân mất code, yêu cầu pull code mới từ main và khôi phục hoàn thiện |
+
+#### 5.1. Prompt nguyên văn
+
+```text
+- "User Management: nguyên nhân tại sao cái tôi là admin ở trang này tôi lại không thể có những thao tác ban, unban user, và edit tôi nhớ tôi đã làm rồi mà sao hiện tại lại không có và chỉ có thể xem được là sao, chỉ xem tôi nhứo là vứoi role PT mà sao lạ vậy. check lại cho tôi kĩ chỗ này tôi nhớ tôi đã làm rồi."
+- "đúng khôi phục lại cho tôi , trước tiên pull main về đi. rồi code tiếp cho chuẩn"
+```
+
+#### 5.2. Bối cảnh khi viết prompt
+
+```text
+Trang Quản lý người dùng của Admin (AdminUsers.tsx) trước đây đã có chức năng Ban/Unban và phân quyền (PT chỉ xem, Admin có toàn quyền). Tuy nhiên sau khi gộp nhánh AI Workout lớn của nhóm, file giao diện đã bị revert nhầm về phiên bản sơ khai, biến trang này thành bản tĩnh không có nút thao tác nào. Cần truy tìm nguyên nhân trong Git, kéo code mới nhất từ main và khôi phục lại đầy đủ tính năng.
+```
+
+#### 5.3. Kết quả AI trả về
+
+```text
+- Rà soát lịch sử Git và chỉ ra chính xác commit 2674e8f đã ghi đè làm mất code.
+- Kéo và áp dụng thành công các commit mới nhất từ main (fix OTP đăng ký, gửi email qua app password, case-insensitive email).
+- Bổ sung 2 endpoint CreateUser (POST) và UpdateUser (PUT) trong UserController.cs.
+- Tăng cường bảo mật AuthService.cs chặn đăng nhập tài khoản Banned/Inactive.
+- Khôi phục và nâng cấp toàn diện AdminUsers.tsx: Switch Ban/Unban nhanh, Edit User Modal, Add User Modal, Search & Filter bar, 4 Stat Cards và phân quyền nghiêm ngặt theo roleId.
+```
+
+#### 5.4. Kết quả đã áp dụng vào bài
+
+```text
+Toàn bộ mã nguồn UserController.cs, AuthService.cs và AdminUsers.tsx đã được tích hợp, build pass 100% không lỗi.
+```
+
+#### 5.5. Phần sinh viên/nhóm đã chỉnh sửa hoặc cải tiến
+
+```text
+- Tự nhớ lại tính năng đã từng thực hiện để yêu cầu AI kiểm tra lại lịch sử.
+- Yêu cầu đồng bộ code mới từ main trước khi tiếp tục phát triển.
+```
+
+#### 5.6. Đánh giá chất lượng prompt
+
+- [x] Prompt rõ ràng
+- [x] Prompt có đủ bối cảnh
+- [x] Prompt tạo ra kết quả tốt
+
+#### 5.7. Minh chứng liên quan
+
+| Loại minh chứng | Nội dung |
+|---|---|
+| Link commit | ef7329a05f25669be456aac413eb0f1af820a5a2 |
+| File liên quan | AdminUsers.tsx, UserController.cs, AuthService.cs |
+| Screenshot | Đã kiểm thử thành công giao diện Admin Users với Switch Ban/Unban, Edit Modal và Stats card |
+| Kết quả chạy/test | pnpm build pass 100%, dotnet build pass 0 error |
+| Link tài liệu/báo cáo | N/A |
+| Ghi chú khác | N/A |
+
 
 

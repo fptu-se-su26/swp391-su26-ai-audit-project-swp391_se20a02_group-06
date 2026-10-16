@@ -2523,4 +2523,70 @@ Bài học rút ra từ phiên làm việc:
 2. Trải nghiệm người dùng (UX) đối với thao tác làm mới: Khi kích hoạt tác vụ bất đồng bộ (SWR mutate), bắt buộc phải có visual feedback (icon loading, disabled button, toast alert) để người dùng nhận biết hệ thống đang phản hồi, tránh hiểu lầm nút bấm bị liệt.
 ```
 
+---
+
+### Lần sử dụng AI số 32
+
+| Nội dung | Thông tin |
+|---|---|
+| Ngày sử dụng | 16/10/2026 |
+| Công cụ AI | Antigravity |
+| Mục đích sử dụng | Điều tra nguyên nhân và khôi phục các thao tác Ban, Unban và Edit hội viên trong trang User Management Admin; phân quyền chuẩn Admin vs PT; cập nhật đồng bộ các commit mới nhất từ main |
+| Phần việc liên quan | Fullstack / Admin User Management, Account Ban Security & Role-Based Access Control |
+| Mức độ sử dụng | Hỗ trợ nhiều |
+
+#### 4.1. Prompt đã sử dụng
+
+```text
+- "User Management: nguyên nhân tại sao cái tôi là admin ở trang này tôi lại không thể có những thao tác ban, unban user, và edit tôi nhớ tôi đã làm rồi mà sao hiện tại lại không có và chỉ có thể xem được là sao, chỉ xem tôi nhứo là vứoi role PT mà sao lạ vậy. check lại cho tôi kĩ chỗ này tôi nhớ tôi đã làm rồi."
+- "đúng khôi phục lại cho tôi , trước tiên pull main về đi. rồi code tiếp cho chuẩn"
+```
+
+#### 4.2. Kết quả AI gợi ý
+
+```text
+- Điều tra Git Log & Reflog: Xác định sinh viên đã từng hoàn thành Ban/Unban ở commit d243708 và menu Actions ở commit f916360. Tuy nhiên tại commit 2674e8f (Squash local changes for AIworkout feature), file AdminUsers.tsx đã bị ghi đè nhầm về bản sơ khai (primitive version ban đầu) làm mất cột Actions, hàm handleToggleStatus và các quyền thao tác.
+- Đồng bộ nhánh: Kéo các bản vá mới nhất từ nhánh main (gồm fix OTP đăng ký, gửi email qua app password và chuẩn hóa email case-insensitive) vào production với trạng thái clean 100%.
+- Nâng cấp Backend UserController.cs: Bổ sung endpoint POST /api/user (tạo tài khoản hội viên), PUT /api/user/{id} (chỉnh sửa thông tin Họ tên, Email, SĐT, Trạng thái) kết hợp cùng 2 endpoint PUT /api/user/{id}/activate và PUT /api/user/{id}/deactivate có sẵn.
+- Tăng cường bảo mật AuthService.cs: Thêm cơ chế chặn đăng nhập (chặn cả Email/Password và Google OAuth) nếu tài khoản ở trạng thái Inactive hoặc BANNED, trả về thông báo lỗi rõ ràng.
+- Tái thiết kế Frontend AdminUsers.tsx chuẩn thiết kế NetFit Admin:
+  + Phân quyền theo vai trò: Admin (roleId = 1) có toàn quyền thao tác (Add User, Edit Profile, Ban/Unban Switch); PT (roleId = 2) vào bảng ở chế độ Chỉ xem (Trainer Access Read-Only, ẩn cột Actions).
+  + Thêm 4 thẻ Thống kê tổng quan: Tổng hội viên, Đang hoạt động, Đã bị khóa, Gói trả phí (Paid/Pro).
+  + Thêm thanh Tìm kiếm theo Tên/Email và Bộ lọc Trạng thái (All/Active/Banned), Bộ lọc Gói tập (All/Free/Pro).
+  + Cột trạng thái có Switch bật/tắt nhanh trạng thái Ban/Unban kèm Toast thông báo và spinner loading.
+  + Thêm 2 Modal: Modal Chỉnh sửa thông tin hội viên (Edit User Modal) và Modal Thêm hội viên mới (Add User Modal).
+```
+
+#### 4.3. Phần sinh viên/nhóm đã sử dụng từ AI
+
+```text
+Toàn bộ mã nguồn AdminUsers.tsx hoàn chỉnh, bổ sung các API quản lý người dùng trong UserController.cs, logic bảo mật chặn tài khoản bị khóa trong AuthService.cs và quy trình kiểm tra build FE/BE.
+```
+
+#### 4.4. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
+
+```text
+- Tinh ý nhận diện được tính năng đã từng làm trong quá khứ bị mất sau các lần merge nhánh lớn của nhóm.
+- Yêu cầu chiến lược đúng đắn: Kéo toàn bộ code mới từ main về trước để có nền tảng chuẩn nhất trước khi khôi phục code.
+```
+
+#### 4.5. Minh chứng
+
+| Loại minh chứng | Nội dung |
+|---|---|
+| Link commit | ef7329a05f25669be456aac413eb0f1af820a5a2 |
+| File liên quan | `AdminUsers.tsx`, `UserController.cs`, `AuthService.cs` |
+| Screenshot | Đã kiểm thử thành công giao diện Admin Users với Switch Ban/Unban, Edit Modal và Stats card |
+| Kết quả chạy/test | pnpm build pass 100%, dotnet build pass 0 error |
+| Link video demo | N/A |
+| Ghi chú khác | N/A |
+
+#### 4.6. Nhận xét cá nhân/nhóm
+
+```text
+Bài học rút ra:
+1. Quản lý nhánh và merge code trong nhóm: Khi squash commit hoặc giải nén file zip từ thành viên khác vào dự án, cần kiểm tra kỹ lưỡng danh sách file thay đổi (git diff --stat) để tránh tình trạng vô tình ghi đè các tính năng đã hoàn thiện trước đó.
+2. Phân quyền chặt chẽ giữa Backend và Frontend: Không chỉ ẩn/hiện nút bấm trên giao diện dựa theo RoleId, mà tầng Backend Controller bắt buộc phải áp dụng Authorize attribute tương ứng để ngăn chặn truy cập trái phép trực tiếp qua API.
+```
+
 
