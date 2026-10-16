@@ -30,6 +30,21 @@ public class WebsiteReviewsController : ControllerBase
         throw new UnauthorizedAccessException("Người dùng chưa được xác thực.");
     }
 
+    [HttpGet("public")]
+    [AllowAnonymous]
+    public async Task<ActionResult<List<WebsiteReviewDto>>> GetPublicReviews()
+    {
+        try
+        {
+            var reviews = await _reviewService.GetPublicReviewsAsync();
+            return Ok(reviews);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { message = "Lỗi khi lấy danh sách đánh giá công khai.", error = ex.Message });
+        }
+    }
+
     [HttpGet("status")]
     public async Task<ActionResult<ReviewEligibilityDto>> GetReviewStatus()
     {

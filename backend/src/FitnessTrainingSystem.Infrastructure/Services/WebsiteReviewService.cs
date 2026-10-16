@@ -157,6 +157,17 @@ public class WebsiteReviewService : IWebsiteReviewService
         return true;
     }
 
+    public async Task<List<WebsiteReviewDto>> GetPublicReviewsAsync()
+    {
+        var publicReviews = await _context.WebsiteReviews
+            .Include(r => r.User)
+            .Where(r => !r.IsHidden && r.Rating >= 4)
+            .OrderByDescending(r => r.CreatedAt)
+            .ToListAsync();
+
+        return publicReviews.Select(MapToDto).ToList();
+    }
+
     private static WebsiteReviewDto MapToDto(WebsiteReview r)
     {
         return new WebsiteReviewDto

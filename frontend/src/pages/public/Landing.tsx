@@ -31,6 +31,7 @@ import {
 import PublicNavbar from '../../components/shared/Navbar/PublicNavbar'
 import PublicFooter from '../../components/shared/Footer/PublicFooter'
 import AppButton from '../../components/shared/Button/AppButton'
+import ReviewMarquee from '../../components/shared/ReviewMarquee/ReviewMarquee'
 import { getProductPackages, type ProductPackage } from '../../api/productPackages'
 
 // Hero athlete gallery images from Stitch
@@ -580,6 +581,9 @@ const Landing: React.FC = () => {
             </Grid>
           </Box>
         </Flex>
+
+        {/* ===================== ATHLETE REVIEWS MARQUEE ===================== */}
+        <ReviewMarquee />
       </Box>
 
       <PublicFooter />

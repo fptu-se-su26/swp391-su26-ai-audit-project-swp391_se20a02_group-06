@@ -9,4 +9,5 @@ public interface IWebsiteReviewService
     Task<AdminReviewStatsDto> GetAdminReviewsAsync(int? ratingFilter = null, string? search = null);
     Task<bool> ToggleHideReviewAsync(int reviewId);
     Task<bool> DeleteReviewAsync(int reviewId);
+    Task<List<WebsiteReviewDto>> GetPublicReviewsAsync();
 }
