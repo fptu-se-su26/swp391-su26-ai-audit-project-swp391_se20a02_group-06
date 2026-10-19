@@ -2531,3 +2531,71 @@ Toàn bộ văn bản giao diện người dùng trên toàn Frontend đã đư�
 | Link tài liệu/báo cáo | N/A |
 | Ghi chú khác | N/A |
 
+---
+
+### Prompt số 37
+
+| Nội dung | Thông tin |
+|---|---|
+| Ngày thực hiện | 20/10/2026 |
+| Người thực hiện | Đạt |
+| Công cụ AI | Antigravity |
+| Mục đích | Dịch toàn diện 100% trang web sang tiếng Việt (bao gồm toàn bộ nội dung chi tiết bên trong, thẻ thống kê, biểu đồ, bảng biểu, modal, dialog ở mọi vai trò) thay vì chỉ dịch thanh điều hướng |
+| Kết quả mong đợi | Khi ở chế độ tiếng Việt, 100% nội dung trang web hiển thị bằng tiếng Việt chuẩn xác, đồng thời có thể chuyển đổi mượt mà sang tiếng Anh |
+
+#### 5.1. Bối cảnh khi viết prompt
+
+Người dùng kiểm tra thấy hệ thống mới chỉ dịch thanh điều hướng (navbar), còn các nội dung bên trong như thẻ stat, biểu đồ, modal, bảng quản trị vẫn còn tiếng Anh. Người dùng yêu cầu dịch toàn bộ trang web sang tiếng Việt ("tiếng việt là tất phải tiếng việt", "nội dung bên trong, nói chung tất cả").
+
+#### 5.2. Nội dung prompt đầy đủ
+
+```text
+"bạn mới dịch thanh nav đồ chứ mấy tôi muốn dịch toàn bộ trang web luôn á, nộidung bên trong, nói chung tất cả, tiếng việt là tất phải tiếng việt bạn hiểu ý tôi nói khong"
+```
+
+#### 5.3. Phân tích kết quả AI trả về
+
+- AI triển khai cấu trúc i18n hoàn chỉnh với `i18next` và `react-i18next`:
+  + Ngôn ngữ mặc định được đặt là tiếng Việt (`vi`) với fallback `vi`.
+  + Tạo component chuyển đổi `LanguageSwitcher` hiển thị `[ 🌐 EN | VI ]` trên header người dùng, thanh điều hướng công khai và các trang xác thực (Login, Register, Forgot Password).
+- Xây dựng file từ điển khổng lồ `vi.json` và `en.json` chứa hơn 350+ key song ngữ bao phủ toàn diện:
+  + Dashboard (chuỗi ngày tập liên tục, khối lượng tập luyện, phân bổ dinh dưỡng, gợi ý bài tập).
+  + Nutrition (nhật ký 4 bữa, công cụ theo dõi nước thông minh, countdown nhắc uống nước, modal cài đặt).
+  + Workouts (giới thiệu buổi tập, thiết lập bài tập, màn hình đếm giờ tải bài, kết quả buổi tập, modal chi tiết bài tập).
+  + Exercises (thư viện bài tập, bộ lọc, chi tiết bài tập).
+  + Progress (biểu đồ thể trọng, số đo cơ thể, lịch sử buổi tập).
+  + Profile (thông tin cá nhân, cập nhật mật khẩu, cập nhật chỉ số cơ thể).
+  + PT Booking (danh sách HLV, chi tiết PT, đặt lịch tập, quản lý buổi tập).
+  + AI Chat (trợ lý gợi ý dinh dưỡng, thực đơn mẫu, lịch sử gợi ý).
+  + Admin Portal (Dashboard thống kê doanh thu, quản lý hội viên, quản lý thanh toán, quản lý đánh giá).
+  + Public & Auth (Trang chủ Landing, bảng giá Pricing, thanh toán thành công/hủy, form Đăng nhập, Đăng ký, Quên mật khẩu, Xác thực OTP).
+- Đảm bảo 100% các chuỗi dịch đều có fallback tiếng Anh: `t('key', 'Default English text')`.
+- Đảm bảo TypeScript compilation và Vite production build hoàn toàn sạch lỗi (`tsc -b && vite build` hoàn thành với exit code 0).
+
+#### 5.4. Kết quả đã áp dụng vào bài
+
+100% trang web ở cả 4 phân hệ (Member, Admin, Public, Auth) đã chuyển sang tiếng Việt hoàn chỉnh, đáp ứng chính xác yêu cầu của người dùng, đồng thời người dùng có thể bấm nút chuyển đổi ngôn ngữ sang tiếng Anh hoặc quay lại tiếng Việt bất cứ lúc nào.
+
+#### 5.5. Phần sinh viên/nhóm đã chỉnh sửa hoặc cải tiến
+
+- Nhắc nhở và định hướng AI dịch sâu vào toàn bộ ngóc ngách của trang web, không chỉ dừng lại ở thanh điều hướng.
+- Kiểm tra tính thực tế và độ tự nhiên của các thuật ngữ thể hình/dinh dưỡng trong tiếng Việt.
+
+#### 5.6. Đánh giá chất lượng prompt
+
+- [x] Prompt rõ ràng
+- [x] Prompt có đủ bối cảnh
+- [x] Prompt tạo ra kết quả tốt
+
+#### 5.7. Minh chứng liên quan
+
+| Loại minh chứng | Nội dung |
+|---|---|
+| Link commit | b90cfffdf5430fbc2abcdd46f7e59e9a1b7425fd |
+| File liên quan | `i18n/`, `LanguageSwitcher.tsx`, `Dashboard.tsx`, `Nutrition.tsx`, `AIChat.tsx`, `PTBooking.tsx`, `Pricing.tsx`, `Admin*.tsx`, `Login.tsx`, `Register.tsx` |
+| Screenshot | Đã kiểm thử trình duyệt qua Browser Subagent xác nhận các trang Login, Pricing, Dashboard, AIChat, PTBooking hiển thị 100% tiếng Việt chuẩn |
+| Kết quả chạy/test | pnpm run build pass 100% (507ms, 0 errors) |
+| Link tài liệu/báo cáo | N/A |
+| Ghi chú khác | N/A |
+
+

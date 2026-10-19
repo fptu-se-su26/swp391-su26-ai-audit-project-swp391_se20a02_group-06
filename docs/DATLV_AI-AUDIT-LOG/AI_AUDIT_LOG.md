@@ -2944,3 +2944,77 @@ Bài học rút ra:
 2. Quét regex tự động: Sử dụng script Python quét toàn bộ cây thư mục source code với bảng mã Unicode tiếng Việt giúp phát hiện triệt để các góc khuất (modal, toast, fallback text, aria-label) mà mắt thường dễ bỏ sót.
 ```
 
+---
+
+### Lần sử dụng AI số 38
+
+| Nội dung | Thông tin |
+|---|---|
+| Ngày sử dụng | 20/10/2026 |
+| Công cụ AI | Antigravity |
+| Mục đích sử dụng | Xây dựng hệ thống quốc tế hoá đa ngôn ngữ toàn diện (Full-site i18n EN/VI) bằng `i18next` & `react-i18next`, dịch 100% nội dung trang web sang tiếng Việt (Navbar, Dashboard, Nutrition, Workouts, AI Chat, PT Booking, Progress, Profile, Pricing, Landing, Auth, Admin) và mặc định hiển thị tiếng Việt |
+| Phần việc liên quan | Frontend (Toàn bộ các module User, Workout, Nutrition, PT, AIChat, Public, Auth, Admin, Layout, Widgets) |
+| Mức độ sử dụng | Sinh chính nội dung |
+
+#### 4.1. Prompt đã sử dụng
+
+```text
+"bạn mới dịch thanh nav đồ chứ mấy tôi muốn dịch toàn bộ trang web luôn á, nộidung bên trong, nói chung tất cả, tiếng việt là tất phải tiếng việt bạn hiểu ý tôi nói khong"
+```
+
+#### 4.2. Kết quả AI gợi ý
+
+```text
+- Khởi tạo hệ thống đa ngôn ngữ với `i18next` và `react-i18next`, cấu hình ngôn ngữ mặc định là tiếng Việt (`vi`), hỗ trợ lưu lựa chọn vào `localStorage` key `netfit_lang`.
+- Xây dựng bộ từ điển song ngữ hoàn chỉnh `vi.json` và `en.json` với hơn 350+ key dịch chuẩn xác, bao quát toàn bộ ứng dụng:
+  + `common`: các hành động, trạng thái, modal, phân trang, lọc, ngày tháng.
+  + `nav`, `header`: điều hướng thanh bên Member, Admin và thanh tác vụ trên cùng kèm chuông thông báo.
+  + `dashboard`: chuỗi ngày tập liên tục (streak), khối lượng tập (volume chart), phân bổ dinh dưỡng (macros), bài tập gợi ý.
+  + `nutrition`: nhật ký 4 bữa ăn, widget nước thông minh, countdown nhắc uống nước, modal cấu hình dinh dưỡng & nhắc nhở.
+  + `workouts`: màn hình giới thiệu buổi tập, thiết lập bài tập, màn hình đếm giờ tải bài, kết quả buổi tập và modal bài tập chi tiết.
+  + `exercises`: thư viện bài tập, bộ lọc nhóm cơ/thiết bị, chi tiết bài tập.
+  + `progress`: theo dõi cân nặng, số đo cơ thể, lịch sử buổi tập và biểu đồ biến thiên.
+  + `profile`: thông tin cá nhân, cập nhật mật khẩu, cập nhật chỉ số cơ thể.
+  + `pt`: danh sách huấn luyện viên cá nhân, thẻ PT, đặt lịch tập, quản lý buổi tập.
+  + `aiChat`: giao diện chat trợ lý AI, gợi ý câu hỏi, thực đơn mẫu, lịch sử gợi ý chế độ ăn.
+  + `auth`: Đăng nhập, Đăng ký nhiều bước, Quên mật khẩu, Xác thực OTP email.
+  + `landing`, `pricing`: Trang chủ giới thiệu, bảng so sánh gói tập, thanh toán thành công/hủy.
+  + `admin`: Bảng điều khiển quản trị, quản lý người dùng, quản lý giao dịch thanh toán, quản lý đánh giá trang web.
+- Tích hợp component `LanguageSwitcher` với nút chuyển đổi trực quan `[ 🌐 EN | VI ]` trên HeaderActions, PublicNavbar, Login, Register, ForgotPassword.
+- Chuyển đổi toàn bộ text tĩnh sang hook `useTranslation()` với fallback tiếng Anh đầy đủ: `t('key', 'Default text')`.
+- Đảm bảo 100% tuân thủ TypeScript, không phát sinh lỗi biên dịch và Vite bundle pass sạch sẽ.
+```
+
+#### 4.3. Phần sinh viên/nhóm đã sử dụng từ AI
+
+```text
+Toàn bộ mã nguồn i18n, bộ từ điển song ngữ vi.json/en.json và tích hợp `useTranslation` trên 51 tệp giao diện Frontend.
+```
+
+#### 4.4. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
+
+```text
+- Yêu cầu nghiêm ngặt: Khi chọn tiếng Việt thì 100% nội dung (stat cards, widget, biểu đồ, nút, modal, dialog) phải hiển thị tiếng Việt, không còn văn bản tiếng Anh sót lại.
+- Trực tiếp kiểm thử trên trình duyệt các phân hệ Member, Admin, Public và Auth để xác nhận khả năng chuyển đổi tức thì mượt mà.
+```
+
+#### 4.5. Minh chứng
+
+| Loại minh chứng | Nội dung |
+|---|---|
+| Link commit | b90cfffdf5430fbc2abcdd46f7e59e9a1b7425fd |
+| File liên quan | `i18n/`, `LanguageSwitcher.tsx`, `Dashboard.tsx`, `Nutrition.tsx`, `AIChat.tsx`, `PTBooking.tsx`, `Pricing.tsx`, `Admin*.tsx`, `Login.tsx`, `Register.tsx` |
+| Screenshot | Đã kiểm thử trình duyệt qua Browser Subagent xác nhận các trang Login, Pricing, Dashboard, AIChat, PTBooking hiển thị 100% tiếng Việt chuẩn |
+| Kết quả chạy/test | pnpm run build pass 100% (507ms, 0 errors) |
+| Link video demo | N/A |
+| Ghi chú khác | N/A |
+
+#### 4.6. Nhận xét cá nhân/nhóm
+
+```text
+Bài học rút ra:
+1. Kiến trúc i18n chuyên nghiệp: Thay vì dịch tạm bợ hoặc hardcode chuỗi tiếng Việt vào mã nguồn, việc tổ chức file locale theo cấu trúc namespace JSON (`vi.json` và `en.json`) kết hợp với `react-i18next` mang lại khả năng mở rộng tuyệt vời, dễ bảo trì và hỗ trợ thêm ngôn ngữ mới trong tương lai mà không ảnh hưởng tới logic nghiệp vụ.
+2. Fallback an toàn: Luôn cung cấp chuỗi fallback tiếng Anh trực tiếp trong hàm gọi `t('key', 'Fallback')` giúp giao diện không bao giờ bị vỡ hay hiển thị key trống nếu có key chưa kịp tải hoặc thiếu sót.
+```
+
+
