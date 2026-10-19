@@ -25,9 +25,11 @@ import { useNavigate } from 'react-router-dom'
 import { FiArrowLeft } from 'react-icons/fi'
 // import { FaApple } from 'react-icons/fa'
 import { GoogleLogin } from '@react-oauth/google'
+import { useTranslation } from 'react-i18next'
 import AppButton from '../../components/shared/Button/AppButton'
 import { useAuthStore } from '../../store/useAuthStore'
 import { authService } from '../../features/auth/authService'
+import LanguageSwitcher from '../../components/shared/Header/LanguageSwitcher'
 
 // Validation Schema using Zod
 const loginSchema = z.object({
@@ -38,6 +40,7 @@ const loginSchema = z.object({
 type LoginFormInputs = z.infer<typeof loginSchema>
 
 const Login: React.FC = () => {
+  const { t } = useTranslation()
   const navigate = useNavigate()
   const toast = useToast()
   const [showPassword, setShowPassword] = useState(false)
@@ -130,14 +133,17 @@ const Login: React.FC = () => {
               NETFIT
             </Heading>
           </HStack>
-          <Link
-            fontSize="sm"
-            color="#e5bdb9"
-            _hover={{ color: 'white', textDecoration: 'none' }}
-            href="#"
-          >
-            Support
-          </Link>
+          <HStack spacing="4">
+            <LanguageSwitcher />
+            <Link
+              fontSize="sm"
+              color="#e5bdb9"
+              _hover={{ color: 'white', textDecoration: 'none' }}
+              href="#"
+            >
+              {t('auth.support', 'Support')}
+            </Link>
+          </HStack>
         </Flex>
       </Box>
 
@@ -172,10 +178,10 @@ const Login: React.FC = () => {
           {/* Header */}
           <Stack spacing="2" textAlign="center" align="center">
             <Heading as="h1" fontSize="22px" color="white" fontWeight="700" letterSpacing="-0.02em">
-              Welcome Back
+              {t('auth.welcomeBack', 'Welcome Back')}
             </Heading>
             <Text fontSize="14px" color="#e5bdb9">
-              Enter your credentials to access your dashboard.
+              {t('auth.enterCredentials', 'Enter your credentials to access your dashboard.')}
             </Text>
           </Stack>
 
@@ -185,7 +191,7 @@ const Login: React.FC = () => {
               {/* Email Field */}
               <FormControl isInvalid={!!errors.email}>
                 <FormLabel fontSize="12px" color="#e5bdb9" mb="1">
-                  Email
+                  {t('auth.email', 'Email')}
                 </FormLabel>
                 <Input
                   type="email"
@@ -209,7 +215,7 @@ const Login: React.FC = () => {
               {/* Password Field */}
               <FormControl isInvalid={!!errors.password}>
                 <FormLabel fontSize="12px" color="#e5bdb9" mb="1">
-                  Password
+                  {t('auth.password', 'Password')}
                 </FormLabel>
                 <InputGroup size="md">
                   <Input
@@ -270,7 +276,7 @@ const Login: React.FC = () => {
                   }}
                 >
                   <Text fontSize="12px" color="#e5bdb9">
-                    Remember me
+                    {t('auth.rememberMe', 'Remember me')}
                   </Text>
                 </Checkbox>
                 <Link
@@ -279,20 +285,20 @@ const Login: React.FC = () => {
                   _hover={{ color: '#ffdad6', textDecoration: 'none' }}
                   onClick={() => navigate('/forgot-password')}
                 >
-                  Forgot password?
+                  {t('auth.forgotPassword', 'Forgot password?')}
                 </Link>
               </Flex>
 
               {/* Primary Action */}
               <AppButton
-                label="Login"
+                label={t('auth.login', 'Login')}
                 type="submit"
                 variant="solid"
                 w="full"
                 h="44px"
                 fontSize="14px"
                 isLoading={isLoading}
-                loadingText="Logging in..."
+                loadingText={t('auth.login', 'Logging in...')}
                 mt="2"
               />
             </Stack>
@@ -302,7 +308,7 @@ const Login: React.FC = () => {
           <Flex align="center" py="1">
             <Box flex="1" h="1px" bg="#33343c" />
             <Text px="4" fontSize="12px" color="#e5bdb9" whiteSpace="nowrap">
-              or continue with
+              {t('auth.orContinueWith', 'or continue with')}
             </Text>
             <Box flex="1" h="1px" bg="#33343c" />
           </Flex>
@@ -312,30 +318,20 @@ const Login: React.FC = () => {
             <Box w="full" display="flex" justifyContent="center">
               {loginWithGoogle}
             </Box>
-            {/* <AppButton
-              label="Continue with Apple"
-              variant="outline"
-              w="full"
-              h="42px"
-              fontSize="14px"
-              leftIcon={
-                <Icon as={FaApple} fontSize="18px" style={{ marginRight: '6px' }} />
-              }
-            /> */}
           </Stack>
         </Box>
 
         {/* Redirect Link */}
         <Box mt="6" textAlign="center">
           <Text fontSize="12px" color="#e5bdb9">
-            Don't have an account?{' '}
+            {t('auth.dontHaveAccount', "Don't have an account?")}{' '}
             <Link
               color="#ffb4ac"
               fontWeight="600"
               _hover={{ color: '#ffdad6', textDecoration: 'none' }}
               onClick={() => navigate('/register')}
             >
-              Register
+              {t('auth.register', 'Register')}
             </Link>
           </Text>
         </Box>

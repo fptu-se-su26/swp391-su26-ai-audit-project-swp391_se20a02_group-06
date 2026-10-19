@@ -57,6 +57,7 @@ import AdminLayout from '../../components/shared/Layout/AdminLayout'
 import { useAuthStore } from '../../store/useAuthStore'
 import PaginationFooter from '../../features/admin/components/PaginationFooter'
 import { motion } from 'framer-motion'
+import { useTranslation } from 'react-i18next'
 
 const MotionBox = motion(Box)
 const MotionTr = motion(Tr)
@@ -84,6 +85,7 @@ const getInitials = (name: string) => {
 }
 
 const AdminUsers: React.FC = () => {
+    const { t } = useTranslation()
     const { data: users, error, isLoading, mutate } = useSWR<UserDto[]>('/user', fetcher)
     const roleId = useAuthStore(state => state.roleId)
     const toast = useToast()
@@ -339,23 +341,23 @@ const AdminUsers: React.FC = () => {
                     <Box>
                         <HStack spacing="3" align="center">
                             <Heading fontSize={{ base: '20px', md: '24px' }} fontWeight="800" color="white">
-                                {isPT ? 'My Clients' : 'User Management'}
+                                {isPT ? t('nav.myClients', 'My Clients') : t('admin.userManagement', 'User Management')}
                             </Heading>
                             {isPT && (
                                 <Badge bg="#1e2028" color="#8A8A93" px="2.5" py="1" borderRadius="full" fontSize="11px">
-                                    Trainer Access (Read-Only)
+                                    {t('admin.trainerAccess', 'Trainer Access (Read-Only)')}
                                 </Badge>
                             )}
                             {isAdmin && (
                                 <Badge bg="rgba(224, 48, 48, 0.15)" color="#E03030" border="1px solid rgba(224, 48, 48, 0.3)" px="2.5" py="1" borderRadius="full" fontSize="11px">
-                                    Admin Full Control
+                                    {t('admin.adminControl', 'Admin Full Control')}
                                 </Badge>
                             )}
                         </HStack>
                         <Text color="#8A8A93" fontSize="13px" mt="1">
                             {isPT
-                                ? 'View client progress, membership plans, and account details'
-                                : 'Manage member accounts, modify profile details, and enforce ban/unban status'}
+                                ? t('admin.ptSubtitle', 'View client progress, membership plans, and account details')
+                                : t('admin.adminSubtitle', 'Manage member accounts, modify profile details, and enforce ban/unban status')}
                         </Text>
                     </Box>
 
@@ -374,7 +376,7 @@ const AdminUsers: React.FC = () => {
                             transition="all 0.2s"
                             onClick={() => setIsAddOpen(true)}
                         >
-                            Add User
+                            {t('admin.addUser', 'Add User')}
                         </Button>
                     )}
                 </Flex>
@@ -387,7 +389,7 @@ const AdminUsers: React.FC = () => {
                     >
                         <Flex justify="space-between" align="center">
                             <Text color="#8A8A93" fontSize="12px" fontWeight="600" textTransform="uppercase">
-                                Total Members
+                                {t('admin.totalMembers', 'Total Members')}
                             </Text>
                             <Circle size="32px" bg="#1e2028" color="#8A8A93">
                                 <FiUsers size={15} />
@@ -404,7 +406,7 @@ const AdminUsers: React.FC = () => {
                     >
                         <Flex justify="space-between" align="center">
                             <Text color="#8A8A93" fontSize="12px" fontWeight="600" textTransform="uppercase">
-                                Active
+                                {t('admin.active', 'Active')}
                             </Text>
                             <Circle size="32px" bg="rgba(16, 185, 129, 0.15)" color="#34d399">
                                 <FiUserCheck size={15} />
@@ -421,7 +423,7 @@ const AdminUsers: React.FC = () => {
                     >
                         <Flex justify="space-between" align="center">
                             <Text color="#8A8A93" fontSize="12px" fontWeight="600" textTransform="uppercase">
-                                Banned / Inactive
+                                {t('admin.banned', 'Banned / Inactive')}
                             </Text>
                             <Circle size="32px" bg="rgba(239, 68, 68, 0.15)" color="#f87171">
                                 <FiUserX size={15} />
@@ -438,7 +440,7 @@ const AdminUsers: React.FC = () => {
                     >
                         <Flex justify="space-between" align="center">
                             <Text color="#8A8A93" fontSize="12px" fontWeight="600" textTransform="uppercase">
-                                Paid Memberships
+                                {t('admin.paidMemberships', 'Paid Memberships')}
                             </Text>
                             <Circle size="32px" bg="rgba(224, 48, 48, 0.15)" color="#E03030">
                                 <FiAward size={15} />
@@ -466,7 +468,7 @@ const AdminUsers: React.FC = () => {
                                 <FiSearch color="#8A8A93" />
                             </InputLeftElement>
                             <Input
-                                placeholder="Search by name or email..."
+                                placeholder={t('admin.searchUser', 'Search by name or email...')}
                                 value={searchQuery}
                                 onChange={e => setSearchQuery(e.target.value)}
                                 bg="#141720"
@@ -491,9 +493,9 @@ const AdminUsers: React.FC = () => {
                                 w="150px"
                                 _focus={{ borderColor: '#E03030' }}
                             >
-                                <option value="ALL" style={{ background: '#141720' }}>Status: All</option>
-                                <option value="ACTIVE" style={{ background: '#141720' }}>Active Only</option>
-                                <option value="BANNED" style={{ background: '#141720' }}>Banned Only</option>
+                                <option value="ALL" style={{ background: '#141720' }}>{t('admin.allStatus', 'Status: All')}</option>
+                                <option value="ACTIVE" style={{ background: '#141720' }}>{t('admin.active', 'Active Only')}</option>
+                                <option value="BANNED" style={{ background: '#141720' }}>{t('admin.banned', 'Banned Only')}</option>
                             </Select>
 
                             <Select
@@ -507,9 +509,9 @@ const AdminUsers: React.FC = () => {
                                 w="160px"
                                 _focus={{ borderColor: '#E03030' }}
                             >
-                                <option value="ALL" style={{ background: '#141720' }}>Plan: All</option>
-                                <option value="FREE" style={{ background: '#141720' }}>Free Plan</option>
-                                <option value="PRO" style={{ background: '#141720' }}>Paid / Pro</option>
+                                <option value="ALL" style={{ background: '#141720' }}>{t('admin.allPlans', 'Plan: All')}</option>
+                                <option value="FREE" style={{ background: '#141720' }}>{t('admin.freePlan', 'Free Plan')}</option>
+                                <option value="PRO" style={{ background: '#141720' }}>{t('admin.proPlan', 'Paid / Pro')}</option>
                             </Select>
                         </HStack>
                     </Flex>
@@ -530,18 +532,18 @@ const AdminUsers: React.FC = () => {
                     {isLoading ? (
                         <Flex justify="center" align="center" p="16" direction="column" gap="3">
                             <Spinner color="#E03030" size="xl" thickness="3px" />
-                            <Text color="#8A8A93" fontSize="13px">Loading members...</Text>
+                            <Text color="#8A8A93" fontSize="13px">{t('common.loading', 'Loading members...')}</Text>
                         </Flex>
                     ) : error ? (
                         <Flex justify="center" p="10" direction="column" align="center">
-                            <Text color="red.400" fontWeight="600" mb="2">Failed to load users</Text>
+                            <Text color="red.400" fontWeight="600" mb="2">{t('admin.failedLoadUsers', 'Failed to load users')}</Text>
                             <Button size="sm" onClick={() => mutate()} colorScheme="red" variant="outline">
-                                Try Again
+                                {t('common.retry', 'Try Again')}
                             </Button>
                         </Flex>
                     ) : filteredUsers.length === 0 ? (
                         <Flex justify="center" align="center" p="12" direction="column">
-                            <Text color="#8A8A93" fontSize="14px">No users found matching your filters.</Text>
+                            <Text color="#8A8A93" fontSize="14px">{t('admin.noUsersFound', 'No users found matching your filters.')}</Text>
                         </Flex>
                     ) : (
                         <>
@@ -549,14 +551,14 @@ const AdminUsers: React.FC = () => {
                                 <Table variant="simple" size="sm">
                                 <Thead bg="#0A0C10">
                                     <Tr>
-                                        <Th color="#8A8A93" borderColor="#1e2028" py="4" fontSize="11px" letterSpacing="0.05em">NAME</Th>
-                                        <Th color="#8A8A93" borderColor="#1e2028" py="4" fontSize="11px" letterSpacing="0.05em">EMAIL</Th>
-                                        <Th color="#8A8A93" borderColor="#1e2028" py="4" fontSize="11px" letterSpacing="0.05em">PLAN</Th>
-                                        <Th color="#8A8A93" borderColor="#1e2028" py="4" fontSize="11px" letterSpacing="0.05em">JOIN DATE</Th>
-                                        <Th color="#8A8A93" borderColor="#1e2028" py="4" fontSize="11px" letterSpacing="0.05em">STATUS</Th>
+                                        <Th color="#8A8A93" borderColor="#1e2028" py="4" fontSize="11px" letterSpacing="0.05em">{t('common.name', 'NAME')}</Th>
+                                        <Th color="#8A8A93" borderColor="#1e2028" py="4" fontSize="11px" letterSpacing="0.05em">{t('common.email', 'EMAIL')}</Th>
+                                        <Th color="#8A8A93" borderColor="#1e2028" py="4" fontSize="11px" letterSpacing="0.05em">{t('admin.plan', 'PLAN')}</Th>
+                                        <Th color="#8A8A93" borderColor="#1e2028" py="4" fontSize="11px" letterSpacing="0.05em">{t('admin.joined', 'JOIN DATE')}</Th>
+                                        <Th color="#8A8A93" borderColor="#1e2028" py="4" fontSize="11px" letterSpacing="0.05em">{t('common.status', 'STATUS')}</Th>
                                         {isAdmin && (
                                             <Th color="#8A8A93" borderColor="#1e2028" py="4" fontSize="11px" letterSpacing="0.05em" textAlign="right">
-                                                ACTIONS
+                                                {t('common.actions', 'ACTIONS')}
                                             </Th>
                                         )}
                                     </Tr>
@@ -645,7 +647,7 @@ const AdminUsers: React.FC = () => {
                                                             fontSize="11px"
                                                             fontWeight="600"
                                                         >
-                                                            FREE
+                                                            {t('admin.freePlan', 'FREE')}
                                                         </Badge>
                                                     )}
                                                 </Td>
@@ -671,13 +673,13 @@ const AdminUsers: React.FC = () => {
                                                             textTransform="uppercase"
                                                             letterSpacing="0.04em"
                                                         >
-                                                            {isActive ? 'ACTIVE' : 'BANNED'}
+                                                            {isActive ? t('common.active', 'ACTIVE') : t('admin.banned', 'BANNED')}
                                                         </Badge>
 
                                                         {/* Quick Switch for Admin */}
                                                         {isAdmin && (
                                                             <Tooltip
-                                                                label={isActive ? 'Click to Ban User' : 'Click to Unban / Activate User'}
+                                                                 label={isActive ? t('admin.banUser', 'Click to Ban User') : t('admin.unbanUser', 'Click to Unban / Activate User')}
                                                                 hasArrow
                                                                 placement="top"
                                                             >
@@ -703,10 +705,10 @@ const AdminUsers: React.FC = () => {
                                                 {isAdmin && (
                                                     <Td borderColor="#1e2028" textAlign="right">
                                                         <HStack spacing="1.5" justify="flex-end">
-                                                            {/* Edit Button */}
-                                                            <Tooltip label="Edit Member Profile" hasArrow placement="top">
+                                                             {/* Edit Button */}
+                                                             <Tooltip label={t('admin.editUser', 'Edit Member Profile')} hasArrow placement="top">
                                                                 <IconButton
-                                                                    aria-label="Edit User"
+                                                                     aria-label={t('admin.editUser', 'Edit User')}
                                                                     icon={<FiEdit2 />}
                                                                     size="sm"
                                                                     variant="ghost"
@@ -716,14 +718,14 @@ const AdminUsers: React.FC = () => {
                                                                 />
                                                             </Tooltip>
 
-                                                            {/* Ban/Unban Button */}
-                                                            <Tooltip
-                                                                label={isActive ? 'Ban Account' : 'Unban Account'}
+                                                             {/* Ban/Unban Button */}
+                                                             <Tooltip
+                                                                 label={isActive ? t('admin.banUser', 'Ban Account') : t('admin.unbanUser', 'Unban Account')}
                                                                 hasArrow
                                                                 placement="top"
                                                             >
                                                                 <IconButton
-                                                                    aria-label={isActive ? 'Ban User' : 'Unban User'}
+                                                                     aria-label={isActive ? t('admin.banUser', 'Ban User') : t('admin.unbanUser', 'Unban User')}
                                                                     icon={isActive ? <FiSlash /> : <FiCheckCircle />}
                                                                     size="sm"
                                                                     variant="ghost"
@@ -740,7 +742,7 @@ const AdminUsers: React.FC = () => {
                                                             <Menu placement="bottom-end">
                                                                 <MenuButton
                                                                     as={IconButton}
-                                                                    aria-label="More actions"
+                                                                     aria-label={t('common.actions', 'More actions')}
                                                                     icon={<FiMoreVertical />}
                                                                     size="sm"
                                                                     variant="ghost"
@@ -757,7 +759,7 @@ const AdminUsers: React.FC = () => {
                                                                         borderRadius="8px"
                                                                         onClick={() => handleOpenEdit(u)}
                                                                     >
-                                                                        Edit Details
+                                                                         {t('common.edit', 'Edit Details')}
                                                                     </MenuItem>
                                                                     <MenuItem
                                                                         bg="transparent"
@@ -768,7 +770,7 @@ const AdminUsers: React.FC = () => {
                                                                         borderRadius="8px"
                                                                         onClick={() => handleToggleStatus(u.id, u.status)}
                                                                     >
-                                                                        {isActive ? 'Ban / Deactivate' : 'Unban / Activate'}
+                                                                         {isActive ? t('admin.banUser', 'Ban / Deactivate') : t('admin.unbanUser', 'Unban / Activate')}
                                                                     </MenuItem>
                                                                 </MenuList>
                                                             </Menu>
@@ -802,14 +804,14 @@ const AdminUsers: React.FC = () => {
                 <ModalContent bg="#141720" border="1px solid #1e2028" borderRadius="18px" color="white">
                     <form onSubmit={handleSubmitEdit}>
                         <ModalHeader borderBottom="1px solid #1e2028" fontSize="18px" fontWeight="800">
-                            Edit Member Profile
+                            {t('admin.editUser', 'Edit Member Profile')}
                         </ModalHeader>
                         <ModalCloseButton />
                         <ModalBody py="5">
                             <VStack spacing="4">
                                 <FormControl isRequired>
                                     <FormLabel fontSize="12px" color="#8A8A93" fontWeight="600" textTransform="uppercase">
-                                        Full Name
+                                        {t('common.name', 'Full Name')}
                                     </FormLabel>
                                     <Input
                                         value={editForm.fullname}
@@ -824,7 +826,7 @@ const AdminUsers: React.FC = () => {
 
                                 <FormControl isRequired>
                                     <FormLabel fontSize="12px" color="#8A8A93" fontWeight="600" textTransform="uppercase">
-                                        Email Address
+                                        {t('common.email', 'Email Address')}
                                     </FormLabel>
                                     <Input
                                         type="email"
@@ -840,7 +842,7 @@ const AdminUsers: React.FC = () => {
 
                                 <FormControl>
                                     <FormLabel fontSize="12px" color="#8A8A93" fontWeight="600" textTransform="uppercase">
-                                        Phone Number
+                                        {t('admin.phone', 'Phone Number')}
                                     </FormLabel>
                                     <Input
                                         value={editForm.phone}
@@ -856,7 +858,7 @@ const AdminUsers: React.FC = () => {
 
                                 <FormControl>
                                     <FormLabel fontSize="12px" color="#8A8A93" fontWeight="600" textTransform="uppercase">
-                                        Account Status
+                                        {t('common.status', 'Account Status')}
                                     </FormLabel>
                                     <Select
                                         value={editForm.status}
@@ -867,15 +869,15 @@ const AdminUsers: React.FC = () => {
                                         fontSize="13px"
                                         _focus={{ borderColor: '#E03030' }}
                                     >
-                                        <option value="ACTIVE" style={{ background: '#141720' }}>ACTIVE (Normal Access)</option>
-                                        <option value="BANNED" style={{ background: '#141720' }}>BANNED (Suspended)</option>
+                                        <option value="ACTIVE" style={{ background: '#141720' }}>{t('common.active', 'ACTIVE')} ({t('admin.active', 'Normal Access')})</option>
+                                        <option value="BANNED" style={{ background: '#141720' }}>{t('admin.banned', 'BANNED')} ({t('admin.banned', 'Suspended')})</option>
                                     </Select>
                                 </FormControl>
                             </VStack>
                         </ModalBody>
                         <ModalFooter borderTop="1px solid #1e2028">
                             <Button variant="ghost" mr="3" onClick={() => setIsEditOpen(false)} color="#8A8A93" size="sm">
-                                Cancel
+                                {t('common.cancel', 'Cancel')}
                             </Button>
                             <Button
                                 type="submit"
@@ -887,7 +889,7 @@ const AdminUsers: React.FC = () => {
                                 _hover={{ bg: '#c52828' }}
                                 isLoading={isSubmittingEdit}
                             >
-                                Save Changes
+                                {t('common.save', 'Save Changes')}
                             </Button>
                         </ModalFooter>
                     </form>
@@ -900,14 +902,14 @@ const AdminUsers: React.FC = () => {
                 <ModalContent bg="#141720" border="1px solid #1e2028" borderRadius="18px" color="white">
                     <form onSubmit={handleSubmitAdd}>
                         <ModalHeader borderBottom="1px solid #1e2028" fontSize="18px" fontWeight="800">
-                            Create New Member Account
+                            {t('admin.createUser', 'Create New Member Account')}
                         </ModalHeader>
                         <ModalCloseButton />
                         <ModalBody py="5">
                             <VStack spacing="4">
                                 <FormControl isRequired>
                                     <FormLabel fontSize="12px" color="#8A8A93" fontWeight="600" textTransform="uppercase">
-                                        Full Name
+                                        {t('common.name', 'Full Name')}
                                     </FormLabel>
                                     <Input
                                         placeholder="e.g. Nguyen Van A"
@@ -923,7 +925,7 @@ const AdminUsers: React.FC = () => {
 
                                 <FormControl isRequired>
                                     <FormLabel fontSize="12px" color="#8A8A93" fontWeight="600" textTransform="uppercase">
-                                        Email Address
+                                        {t('common.email', 'Email Address')}
                                     </FormLabel>
                                     <Input
                                         type="email"
@@ -940,7 +942,7 @@ const AdminUsers: React.FC = () => {
 
                                 <FormControl>
                                     <FormLabel fontSize="12px" color="#8A8A93" fontWeight="600" textTransform="uppercase">
-                                        Initial Password (Default: 123456)
+                                        {t('auth.password', 'Initial Password')} (123456)
                                     </FormLabel>
                                     <Input
                                         type="password"
@@ -957,7 +959,7 @@ const AdminUsers: React.FC = () => {
 
                                 <FormControl>
                                     <FormLabel fontSize="12px" color="#8A8A93" fontWeight="600" textTransform="uppercase">
-                                        Phone Number (Optional)
+                                        {t('admin.phone', 'Phone Number')}
                                     </FormLabel>
                                     <Input
                                         placeholder="0912345678"
@@ -974,7 +976,7 @@ const AdminUsers: React.FC = () => {
                         </ModalBody>
                         <ModalFooter borderTop="1px solid #1e2028">
                             <Button variant="ghost" mr="3" onClick={() => setIsAddOpen(false)} color="#8A8A93" size="sm">
-                                Cancel
+                                {t('common.cancel', 'Cancel')}
                             </Button>
                             <Button
                                 type="submit"
@@ -986,7 +988,7 @@ const AdminUsers: React.FC = () => {
                                 _hover={{ bg: '#c52828' }}
                                 isLoading={isSubmittingAdd}
                             >
-                                Create Account
+                                {t('admin.addUser', 'Create Account')}
                             </Button>
                         </ModalFooter>
                     </form>

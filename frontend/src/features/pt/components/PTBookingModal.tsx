@@ -13,6 +13,7 @@ import {
     Text,
     Textarea,
 } from '@chakra-ui/react'
+import { useTranslation } from 'react-i18next'
 import type { BookingState, Session, SessionType } from '../types/pt'
 
 const SESSION_TYPE_OPTIONS: SessionType[] = [
@@ -42,6 +43,8 @@ const PTBookingModal: React.FC<PTBookingModalProps> = ({
     onCancel,
     isSubmitting = false,
 }) => {
+    const { t } = useTranslation()
+
     if (!session || !bookingForm) {
         return null
     }
@@ -61,7 +64,7 @@ const PTBookingModal: React.FC<PTBookingModalProps> = ({
             >
                 <ModalHeader p="0" mb="7">
                     <Text fontSize="22px" fontWeight="800" color="#E2E1EB" letterSpacing="-0.01em">
-                        Confirm Your Session
+                        {t('pt.confirmYourSession', 'Confirm Your Session')}
                     </Text>
                 </ModalHeader>
 
@@ -69,7 +72,7 @@ const PTBookingModal: React.FC<PTBookingModalProps> = ({
                     <Stack spacing="6">
                         <Stack spacing="1">
                             <Text fontSize="14px" fontWeight="700" color="#8A8A93">
-                                Selected detail:
+                                {t('pt.selectedDetail', 'Selected detail:')}
                             </Text>
                             <Text fontSize="18px" fontWeight="800" color="#E2E1EB">
                                 {bookingForm.sessionDate} at {session.time}
@@ -85,7 +88,7 @@ const PTBookingModal: React.FC<PTBookingModalProps> = ({
                                 letterSpacing="wider"
                                 mb="2"
                             >
-                                Session Type
+                                {t('pt.sessionType', 'Session Type')}
                             </FormLabel>
                             <Select
                                 value={bookingForm.sessionType}
@@ -100,7 +103,7 @@ const PTBookingModal: React.FC<PTBookingModalProps> = ({
                             >
                                 {SESSION_TYPE_OPTIONS.map((option) => (
                                     <option key={option} value={option}>
-                                        {option}
+                                        {option === 'Video Call' ? t('pt.videoCall', 'Video Call') : t('pt.inPerson', 'In-Person')}
                                     </option>
                                 ))}
                             </Select>
@@ -115,12 +118,12 @@ const PTBookingModal: React.FC<PTBookingModalProps> = ({
                                 letterSpacing="wider"
                                 mb="2"
                             >
-                                Notes
+                                {t('pt.notes', 'Notes')}
                             </FormLabel>
                             <Textarea
                                 value={bookingForm.notes}
                                 onChange={(event) => onNotesChange(event.target.value)}
-                                placeholder="Any specific goals for this session?"
+                                placeholder={t('pt.notesPlaceholder', 'Any specific goals for this session?')}
                                 bg="#12131a"
                                 borderColor="#262626"
                                 borderRadius="8px"
@@ -144,10 +147,10 @@ const PTBookingModal: React.FC<PTBookingModalProps> = ({
                                 _hover={{ bg: '#c92a2a' }}
                                 onClick={onConfirm}
                                 isLoading={isSubmitting}
-                                loadingText="Redirecting..."
+                                loadingText={t('pt.redirecting', 'Redirecting...')}
                                 isDisabled={bookingForm.sessionType === 'In-Person'}
                             >
-                                {bookingForm.sessionType === 'In-Person' ? 'Coming Soon' : 'Confirm Booking'}
+                                {bookingForm.sessionType === 'In-Person' ? t('pt.comingSoon', 'Coming Soon') : t('pt.confirmBooking', 'Confirm Booking')}
                             </Button>
 
                             <Button
@@ -162,7 +165,7 @@ const PTBookingModal: React.FC<PTBookingModalProps> = ({
                                 _hover={{ bg: 'rgba(255,255,255,0.05)', borderColor: 'white' }}
                                 onClick={onCancel}
                             >
-                                Cancel
+                                {t('common.cancel', 'Cancel')}
                             </Button>
                         </Stack>
                     </Stack>

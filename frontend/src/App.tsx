@@ -6,6 +6,8 @@ import RouterContainer from './router/router-container'
 
 import { NotificationProvider } from './context/NotificationContext'
 import ErrorBoundary from './components/shared/ErrorBoundary'
+import { I18nextProvider } from 'react-i18next'
+import i18n from './i18n'
 
 const Router = import.meta.env.PROD ? HashRouter : BrowserRouter
 
@@ -20,15 +22,17 @@ function App() {
     <>
       <ColorModeScript initialColorMode={theme.config.initialColorMode} />
       <ChakraProvider theme={theme}>
-        <GoogleOAuthProvider clientId={googleClientId}>
-          <Router>
-            <ErrorBoundary>
-              <NotificationProvider>
-                <RouterContainer />
-              </NotificationProvider>
-            </ErrorBoundary>
-          </Router>
-        </GoogleOAuthProvider>
+        <I18nextProvider i18n={i18n}>
+          <GoogleOAuthProvider clientId={googleClientId}>
+            <Router>
+              <ErrorBoundary>
+                <NotificationProvider>
+                  <RouterContainer />
+                </NotificationProvider>
+              </ErrorBoundary>
+            </Router>
+          </GoogleOAuthProvider>
+        </I18nextProvider>
       </ChakraProvider>
     </>
   )

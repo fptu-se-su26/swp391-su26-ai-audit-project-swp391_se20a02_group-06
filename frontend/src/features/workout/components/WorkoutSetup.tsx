@@ -19,6 +19,7 @@ import {
 } from '@chakra-ui/react'
 import { FiLock } from 'react-icons/fi'
 import { useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import AppButton from '../../../components/shared/Button/AppButton'
 import type { WorkoutFormData } from '../types/workout'
 import {
@@ -39,6 +40,7 @@ interface WorkoutSetupProps {
 
 /* ─── Main Wizard ──────────────────────────── */
 const WorkoutSetup: React.FC<WorkoutSetupProps> = ({ onComplete }) => {
+    const { t } = useTranslation()
     const [step, setStep] = useState(0)
     const TOTAL = 3
     const toast = useToast()
@@ -144,9 +146,9 @@ const WorkoutSetup: React.FC<WorkoutSetupProps> = ({ onComplete }) => {
     const back = () => setStep((s) => s - 1)
 
     const stepMeta = [
-        { title: 'Plan Type', sub: 'Do you want a single day or a full week plan?' },
-        { title: 'Training Goal', sub: 'Choose your main goal for the AI to adjust your program.' },
-        { title: 'Target Muscles', sub: 'Select the target muscles you want NETFIT to focus on.' },
+        { title: t('workouts.planType', 'Plan Type'), sub: t('workouts.planTypeDesc', 'Do you want a single day or a full week plan?') },
+        { title: t('workouts.trainingGoal', 'Training Goal'), sub: t('workouts.trainingGoalDesc', 'Choose your main goal for the AI to adjust your program.') },
+        { title: t('workouts.targetMuscles', 'Target Muscles'), sub: t('workouts.targetMusclesDesc', 'Select the target muscles you want NETFIT to focus on.') },
     ]
 
     return (
@@ -195,15 +197,15 @@ const WorkoutSetup: React.FC<WorkoutSetupProps> = ({ onComplete }) => {
                     {/* ── STEP 1: Goal selection ── */}
                     {step === 1 && (
                         <Stack spacing="5">
-                            <SectionLabel>Select your goal</SectionLabel>
+                            <SectionLabel>{t('workouts.selectGoal', 'Select your goal')}</SectionLabel>
                             <Grid templateColumns="repeat(2, minmax(0, 1fr))" gap="3">
                                 {[
-                                    { id: 'lose_weight', label: 'Lose Weight' },
-                                    { id: 'build_muscle', label: 'Build Muscle' },
-                                    { id: 'stay_active', label: 'Stay Active' },
-                                    { id: 'endurance', label: 'Increase Endurance' },
-                                    { id: 'health', label: 'Improve Health' },
-                                    { id: 'performance', label: 'Sports Performance' },
+                                    { id: 'lose_weight', label: t('workouts.loseWeight', 'Lose Weight') },
+                                    { id: 'build_muscle', label: t('workouts.buildMuscle', 'Build Muscle') },
+                                    { id: 'stay_active', label: t('workouts.stayActive', 'Stay Active') },
+                                    { id: 'endurance', label: t('workouts.endurance', 'Increase Endurance') },
+                                    { id: 'health', label: t('workouts.health', 'Improve Health') },
+                                    { id: 'performance', label: t('workouts.performance', 'Sports Performance') },
                                 ].map((g) => (
                                     <GoalCard
                                         key={g.id}
@@ -215,14 +217,18 @@ const WorkoutSetup: React.FC<WorkoutSetupProps> = ({ onComplete }) => {
                             </Grid>
 
                             <Box>
-                                <SectionLabel>Current Level</SectionLabel>
+                                <SectionLabel>{t('workouts.currentLevel', 'Current Level')}</SectionLabel>
                                 <Flex gap="1" p="1" bg="#141820" border="1px solid" borderColor="#232936" borderRadius="16px">
-                                    {['Beginner', 'Intermediate', 'Advanced'].map((lv) => (
+                                    {[
+                                        { id: 'Beginner', label: t('workouts.beginner', 'Beginner') },
+                                        { id: 'Intermediate', label: t('workouts.intermediate', 'Intermediate') },
+                                        { id: 'Advanced', label: t('workouts.advanced', 'Advanced') }
+                                    ].map((lv) => (
                                         <LevelPill
-                                            key={lv}
-                                            label={lv}
-                                            selected={form.level === lv}
-                                            onClick={() => set('level', lv)}
+                                            key={lv.id}
+                                            label={lv.label}
+                                            selected={form.level === lv.id}
+                                            onClick={() => set('level', lv.id as any)}
                                         />
                                     ))}
                                 </Flex>
@@ -275,7 +281,7 @@ const WorkoutSetup: React.FC<WorkoutSetupProps> = ({ onComplete }) => {
                                 {form.muscles.length > 0 && (
                                     <Box>
                                         <Text fontSize="9px" fontWeight="700" color="#8A8A93" textTransform="uppercase" letterSpacing="wider" mb="2">
-                                            Selected Zones
+                                            {t('workouts.selectedZones', 'Selected Zones')}
                                         </Text>
                                         <Flex flexWrap="wrap" gap="1">
                                             {form.muscles.map((m) => {
@@ -312,7 +318,7 @@ const WorkoutSetup: React.FC<WorkoutSetupProps> = ({ onComplete }) => {
                                 {form.planType === 'weekly' && form.injuries.length > 0 && (
                                     <Box mt="3">
                                         <Text fontSize="9px" fontWeight="700" color="#E03030" textTransform="uppercase" letterSpacing="wider" mb="2">
-                                            Injuries / Pain
+                                            {t('workouts.injuriesPain', 'Injuries / Pain')}
                                         </Text>
                                         <Flex flexWrap="wrap" gap="1">
                                             {form.injuries.map((m) => {
@@ -361,7 +367,7 @@ const WorkoutSetup: React.FC<WorkoutSetupProps> = ({ onComplete }) => {
                                     w="fit-content"
                                     mx="auto"
                                 >
-                                    <Text fontSize="12px" color="#8A8A93">Select target muscles</Text>
+                                    <Text fontSize="12px" color="#8A8A93">{t('workouts.selectTargetMuscles', 'Select target muscles')}</Text>
                                 </Flex>
 
                                 {/* Also allow clicking muscle chips */}
@@ -375,7 +381,7 @@ const WorkoutSetup: React.FC<WorkoutSetupProps> = ({ onComplete }) => {
                                         />
                                     ))}
                                     <OptionChip
-                                        label="Full Body"
+                                        label={t('workouts.fullBody', 'Full Body')}
                                         selected={form.muscles.length === muscleZones.length && muscleZones.length > 0}
                                         onClick={() => {
                                             setForm((p) => ({
@@ -400,7 +406,7 @@ const WorkoutSetup: React.FC<WorkoutSetupProps> = ({ onComplete }) => {
                                             w="fit-content"
                                             mx="auto"
                                         >
-                                            <Text fontSize="12px" color="#E03030" fontWeight="600">Are you experiencing pain or injury in any muscle group?</Text>
+                                            <Text fontSize="12px" color="#E03030" fontWeight="600">{t('workouts.painQuestion', 'Are you experiencing pain or injury in any muscle group?')}</Text>
                                         </Flex>
 
                                         <Flex flexWrap="wrap" gap="2" justify="center" mt="3">
@@ -461,7 +467,7 @@ const WorkoutSetup: React.FC<WorkoutSetupProps> = ({ onComplete }) => {
                     {/* ── STEP 0: Plan Type ── */}
                     {step === 0 && (
                         <Stack spacing="5">
-                            <SectionLabel>Select plan type</SectionLabel>
+                            <SectionLabel>{t('workouts.planType', 'Select plan type')}</SectionLabel>
                             <Grid templateColumns={{ base: '1fr', sm: 'repeat(2, minmax(0, 1fr))' }} gap="4">
                                 <Box
                                     p="5"
@@ -475,10 +481,10 @@ const WorkoutSetup: React.FC<WorkoutSetupProps> = ({ onComplete }) => {
                                     _hover={{ borderColor: form.planType === 'daily' ? '#E03030' : '#3e4050' }}
                                 >
                                     <Heading fontSize="18px" fontWeight="800" color={form.planType === 'daily' ? 'white' : '#E2E1EB'} mb="2">
-                                        Daily
+                                        {t('workouts.daily', 'Daily')}
                                     </Heading>
                                     <Text fontSize="13px" color="#8A8A93">
-                                        Generate a quick single workout session for today.
+                                        {t('workouts.dailyDesc', 'Generate a quick single workout session for today.')}
                                     </Text>
                                 </Box>
                                 <Box
@@ -493,7 +499,7 @@ const WorkoutSetup: React.FC<WorkoutSetupProps> = ({ onComplete }) => {
                                     onClick={() => {
                                         if (!hasWeeklyAccess) {
                                             toast({
-                                                title: 'Premium Tier Feature',
+                                                title: t('workouts.premiumTierFeature', 'Premium Tier Feature'),
                                                 description: `You need the "${requiredPackageName}" subscription to generate Weekly Plans. Click to view available packages.`,
                                                 status: 'warning',
                                                 duration: 5000,
@@ -509,7 +515,7 @@ const WorkoutSetup: React.FC<WorkoutSetupProps> = ({ onComplete }) => {
                                 >
                                     <Flex justify="space-between" align="center" mb="2">
                                         <Heading fontSize="18px" fontWeight="800" color={form.planType === 'weekly' ? 'white' : '#E2E1EB'}>
-                                            Weekly
+                                            {t('workouts.weekly', 'Weekly')}
                                         </Heading>
                                         {!hasWeeklyAccess && (
                                             <HStack spacing="1.5" px="2" py="0.5" bg="rgba(224,48,48,0.15)" borderRadius="full" border="1px solid" borderColor="#E03030">
@@ -521,7 +527,7 @@ const WorkoutSetup: React.FC<WorkoutSetupProps> = ({ onComplete }) => {
                                         )}
                                     </Flex>
                                     <Text fontSize="13px" color="#8A8A93">
-                                        Generate a personalized weekly plan aligned with your schedule.
+                                        {t('workouts.weeklyDesc', 'Generate a personalized weekly plan aligned with your schedule.')}
                                     </Text>
                                 </Box>
                             </Grid>
@@ -542,7 +548,7 @@ const WorkoutSetup: React.FC<WorkoutSetupProps> = ({ onComplete }) => {
                 >
                     {step > 0 ? (
                         <AppButton
-                            label="Back"
+                            label={t('common.back', 'Back')}
                             variant="outline"
                             h="42px"
                             px="5"
@@ -554,7 +560,7 @@ const WorkoutSetup: React.FC<WorkoutSetupProps> = ({ onComplete }) => {
                     )}
 
                     <AppButton
-                        label={step === TOTAL - 1 ? 'Generate Workout' : 'Continue'}
+                        label={step === TOTAL - 1 ? t('workouts.generateWorkout', 'Generate Workout') : t('common.continue', 'Continue')}
                         variant="solid"
                         h="42px"
                         px="6"
@@ -570,10 +576,10 @@ const WorkoutSetup: React.FC<WorkoutSetupProps> = ({ onComplete }) => {
             <Modal isOpen={showInjuryWarning} onClose={() => setShowInjuryWarning(false)} isCentered>
                 <ModalOverlay />
                 <ModalContent bg="#111318" border="1px solid #1e2028" color="white" borderRadius="16px">
-                    <ModalHeader color="#E03030">Health Warning</ModalHeader>
+                    <ModalHeader color="#E03030">{t('workouts.healthWarning', 'Health Warning')}</ModalHeader>
                     <ModalBody>
                         <Text fontSize="15px" color="#E2E1EB">
-                            You should rest and take care your health before doing exercises!
+                            {t('workouts.healthWarningDesc', 'You should rest and take care your health before doing exercises!')}
                         </Text>
                     </ModalBody>
                     <ModalFooter>
@@ -584,7 +590,7 @@ const WorkoutSetup: React.FC<WorkoutSetupProps> = ({ onComplete }) => {
                                 _hover={{ bg: '#C02020' }}
                                 onClick={() => navigate('/dashboard')}
                             >
-                                Exit
+                                {t('common.exit', 'Exit')}
                             </Button>
                         ) : (
                             <>
@@ -595,7 +601,7 @@ const WorkoutSetup: React.FC<WorkoutSetupProps> = ({ onComplete }) => {
                                     mr={3}
                                     onClick={() => navigate('/dashboard')}
                                 >
-                                    Exit
+                                    {t('common.exit', 'Exit')}
                                 </Button>
                                 <Button
                                     bg="#E03030"
@@ -606,7 +612,7 @@ const WorkoutSetup: React.FC<WorkoutSetupProps> = ({ onComplete }) => {
                                         onComplete(form)
                                     }}
                                 >
-                                    Continue
+                                    {t('common.continue', 'Continue')}
                                 </Button>
                             </>
                         )}

@@ -1,6 +1,7 @@
 import React from 'react'
 import { Box, Button, Flex, Heading, Icon, Image, Stack, Text } from '@chakra-ui/react'
 import { FiMessageSquare } from 'react-icons/fi'
+import { useTranslation } from 'react-i18next'
 import type { Coach } from '../types/pt'
 
 const OnlineDot = (
@@ -18,127 +19,131 @@ interface PTCoachCardProps {
     coach: Coach
 }
 
-const PTCoachCard: React.FC<PTCoachCardProps> = ({ coach }) => (
-    <Stack spacing="6">
-        <Box
-            bg="#141414"
-            border="1px solid"
-            borderColor="#262626"
-            borderRadius="32px"
-            p={{ base: '5', md: '6' }}
-            w="full"
-            boxShadow="0 12px 32px rgba(0, 0, 0, 0.18)"
-        >
+const PTCoachCard: React.FC<PTCoachCardProps> = ({ coach }) => {
+    const { t } = useTranslation()
+
+    return (
+        <Stack spacing="6">
             <Box
-                position="relative"
-                overflow="hidden"
-                borderRadius="24px"
-                bg="#0c0e14"
-                mb="6"
-                sx={{ aspectRatio: '1 / 1' }}
-            >
-                <Image
-                    src={coach.imageUrl}
-                    alt={coach.imageAlt}
-                    w="full"
-                    h="full"
-                    objectFit="cover"
-                    transition="transform 0.7s ease"
-                    _hover={{ transform: 'scale(1.04)' }}
-                />
-                <Box
-                    position="absolute"
-                    inset="0"
-                    bgGradient="linear(to-t, rgba(0,0,0,0.28), transparent 46%)"
-                    pointerEvents="none"
-                />
-                {coach.isOnline && (
-                    <Flex
-                        position="absolute"
-                        top="4"
-                        left="4"
-                        align="center"
-                        gap="2"
-                        px="3"
-                        py="1.5"
-                        bg="rgba(0,0,0,0.55)"
-                        backdropFilter="blur(8px)"
-                        borderRadius="full"
-                        border="1px solid rgba(255,255,255,0.1)"
-                    >
-                        {OnlineDot}
-                        <Text fontSize="11px" fontWeight="700" color="white">
-                            Online
-                        </Text>
-                    </Flex>
-                )}
-            </Box>
-
-            <Heading fontSize="22px" fontWeight="800" color="white" mb="1" letterSpacing="-0.01em">
-                {coach.name}
-            </Heading>
-            <Text fontSize="10px" fontWeight="700" color="#E03030" textTransform="uppercase" letterSpacing="wider" mb="3">
-                {coach.tagline}
-            </Text>
-            <Text fontSize="14px" color="#C8C6C5" lineHeight="1.7" mb="5">
-                {coach.bio}
-            </Text>
-
-            <Flex wrap="wrap" gap="2" mb="8">
-                {coach.tags.map((tag) => (
-                    <Box
-                        key={tag}
-                        px="10px"
-                        py="5px"
-                        bg="#262626"
-                        borderRadius="full"
-                    >
-                        <Text fontSize="10px" fontWeight="700" color="#C8C6C5">
-                            {tag}
-                        </Text>
-                    </Box>
-                ))}
-                {coach.sessionRate && (
-                    <Box
-                        px="10px"
-                        py="5px"
-                        bg="rgba(224, 48, 48, 0.1)"
-                        border="1px solid rgba(224, 48, 48, 0.3)"
-                        borderRadius="full"
-                    >
-                        <Text fontSize="10px" fontWeight="800" color="#E03030">
-                            {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(coach.sessionRate)}/session
-                        </Text>
-                    </Box>
-                )}
-            </Flex>
-
-            {coach.philosophy && (
-                <Box mb="6" p="4" bg="rgba(255, 255, 255, 0.02)" borderRadius="16px" border="1px solid" borderColor="rgba(255, 255, 255, 0.05)">
-                    <Text fontSize="10px" fontWeight="800" color="#C8C6C5" textTransform="uppercase" letterSpacing="wider" mb="2">
-                        Coaching Philosophy
-                    </Text>
-                    <Text fontSize="13px" color="#C8C6C5" fontStyle="italic" lineHeight="1.6">
-                        "{coach.philosophy}"
-                    </Text>
-                </Box>
-            )}
-
-            <Button
-                leftIcon={<Icon as={FiMessageSquare} boxSize="15px" />}
+                bg="#141414"
+                border="1px solid"
+                borderColor="#262626"
+                borderRadius="32px"
+                p={{ base: '5', md: '6' }}
                 w="full"
-                h="56px"
-                bg="#E03030"
-                color="white"
-                borderRadius="full"
-                fontSize="14px"
-                fontWeight="800"
-                _hover={{ bg: '#c92a2a' }}
+                boxShadow="0 12px 32px rgba(0, 0, 0, 0.18)"
             >
-                Message {coach.name.split(' ')[0]}
-            </Button>
-        </Box>
-    </Stack>
-)
+                <Box
+                    position="relative"
+                    overflow="hidden"
+                    borderRadius="24px"
+                    bg="#0c0e14"
+                    mb="6"
+                    sx={{ aspectRatio: '1 / 1' }}
+                >
+                    <Image
+                        src={coach.imageUrl}
+                        alt={coach.imageAlt}
+                        w="full"
+                        h="full"
+                        objectFit="cover"
+                        transition="transform 0.7s ease"
+                        _hover={{ transform: 'scale(1.04)' }}
+                    />
+                    <Box
+                        position="absolute"
+                        inset="0"
+                        bgGradient="linear(to-t, rgba(0,0,0,0.28), transparent 46%)"
+                        pointerEvents="none"
+                    />
+                    {coach.isOnline && (
+                        <Flex
+                            position="absolute"
+                            top="4"
+                            left="4"
+                            align="center"
+                            gap="2"
+                            px="3"
+                            py="1.5"
+                            bg="rgba(0,0,0,0.55)"
+                            backdropFilter="blur(8px)"
+                            borderRadius="full"
+                            border="1px solid rgba(255,255,255,0.1)"
+                        >
+                            {OnlineDot}
+                            <Text fontSize="11px" fontWeight="700" color="white">
+                                {t('common.online', 'Online')}
+                            </Text>
+                        </Flex>
+                    )}
+                </Box>
+
+                <Heading fontSize="22px" fontWeight="800" color="white" mb="1" letterSpacing="-0.01em">
+                    {coach.name}
+                </Heading>
+                <Text fontSize="10px" fontWeight="700" color="#E03030" textTransform="uppercase" letterSpacing="wider" mb="3">
+                    {coach.tagline}
+                </Text>
+                <Text fontSize="14px" color="#C8C6C5" lineHeight="1.7" mb="5">
+                    {coach.bio}
+                </Text>
+
+                <Flex wrap="wrap" gap="2" mb="8">
+                    {coach.tags.map((tag) => (
+                        <Box
+                            key={tag}
+                            px="10px"
+                            py="5px"
+                            bg="#262626"
+                            borderRadius="full"
+                        >
+                            <Text fontSize="10px" fontWeight="700" color="#C8C6C5">
+                                {tag}
+                            </Text>
+                        </Box>
+                    ))}
+                    {coach.sessionRate && (
+                        <Box
+                            px="10px"
+                            py="5px"
+                            bg="rgba(224, 48, 48, 0.1)"
+                            border="1px solid rgba(224, 48, 48, 0.3)"
+                            borderRadius="full"
+                        >
+                            <Text fontSize="10px" fontWeight="800" color="#E03030">
+                                {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(coach.sessionRate)}/{t('pt.session', 'buổi')}
+                            </Text>
+                        </Box>
+                    )}
+                </Flex>
+
+                {coach.philosophy && (
+                    <Box mb="6" p="4" bg="rgba(255, 255, 255, 0.02)" borderRadius="16px" border="1px solid" borderColor="rgba(255, 255, 255, 0.05)">
+                        <Text fontSize="10px" fontWeight="800" color="#C8C6C5" textTransform="uppercase" letterSpacing="wider" mb="2">
+                            {t('pt.coachingPhilosophy', 'Coaching Philosophy')}
+                        </Text>
+                        <Text fontSize="13px" color="#C8C6C5" fontStyle="italic" lineHeight="1.6">
+                            "{coach.philosophy}"
+                        </Text>
+                    </Box>
+                )}
+
+                <Button
+                    leftIcon={<Icon as={FiMessageSquare} boxSize="15px" />}
+                    w="full"
+                    h="56px"
+                    bg="#E03030"
+                    color="white"
+                    borderRadius="full"
+                    fontSize="14px"
+                    fontWeight="800"
+                    _hover={{ bg: '#c92a2a' }}
+                >
+                    {t('pt.messageTrainer', 'Message {{name}}', { name: coach.name.split(' ')[0] })}
+                </Button>
+            </Box>
+        </Stack>
+    )
+}
 
 export default PTCoachCard

@@ -17,6 +17,7 @@ import {
   Spinner,
 } from '@chakra-ui/react'
 import { useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import useSWR from 'swr'
 import apiClient from '../../lib/axios'
 import PublicNavbar from '../../components/shared/Navbar/PublicNavbar'
@@ -28,6 +29,7 @@ import { orderService } from '../../features/orders/orderService'
 const fetcher = (url: string) => apiClient.get(url).then(res => res.data)
 
 const Pricing: React.FC = () => {
+  const { t } = useTranslation()
   const navigate = useNavigate()
   const toast = useToast()
   
@@ -92,10 +94,10 @@ const Pricing: React.FC = () => {
         {/* Header Section */}
         <Stack align="center" spacing="6" textAlign="center" mb="12">
           <Heading fontSize={{ base: '32px', md: '40px' }} color="white" fontWeight="700" letterSpacing="-0.02em">
-            Choose Your Plan
+            {t('landing.choosePlan', 'Choose Your Plan')}
           </Heading>
           <Text color="#8A8A93" maxW="500px">
-            Unlock your full potential with our premium memberships and online programs.
+            {t('landing.choosePlanDesc', 'Unlock your full potential with our premium memberships and online programs.')}
           </Text>
         </Stack>
 
@@ -105,7 +107,7 @@ const Pricing: React.FC = () => {
             <Spinner color="#e03030" size="xl" />
           </Flex>
         ) : error ? (
-          <Text color="red.500">Failed to load packages.</Text>
+          <Text color="red.500">{t('common.error', 'Failed to load packages.')}</Text>
         ) : (
           <Grid
             templateColumns={{ base: '1fr', md: 'repeat(3, 1fr)' }}
@@ -148,7 +150,7 @@ const Pricing: React.FC = () => {
                       textTransform="uppercase"
                       letterSpacing="wider"
                     >
-                      Most Popular
+                      {t('landing.popular', 'Most Popular')}
                     </Box>
                   )}
 
@@ -163,7 +165,7 @@ const Pricing: React.FC = () => {
                       </Text>
                     </HStack>
                     <Text fontSize="12px" color="#8A8A93" mt="2">
-                      Duration: {pkg.durationDays} days
+                      {pkg.durationDays} {t('profile.days', 'days')}
                     </Text>
                   </Box>
 
@@ -172,17 +174,17 @@ const Pricing: React.FC = () => {
                     <Text color="#e2e1eb" fontSize="14px">{pkg.description}</Text>
                     <HStack spacing="2" align="center" mt="4">
                       <Box as="span" className="material-symbols-outlined" style={{ color: '#e03030', fontSize: '18px' }}>check</Box>
-                      <Text fontSize="13px" color="#e2e1eb">Access to Platform</Text>
+                      <Text fontSize="13px" color="#e2e1eb">{t('landing.features', 'Access to Platform')}</Text>
                     </HStack>
                     <HStack spacing="2" align="center">
                       <Box as="span" className="material-symbols-outlined" style={{ color: '#e03030', fontSize: '18px' }}>check</Box>
-                      <Text fontSize="13px" color="#e2e1eb">Progress Tracking</Text>
+                      <Text fontSize="13px" color="#e2e1eb">{t('nav.progress', 'Progress Tracking')}</Text>
                     </HStack>
                   </Stack>
 
                   {/* Purchase Button */}
                   <AppButton
-                    label={purchasingPlan === pkg.id ? 'Processing...' : 'Purchase Plan'}
+                    label={purchasingPlan === pkg.id ? t('pt.redirecting', 'Processing...') : t('landing.selectPlan', 'Purchase Plan')}
                     variant={isPopular ? 'solid' : 'ghost'}
                     w="full"
                     bg={isPopular ? '#e03030' : '#1a1a1a'}
@@ -200,7 +202,7 @@ const Pricing: React.FC = () => {
         {/* ===================== COMPARISON TABLE ===================== */}
         <Box w="full" px={{ base: '0', lg: '8' }}>
           <Heading fontSize={{ base: '24px', md: '28px' }} color="white" fontWeight="700" textAlign="center" mb="8">
-            Compare Features
+            {t('landing.features', 'Compare Features')}
           </Heading>
           <Box overflowX="auto" bg="#141414" border="1px solid" borderColor="#262626" borderRadius="24px" p="6">
             <Table variant="unstyled" size="sm">

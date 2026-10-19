@@ -2,21 +2,24 @@ import React, { useState } from 'react'
 import { Box, Flex, Heading, Text, HStack, IconButton } from '@chakra-ui/react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { FiMenu, FiX } from 'react-icons/fi'
+import { useTranslation } from 'react-i18next'
 import AppButton from '../Button/AppButton'
 import { useAuthStore } from '../../../store/useAuthStore'
-
-const navLinks = [
-  { label: 'Features', href: '/#features' },
-  { label: 'Pricing', href: '/pricing' },
-  { label: 'Training', href: '/dashboard' },
-  { label: 'About', href: '/about' },
-]
+import LanguageSwitcher from '../Header/LanguageSwitcher'
 
 const PublicNavbar: React.FC = () => {
+  const { t } = useTranslation()
   const navigate = useNavigate()
   const location = useLocation()
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const { isAuthenticated, logout, roleId } = useAuthStore()
+
+  const navLinks = [
+    { label: t('landing.features', 'Features'), href: '/#features' },
+    { label: t('landing.pricing', 'Pricing'), href: '/pricing' },
+    { label: t('nav.workouts', 'Training'), href: '/dashboard' },
+    { label: t('landing.about', 'About'), href: '/about' },
+  ]
 
   const handleLoginClick = () => navigate('/login')
 
@@ -108,11 +111,12 @@ const PublicNavbar: React.FC = () => {
           </HStack>
 
           {/* Right Side CTA */}
-          <HStack spacing="4" zIndex="50">
+          <HStack spacing="3" zIndex="50">
+            <LanguageSwitcher />
             {isAuthenticated ? (
               <AppButton
                 variant="outline"
-                label="Logout"
+                label={t('landing.logout', 'Logout')}
                 fontSize="xs"
                 px="5"
                 h="9"
@@ -125,7 +129,7 @@ const PublicNavbar: React.FC = () => {
             ) : (
               <AppButton
                 variant="outline"
-                label="Login"
+                label={t('landing.login', 'Login')}
                 fontSize="xs"
                 px="5"
                 h="9"
@@ -135,7 +139,7 @@ const PublicNavbar: React.FC = () => {
             )}
             <AppButton
               variant="solid"
-              label={isAuthenticated ? "Dashboard" : "Start Training"}
+              label={isAuthenticated ? t('landing.dashboard', 'Dashboard') : t('landing.startTraining', 'Start Training')}
               fontSize="xs"
               px="5"
               h="9"
@@ -192,7 +196,7 @@ const PublicNavbar: React.FC = () => {
           {isAuthenticated ? (
             <AppButton
               variant="ghost"
-              label="Logout"
+              label={t('landing.logout', 'Logout')}
               fontSize="md"
               mt="4"
               onClick={() => {
@@ -204,7 +208,7 @@ const PublicNavbar: React.FC = () => {
           ) : (
             <AppButton
               variant="ghost"
-              label="Login"
+              label={t('landing.login', 'Login')}
               fontSize="md"
               mt="4"
               onClick={() => {

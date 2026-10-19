@@ -37,6 +37,7 @@ import {
     FiPrinter,
     FiFileText,
 } from 'react-icons/fi'
+import { useTranslation } from 'react-i18next'
 import MemberLayout from '../../components/shared/Layout/MemberLayout.tsx'
 import type { DietPlanResponse } from '../../api/nutrition'
 import {
@@ -53,6 +54,7 @@ interface LocalMessage {
 }
 
 const ChatInputArea = ({ onSend, sending, loadingHistory }: { onSend: (text: string) => void, sending: boolean, loadingHistory: boolean }) => {
+    const { t } = useTranslation()
     const [localText, setLocalText] = useState('')
 
     const handleSend = () => {
@@ -73,7 +75,7 @@ const ChatInputArea = ({ onSend, sending, loadingHistory }: { onSend: (text: str
                             handleSend()
                         }
                     }}
-                    placeholder="Type your message to the AI assistant..."
+                    placeholder={t('aiChat.typeMessage', 'Type your message to the AI assistant...')}
                     rows={1}
                     minH="44px"
                     maxH="100px"
@@ -111,6 +113,7 @@ const ChatInputArea = ({ onSend, sending, loadingHistory }: { onSend: (text: str
 }
 
 const AIChat: React.FC = () => {
+    const { t } = useTranslation()
     const [messages, setMessages] = useState<LocalMessage[]>([])
     const [sessionId, setSessionId] = useState<number | undefined>(undefined)
     const [activeDietPlan, setActiveDietPlan] = useState<DietPlanResponse | null>(null)
@@ -125,7 +128,7 @@ const AIChat: React.FC = () => {
 
     const initialGreeting: LocalMessage = {
         role: 'assistant',
-        message: "Hello! I am your AI Nutrition Assistant. I will help design a fully personalized nutrition plan just for you.\n\nTo get started, please share your nutrition goals (e.g., weight gain, fat loss, maintenance), eating habits (vegetarian or not), food allergies, medical conditions (if any), or how many meals you'd like to eat per day!",
+        message: t('aiChat.initialGreeting', "Hello! I am your AI Nutrition Assistant. I will help design a fully personalized nutrition plan just for you.\n\nTo get started, please share your nutrition goals (e.g., weight gain, fat loss, maintenance), eating habits (vegetarian or not), food allergies, medical conditions (if any), or how many meals you'd like to eat per day!"),
         dietPlan: null
     }
 
@@ -179,7 +182,7 @@ const AIChat: React.FC = () => {
         } catch (error) {
             console.error('Failed to load chat history:', error)
             toast({
-                title: 'Failed to load chat history.',
+                title: t('aiChat.failedLoadHistory', 'Failed to load chat history.'),
                 status: 'error',
                 duration: 3000,
                 isClosable: true,
@@ -236,8 +239,8 @@ const AIChat: React.FC = () => {
                     setActiveDietPlan(response.dietPlan || null)
                     setGeneratingPlan(false)
                     toast({
-                        title: 'Nutrition plan created successfully!',
-                        description: 'Please check the detailed menu on the side.',
+                        title: t('aiChat.planCreatedSuccess', 'Nutrition plan created successfully!'),
+                        description: t('aiChat.checkMenuOnSide', 'Please check the detailed menu on the side.'),
                         status: 'success',
                         duration: 5000,
                         isClosable: true,
@@ -262,7 +265,7 @@ const AIChat: React.FC = () => {
         } catch (error: any) {
             console.error(error)
             toast({
-                title: 'Message sending failed.',
+                title: t('aiChat.msgFailed', 'Message sending failed.'),
                 description: error?.response?.data?.detail || error?.message || 'An error occurred while connecting to AI.',
                 status: 'error',
                 duration: 4000,
@@ -274,13 +277,13 @@ const AIChat: React.FC = () => {
     }
 
     const handleRestartChat = () => {
-        if (window.confirm('Are you sure you want to delete the current chat history and start over?')) {
+        if (window.confirm(t('aiChat.confirmRestart', 'Are you sure you want to delete the current chat history and start over?'))) {
             localStorage.removeItem('ai_chat_session_id')
             setSessionId(undefined)
             setMessages([initialGreeting])
             setActiveDietPlan(null)
             toast({
-                title: 'Started a new conversation.',
+                title: t('aiChat.startedNewChat', 'Started a new conversation.'),
                 status: 'info',
                 duration: 2000,
                 isClosable: true,
@@ -297,11 +300,11 @@ const AIChat: React.FC = () => {
     }
 
     const suggestions = [
-        'I want to lose belly fat',
-        'Create a weight gain menu',
-        'I am vegetarian/non-vegetarian',
-        'I am allergic to seafood',
-        'Divide into 4 meals a day',
+        t('aiChat.suggestion1', 'I want to lose belly fat'),
+        t('aiChat.suggestion2', 'Create a weight gain menu'),
+        t('aiChat.suggestion3', 'I am vegetarian/non-vegetarian'),
+        t('aiChat.suggestion4', 'I am allergic to seafood'),
+        t('aiChat.suggestion5', 'Divide into 4 meals a day'),
     ]
 
     return (
@@ -324,7 +327,7 @@ const AIChat: React.FC = () => {
                         </Box>
                         <Box minW="0">
                             <Heading fontSize={{ base: '18px', sm: '22px' }} color="white" fontWeight="800" noOfLines={1}>
-                                AI Nutrition Assistant
+                                {t('aiChat.assistantTitle', 'AI Nutrition Assistant')}
                             </Heading>
                             <HStack spacing="2" mt="0.5">
                                 <Box
@@ -342,7 +345,7 @@ const AIChat: React.FC = () => {
                                     }}
                                 />
                                 <Text fontSize="12px" color="#8A8A93" fontWeight="500">
-                                    AI Expert Online
+                                    {t('aiChat.expertOnline', 'AI Expert Online')}
                                 </Text>
                             </HStack>
                         </Box>
@@ -359,7 +362,7 @@ const AIChat: React.FC = () => {
                                 _hover={{ bg: '#1e2028', borderColor: '#8A8A93' }}
                                 onClick={handlePrint}
                             >
-                                Print Menu
+                                {t('aiChat.printMenu', 'Print Menu')}
                             </Button>
                         )}
                         <Button
@@ -372,7 +375,7 @@ const AIChat: React.FC = () => {
                             _hover={{ bg: '#1e2028', borderColor: '#8A8A93' }}
                             onClick={handleOpenHistory}
                         >
-                            Diet History
+                            {t('aiChat.dietHistory', 'Diet History')}
                         </Button>
                         <Button
                             leftIcon={<Icon as={FiRefreshCw} />}
@@ -383,7 +386,7 @@ const AIChat: React.FC = () => {
                             _hover={{ bg: 'rgba(224,48,48,0.08)' }}
                             onClick={handleRestartChat}
                         >
-                            New Chat
+                            {t('aiChat.newChat', 'New Chat')}
                         </Button>
                     </HStack>
                 </Flex>
@@ -426,7 +429,7 @@ const AIChat: React.FC = () => {
                             {loadingHistory ? (
                                 <Flex align="center" justify="center" h="full" direction="column" gap="3">
                                     <Spinner color="#E03030" size="lg" />
-                                    <Text fontSize="13px" color="#8A8A93">Loading chat history...</Text>
+                                    <Text fontSize="13px" color="#8A8A93">{t('aiChat.loadingChatHistory', 'Loading chat history...')}</Text>
                                 </Flex>
                             ) : (
                                 <Stack spacing="4">
@@ -622,9 +625,9 @@ const AIChat: React.FC = () => {
                             <Flex align="center" justify="center" direction="column" flex="1" gap="4" py="10">
                                 <Spinner size="xl" color="#E03030" thickness="4px" speed="0.8s" />
                                 <VStack spacing="1">
-                                    <Heading size="sm" color="white">Generating nutrition plan...</Heading>
+                                    <Heading size="sm" color="white">{t('aiChat.generatingPlan', 'Generating nutrition plan...')}</Heading>
                                     <Text fontSize="12px" color="#8A8A93" textAlign="center">
-                                        The AI is calculating your TDEE, distributing calorie intake, and selecting suitable foods based on your requirements.
+                                        {t('aiChat.generatingPlanDesc', 'The AI is calculating your TDEE, distributing calorie intake, and selecting suitable foods based on your requirements.')}
                                     </Text>
                                 </VStack>
                             </Flex>
@@ -636,7 +639,7 @@ const AIChat: React.FC = () => {
                                         <HStack spacing="2">
                                             <Icon as={FiFileText} color="#E03030" boxSize="18px" className="no-print" />
                                             <Heading fontSize="18px" color="white" sx={{ '@media print': { color: 'black' } }}>
-                                                {activeDietPlan.diet_title || 'Personalized Nutrition Plan'}
+                                                {activeDietPlan.diet_title || t('aiChat.personalizedPlan', 'Personalized Nutrition Plan')}
                                             </Heading>
                                         </HStack>
                                         <Badge
@@ -649,20 +652,20 @@ const AIChat: React.FC = () => {
                                             border="1px solid rgba(224,48,48,0.2)"
                                             sx={{ '@media print': { color: 'black', border: '1px solid black' } }}
                                         >
-                                            {activeDietPlan.daily_calories} kcal / day
+                                            {activeDietPlan.daily_calories} {t('aiChat.kcalPerDay', 'kcal / day')}
                                         </Badge>
                                     </Flex>
                                     <Text fontSize="13px" color="#8A8A93" mt="2" sx={{ '@media print': { color: '#333' } }}>
-                                        Nutrition targets are distributed according to standard ratios tailored to your body metrics.
+                                        {t('aiChat.targetsDistributed', 'Nutrition targets are distributed according to standard ratios tailored to your body metrics.')}
                                     </Text>
                                 </Box>
 
                                 {/* Macros distribution grid */}
                                 <Grid templateColumns={{ base: '1fr', sm: 'repeat(3, minmax(0, 1fr))' }} gap="4">
                                     {[
-                                        { label: 'Protein', val: `${activeDietPlan.protein_target_g}g`, color: '#E03030', icon: FiZap, pct: 30 },
-                                        { label: 'Carbs', val: `${activeDietPlan.carbs_target_g}g`, color: '#3182CE', icon: FiActivity, pct: 50 },
-                                        { label: 'Fat', val: `${activeDietPlan.fat_target_g}g`, color: '#DD6B20', icon: FiDroplet, pct: 20 },
+                                        { label: t('aiChat.protein', 'Protein'), val: `${activeDietPlan.protein_target_g}g`, color: '#E03030', icon: FiZap, pct: 30 },
+                                        { label: t('aiChat.carbs', 'Carbs'), val: `${activeDietPlan.carbs_target_g}g`, color: '#3182CE', icon: FiActivity, pct: 50 },
+                                        { label: t('aiChat.fat', 'Fat'), val: `${activeDietPlan.fat_target_g}g`, color: '#DD6B20', icon: FiDroplet, pct: 20 },
                                     ].map((macro) => (
                                         <Box
                                             key={macro.label}
@@ -727,7 +730,7 @@ const AIChat: React.FC = () => {
                                                                     {food.food_name}
                                                                 </Text>
                                                                 <Text fontSize="11px" color="#8A8A93" sx={{ '@media print': { color: '#555' } }}>
-                                                                    Amount/Portion: {food.amount}
+                                                                    {t('aiChat.amountPortion', 'Amount/Portion:')} {food.amount}
                                                                 </Text>
                                                             </Box>
                                                             <Text fontSize="12px" fontWeight="600" color="#E2E1EB" sx={{ '@media print': { color: 'black' } }}>
@@ -736,13 +739,13 @@ const AIChat: React.FC = () => {
                                                         </Flex>
                                                         <HStack spacing="2" flexWrap="wrap">
                                                             <Badge bg="rgba(224, 48, 48, 0.08)" color="#E03030" fontSize="10px" px="1.5" py="0.2">
-                                                                Protein: {food.protein}g
+                                                                {t('aiChat.protein', 'Protein')}: {food.protein}g
                                                             </Badge>
                                                             <Badge bg="rgba(49, 130, 206, 0.08)" color="#3182CE" fontSize="10px" px="1.5" py="0.2">
-                                                                Carbs: {food.carbs}g
+                                                                {t('aiChat.carbs', 'Carbs')}: {food.carbs}g
                                                             </Badge>
                                                             <Badge bg="rgba(221, 107, 32, 0.08)" color="#DD6B20" fontSize="10px" px="1.5" py="0.2">
-                                                                Fat: {food.fat}g
+                                                                {t('aiChat.fat', 'Fat')}: {food.fat}g
                                                             </Badge>
                                                         </HStack>
                                                     </Box>
@@ -769,22 +772,22 @@ const AIChat: React.FC = () => {
                                     <Icon as={FiCpu} color="#E03030" boxSize="28px" />
                                 </Box>
                                 <Heading fontSize="16px" color="white" mb="2" textAlign="center" fontWeight="700">
-                                    Personalized Nutrition Plan
+                                    {t('aiChat.personalizedPlan', 'Personalized Nutrition Plan')}
                                 </Heading>
                                 <Text fontSize="13px" color="#8A8A93" textAlign="center" maxW="320px" lineHeight="1.6" mb="6">
-                                    Your diet plan will automatically appear here once you provide enough information to the AI assistant.
+                                    {t('aiChat.emptyPlanDesc', 'Your diet plan will automatically appear here once you provide enough information to the AI assistant.')}
                                 </Text>
                                 <Box bg="#0B0D14" border="1px solid" borderColor="#1e2028" borderRadius="14px" p="4" w="full">
                                     <Text fontSize="11px" fontWeight="700" color="#E03030" textTransform="uppercase" letterSpacing="wider" mb="3">
-                                        The AI needs you to share:
+                                        {t('aiChat.aiNeedsYouToShare', 'The AI needs you to share:')}
                                     </Text>
                                     <VStack align="stretch" spacing="2">
                                         {[
-                                            'Nutrition goals (Muscle gain, fat loss, weight maintenance...)',
-                                            'Do you follow a vegetarian or special diet?',
-                                            'Food allergies (cannot eat shrimp, peanuts, crab...)',
-                                            'Desired number of meals per day (3, 4, or 5 meals)',
-                                            'Foods you dislike so the AI can exclude them'
+                                            t('aiChat.needGoal', 'Nutrition goals (Muscle gain, fat loss, weight maintenance...)'),
+                                            t('aiChat.needDietType', 'Do you follow a vegetarian or special diet?'),
+                                            t('aiChat.needAllergies', 'Food allergies (cannot eat shrimp, peanuts, crab...)'),
+                                            t('aiChat.needMeals', 'Desired number of meals per day (3, 4, or 5 meals)'),
+                                            t('aiChat.needDislikes', 'Foods you dislike so the AI can exclude them')
                                         ].map((item, idx) => (
                                             <HStack key={idx} spacing="2" align="flex-start">
                                                 <Icon as={FiInfo} color="#E03030" mt="0.5" boxSize="12px" />
@@ -832,7 +835,7 @@ const AIChat: React.FC = () => {
                 <DrawerOverlay />
                 <DrawerContent bg="#141720" color="white">
                     <DrawerCloseButton />
-                    <DrawerHeader borderBottomWidth="1px" borderColor="#1e2028">Diet History AI</DrawerHeader>
+                    <DrawerHeader borderBottomWidth="1px" borderColor="#1e2028">{t('aiChat.dietHistoryTitle', 'Diet History AI')}</DrawerHeader>
                     <DrawerBody p={0} css={{
                         '&::-webkit-scrollbar': { width: '6px' },
                         '&::-webkit-scrollbar-track': { background: 'transparent' },
@@ -840,7 +843,7 @@ const AIChat: React.FC = () => {
                     }}>
                         {dietHistories.length === 0 ? (
                             <Flex align="center" justify="center" h="200px" color="#8A8A93">
-                                No diet plan has been created yet.
+                                {t('aiChat.noDietHistory', 'No diet plan has been created yet.')}
                             </Flex>
                         ) : (
                             <Stack spacing="0" divider={<Divider borderColor="#1e2028" />}>

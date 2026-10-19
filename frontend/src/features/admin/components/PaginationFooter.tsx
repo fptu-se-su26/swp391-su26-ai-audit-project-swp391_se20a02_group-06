@@ -2,6 +2,7 @@ import React from 'react'
 import { Flex, Text, Button, HStack, Icon } from '@chakra-ui/react'
 import { FiChevronLeft, FiChevronRight } from 'react-icons/fi'
 import { adminColors } from '../../../pages/admin/AdminPrimitives'
+import { useTranslation } from 'react-i18next'
 
 interface PaginationFooterColors {
     dim?: string
@@ -31,6 +32,7 @@ const PaginationFooter: React.FC<PaginationFooterProps> = ({
     hideItemCount = false,
     colors: colorOverrides,
 }) => {
+    const { t } = useTranslation()
     const c = { ...adminColors, ...colorOverrides }
     const startItem = (currentPage - 1) * pageSize + 1
     const endItem = Math.min(currentPage * pageSize, totalItems)
@@ -57,7 +59,12 @@ const PaginationFooter: React.FC<PaginationFooterProps> = ({
         >
             {!hideItemCount && (
                 <Text color={c.dim} fontSize="12px">
-                    Showing {startItem}–{endItem} of {totalItems}
+                    {t('common.showingItems', {
+                        start: startItem,
+                        end: endItem,
+                        total: totalItems,
+                        defaultValue: `Showing ${startItem}–${endItem} of ${totalItems}`
+                    })}
                 </Text>
             )}
             <HStack spacing={1}>

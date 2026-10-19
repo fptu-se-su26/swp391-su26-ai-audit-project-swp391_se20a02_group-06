@@ -20,6 +20,7 @@ import type { ExerciseCardData } from '../types/workout'
 import { useWorkoutStore } from '../../../store/useWorkoutStore.ts'
 import { startWorkoutSession, completeWorkoutSession } from '../../../api/workouts.ts'
 import apiClient from '../../../lib/axios.ts'
+import { useTranslation } from 'react-i18next'
 
 const MiniStat: React.FC<{ value: string; label: string }> = ({
     value,
@@ -64,6 +65,7 @@ const ExerciseCard: React.FC<ExerciseCardProps> = ({
     onSkip,
     onMarkDone
 }) => {
+    const { t } = useTranslation()
     // Determine the overall status for styling
     const safeTags = Array.isArray(tags) ? tags : (tags ? [tags] : ['Full Body'])
     const isPast = isDone || isSkipped
@@ -101,7 +103,7 @@ const ExerciseCard: React.FC<ExerciseCardProps> = ({
                 )}
                 {isLocked && (
                     <Box position="absolute" inset="0" display="flex" flexDirection="column" alignItems="center" justifyContent="center" bg="rgba(0,0,0,0.5)">
-                        <Text fontSize="8px" color="#8A8A93" fontWeight="600" mt="1" textAlign="center" maxW="60px">Premium Plan Required</Text>
+                        <Text fontSize="8px" color="#8A8A93" fontWeight="600" mt="1" textAlign="center" maxW="60px">{t('common.premiumRequired', 'Premium Plan Required')}</Text>
                     </Box>
                 )}
             </Box>
@@ -109,15 +111,15 @@ const ExerciseCard: React.FC<ExerciseCardProps> = ({
             <Box flex="1" minW="0">
                 <Text fontSize="15px" fontWeight="700" color={isLocked ? '#8A8A93' : 'white'} mb="1">{name}</Text>
                 <HStack spacing="2" flexWrap="wrap">
-                    {safeTags.map((t, ti) => (
+                    {safeTags.map((tagItem, ti) => (
                         <Badge key={ti} bg="#1e2028" color="#8A8A93" fontSize="9px" fontWeight="600" px="2" py="0.5" borderRadius="5px" textTransform="uppercase" letterSpacing="wider">
-                            {t}
+                            {tagItem}
                         </Badge>
                     ))}
                 </HStack>
                 {(isActive || isSkipped) && (
                     <Box mt="3">
-                        <AppButton label="Start Exercise" variant="solid" size="sm" h="32px" fontSize="13px" px="5" onClick={onStart} />
+                        <AppButton label={t('workouts.start', 'Start Exercise')} variant="solid" size="sm" h="32px" fontSize="13px" px="5" onClick={onStart} />
                     </Box>
                 )}
             </Box>
@@ -129,12 +131,12 @@ const ExerciseCard: React.FC<ExerciseCardProps> = ({
                     <Flex align="center" gap="4" justify={{ base: 'flex-start', sm: 'flex-end' }} mt="3">
                         {!isSkipped && (
                             <Text fontSize="13px" fontWeight="600" color="#8A8A93" cursor="pointer" _hover={{color: 'white'}} onClick={onSkip}>
-                                Skip
+                                {t('common.cancel', 'Skip')}
                             </Text>
                         )}
                         <Flex align="center" gap="2" cursor="pointer" onClick={(e) => { e.preventDefault(); onMarkDone(); }}>
                             <Checkbox isChecked={isDone} onChange={onMarkDone} colorScheme="red" size="lg" />
-                            <Text fontSize="14px" fontWeight="700" color={isDone ? '#E03030' : '#8A8A93'}>Mark Done</Text>
+                            <Text fontSize="14px" fontWeight="700" color={isDone ? '#E03030' : '#8A8A93'}>{t('common.completed', 'Mark Done')}</Text>
                         </Flex>
                     </Flex>
                 )}
@@ -144,6 +146,7 @@ const ExerciseCard: React.FC<ExerciseCardProps> = ({
 }
 
 const WorkoutResults: React.FC = () => {
+    const { t } = useTranslation()
     const {
         formData: data,
         exercises,
@@ -310,7 +313,7 @@ const WorkoutResults: React.FC = () => {
                                 setPhase('setup')
                             }}
                         >
-                            ← Return
+                            ← {t('common.return', 'Return')}
                         </Text>
                     </HStack>
 
@@ -343,10 +346,10 @@ const WorkoutResults: React.FC = () => {
                     )}
 
                     <Grid templateColumns={{ base: 'repeat(2, minmax(0, 1fr))', sm: 'repeat(4, minmax(0, 1fr))' }} gap="3" mb="6">
-                        <MiniStat value={String(dayExercises.length)} label="Exercises" />
-                        <MiniStat value={currentDay ? `${currentDay.targetCalories}` : `${data.targetCalories}`} label="Calories" />
-                        <MiniStat value={currentDay ? `${currentDay.targetDurationMinutes}m` : `${data.duration}m`} label="Duration" />
-                        <MiniStat value={diffMap[data.level] ?? 'Medium'} label="Difficulty" />
+                        <MiniStat value={String(dayExercises.length)} label={t('workouts.exercises', 'Exercises')} />
+                        <MiniStat value={currentDay ? `${currentDay.targetCalories}` : `${data.targetCalories}`} label={t('common.calories', 'Calories')} />
+                        <MiniStat value={currentDay ? `${currentDay.targetDurationMinutes}m` : `${data.duration}m`} label={t('common.duration', 'Duration')} />
+                        <MiniStat value={diffMap[data.level] ?? 'Medium'} label={t('common.difficulty', 'Difficulty')} />
                     </Grid>
 
                     <Stack spacing="3">
@@ -383,8 +386,8 @@ const WorkoutResults: React.FC = () => {
                 >
                     <Box flex="1" mr={{ base: 0, sm: '8' }}>
                         <Flex justify="space-between" mb="1">
-                            <Text fontSize="10px" fontWeight="700" color="#8A8A93" textTransform="uppercase" letterSpacing="wider">Progress</Text>
-                            <Text fontSize="11px" fontWeight="600" color="white">{completedCount} / {dayExercises.length} Completed</Text>
+                            <Text fontSize="10px" fontWeight="700" color="#8A8A93" textTransform="uppercase" letterSpacing="wider">{t('workouts.progress', 'Progress')}</Text>
+                            <Text fontSize="11px" fontWeight="600" color="white">{completedCount} / {dayExercises.length} {t('common.completed', 'Completed')}</Text>
                         </Flex>
                         <Box h="3px" bg="#1e2028" borderRadius="full">
                             <Box
@@ -401,7 +404,7 @@ const WorkoutResults: React.FC = () => {
                         cursor={completedCount === dayExercises.length ? 'pointer' : 'not-allowed'}
                     >
                         <AppButton
-                            label={completedCount === dayExercises.length ? (data.planType === 'weekly' ? `Complete ${currentDay?.title}` : "Complete Workout") : "Finish All First"}
+                            label={completedCount === dayExercises.length ? (data.planType === 'weekly' ? `${t('workouts.complete', 'Complete')} ${currentDay?.title}` : t('workouts.completeWorkout', "Complete Workout")) : t('workouts.finishAllFirst', "Finish All First")}
                             variant="solid" h="40px" px="6" fontSize="13px" w={{ base: 'full', sm: 'auto' }}
                             isDisabled={completedCount !== dayExercises.length}
                         />

@@ -33,6 +33,7 @@ import useSWR from 'swr'
 import apiClient from '../../lib/axios'
 import AdminLayout from '../../components/shared/Layout/AdminLayout.tsx'
 import PaginationFooter from '../../features/admin/components/PaginationFooter'
+import { useTranslation } from 'react-i18next'
 
 const MotionTr = motion(Tr)
 const MotionBox = motion(Box)
@@ -64,6 +65,7 @@ interface AdminReviewStatsResponse {
 const fetcher = (url: string) => apiClient.get(url).then((res) => res.data)
 
 const AdminReviews: React.FC = () => {
+    const { t } = useTranslation()
     const [selectedRatingFilter, setSelectedRatingFilter] = useState<number | null>(null)
     const [searchQuery, setSearchQuery] = useState<string>('')
     const [actionLoadingId, setActionLoadingId] = useState<number | null>(null)
@@ -85,8 +87,8 @@ const AdminReviews: React.FC = () => {
         try {
             await apiClient.put(`/admin/website-reviews/${id}/toggle-hide`)
             toast({
-                title: 'Status Updated',
-                description: currentHidden ? 'Review is now visible to the public.' : 'Review has been hidden.',
+                title: t('common.status', 'Status Updated'),
+                description: currentHidden ? t('admin.reviewVisibleSuccess', 'Review is now visible to the public.') : t('admin.reviewHiddenSuccess', 'Review has been hidden.'),
                 status: 'success',
                 duration: 2500,
                 isClosable: true,
@@ -95,7 +97,7 @@ const AdminReviews: React.FC = () => {
             mutate()
         } catch (err: any) {
             toast({
-                title: 'Action Failed',
+                title: t('common.error', 'Action Failed'),
                 description: err.response?.data?.message || 'Failed to update review visibility status.',
                 status: 'error',
                 duration: 3000,
@@ -108,14 +110,14 @@ const AdminReviews: React.FC = () => {
     }
 
     const handleDelete = async (id: number) => {
-        if (!window.confirm('Are you sure you want to permanently delete this review?')) return
+        if (!window.confirm(t('admin.confirmDeleteReview', 'Are you sure you want to permanently delete this review?'))) return
 
         setActionLoadingId(id)
         try {
             await apiClient.delete(`/admin/website-reviews/${id}`)
             toast({
-                title: 'Review Deleted',
-                description: 'The review has been permanently removed from the system.',
+                title: t('admin.deleteReview', 'Review Deleted'),
+                description: t('admin.reviewDeletedSuccess', 'The review has been permanently removed from the system.'),
                 status: 'success',
                 duration: 2500,
                 isClosable: true,
@@ -124,7 +126,7 @@ const AdminReviews: React.FC = () => {
             mutate()
         } catch (err: any) {
             toast({
-                title: 'Delete Failed',
+                title: t('common.error', 'Delete Failed'),
                 description: err.response?.data?.message || 'Failed to delete review.',
                 status: 'error',
                 duration: 3000,
@@ -157,15 +159,15 @@ const AdminReviews: React.FC = () => {
     }, [allReviews, safePage, pageSize])
 
     return (
-        <AdminLayout title="Reviews & Ratings" searchPlaceholder="Search reviews...">
+        <AdminLayout title={t('admin.reviewsRatings', 'Reviews & Ratings')} searchPlaceholder={t('admin.searchReviews', 'Search reviews...')}>
             <Box p={{ base: '4', md: '7' }} maxW="1200px">
                 <Flex justify="space-between" align="center" mb="6">
                     <Box>
                         <Heading fontSize="24px" fontWeight="800" color="white">
-                            Website Reviews & Ratings
+                            {t('admin.websiteReviews', 'Website Reviews & Ratings')}
                         </Heading>
                         <Text fontSize="13px" color="#8A8A93" mt="1">
-                            Monitor member feedback, star ratings, and testimonials after workout sessions.
+                            {t('admin.websiteReviewsSubtitle', 'Monitor member feedback, star ratings, and testimonials after workout sessions.')}
                         </Text>
                     </Box>
                 </Flex>
@@ -175,7 +177,7 @@ const AdminReviews: React.FC = () => {
                     {/* Card 1: Average Rating */}
                     <Box bg="#141720" border="1px solid" borderColor="#1e2028" borderRadius="16px" p="5">
                         <Text fontSize="12px" color="#8A8A93" textTransform="uppercase" fontWeight="700">
-                            Average Rating
+                            {t('admin.avgRating', 'Average Rating')}
                         </Text>
                         <HStack align="baseline" spacing="3" mt="2">
                             <Text fontSize="36px" fontWeight="800" color="#FFB800" lineHeight="1">
@@ -200,20 +202,20 @@ const AdminReviews: React.FC = () => {
                     {/* Card 2: Total Reviews */}
                     <Box bg="#141720" border="1px solid" borderColor="#1e2028" borderRadius="16px" p="5">
                         <Text fontSize="12px" color="#8A8A93" textTransform="uppercase" fontWeight="700">
-                            Total Reviews
+                            {t('admin.totalReviews', 'Total Reviews')}
                         </Text>
                         <Text fontSize="36px" fontWeight="800" color="white" lineHeight="1" mt="2">
                             {total}
                         </Text>
                         <Text fontSize="12px" color="#8A8A93" mt="3">
-                            One verified review per member account
+                            {t('admin.verifiedReviewNote', 'One verified review per member account')}
                         </Text>
                     </Box>
 
                     {/* Card 3: Rating Distribution */}
                     <Box bg="#141720" border="1px solid" borderColor="#1e2028" borderRadius="16px" p="5">
                         <Text fontSize="12px" color="#8A8A93" textTransform="uppercase" fontWeight="700" mb="3">
-                            Rating Distribution
+                            {t('admin.ratingDistribution', 'Rating Distribution')}
                         </Text>
                         <VStack spacing="2" align="stretch">
                             {counts.map(({ star, count }) => {
@@ -223,7 +225,7 @@ const AdminReviews: React.FC = () => {
                                         <HStack w="55px" spacing="1">
                                             <Text color="white" fontWeight="700">{star}</Text>
                                             <Icon as={FaStar} color="#FFB800" boxSize="11px" />
-                                            <Text color="#8A8A93" fontSize="11px">Stars</Text>
+                                            <Text color="#8A8A93" fontSize="11px">{t('admin.stars', 'Stars')}</Text>
                                         </HStack>
                                         <Progress
                                             value={percent}
@@ -263,7 +265,7 @@ const AdminReviews: React.FC = () => {
                             _hover={{ bg: selectedRatingFilter === null ? '#B82020' : '#1E2028', color: 'white' }}
                             onClick={() => setSelectedRatingFilter(null)}
                         >
-                            All ({total})
+                            {t('admin.all', 'All')} ({total})
                         </Button>
                         {[5, 4, 3, 2, 1].map((star) => {
                             const isSelected = selectedRatingFilter === star
@@ -281,7 +283,7 @@ const AdminReviews: React.FC = () => {
                                     leftIcon={<Icon as={FaStar} color={isSelected ? '#0A0C10' : '#FFB800'} />}
                                     onClick={() => setSelectedRatingFilter(isSelected ? null : star)}
                                 >
-                                    {star} {star === 1 ? 'Star' : 'Stars'} ({count})
+                                    {star} {star === 1 ? t('admin.star', 'Star') : t('admin.stars', 'Stars')} ({count})
                                 </Button>
                             )
                         })}
@@ -293,7 +295,7 @@ const AdminReviews: React.FC = () => {
                             <FiSearch color="#8A8A93" />
                         </InputLeftElement>
                         <Input
-                            placeholder="Search by name, email, feedback..."
+                            placeholder={t('admin.searchReviews', 'Search by name, email, feedback...')}
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                             bg="#141720"
@@ -323,13 +325,13 @@ const AdminReviews: React.FC = () => {
                         </Flex>
                     ) : error ? (
                         <Text color="red.400" p="8" textAlign="center">
-                            Failed to load reviews. Please refresh or try again later.
+                            {t('admin.failedLoadReviews', 'Failed to load reviews. Please refresh or try again later.')}
                         </Text>
                     ) : allReviews.length === 0 ? (
                         <Box p="16" textAlign="center">
                             <Icon as={FaStar} boxSize="40px" color="#2A2D3A" mb="3" />
                             <Text color="#8A8A93" fontWeight="600">
-                                No reviews match your filter criteria.
+                                {t('admin.noReviewsMatch', 'No reviews match your filter criteria.')}
                             </Text>
                         </Box>
                     ) : (
@@ -338,12 +340,12 @@ const AdminReviews: React.FC = () => {
                                 <Table variant="simple" size="sm">
                                     <Thead bg="#0A0C10">
                                         <Tr>
-                                            <Th color="#8A8A93" borderColor="#1e2028" py="4" fontSize="11px" letterSpacing="0.05em">USER</Th>
-                                            <Th color="#8A8A93" borderColor="#1e2028" fontSize="11px" letterSpacing="0.05em">RATING</Th>
-                                            <Th color="#8A8A93" borderColor="#1e2028" fontSize="11px" letterSpacing="0.05em">FEEDBACK & COMMENTS</Th>
-                                            <Th color="#8A8A93" borderColor="#1e2028" fontSize="11px" letterSpacing="0.05em">DATE & TIME</Th>
-                                            <Th color="#8A8A93" borderColor="#1e2028" fontSize="11px" letterSpacing="0.05em">STATUS</Th>
-                                            <Th color="#8A8A93" borderColor="#1e2028" textAlign="right" fontSize="11px" letterSpacing="0.05em">ACTIONS</Th>
+                                            <Th color="#8A8A93" borderColor="#1e2028" py="4" fontSize="11px" letterSpacing="0.05em">{t('admin.user', 'USER')}</Th>
+                                            <Th color="#8A8A93" borderColor="#1e2028" fontSize="11px" letterSpacing="0.05em">{t('admin.rating', 'RATING')}</Th>
+                                            <Th color="#8A8A93" borderColor="#1e2028" fontSize="11px" letterSpacing="0.05em">{t('admin.feedbackComments', 'FEEDBACK & COMMENTS')}</Th>
+                                            <Th color="#8A8A93" borderColor="#1e2028" fontSize="11px" letterSpacing="0.05em">{t('admin.dateTime', 'DATE & TIME')}</Th>
+                                            <Th color="#8A8A93" borderColor="#1e2028" fontSize="11px" letterSpacing="0.05em">{t('admin.status', 'STATUS')}</Th>
+                                            <Th color="#8A8A93" borderColor="#1e2028" textAlign="right" fontSize="11px" letterSpacing="0.05em">{t('admin.actions', 'ACTIONS')}</Th>
                                         </Tr>
                                     </Thead>
                                     <Tbody>
@@ -398,7 +400,7 @@ const AdminReviews: React.FC = () => {
                                                             </Text>
                                                         ) : (
                                                             <Text color="#555" fontSize="12px" fontStyle="italic">
-                                                                (No comment provided)
+                                                                {t('admin.noComment', '(No comment provided)')}
                                                             </Text>
                                                         )}
                                                     </Td>
@@ -437,14 +439,14 @@ const AdminReviews: React.FC = () => {
                                                             fontWeight="700"
                                                             letterSpacing="0.05em"
                                                         >
-                                                            {r.isHidden ? 'HIDDEN' : 'VISIBLE'}
+                                                            {r.isHidden ? t('admin.hidden', 'HIDDEN') : t('admin.visible', 'VISIBLE')}
                                                         </Badge>
                                                     </Td>
 
                                                     {/* Action Buttons */}
                                                     <Td borderColor="#1e2028" textAlign="right">
                                                         <HStack spacing="2" justify="flex-end">
-                                                            <Tooltip label={r.isHidden ? 'Make review visible' : 'Hide review from public'}>
+                                                            <Tooltip label={r.isHidden ? t('admin.makeVisible', 'Make review visible') : t('admin.hideReview', 'Hide review from public')}>
                                                                 <IconButton
                                                                     aria-label="Toggle Hide"
                                                                     icon={r.isHidden ? <FiEye /> : <FiEyeOff />}
@@ -456,7 +458,7 @@ const AdminReviews: React.FC = () => {
                                                                     onClick={() => handleToggleHide(r.id, r.isHidden)}
                                                                 />
                                                             </Tooltip>
-                                                            <Tooltip label="Delete review permanently">
+                                                            <Tooltip label={t('admin.deleteReview', 'Delete review permanently')}>
                                                                 <IconButton
                                                                     aria-label="Delete review"
                                                                     icon={<FiTrash2 />}

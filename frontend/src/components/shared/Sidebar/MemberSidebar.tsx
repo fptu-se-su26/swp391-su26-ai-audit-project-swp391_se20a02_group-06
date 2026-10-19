@@ -8,26 +8,22 @@ import {
     Heading,
 } from '@chakra-ui/react'
 import { useNavigate, useLocation } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import {
     FiGrid,
     FiActivity,
     FiBookOpen,
-    // FiShoppingCart,
     FiBarChart2,
     FiCalendar,
-    // FiMessageSquare,
     FiUser,
 } from 'react-icons/fi'
 
 const navItems = [
-    { label: 'Dashboard', icon: FiGrid, path: '/dashboard' },
-    { label: 'Workouts', icon: FiActivity, path: '/workouts' },
-    { label: 'Exercises', icon: FiBookOpen, path: '/exercises' },
-    // Temporarily hidden for production:
-    // { label: 'Nutrition', icon: FiShoppingCart, path: '/nutrition' },
-    { label: 'Progress', icon: FiBarChart2, path: '/progress' },
-    { label: 'PT Booking', icon: FiCalendar, path: '/pt-booking' },
-    // { label: 'AI Chat', icon: FiMessageSquare, path: '/ai-chat' },
+    { key: 'dashboard', defaultLabel: 'Dashboard', icon: FiGrid, path: '/dashboard' },
+    { key: 'workouts', defaultLabel: 'Workouts', icon: FiActivity, path: '/workouts' },
+    { key: 'exercises', defaultLabel: 'Exercises', icon: FiBookOpen, path: '/exercises' },
+    { key: 'progress', defaultLabel: 'Progress', icon: FiBarChart2, path: '/progress' },
+    { key: 'ptBooking', defaultLabel: 'PT Booking', icon: FiCalendar, path: '/pt-booking' },
 ]
 
 interface MemberSidebarProps {
@@ -36,6 +32,7 @@ interface MemberSidebarProps {
 }
 
 const MemberSidebar: React.FC<MemberSidebarProps> = ({ mobile = false, onNavigate }) => {
+    const { t } = useTranslation()
     const navigate = useNavigate()
     const location = useLocation()
 
@@ -103,7 +100,7 @@ const MemberSidebar: React.FC<MemberSidebarProps> = ({ mobile = false, onNavigat
                             }}
                         >
                             <Icon as={item.icon} boxSize="16px" />
-                            <Text>{item.label}</Text>
+                            <Text>{t(`nav.${item.key}`, item.defaultLabel)}</Text>
                         </Flex>
                     )
                 })}
@@ -128,7 +125,7 @@ const MemberSidebar: React.FC<MemberSidebarProps> = ({ mobile = false, onNavigat
                     }}
                 >
                     <Icon as={FiUser} boxSize="16px" />
-                    <Text>Profile</Text>
+                    <Text>{t('nav.profile', 'Profile')}</Text>
                 </Flex>
             </Box>
         </Box>

@@ -16,6 +16,8 @@ import {
   useToast
 } from '@chakra-ui/react'
 
+import { useTranslation } from 'react-i18next'
+
 interface OTPModalProps {
   isOpen: boolean
   onClose: () => void
@@ -25,6 +27,7 @@ interface OTPModalProps {
 }
 
 export const OTPModal: React.FC<OTPModalProps> = ({ isOpen, onClose, email, onVerify, onResend }) => {
+  const { t } = useTranslation()
   const [otp, setOtp] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [countdown, setCountdown] = useState(60)
@@ -52,7 +55,7 @@ export const OTPModal: React.FC<OTPModalProps> = ({ isOpen, onClose, email, onVe
       await onVerify(otp)
     } catch (error: any) {
       toast({
-        title: 'Error verifying OTP',
+        title: t('auth.loginFailed', 'Error verifying OTP'),
         description: error.response?.data?.message || 'Invalid OTP',
         status: 'error',
         duration: 3000,
@@ -97,13 +100,13 @@ export const OTPModal: React.FC<OTPModalProps> = ({ isOpen, onClose, email, onVe
       <ModalOverlay bg="blackAlpha.700" backdropFilter="blur(5px)" />
       <ModalContent bg="gray.900" color="white" borderRadius="xl" mx={4}>
         <ModalHeader borderBottom="1px solid" borderColor="whiteAlpha.100">
-          Verify your Email
+          {t('auth.verifyEmail', 'Verify your Email')}
         </ModalHeader>
         <ModalCloseButton />
         <ModalBody py={6}>
           <VStack spacing={6}>
             <Text color="gray.400" textAlign="center">
-              We've sent a 6-digit verification code to<br />
+              {t('auth.otpSentTo', "We've sent a 6-digit verification code to")}<br />
               <Text as="span" color="white" fontWeight="bold">{email}</Text>
             </Text>
 
@@ -127,17 +130,17 @@ export const OTPModal: React.FC<OTPModalProps> = ({ isOpen, onClose, email, onVe
             isDisabled={otp.length < 6}
             onClick={handleVerify}
           >
-            Verify
+            {t('auth.verify', 'Verify')}
           </Button>
           <HStack justify="center" w="full" fontSize="sm">
-            <Text color="gray.400">Didn't receive code?</Text>
+            <Text color="gray.400">{t('auth.didntReceiveCode', "Didn't receive code?")}</Text>
             <Button
               variant="link"
               color={countdown > 0 ? "gray.500" : "brand.primary"}
               onClick={handleResend}
               isDisabled={countdown > 0 || isLoading}
             >
-              {countdown > 0 ? `Resend in ${countdown}s` : 'Resend'}
+              {countdown > 0 ? t('auth.resendIn', { seconds: countdown, defaultValue: `Resend in ${countdown}s` }) : t('auth.resend', 'Resend')}
             </Button>
           </HStack>
         </ModalFooter>

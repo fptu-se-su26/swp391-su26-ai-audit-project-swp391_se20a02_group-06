@@ -20,8 +20,10 @@ import { FiBell, FiCheckCircle } from 'react-icons/fi'
 import { useNotifications } from '../../../context/NotificationContext'
 import { useNavigate } from 'react-router-dom'
 import { useAuthStore } from '../../../store/useAuthStore'
+import { useTranslation } from 'react-i18next'
 
 export const NotificationBell: React.FC = () => {
+    const { t } = useTranslation()
     const navigate = useNavigate()
     const roleId = useAuthStore((state) => state.roleId)
     const { notifications, unreadCount, markRead, markAllRead, drinkWaterFromNotification } = useNotifications()
@@ -117,7 +119,7 @@ export const NotificationBell: React.FC = () => {
                 <PopoverHeader borderColor="#1e2028" py="3">
                     <Flex justify="space-between" align="center">
                         <HStack spacing="2">
-                            <Text fontWeight="800" fontSize="15px">Notifications</Text>
+                            <Text fontWeight="800" fontSize="15px">{t('header.notifications', 'Notifications')}</Text>
                             {unreadCount > 0 && (
                                 <Badge bg="#E03030" color="white" borderRadius="full" px="2" fontSize="10px">
                                     {unreadCount}
@@ -134,7 +136,7 @@ export const NotificationBell: React.FC = () => {
                                 onClick={markAllRead}
                                 _hover={{ bg: 'rgba(255,255,255,0.05)' }}
                             >
-                                Mark Read
+                                {t('header.markRead', 'Mark Read')}
                             </Button>
                         )}
                     </Flex>
@@ -143,7 +145,7 @@ export const NotificationBell: React.FC = () => {
                     <VStack spacing="2" align="stretch">
                         {notifications.length === 0 ? (
                             <Box py="6" textAlign="center">
-                                <Text color="#8A8A93" fontSize="13px">No notifications yet.</Text>
+                                <Text color="#8A8A93" fontSize="13px">{t('header.noNotifications', 'No notifications yet.')}</Text>
                             </Box>
                         ) : (
                             notifications.map((notif) => (

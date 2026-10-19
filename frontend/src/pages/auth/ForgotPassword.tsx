@@ -12,11 +12,14 @@ import {
   Link,
 } from '@chakra-ui/react'
 import { useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import AppButton from '../../components/shared/Button/AppButton'
 import { authApi } from '../../api/auth'
 import { OTPModal } from '../../features/auth/components/OTPModal'
+import LanguageSwitcher from '../../components/shared/Header/LanguageSwitcher'
 
 const ForgotPassword = () => {
+  const { t } = useTranslation()
   const navigate = useNavigate()
   const toast = useToast()
   
@@ -138,23 +141,27 @@ const ForgotPassword = () => {
   }
 
   return (
-    <Box minH="100vh" display="flex" bg="brand.dark" bgImage="url('https://images.unsplash.com/photo-1534438327276-14e5300c3a48?q=80&w=1470&auto=format&fit=crop')" bgSize="cover" bgPosition="center">
+    <Box minH="100vh" display="flex" bg="brand.dark" bgImage="url('https://images.unsplash.com/photo-1534438327276-14e5300c3a48?q=80&w=1470&auto=format&fit=crop')" bgSize="cover" bgPosition="center" position="relative">
       <Box w="full" h="full" position="absolute" top="0" left="0" bg="blackAlpha.800" backdropFilter="blur(5px)" zIndex="0" />
       
+      <Box position="absolute" top="6" right="6" zIndex="10">
+        <LanguageSwitcher />
+      </Box>
+
       <Flex direction="column" justify="center" align="center" flex="1" zIndex="1" px={4}>
         <Box bg="whiteAlpha.100" backdropFilter="blur(20px)" p={8} borderRadius="2xl" border="1px solid" borderColor="whiteAlpha.200" w="full" maxW="md" boxShadow="2xl">
           <Heading size="lg" mb={2} color="white" textAlign="center">
-            {isVerified ? 'Reset Password' : 'Forgot Password'}
+            {isVerified ? t('profile.changePassword', 'Reset Password') : t('auth.forgotPassword', 'Forgot Password')}
           </Heading>
           <Text mb={6} color="gray.400" textAlign="center" fontSize="sm">
-            {isVerified ? 'Enter your new password below.' : 'Enter your email address and we will send you a verification code.'}
+            {isVerified ? t('profile.changePassword', 'Enter your new password below.') : t('auth.enterCredentials', 'Enter your email address and we will send you a verification code.')}
           </Text>
 
           <Stack spacing={4}>
             {!isVerified ? (
               <>
                 <FormControl isRequired>
-                  <FormLabel color="whiteAlpha.800">Email Address</FormLabel>
+                  <FormLabel color="whiteAlpha.800">{t('auth.email', 'Email Address')}</FormLabel>
                   <Input 
                     type="email" 
                     placeholder="Enter your email" 
@@ -179,13 +186,13 @@ const ForgotPassword = () => {
                   isLoading={isLoading}
                   w="full"
                   mt={2}
-                  label="Send Verification Code"
+                  label={t('auth.nextStep', 'Send Verification Code')}
                 />
               </>
             ) : (
               <>
                 <FormControl isRequired>
-                  <FormLabel color="whiteAlpha.800">New Password</FormLabel>
+                  <FormLabel color="whiteAlpha.800">{t('profile.newPassword', 'New Password')}</FormLabel>
                   <Input 
                     type="password" 
                     placeholder="Enter new password" 
@@ -206,7 +213,7 @@ const ForgotPassword = () => {
                 </FormControl>
 
                 <FormControl isRequired>
-                  <FormLabel color="whiteAlpha.800">Confirm Password</FormLabel>
+                  <FormLabel color="whiteAlpha.800">{t('profile.confirmNewPassword', 'Confirm Password')}</FormLabel>
                   <Input 
                     type="password" 
                     placeholder="Confirm new password" 
@@ -231,7 +238,7 @@ const ForgotPassword = () => {
                   isLoading={isLoading}
                   w="full"
                   mt={2}
-                  label="Reset Password"
+                  label={t('profile.savePassword', 'Reset Password')}
                 />
               </>
             )}
@@ -239,7 +246,7 @@ const ForgotPassword = () => {
 
           <Box textAlign="center" mt={6}>
             <Text fontSize="sm" color="gray.400">
-              Remember your password? <Link color="brand.primary" onClick={() => navigate('/login')}>Login</Link>
+              {t('auth.alreadyHaveAccount', 'Remember your password?')} <Link color="brand.primary" onClick={() => navigate('/login')}>{t('auth.login', 'Login')}</Link>
             </Text>
           </Box>
         </Box>

@@ -2,8 +2,10 @@ import React from 'react'
 import { Box, VStack, Flex, Text } from '@chakra-ui/react'
 import { useAuthStore } from '../../../store/useAuthStore.ts'
 import { useNavigate, useLocation } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 
 const AdminSidebar: React.FC = () => {
+    const { t } = useTranslation()
     const roleId = useAuthStore((state) => state.roleId)
     const isPT = roleId === 2
     const navigate = useNavigate()
@@ -44,21 +46,21 @@ const AdminSidebar: React.FC = () => {
                 NETFIT <Text as="span" color="#E03030">{isPT ? 'PT' : 'ADMIN'}</Text>
             </Text>
             <VStack align="stretch" spacing="2">
-                <NavItem href="/admin" label="Dashboard" />
-                <NavItem href="/admin/users" label={isPT ? 'My Clients' : 'Users'} />
-                <NavItem href="/admin/workouts" label="Workouts" />
+                <NavItem href="/admin" label={t('nav.dashboard', 'Dashboard')} />
+                <NavItem href="/admin/users" label={isPT ? t('nav.myClients', 'My Clients') : t('nav.users', 'Users')} />
+                <NavItem href="/admin/workouts" label={t('nav.workouts', 'Workouts')} />
                 {isPT ? (
-                    <NavItem href="/admin/pt-requests" label="Exercise Requests" />
+                    <NavItem href="/admin/pt-requests" label={t('nav.exerciseRequests', 'Exercise Requests')} />
                 ) : (
-                    <NavItem href="/admin/exercise-requests" label="Exercise Requests" />
+                    <NavItem href="/admin/exercise-requests" label={t('nav.exerciseRequests', 'Exercise Requests')} />
                 )}
                 {!isPT && (
                     <>
-                        <NavItem href="/admin/pts" label="PTs" />
-                        <NavItem href="/admin/platform" label="Platform" />
-                        <NavItem href="/admin/payments" label="Payments" />
-                        <NavItem href="/admin/packages" label="Pricing & Packages" />
-                        <NavItem href="/admin/reviews" label="Reviews & Ratings" />
+                        <NavItem href="/admin/pts" label={t('nav.pts', 'PTs')} />
+                        <NavItem href="/admin/platform" label={t('nav.platform', 'Platform')} />
+                        <NavItem href="/admin/payments" label={t('nav.payments', 'Payments')} />
+                        <NavItem href="/admin/packages" label={t('nav.packages', 'Pricing & Packages')} />
+                        <NavItem href="/admin/reviews" label={t('nav.reviews', 'Reviews & Ratings')} />
                     </>
                 )}
             </VStack>

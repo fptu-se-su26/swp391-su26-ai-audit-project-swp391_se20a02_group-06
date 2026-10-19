@@ -4,6 +4,7 @@ import { FiSettings } from 'react-icons/fi'
 import { useNavigate } from 'react-router-dom'
 import { getProfile } from '../../../api/user'
 import NotificationBell from './NotificationBell'
+import LanguageSwitcher from './LanguageSwitcher'
 
 const HeaderActions: React.FC = () => {
     const navigate = useNavigate()
@@ -23,6 +24,7 @@ const HeaderActions: React.FC = () => {
 
     return (
         <HStack spacing="3">
+            <LanguageSwitcher />
             <NotificationBell />
             <IconButton
                 aria-label="Settings"

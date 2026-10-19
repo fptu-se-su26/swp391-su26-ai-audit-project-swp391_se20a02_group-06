@@ -8,8 +8,10 @@ import { useWorkoutStore } from '../../store/useWorkoutStore.ts'
 import WorkoutExerciseModal, { type ModalExerciseData } from '../../features/workout/components/WorkoutExerciseModal.tsx'
 import type { ExerciseCardData } from '../../features/workout/types/workout.ts'
 import apiClient from '../../lib/axios.ts'
+import { useTranslation } from 'react-i18next'
 
 const Progress: React.FC = () => {
+    const { t, i18n } = useTranslation()
     const [history, setHistory] = useState<WorkoutSessionDto[]>([])
     const [allExercises, setAllExercises] = useState<any[]>([])
     const [catalog, setCatalog] = useState<any[]>([])
@@ -188,8 +190,8 @@ const Progress: React.FC = () => {
                         <Icon as={FiClock} color="#E03030" boxSize="20px" />
                     </Box>
                     <Box>
-                        <Heading fontSize="24px" fontWeight="800" color="white">Workout History</Heading>
-                        <Text fontSize="13px" color="#8A8A93">Review your past training sessions and progress</Text>
+                        <Heading fontSize="24px" fontWeight="800" color="white">{t('progress.title', 'Workout History')}</Heading>
+                        <Text fontSize="13px" color="#8A8A93">{t('progress.subtitle', 'Review your past training sessions and progress')}</Text>
                     </Box>
                 </Flex>
 
@@ -199,7 +201,7 @@ const Progress: React.FC = () => {
                     </Flex>
                 ) : history.length === 0 ? (
                     <Box p="10" bg="#141720" borderRadius="16px" border="1px solid" borderColor="#1e2028" textAlign="center">
-                        <Text color="#8A8A93">You haven't completed any workouts yet.</Text>
+                        <Text color="#8A8A93">{t('progress.noHistory', "You haven't completed any workouts yet.")}</Text>
                     </Box>
                 ) : (
                     <Stack spacing="4">
@@ -211,13 +213,13 @@ const Progress: React.FC = () => {
                                     <Flex justify="space-between" align="center" mb="4" wrap="wrap" gap="3">
                                         <Box>
                                             <Text fontSize="16px" fontWeight="700" color="white" mb="1">
-                                                {session.startedAt ? new Date(session.startedAt).toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' }) : 'Unknown Date'}
+                                                {session.startedAt ? new Date(session.startedAt).toLocaleDateString(i18n.language.startsWith('vi') ? 'vi-VN' : 'en-US', { weekday: 'long', month: 'short', day: 'numeric' }) : (i18n.language.startsWith('vi') ? 'Không rõ ngày' : 'Unknown Date')}
                                             </Text>
                                             <HStack spacing="3">
-                                                <Badge bg="rgba(224,48,48,0.15)" color="#E03030" fontSize="10px" px="2" py="0.5" borderRadius="4px">COMPLETED</Badge>
+                                                <Badge bg="rgba(224,48,48,0.15)" color="#E03030" fontSize="10px" px="2" py="0.5" borderRadius="4px">{t('progress.completed', 'COMPLETED')}</Badge>
                                                 <Flex align="center" gap="1" color="#8A8A93" fontSize="12px">
                                                     <Icon as={FiClock} />
-                                                    <Text>{session.totalDurationMinutes} min</Text>
+                                                    <Text>{session.totalDurationMinutes} {i18n.language.startsWith('vi') ? 'phút' : 'min'}</Text>
                                                 </Flex>
                                                 <Flex align="center" gap="1" color="#8A8A93" fontSize="12px">
                                                     <Icon as={FiZap} />
@@ -248,13 +250,13 @@ const Progress: React.FC = () => {
                                                 transition="all 0.2s"
                                                 onClick={() => handleRepeatWorkout(session)}
                                             >
-                                                {hasLockedExercises ? 'Premium Required' : 'Repeat Workout'}
+                                                {hasLockedExercises ? t('common.premiumRequired', 'Premium Required') : t('progress.repeat', 'Repeat Workout')}
                                             </Button>
                                         )}
                                     </Flex>
                                     
                                     <Box bg="#0f1117" p="4" borderRadius="12px" border="1px solid" borderColor="#1e2028">
-                                        <Text fontSize="11px" fontWeight="700" color="#8A8A93" textTransform="uppercase" letterSpacing="wider" mb="3">Exercises Completed</Text>
+                                        <Text fontSize="11px" fontWeight="700" color="#8A8A93" textTransform="uppercase" letterSpacing="wider" mb="3">{t('progress.exercisesCompleted', 'Exercises Completed')}</Text>
                                         <Stack spacing="2">
                                             {session.details.map((detail, idx) => {
                                                 const lockState = isDetailLocked(detail)
@@ -285,7 +287,7 @@ const Progress: React.FC = () => {
                                                             )}
                                                         </Flex>
                                                         <HStack spacing="3">
-                                                            <Text fontSize="12px" color="#8A8A93">{detail.setsDone} sets × {detail.repsDone} reps</Text>
+                                                            <Text fontSize="12px" color="#8A8A93">{detail.setsDone} {t('workouts.sets', 'sets')} × {detail.repsDone} {t('workouts.reps', 'reps')}</Text>
                                                             <Button
                                                                 size="xs"
                                                                 variant="outline"
@@ -304,14 +306,14 @@ const Progress: React.FC = () => {
                                                                 px="2.5"
                                                                 onClick={() => handleOpenExerciseModal(detail)}
                                                             >
-                                                                {lockState.locked ? 'Unlock' : 'Retry'}
+                                                                {lockState.locked ? t('common.unlock', 'Unlock') : t('common.retry', 'Retry')}
                                                             </Button>
                                                         </HStack>
                                                     </Flex>
                                                 )
                                             })}
                                             {session.details.length === 0 && (
-                                                <Text fontSize="12px" color="#8A8A93">No exercises recorded.</Text>
+                                                <Text fontSize="12px" color="#8A8A93">{t('progress.noExercises', 'No exercises recorded.')}</Text>
                                             )}
                                         </Stack>
                                     </Box>

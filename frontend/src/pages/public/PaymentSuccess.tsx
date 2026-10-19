@@ -1,10 +1,12 @@
 import { useEffect, useState, useCallback } from 'react'
 import { Flex, Heading, Text, Spinner } from '@chakra-ui/react'
 import { useSearchParams, useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import AppButton from '../../components/shared/Button/AppButton'
 import apiClient from '../../lib/axios'
 
 const PaymentSuccess = () => {
+  const { t } = useTranslation()
   const [searchParams] = useSearchParams()
   const navigate = useNavigate()
   const [status, setStatus] = useState<'processing' | 'success' | 'cancelled' | 'error'>('processing')
@@ -93,18 +95,18 @@ const PaymentSuccess = () => {
         status === 'cancelled' ? '#F59E0B' :
         status === 'error' ? '#E03030' : 'white'
       }>
-        {status === 'processing' ? 'Confirming payment...' :
-         status === 'success' ? 'Payment Successful!' :
-         status === 'cancelled' ? 'Payment Cancelled' :
-         'Payment Error'}
+        {status === 'processing' ? t('landing.confirmingPayment', 'Confirming payment...') :
+         status === 'success' ? t('landing.paymentSuccessful', 'Payment Successful!') :
+         status === 'cancelled' ? t('landing.paymentCancelled', 'Payment Cancelled') :
+         t('landing.paymentError', 'Payment Error')}
       </Heading>
       <Text color="#8A8A93">{message}</Text>
       {status === 'cancelled' && (
-        <AppButton label="Back to Pricing" onClick={() => navigate('/pricing')} mt="4" />
+        <AppButton label={t('landing.backToPricing', 'Back to Pricing')} onClick={() => navigate('/pricing')} mt="4" />
       )}
       {status === 'success' && (
         <Text fontSize="sm" color="#8A8A93" mt="4">
-          Redirecting to dashboard...
+          {t('landing.redirectingDashboard', 'Redirecting to dashboard...')}
         </Text>
       )}
     </Flex>

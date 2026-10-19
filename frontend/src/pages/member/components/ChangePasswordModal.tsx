@@ -14,6 +14,7 @@ import {
     VStack,
     useToast
 } from '@chakra-ui/react'
+import { useTranslation } from 'react-i18next'
 import { changePassword } from '../../../api/user'
 
 interface Props {
@@ -23,6 +24,7 @@ interface Props {
 }
 
 const ChangePasswordModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) => {
+    const { t } = useTranslation()
     const [currentPassword, setCurrentPassword] = useState('')
     const [newPassword, setNewPassword] = useState('')
     const [confirmPassword, setConfirmPassword] = useState('')
@@ -31,11 +33,11 @@ const ChangePasswordModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) =>
 
     const handleSubmit = async () => {
         if (!currentPassword || !newPassword || !confirmPassword) {
-            toast({ title: 'Please fill in all fields', status: 'warning', duration: 3000 })
+            toast({ title: t('profile.fillAllFields', 'Please fill in all fields'), status: 'warning', duration: 3000 })
             return
         }
         if (newPassword !== confirmPassword) {
-            toast({ title: 'New passwords do not match', status: 'error', duration: 3000 })
+            toast({ title: t('profile.passwordsDoNotMatch', 'New passwords do not match'), status: 'error', duration: 3000 })
             return
         }
 
@@ -44,14 +46,14 @@ const ChangePasswordModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) =>
         setLoading(false)
 
         if (success) {
-            toast({ title: 'Password changed successfully', status: 'success', duration: 3000 })
+            toast({ title: t('profile.passwordChangedSuccess', 'Password changed successfully'), status: 'success', duration: 3000 })
             setCurrentPassword('')
             setNewPassword('')
             setConfirmPassword('')
             onSuccess()
             onClose()
         } else {
-            toast({ title: 'Current password is incorrect', status: 'error', duration: 3000 })
+            toast({ title: t('profile.currentPasswordIncorrect', 'Current password is incorrect'), status: 'error', duration: 3000 })
         }
     }
 
@@ -59,12 +61,12 @@ const ChangePasswordModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) =>
         <Modal isOpen={isOpen} onClose={onClose} isCentered>
             <ModalOverlay bg="blackAlpha.700" backdropFilter="blur(5px)" />
             <ModalContent bg="#111318" border="1px solid #1e2028" borderRadius="20px">
-                <ModalHeader color="white">Change Password</ModalHeader>
+                <ModalHeader color="white">{t('profile.changePassword', 'Change Password')}</ModalHeader>
                 <ModalCloseButton color="white" />
                 <ModalBody>
                     <VStack spacing={4}>
                         <FormControl>
-                            <FormLabel color="#8A8A93" fontSize="13px">Current Password</FormLabel>
+                            <FormLabel color="#8A8A93" fontSize="13px">{t('profile.currentPassword', 'Current Password')}</FormLabel>
                             <Input 
                                 type="password" 
                                 value={currentPassword} 
@@ -83,7 +85,7 @@ const ChangePasswordModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) =>
                             />
                         </FormControl>
                         <FormControl>
-                            <FormLabel color="#8A8A93" fontSize="13px">New Password</FormLabel>
+                            <FormLabel color="#8A8A93" fontSize="13px">{t('profile.newPassword', 'New Password')}</FormLabel>
                             <Input 
                                 type="password" 
                                 value={newPassword} 
@@ -102,7 +104,7 @@ const ChangePasswordModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) =>
                             />
                         </FormControl>
                         <FormControl>
-                            <FormLabel color="#8A8A93" fontSize="13px">Confirm New Password</FormLabel>
+                            <FormLabel color="#8A8A93" fontSize="13px">{t('profile.confirmNewPassword', 'Confirm New Password')}</FormLabel>
                             <Input 
                                 type="password" 
                                 value={confirmPassword} 
@@ -124,7 +126,7 @@ const ChangePasswordModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) =>
                 </ModalBody>
                 <ModalFooter>
                     <Button variant="ghost" mr={3} onClick={onClose} color="#8A8A93" _hover={{ bg: '#1e2028' }}>
-                        Cancel
+                        {t('common.cancel', 'Cancel')}
                     </Button>
                     <Button 
                         bg="#E03030" 
@@ -133,7 +135,7 @@ const ChangePasswordModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) =>
                         onClick={handleSubmit}
                         isLoading={loading}
                     >
-                        Save Password
+                        {t('profile.savePassword', 'Save Password')}
                     </Button>
                 </ModalFooter>
             </ModalContent>

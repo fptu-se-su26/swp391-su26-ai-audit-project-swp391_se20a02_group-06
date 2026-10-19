@@ -12,6 +12,7 @@ import PlanSidebar from './components/PlanSidebar'
 import WorkoutExerciseModal from '../../../features/workout/components/WorkoutExerciseModal'
 import PaginationFooter from '../../../features/admin/components/PaginationFooter'
 import type { ExerciseGridItem } from './components/ExerciseGridCard'
+import { useTranslation } from 'react-i18next'
 
 const fetcher = (url: string) => apiClient.get(url).then(res => res.data)
 
@@ -31,6 +32,7 @@ const packageBadgeMap: Record<string, { label: string; color: string; bg: string
 const PER_PAGE = 6
 
 const ExerciseLibrary: React.FC = () => {
+    const { t } = useTranslation()
     const [muscleFilter, setMuscleFilter] = useState('')
     const [difficultyFilter, setDifficultyFilter] = useState('')
     const [showMuscleDropdown, setShowMuscleDropdown] = useState(false)
@@ -144,9 +146,9 @@ const ExerciseLibrary: React.FC = () => {
                 >
                     <Box>
                         <Heading fontSize={{ base: '22px', md: '32px' }} fontWeight="700" color="white" letterSpacing="-0.02em" mb="1">
-                            Exercise Library
+                            {t('exercises.catalogTitle', 'Exercise Library')}
                         </Heading>
-                        <Text fontSize="14px" color="#8A8A93">Browse our elite exercise catalog.</Text>
+                        <Text fontSize="14px" color="#8A8A93">{t('exercises.catalogSubtitle', 'Browse our elite exercise catalog.')}</Text>
                     </Box>
                     <Flex direction={{ base: 'column', sm: 'row' }} gap="4" w={{ base: 'full', lg: 'auto' }} align="center">
                         {/* My Plan Trigger */}
@@ -168,7 +170,7 @@ const ExerciseLibrary: React.FC = () => {
                         >
                             <Box textAlign="left">
                                 <Text fontSize="10px" fontWeight="700" letterSpacing="0.05em" textTransform="uppercase" color="#8A8A93">
-                                    My Plan
+                                    {t('exercises.myPlan', 'My Plan')}
                                 </Text>
                                 <Text fontSize="14px" fontWeight="600" color="#FFB4AC">
                                     {membership?.packageName || 'Free'}
@@ -201,7 +203,7 @@ const ExerciseLibrary: React.FC = () => {
                             onClick={() => { setShowMuscleDropdown(d => !d); setShowDifficultyDropdown(false) }}
                         >
                             <Icon as={FiChevronDown} boxSize="16px" color="#8A8A93" />
-                            {muscleFilter || 'Muscle Group'}
+                            {muscleFilter || t('exercises.muscleGroup', 'Muscle Group')}
                         </Flex>
                         {showMuscleDropdown && (
                             <Box
@@ -230,7 +232,7 @@ const ExerciseLibrary: React.FC = () => {
                                     _hover={{ bg: 'rgba(255,255,255,0.04)' }}
                                     onClick={() => { setMuscleFilter(''); setShowMuscleDropdown(false); resetPage() }}
                                 >
-                                    All
+                                    {t('common.all', 'All')}
                                 </Box>
                                 {muscleGroups.map(mg => (
                                     <Box
@@ -273,7 +275,7 @@ const ExerciseLibrary: React.FC = () => {
                             onClick={() => { setShowDifficultyDropdown(d => !d); setShowMuscleDropdown(false) }}
                         >
                             <Icon as={FiChevronDown} boxSize="16px" color="#8A8A93" />
-                            {difficultyFilter || 'Difficulty'}
+                            {difficultyFilter || t('exercises.difficulty', 'Difficulty')}
                         </Flex>
                         {showDifficultyDropdown && (
                             <Box
@@ -302,7 +304,7 @@ const ExerciseLibrary: React.FC = () => {
                                     _hover={{ bg: 'rgba(255,255,255,0.04)' }}
                                     onClick={() => { setDifficultyFilter(''); setShowDifficultyDropdown(false); resetPage() }}
                                 >
-                                    All
+                                    {t('common.all', 'All')}
                                 </Box>
                                 {difficulties.map(d => (
                                     <Box

@@ -25,6 +25,7 @@ import apiClient from '../../lib/axios'
 import { logWater, updateReminderSettings } from '../../api/nutrition'
 import { useAuthStore } from '../../store/useAuthStore'
 import { HydrationCountdown } from '../../features/nutrition/components/NutritionWidgets'
+import { useTranslation } from 'react-i18next'
 import AppButton from '../../components/shared/Button/AppButton'
 import MemberLayout from '../../components/shared/Layout/MemberLayout.tsx'
 
@@ -41,6 +42,7 @@ const fetcher = (url: string) => apiClient.get(url).then((res) => res.data)
 
 /* ── Dashboard Page ─────────────────────────── */
 const Dashboard: React.FC = () => {
+    const { t } = useTranslation()
     const today = new Date()
     const todayStr = today.toISOString().split('T')[0]
     const toast = useToast()
@@ -55,8 +57,8 @@ const Dashboard: React.FC = () => {
             await logWater(todayStr, 1)
             globalMutate(key)
             toast({
-                title: 'Water logged! 🥛',
-                description: '1 glass of water added.',
+                title: t('dashboard.toastWaterLogged', 'Water logged! 🥛'),
+                description: t('dashboard.toastWaterAdded', '1 glass of water added.'),
                 status: 'success',
                 duration: 2000,
                 isClosable: true,
@@ -64,13 +66,13 @@ const Dashboard: React.FC = () => {
         } catch {
             globalMutate(key)
             toast({
-                title: 'Failed to log water',
+                title: t('dashboard.toastWaterFailed', 'Failed to log water'),
                 status: 'error',
                 duration: 2000,
                 isClosable: true,
             })
         }
-    }, [todayStr, toast])
+    }, [todayStr, toast, t])
 
     const waterCurrent = summary?.waterConsumedGlasses ?? 0
     const waterTotal = summary?.waterTargetGlasses ?? 8
@@ -90,9 +92,9 @@ const Dashboard: React.FC = () => {
         try {
             await updateReminderSettings(reminderStart, reminderEnd)
             globalMutate(`/nutrition/daily?date=${todayStr}`)
-            toast({ title: 'Reminder schedule saved', status: 'success', duration: 2000, isClosable: true })
+            toast({ title: t('dashboard.toastScheduleSaved', 'Reminder schedule saved'), status: 'success', duration: 2000, isClosable: true })
         } catch {
-            toast({ title: 'Failed to save', status: 'error', duration: 2000, isClosable: true })
+            toast({ title: t('dashboard.toastScheduleFailed', 'Failed to save'), status: 'error', duration: 2000, isClosable: true })
         } finally {
             setSavingSchedule(false)
         }
@@ -106,7 +108,7 @@ const Dashboard: React.FC = () => {
                 <Grid templateColumns={{ base: '1fr', sm: 'repeat(2, 1fr)', xl: 'repeat(4, 1fr)' }} gap="4" mb="5">
                     {/* Active Calories */}
                     <StatCard
-                        label="Active Calories"
+                        label={t('dashboard.activeCalories', 'Active Calories')}
                         value={
                             <Box>
                                 <Text as="span" fontSize="28px" fontWeight="800" color="white">1,240</Text>
@@ -119,11 +121,11 @@ const Dashboard: React.FC = () => {
 
                     {/* Current Streak */}
                     <StatCard
-                        label="Current Streak"
+                        label={t('dashboard.currentStreak', 'Current Streak')}
                         value={
                             <Box>
                                 <Text as="span" fontSize="28px" fontWeight="800" color="white">12</Text>
-                                <Text as="span" fontSize="13px" color="#8A8A93" ml="1">Days</Text>
+                                <Text as="span" fontSize="13px" color="#8A8A93" ml="1">{t('dashboard.days', 'Days')}</Text>
                             </Box>
                         }
                         icon={FiZap}
@@ -141,14 +143,14 @@ const Dashboard: React.FC = () => {
                         _hover={{ borderColor: '#2e3040', transform: 'translateY(-2px)' }}
                     >
                         <Text fontSize="10px" fontWeight="700" color="#8A8A93" textTransform="uppercase" letterSpacing="wider" mb="2">
-                            Weekly Goal
+                            {t('dashboard.weeklyGoal', 'Weekly Goal')}
                         </Text>
                         <Flex align="center" justify="space-between">
                             <Box>
                                 <Text fontSize="28px" fontWeight="800" color="white" lineHeight="1">
-                                    4 <Text as="span" fontSize="14px" color="#8A8A93" fontWeight="500">/ 5 Sessions</Text>
+                                    4 <Text as="span" fontSize="14px" color="#8A8A93" fontWeight="500">{t('dashboard.sessions', '/ 5 Sessions')}</Text>
                                 </Text>
-                                <Text fontSize="11px" color="#8A8A93" mt="3">1 session left to hit target.</Text>
+                                <Text fontSize="11px" color="#8A8A93" mt="3">{t('dashboard.sessionLeft', '1 session left to hit target.')}</Text>
                             </Box>
                             <GoalRing current={4} total={5} />
                         </Flex>
@@ -166,23 +168,23 @@ const Dashboard: React.FC = () => {
                     >
                         <Flex justify="space-between" align="center" mb="1">
                             <Text fontSize="10px" fontWeight="700" color="#8A8A93" textTransform="uppercase" letterSpacing="wider">
-                                Daily Hydration
+                                {t('dashboard.dailyHydration', 'Daily Hydration')}
                             </Text>
                             <Icon as={FiDroplet} color="#3b82f6" boxSize="13px" />
                         </Flex>
                         <Text fontSize="24px" fontWeight="800" color="white" mb="1" lineHeight="1.1">
-                            {waterCurrent} <Text as="span" fontSize="13px" color="#8A8A93" fontWeight="500">/ {waterTotal} Glasses</Text>
+                            {waterCurrent} <Text as="span" fontSize="13px" color="#8A8A93" fontWeight="500">/ {waterTotal} {t('dashboard.glasses', 'Glasses')}</Text>
                         </Text>
                         <Text fontSize="11px" color="#8A8A93" mb="3">
                             {waterTotal > waterCurrent
-                                ? `${waterTotal - waterCurrent} more glasses to reach goal`
-                                : '🎉 Daily goal reached!'}
+                                ? `${waterTotal - waterCurrent} ${t('dashboard.moreGlasses', 'more glasses to reach goal')}`
+                                : t('dashboard.goalReached', '🎉 Daily goal reached!')}
                         </Text>
                         <AppButton
                             label={
                                 <HStack spacing="1.5">
                                     <Icon as={FiDroplet} boxSize="12px" />
-                                    <Text>+ Log 1 Glass</Text>
+                                    <Text>{t('dashboard.log1Glass', '+ Log 1 Glass')}</Text>
                                 </HStack>
                             }
                             variant="solid"
@@ -253,7 +255,7 @@ const Dashboard: React.FC = () => {
                                 borderRadius="6px"
                                 textTransform="uppercase"
                             >
-                                Strength
+                                {t('dashboard.strength', 'Strength')}
                             </Badge>
                             <Badge
                                 bg="#2e3040"
@@ -268,18 +270,18 @@ const Dashboard: React.FC = () => {
                             </Badge>
                         </HStack>
                         <Heading fontSize="24px" fontWeight="800" color="white" mb="2">
-                            Hypertrophy Block A
+                            {t('dashboard.hypertrophyTitle', 'Hypertrophy Block A')}
                         </Heading>
                         <Text fontSize="13px" color="#8A8A93" mb="5" maxW="500px">
-                            Focus on controlled eccentrics and progressive overload on main compound lifts.
+                            {t('dashboard.hypertrophyDesc', 'Focus on controlled eccentrics and progressive overload on main compound lifts.')}
                         </Text>
 
                         <Grid templateColumns={{ base: '1fr', sm: 'repeat(2, 1fr)', xl: 'repeat(4, 1fr)' }} gap="4" mb="5">
                             {[
-                                { label: 'Block 1', name: 'Barbell Squat', sets: '4 x 8–10' },
-                                { label: 'Block 2', name: 'Bulgarian Split', sets: '3 x 12 /leg' },
-                                { label: 'Block 3', name: 'Leg Press', sets: '3 x 15' },
-                                { label: 'Finisher', name: 'Calf Raises', sets: '4 x 20' },
+                                { label: t('dashboard.block1', 'Block 1'), name: t('dashboard.barbellSquat', 'Barbell Squat'), sets: '4 x 8–10' },
+                                { label: t('dashboard.block2', 'Block 2'), name: t('dashboard.bulgarianSplit', 'Bulgarian Split'), sets: '3 x 12 /leg' },
+                                { label: t('dashboard.block3', 'Block 3'), name: t('dashboard.legPress', 'Leg Press'), sets: '3 x 15' },
+                                { label: t('dashboard.finisher', 'Finisher'), name: t('dashboard.calfRaises', 'Calf Raises'), sets: '4 x 20' },
                             ].map((b, i) => (
                                 <Box key={i}>
                                     <Text fontSize="9px" fontWeight="700" color="#8A8A93" textTransform="uppercase" letterSpacing="wider" mb="1">
@@ -302,13 +304,13 @@ const Dashboard: React.FC = () => {
                                     <Avatar size="xs" name="User 1" bg="#4a5068" fontSize="9px" />
                                     <Avatar size="xs" name="User 2" bg="#3a4058" fontSize="9px" />
                                 </HStack>
-                                <Text fontSize="11px" color="#8A8A93">+24 Completed today</Text>
+                                <Text fontSize="11px" color="#8A8A93">{t('dashboard.completedToday', '+24 Completed today')}</Text>
                             </HStack>
                             <AppButton
                                 label={
                                     <HStack spacing="2">
                                         <Icon as={FiPlay} boxSize="13px" />
-                                        <Text>Start Workout</Text>
+                                        <Text>{t('dashboard.startWorkout', 'Start Workout')}</Text>
                                     </HStack>
                                 }
                                 variant="solid"
@@ -333,11 +335,11 @@ const Dashboard: React.FC = () => {
                             <HStack spacing="2">
                                 <Icon as={FiDroplet} color="#3b82f6" boxSize="14px" />
                                 <Text fontSize="10px" fontWeight="700" color="#3b82f6" textTransform="uppercase" letterSpacing="wider">
-                                    Water Reminder
+                                    {t('dashboard.waterReminder', 'Water Reminder')}
                                 </Text>
                             </HStack>
                             <Badge bg="rgba(59, 130, 246, 0.15)" color="#60a5fa" fontSize="10px" px="2" py="0.5" borderRadius="md">
-                                {waterCurrent}/{waterTotal} Glasses
+                                {waterCurrent}/{waterTotal} {t('dashboard.glasses', 'Glasses')}
                             </Badge>
                         </Flex>
 
@@ -350,8 +352,11 @@ const Dashboard: React.FC = () => {
                                 endTime={summary?.waterReminderEndTime}
                                 onRemind={() => {
                                     toast({
-                                        title: 'Time to drink water! 🥛',
-                                        description: `You need to drink ${Math.max(0, waterTotal - waterCurrent)} more cups of water.`,
+                                        title: t('dashboard.toastTimeToDrink', 'Time to drink water! 🥛'),
+                                        description: t('dashboard.toastDrinkMore', {
+                                            count: Math.max(0, waterTotal - waterCurrent),
+                                            defaultValue: `You need to drink ${Math.max(0, waterTotal - waterCurrent)} more cups of water.`,
+                                        }),
                                         status: 'success',
                                         duration: 5000,
                                         isClosable: true,
@@ -363,7 +368,7 @@ const Dashboard: React.FC = () => {
                         {/* Interactive Droplet Grid */}
                         <Box mb="4">
                             <Text fontSize="11px" color="#8A8A93" fontWeight="600" mb="2">
-                                Quick Log (Click next glass):
+                                {t('dashboard.quickLog', 'Quick Log (Click next glass):')}
                             </Text>
                             <Flex gap="1.5" flexWrap="wrap">
                                 {Array.from({ length: waterTotal }).map((_, i) => {
@@ -385,7 +390,7 @@ const Dashboard: React.FC = () => {
                                             cursor={isNext ? 'pointer' : 'default'}
                                             _hover={isNext ? { bg: 'rgba(59,130,246,0.2)', borderColor: '#3b82f6' } : undefined}
                                             onClick={() => { if (isNext) handleLogWater() }}
-                                            title={filled ? `Glass ${i + 1} logged` : isNext ? `Click to log glass ${i + 1}` : `Glass ${i + 1}`}
+                                            title={filled ? `Glass ${i + 1}` : isNext ? `+1 Glass` : `Glass ${i + 1}`}
                                         >
                                             <Icon as={FiDroplet} color={filled ? '#3b82f6' : '#3e4050'} boxSize="11px" />
                                         </Box>
@@ -398,7 +403,7 @@ const Dashboard: React.FC = () => {
                         <Box borderTop="1px solid" borderColor="#1e2028" pt="3">
                             <Flex justify="space-between" align="center" mb="2">
                                 <Text fontSize="10px" fontWeight="700" color="#8A8A93" textTransform="uppercase" letterSpacing="wider">
-                                    Reminder Schedule
+                                    {t('dashboard.reminderSchedule', 'Reminder Schedule')}
                                 </Text>
                                 <Box
                                     as="button"
@@ -408,12 +413,12 @@ const Dashboard: React.FC = () => {
                                     _hover={{ color: '#ff6b6b' }}
                                     onClick={handleSaveReminder}
                                 >
-                                    {savingSchedule ? 'Saving...' : 'Save'}
+                                    {savingSchedule ? t('dashboard.saving', 'Saving...') : t('dashboard.save', 'Save')}
                                 </Box>
                             </Flex>
                             <Flex gap="2" align="center">
                                 <Box flex="1">
-                                    <Text fontSize="10px" color="#8A8A93" mb="1">From</Text>
+                                    <Text fontSize="10px" color="#8A8A93" mb="1">{t('dashboard.from', 'From')}</Text>
                                     <Box
                                         as="input"
                                         type="time"
@@ -431,7 +436,7 @@ const Dashboard: React.FC = () => {
                                     />
                                 </Box>
                                 <Box flex="1">
-                                    <Text fontSize="10px" color="#8A8A93" mb="1">To</Text>
+                                    <Text fontSize="10px" color="#8A8A93" mb="1">{t('dashboard.to', 'To')}</Text>
                                     <Box
                                         as="input"
                                         type="time"
@@ -514,7 +519,7 @@ const Dashboard: React.FC = () => {
                     >
                         <Flex justify="space-between" align="center" mb="4">
                             <Heading fontSize="16px" fontWeight="700" color="white">
-                                Weekly Volume
+                                {t('dashboard.weeklyVolume', 'Weekly Volume')}
                             </Heading>
                             <Text fontSize="10px" fontWeight="700" color="#8A8A93">
                                 LBS
@@ -533,16 +538,16 @@ const Dashboard: React.FC = () => {
                     >
                         <Flex justify="space-between" align="center" mb="4">
                             <Heading fontSize="16px" fontWeight="700" color="white">
-                                Macros
+                                {t('dashboard.macros', 'Macros')}
                             </Heading>
                             <Text fontSize="10px" fontWeight="700" color="#8A8A93">
-                                TODAY
+                                {t('dashboard.today', 'TODAY')}
                             </Text>
                         </Flex>
                         <Stack spacing="4">
-                            <MacroBar label="Protein" current={160} total={180} unit="g" color="#E03030" />
-                            <MacroBar label="Carbs" current={210} total={300} unit="g" color="#3b82f6" />
-                            <MacroBar label="Fats" current={45} total={65} unit="g" color="#f59e0b" />
+                            <MacroBar label={t('dashboard.protein', 'Protein')} current={160} total={180} unit="g" color="#E03030" />
+                            <MacroBar label={t('dashboard.carbs', 'Carbs')} current={210} total={300} unit="g" color="#3b82f6" />
+                            <MacroBar label={t('dashboard.fats', 'Fats')} current={45} total={65} unit="g" color="#f59e0b" />
                         </Stack>
                     </Box>
 
@@ -556,16 +561,16 @@ const Dashboard: React.FC = () => {
                     >
                         <Flex justify="space-between" align="center" mb="4">
                             <Heading fontSize="16px" fontWeight="700" color="white">
-                                Upcoming
+                                {t('dashboard.upcoming', 'Upcoming')}
                             </Heading>
                             <Text fontSize="10px" fontWeight="700" color="#8A8A93">
-                                CALENDAR
+                                {t('dashboard.calendar', 'CALENDAR')}
                             </Text>
                         </Flex>
                         <Stack spacing="3">
                             {[
-                                { date: '14', day: 'TOM', title: 'Rest & Mobility', sub: 'Active Recovery' },
-                                { date: '15', day: 'FRI', title: 'Upper Power', sub: '18:00 • Block B' },
+                                { date: '14', day: 'TOM', title: t('dashboard.restMobility', 'Rest & Mobility'), sub: t('dashboard.activeRecovery', 'Active Recovery') },
+                                { date: '15', day: 'FRI', title: t('dashboard.upperPower', 'Upper Power'), sub: '18:00 • Block B' },
                             ].map((ev, i) => (
                                 <Flex
                                     key={i}

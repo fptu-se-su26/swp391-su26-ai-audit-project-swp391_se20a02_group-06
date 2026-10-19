@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { Box, Grid, Heading, Text, Flex, Spinner, Button, Icon } from '@chakra-ui/react'
 import { FiArrowLeft } from 'react-icons/fi'
+import { useTranslation } from 'react-i18next'
 import useSWR from 'swr'
 import apiClient from '../../lib/axios'
 import MemberLayout from '../../components/shared/Layout/MemberLayout'
@@ -27,6 +28,7 @@ interface PtDto {
 }
 
 const PTBooking: React.FC = () => {
+    const { t } = useTranslation()
     const { data: pts, error, isLoading } = useSWR<PtDto[]>('/pt', fetcher)
     const [selectedPt, setSelectedPt] = useState<Coach | null>(null)
 
@@ -49,7 +51,7 @@ const PTBooking: React.FC = () => {
     }
 
     if (isLoading) return <MemberLayout><Flex justify="center" p="10"><Spinner color="#E03030" /></Flex></MemberLayout>
-    if (error) return <MemberLayout><Text color="red.500" p="10">Failed to load PTs.</Text></MemberLayout>
+    if (error) return <MemberLayout><Text color="red.500" p="10">{t('pt.failedLoad', 'Failed to load PTs.')}</Text></MemberLayout>
 
     return (
         <MemberLayout>
@@ -58,15 +60,15 @@ const PTBooking: React.FC = () => {
                     {selectedPt ? (
                         <Flex align="center" gap="4">
                             <Button variant="ghost" color="#8A8A93" _hover={{ color: 'white', bg: 'rgba(255,255,255,0.05)' }} onClick={() => setSelectedPt(null)} leftIcon={<Icon as={FiArrowLeft} />}>
-                                Back to PTs
+                                {t('pt.backToPts', 'Back to PTs')}
                             </Button>
                             <Heading fontSize={{ base: '18px', md: '20px' }} fontWeight="800" color="#E2E1EB">
-                                Book Session with {selectedPt.name}
+                                {t('pt.bookSessionWith', 'Book Session with {{name}}', { name: selectedPt.name })}
                             </Heading>
                         </Flex>
                     ) : (
                         <Heading fontSize={{ base: '18px', md: '20px' }} fontWeight="800" color="#E2E1EB">
-                            Select a Personal Trainer
+                            {t('pt.selectTrainer', 'Select a Personal Trainer')}
                         </Heading>
                     )}
                 </Box>

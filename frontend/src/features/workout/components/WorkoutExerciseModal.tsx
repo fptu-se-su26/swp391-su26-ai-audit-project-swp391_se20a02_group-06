@@ -4,6 +4,7 @@ import {
     Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalFooter, ModalCloseButton,
 } from '@chakra-ui/react'
 import { FiList, FiClock, FiInfo } from 'react-icons/fi'
+import { useTranslation } from 'react-i18next'
 import AppButton from '../../../components/shared/Button/AppButton'
 
 export interface ModalExerciseData {
@@ -69,6 +70,7 @@ const parseInstructionSteps = (description?: string): string[] => {
 }
 
 const WorkoutExerciseModal: React.FC<WorkoutExerciseModalProps> = ({ exercise, isOpen, onClose, onComplete, currentStep, totalSteps }) => {
+    const { t } = useTranslation()
     const [started, setStarted] = useState(false)
     const [elapsedSeconds, setElapsedSeconds] = useState(0)
     const [isCompleted, setIsCompleted] = useState(false)
@@ -245,13 +247,13 @@ const WorkoutExerciseModal: React.FC<WorkoutExerciseModalProps> = ({ exercise, i
                             <Box>
                                 <Flex align="center" gap="1.5" mb="1">
                                     <Icon as={FiClock} color="#8A8A93" boxSize="13px" />
-                                    <Text fontSize="12px" color="#8A8A93">Duration</Text>
+                                    <Text fontSize="12px" color="#8A8A93">{t('common.duration', 'Duration')}</Text>
                                 </Flex>
                                 <Text fontSize="18px" fontWeight="800" color="#E03030">{exercise.duration ? `${exercise.duration}m` : '--'}</Text>
                             </Box>
                             {started && (
                                 <Box textAlign="right">
-                                    <Text fontSize="12px" color="#8A8A93" mb="1">{isCompleted ? 'Completed' : 'Remaining'}</Text>
+                                    <Text fontSize="12px" color="#8A8A93" mb="1">{isCompleted ? t('common.completed', 'Completed') : t('common.remaining', 'Remaining')}</Text>
                                     <Text fontSize="24px" fontWeight="900" color={remainingSeconds < 60 ? '#E03030' : '#22C55E'}>{formatTime(remainingSeconds)}</Text>
                                 </Box>
                             )}
@@ -274,7 +276,7 @@ const WorkoutExerciseModal: React.FC<WorkoutExerciseModalProps> = ({ exercise, i
                                             <Icon as={FiList} boxSize="15px" />
                                         </Box>
                                         <Text fontSize="13px" fontWeight="700" color="#FFFFFF" letterSpacing="0.5px">
-                                            EXERCISE INSTRUCTIONS
+                                            {t('workouts.instructionsTitle', 'EXERCISE INSTRUCTIONS')}
                                         </Text>
                                     </Flex>
                                     <Badge
@@ -289,7 +291,7 @@ const WorkoutExerciseModal: React.FC<WorkoutExerciseModalProps> = ({ exercise, i
                                         borderRadius="full"
                                         letterSpacing="wider"
                                     >
-                                        {instructionSteps.length} {instructionSteps.length === 1 ? 'STEP' : 'STEPS'}
+                                        {instructionSteps.length} {t('workouts.step', 'STEP')}
                                     </Badge>
                                 </Flex>
 
@@ -334,7 +336,7 @@ const WorkoutExerciseModal: React.FC<WorkoutExerciseModalProps> = ({ exercise, i
                                             </Box>
                                             <Box flex="1">
                                                 <Text fontSize="11px" fontWeight="700" color="#8A8A93" textTransform="uppercase" letterSpacing="wider" mb="0.5">
-                                                    STEP {idx + 1}
+                                                    {t('workouts.step', 'STEP')} {idx + 1}
                                                 </Text>
                                                 <Text fontSize="13.5px" color="#F1F1F5" lineHeight="1.65" fontWeight="500">
                                                     {stepText}
@@ -349,7 +351,7 @@ const WorkoutExerciseModal: React.FC<WorkoutExerciseModalProps> = ({ exercise, i
                                 <Flex align="center" gap="3">
                                     <Icon as={FiInfo} color="#8A8A93" boxSize="18px" />
                                     <Text fontSize="13px" color="#8A8A93">
-                                        No step-by-step instructions available. Please follow the demonstration video for proper form.
+                                        {t('workouts.noInstructions', 'No step-by-step instructions available. Please follow the demonstration video for proper form.')}
                                     </Text>
                                 </Flex>
                             </Box>
@@ -362,10 +364,10 @@ const WorkoutExerciseModal: React.FC<WorkoutExerciseModalProps> = ({ exercise, i
                     {modalBreak ? (
                         <Box w="full">
                             <Text textAlign="center" fontSize="13px" fontWeight="700" color="#22C55E" mb="2" textTransform="uppercase" letterSpacing="wider">
-                                Break Time
+                                {t('workouts.breakTime', 'Break Time')}
                             </Text>
                             <AppButton
-                                label={breakRemaining > 0 ? `Skip Break (${formatTime(breakRemaining)})` : 'Continue'}
+                                label={breakRemaining > 0 ? `${t('workouts.skipBreak', 'Skip Break')} (${formatTime(breakRemaining)})` : t('common.continue', 'Continue')}
                                 variant="solid"
                                 w="full" h="48px" fontSize="15px"
                                 bg="#22C55E" color="black"
@@ -375,13 +377,13 @@ const WorkoutExerciseModal: React.FC<WorkoutExerciseModalProps> = ({ exercise, i
                         </Box>
                     ) : started && !isCompleted ? (
                         <AppButton
-                            label="Complete"
+                            label={t('workouts.complete', 'Complete')}
                             variant="solid" w="full" h="48px" fontSize="15px"
                             onClick={handleComplete}
                         />
                     ) : !started ? (
                         <AppButton
-                            label="Start"
+                            label={t('workouts.start', 'Start')}
                             variant="solid" w="full" h="48px" fontSize="15px"
                             bg="#E03030" color="white"
                             _hover={{ bg: '#C62828' }}

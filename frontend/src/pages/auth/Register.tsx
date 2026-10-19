@@ -21,11 +21,13 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
 import { useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import AppButton from '../../components/shared/Button/AppButton'
 import { authService } from '../../features/auth/authService'
 import { useAuthStore } from '../../store/useAuthStore'
 import { authApi } from '../../api/auth'
 import { OTPModal } from '../../features/auth/components/OTPModal'
+import LanguageSwitcher from '../../components/shared/Header/LanguageSwitcher'
 
 // Validation Schema using Zod
 const registerSchema = z
@@ -46,6 +48,7 @@ const registerSchema = z
 type RegisterFormInputs = z.infer<typeof registerSchema>
 
 const Register: React.FC = () => {
+  const { t } = useTranslation()
   const navigate = useNavigate()
   const toast = useToast()
   const [showPassword, setShowPassword] = useState(false)
@@ -74,16 +77,16 @@ const Register: React.FC = () => {
   // Simple dynamic password strength calculator
   const getPasswordStrength = () => {
     if (!watchedPassword) return { score: 0, label: '' }
-    if (watchedPassword.length < 6) return { score: 1, label: 'Weak' }
+    if (watchedPassword.length < 6) return { score: 1, label: t('auth.strengthWeak', 'Weak') }
     const hasNumbers = /\d/.test(watchedPassword)
     const hasSpecial = /[!@#$%^&*(),.?":{}|<>]/.test(watchedPassword)
     if (watchedPassword.length >= 8 && hasNumbers && hasSpecial) {
-      return { score: 4, label: 'Strongest' }
+      return { score: 4, label: t('auth.strengthStrongest', 'Strongest') }
     }
     if (watchedPassword.length >= 7 && (hasNumbers || hasSpecial)) {
-      return { score: 3, label: 'Strong' }
+      return { score: 3, label: t('auth.strengthStrong', 'Strong') }
     }
-    return { score: 2, label: 'Medium' }
+    return { score: 2, label: t('auth.strengthMedium', 'Medium') }
   }
 
   const strength = getPasswordStrength()
@@ -203,7 +206,12 @@ const Register: React.FC = () => {
       alignItems="center"
       justifyContent="center"
       p="6"
+      position="relative"
     >
+      <Box position="absolute" top="6" right="6">
+        <LanguageSwitcher />
+      </Box>
+
       <Box w="full" maxW="480px" display="flex" flexDirection="column" gap="4">
         {/* Header */}
         <Box textAlign="center" mb="2">
@@ -254,10 +262,10 @@ const Register: React.FC = () => {
             </Flex>
             <Box textAlign="center">
               <Text fontSize="10px" fontWeight="600" color="#e5bdb9" textTransform="uppercase" letterSpacing="0.05em">
-                Step 1 of 3
+                {t('auth.step1of3', 'Step 1 of 3')}
               </Text>
               <Heading as="h2" fontSize="18px" fontWeight="600" color="white" mt="1">
-                Account Info
+                {t('auth.accountInfo', 'Account Info')}
               </Heading>
             </Box>
           </Box>
@@ -289,7 +297,7 @@ const Register: React.FC = () => {
               {/* Full Name */}
               <FormControl isInvalid={!!errors.fullName}>
                 <FormLabel fontSize="12px" color="#e2e1eb" mb="1">
-                  Full Name
+                  {t('auth.fullName', 'Full Name')}
                 </FormLabel>
                 <Input
                   placeholder="John Doe"
@@ -312,7 +320,7 @@ const Register: React.FC = () => {
               {/* Email */}
               <FormControl isInvalid={!!errors.email}>
                 <FormLabel fontSize="12px" color="#e2e1eb" mb="1">
-                  Email
+                  {t('auth.email', 'Email')}
                 </FormLabel>
                 <Input
                   placeholder="john@example.com"
@@ -340,7 +348,7 @@ const Register: React.FC = () => {
               {/* Password */}
               <FormControl isInvalid={!!errors.password}>
                 <FormLabel fontSize="12px" color="#e2e1eb" mb="1">
-                  Password
+                  {t('auth.password', 'Password')}
                 </FormLabel>
                 <InputGroup size="md">
                   <Input
@@ -397,7 +405,7 @@ const Register: React.FC = () => {
               {/* Confirm Password */}
               <FormControl isInvalid={!!errors.confirmPassword}>
                 <FormLabel fontSize="12px" color="#e2e1eb" mb="1">
-                  Confirm Password
+                  {t('auth.confirmPassword', 'Confirm Password')}
                 </FormLabel>
                 <Input
                   type="password"
@@ -443,15 +451,7 @@ const Register: React.FC = () => {
                   />
                   <Box ml="3">
                     <FormLabel htmlFor="terms" fontSize="12px" color="#e5bdb9" m="0" cursor="pointer" lineHeight="1.4">
-                      I agree to the{' '}
-                      <Link color="#ffb4ac" href="#" _hover={{ textDecoration: 'underline' }}>
-                        Terms of Service
-                      </Link>{' '}
-                      and{' '}
-                      <Link color="#ffb4ac" href="#" _hover={{ textDecoration: 'underline' }}>
-                        Privacy Policy
-                      </Link>
-                      .
+                      {t('auth.agreeTerms', 'I agree to the Terms & Privacy Policy')}
                     </FormLabel>
                   </Box>
                 </Flex>
@@ -473,7 +473,7 @@ const Register: React.FC = () => {
                   gap="1"
                   label={
                     <>
-                      Continue
+                      {t('auth.nextStep', 'Continue')}
                       <Box as="span" className="material-symbols-outlined" fontSize="20px">
                         arrow_forward
                       </Box>
@@ -488,7 +488,7 @@ const Register: React.FC = () => {
         {/* Back to Login Link */}
         <Box textAlign="center" mt="2">
             <Text fontSize="12px" color="#e5bdb9">
-              Have an account? <Link color="brand.primary" onClick={() => navigate('/login')}>Login</Link>
+              {t('auth.alreadyHaveAccount', 'Already have an account?')} <Link color="brand.primary" onClick={() => navigate('/login')}>{t('auth.login', 'Login')}</Link>
             </Text>
         </Box>
       </Box>

@@ -12,18 +12,19 @@ import {
 } from '@chakra-ui/react'
 import { useLocation } from 'react-router-dom'
 import { FiMenu } from 'react-icons/fi'
+import { useTranslation } from 'react-i18next'
 import MemberSidebar from '../Sidebar/MemberSidebar'
 import HeaderActions from '../Header/HeaderActions'
 
-const pathTitles: Record<string, string> = {
-    '/dashboard': 'Dashboard',
-    '/workouts': 'Workouts',
-    '/exercises': 'Exercises',
-    '/nutrition': 'Nutrition',
-    '/progress': 'Progress',
-    '/pt-booking': 'PT Booking',
-    '/ai-chat': 'AI Chat',
-    '/profile': 'Profile',
+const pathTitleKeys: Record<string, { key: string; defaultLabel: string }> = {
+    '/dashboard': { key: 'nav.dashboard', defaultLabel: 'Dashboard' },
+    '/workouts': { key: 'nav.workouts', defaultLabel: 'Workouts' },
+    '/exercises': { key: 'nav.exercises', defaultLabel: 'Exercises' },
+    '/nutrition': { key: 'nav.nutrition', defaultLabel: 'Nutrition' },
+    '/progress': { key: 'nav.progress', defaultLabel: 'Progress' },
+    '/pt-booking': { key: 'nav.ptBooking', defaultLabel: 'PT Booking' },
+    '/ai-chat': { key: 'nav.aiChat', defaultLabel: 'AI Chat' },
+    '/profile': { key: 'nav.profile', defaultLabel: 'Profile' },
 }
 
 interface MemberLayoutProps {
@@ -31,8 +32,10 @@ interface MemberLayoutProps {
 }
 
 const MemberLayout: React.FC<MemberLayoutProps> = ({ children }) => {
+    const { t } = useTranslation()
     const location = useLocation()
-    const title = pathTitles[location.pathname] || 'Member'
+    const mapped = pathTitleKeys[location.pathname]
+    const title = mapped ? t(mapped.key, mapped.defaultLabel) : t('header.member', 'Member')
     const { isOpen, onOpen, onClose } = useDisclosure()
 
     return (

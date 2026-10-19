@@ -1,5 +1,6 @@
 import React, { useState, useCallback, useEffect } from 'react'
 import { useLocation } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import {
     Box,
     Flex,
@@ -44,9 +45,10 @@ const fetcher = (url: string) => apiClient.get(url).then((res) => res.data)
 
 /* ── Nutrition Page ─────────────────────────── */
 const Nutrition: React.FC = () => {
+    const { t, i18n } = useTranslation()
     const today = new Date()
     const todayStr = today.toISOString().split('T')[0]
-    const dateStr = today.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+    const dateStr = today.toLocaleDateString(i18n.language === 'vi' ? 'vi-VN' : 'en-US', { month: 'short', day: 'numeric', year: 'numeric' })
     // const [searchQuery, setSearchQuery] = useState('')
     const toast = useToast()
     const isAuthenticated = useAuthStore(state => state.isAuthenticated)
@@ -66,8 +68,8 @@ const Nutrition: React.FC = () => {
             await logWater(todayStr, 1)
             globalMutate(key)
             toast({
-                title: 'Water logged!',
-                description: '1 glass of water added.',
+                title: t('nutrition.waterLogged', 'Water logged!'),
+                description: t('nutrition.glassAdded', '1 glass of water added.'),
                 status: 'success',
                 duration: 2000,
                 isClosable: true,
@@ -75,13 +77,13 @@ const Nutrition: React.FC = () => {
         } catch {
             globalMutate(key)
             toast({
-                title: 'Failed to log water',
+                title: t('nutrition.failedLogWater', 'Failed to log water'),
                 status: 'error',
                 duration: 2000,
                 isClosable: true,
             })
         }
-    }, [todayStr, toast])
+    }, [todayStr, toast, t])
 
     // Pre-filled water count when navigated from notification
     const location = useLocation()
@@ -112,7 +114,7 @@ const Nutrition: React.FC = () => {
                         />
                         <Box>
                             <Heading fontSize="22px" fontWeight="800" color="white">
-                                Today
+                                {t('nutrition.today', 'Today')}
                             </Heading>
                             <Text fontSize="12px" color="#8A8A93">
                                 {dateStr}
@@ -158,8 +160,8 @@ const Nutrition: React.FC = () => {
                             endTime={summary?.waterReminderEndTime}
                             onRemind={() => {
                                 toast({
-                                    title: 'Time to drink water! 🥛',
-                                    description: `You need to drink ${Math.max(0, waterTotal - waterCurrent)} more cups of water.`,
+                                    title: t('nutrition.reminderToastTitle', 'Time to drink water! 🥛'),
+                                    description: t('nutrition.reminderToastDesc', 'You need to drink {{count}} more cups of water.', { count: Math.max(0, waterTotal - waterCurrent) }),
                                     status: 'success',
                                     duration: 5000,
                                     isClosable: true,
@@ -375,6 +377,7 @@ const Nutrition: React.FC = () => {
 
 /* ── Water Reminder Settings ─────────────────── */
 const WaterReminderSettings: React.FC<{ startTime: string; endTime: string }> = ({ startTime, endTime }) => {
+    const { t } = useTranslation()
     const [start, setStart] = useState(startTime)
     const [end, setEnd] = useState(endTime)
     const [saving, setSaving] = useState(false)
@@ -384,9 +387,9 @@ const WaterReminderSettings: React.FC<{ startTime: string; endTime: string }> = 
         setSaving(true)
         try {
             await updateReminderSettings(start, end)
-            toast({ title: 'Reminder schedule saved', status: 'success', duration: 2000, isClosable: true })
+            toast({ title: t('nutrition.reminderSaved', 'Reminder schedule saved'), status: 'success', duration: 2000, isClosable: true })
         } catch {
-            toast({ title: 'Failed to save', status: 'error', duration: 2000, isClosable: true })
+            toast({ title: t('nutrition.failedSave', 'Failed to save'), status: 'error', duration: 2000, isClosable: true })
         } finally {
             setSaving(false)
         }
@@ -396,7 +399,7 @@ const WaterReminderSettings: React.FC<{ startTime: string; endTime: string }> = 
         <Box bg="#141720" border="1px solid" borderColor="#1e2028" borderRadius="14px" p="4">
             <Flex justify="space-between" align="center" mb="3">
                 <Text fontSize="11px" fontWeight="700" color="#8A8A93" textTransform="uppercase" letterSpacing="wider">
-                    Water Reminder
+                    {t('nutrition.waterReminder', 'Water Reminder')}
                 </Text>
                 <Box
                     as="button"
@@ -405,12 +408,12 @@ const WaterReminderSettings: React.FC<{ startTime: string; endTime: string }> = 
                     _hover={{ color: '#ff6b6b' }}
                     onClick={handleSave}
                 >
-                    {saving ? 'Saving...' : 'Save'}
+                    {saving ? t('common.saving', 'Saving...') : t('common.save', 'Save')}
                 </Box>
             </Flex>
             <Flex gap="2" align="center">
                 <Box flex="1">
-                    <Text fontSize="10px" color="#8A8A93" mb="1">From</Text>
+                    <Text fontSize="10px" color="#8A8A93" mb="1">{t('nutrition.from', 'From')}</Text>
                     <Box
                         as="input"
                         type="time"
@@ -423,7 +426,7 @@ const WaterReminderSettings: React.FC<{ startTime: string; endTime: string }> = 
                     />
                 </Box>
                 <Box flex="1">
-                    <Text fontSize="10px" color="#8A8A93" mb="1">To</Text>
+                    <Text fontSize="10px" color="#8A8A93" mb="1">{t('nutrition.to', 'To')}</Text>
                     <Box
                         as="input"
                         type="time"

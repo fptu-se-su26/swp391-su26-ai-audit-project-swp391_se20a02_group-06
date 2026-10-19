@@ -1,5 +1,6 @@
 import React from 'react'
 import { Box, Flex, Text } from '@chakra-ui/react'
+import { useTranslation } from 'react-i18next'
 import AdminSidebar from '../Sidebar/AdminSidebar'
 import {
     adminColors,
@@ -15,9 +16,12 @@ interface AdminLayoutProps {
 
 const AdminLayout: React.FC<AdminLayoutProps> = ({
     children,
-    title = 'Elite Dashboard',
-    searchPlaceholder = 'Search...',
+    title,
+    searchPlaceholder,
 }) => {
+    const { t } = useTranslation()
+    const displayTitle = title || t('header.adminTitle', 'Elite Dashboard')
+    const displaySearch = searchPlaceholder || t('common.search', 'Search...')
     return (
         <Flex minH="100vh" bg={adminColors.bg} color={adminColors.text}>
             <AdminSidebar />
@@ -43,10 +47,10 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({
                     zIndex={40}
                 >
                     <Text color={adminColors.primarySoft} fontSize="18px" lineHeight="24px" fontWeight="700">
-                        {title}
+                        {displayTitle}
                     </Text>
                     <Flex align="center" gap="24px">
-                        <SearchField placeholder={searchPlaceholder} />
+                        <SearchField placeholder={displaySearch} />
                         <TopbarActions />
                     </Flex>
                 </Flex>

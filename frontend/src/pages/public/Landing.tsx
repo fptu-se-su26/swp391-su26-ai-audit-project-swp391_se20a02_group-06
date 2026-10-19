@@ -15,6 +15,7 @@ import {
   HStack,
 } from '@chakra-ui/react'
 import { useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { useAuthStore } from '../../store/useAuthStore'
 import {
   FiCheck,
@@ -94,6 +95,7 @@ const aboutCards = [
 ]
 
 const Landing: React.FC = () => {
+  const { t } = useTranslation()
   const navigate = useNavigate()
   const [isYearly, setIsYearly] = useState(false)
   const [packages, setPackages] = useState<ProductPackage[]>([])
@@ -197,10 +199,10 @@ const Landing: React.FC = () => {
                 color="white"
                 maxW="3xl"
               >
-                Train Smarter.
+                {t('landing.heroTitle1', 'Train Smarter.')}
                 <br />
                 <Text as="span" color="#e03030">
-                  Powered by AI.
+                  {t('landing.heroTitle2', 'Powered by AI.')}
                 </Text>
               </Heading>
               <Text
@@ -208,12 +210,12 @@ const Landing: React.FC = () => {
                 color="#e5bdb9"
                 maxW="xl"
               >
-                Elevate your performance with elite-level AI programming. No fluff, just data-driven results for the focused athlete.
+                {t('landing.heroSubtitle', 'Elevate your performance with elite-level AI programming. No fluff, just data-driven results for the focused athlete.')}
               </Text>
               <Stack direction={{ base: 'column', sm: 'row' }} spacing="4" pt="2">
                 <AppButton
                   variant="solid"
-                  label={isAuthenticated ? "Go to Dashboard" : "Start Free Trial"}
+                  label={isAuthenticated ? t('landing.dashboard', 'Go to Dashboard') : t('landing.startTrial', 'Start Free Trial')}
                   px="8"
                   py="6"
                   fontSize="md"
@@ -221,7 +223,7 @@ const Landing: React.FC = () => {
                 />
                 <AppButton
                   variant="outline"
-                  label="View Features"
+                  label={t('landing.viewFeatures', 'View Features')}
                   px="8"
                   py="6"
                   fontSize="md"
@@ -317,12 +319,12 @@ const Landing: React.FC = () => {
                 w="fit-content"
               >
                 <Text fontSize="10px" fontWeight="700" color="#e03030" textTransform="uppercase" letterSpacing="wider">
-                  Exclusive Access
+                  {t('landing.exclusiveAccess', 'Exclusive Access')}
                 </Text>
               </Box>
 
               <Heading fontSize={{ base: '28px', md: '36px' }} color="white" fontWeight="bold">
-                Elite Membership Benefits
+                {t('landing.eliteBenefits', 'Elite Membership Benefits')}
               </Heading>
 
               {/* Benefits Grid */}
@@ -360,7 +362,7 @@ const Landing: React.FC = () => {
         >
           <Stack spacing="4" align="center" textAlign="center">
             <Heading fontSize={{ base: '32px', md: '40px' }} color="white" fontWeight="bold">
-              Choose Your Path
+              {t('landing.choosePath', 'Choose Your Path')}
             </Heading>
 
             {/* Monthly/Yearly Toggle */}
@@ -374,14 +376,14 @@ const Landing: React.FC = () => {
             >
               <AppButton
                 variant={!isYearly ? 'solid' : 'ghost'}
-                label="Monthly"
+                label={t('landing.monthly', 'Monthly')}
                 size="sm"
                 px="6"
                 onClick={() => setIsYearly(false)}
               />
               <AppButton
                 variant={isYearly ? 'solid' : 'ghost'}
-                label="Yearly"
+                label={t('landing.yearly', 'Yearly')}
                 size="sm"
                 px="6"
                 onClick={() => setIsYearly(true)}
@@ -432,7 +434,7 @@ const Landing: React.FC = () => {
                     letterSpacing="widest"
                     boxShadow="lg"
                   >
-                    MOST POPULAR
+                    {t('landing.popular', 'MOST POPULAR')}
                   </Box>
                 )}
                 <Stack spacing="2">
@@ -440,7 +442,7 @@ const Landing: React.FC = () => {
                   <Text fontSize="4xl" fontWeight="bold" color="white">
                     {pkg.price.toLocaleString('vi-VN')} ₫
                   </Text>
-                  <Text fontSize="xs" color="#8A8A93">Duration: {pkg.durationDays} days</Text>
+                  <Text fontSize="xs" color="#8A8A93">{pkg.durationDays} {t('profile.days', 'days')}</Text>
                   <Box py="2">
                     <Text fontSize="sm" color="#8A8A93" noOfLines={2}>{pkg.description}</Text>
                   </Box>
@@ -456,7 +458,7 @@ const Landing: React.FC = () => {
                 </Stack>
                 <AppButton
                   variant={pkg.isPopular ? "solid" : "outline"}
-                  label="Purchase Plan"
+                  label={t('landing.selectPlan', 'Purchase Plan')}
                   w="full"
                   mt="auto"
                   py="6"
@@ -495,17 +497,17 @@ const Landing: React.FC = () => {
                 mb="4"
               >
                 <Text fontSize="10px" fontWeight="700" color="#e03030" textTransform="uppercase" letterSpacing="wider">
-                  Our Mission
+                  {t('landing.ourMission', 'Our Mission')}
                 </Text>
               </Box>
               <Heading fontSize="2xl" fontWeight="bold" color="white" lineHeight="tight">
-                Built for Athletes.
+                {t('landing.builtForAthletes', 'Built for Athletes.')}
                 <br />
-                Designed by Data.
+                {t('landing.designedByData', 'Designed by Data.')}
               </Heading>
             </Box>
             <Text fontSize="sm" color="#8A8A93">
-              NETFIT combines AI-driven programming with human expertise to deliver personalized fitness at scale. No generic plans. No guesswork.
+              {t('landing.missionDesc', 'NETFIT combines AI-driven programming with human expertise to deliver personalized fitness at scale. No generic plans. No guesswork.')}
             </Text>
             <Text fontSize="xs" color="#8A8A93" fontStyle="italic">
               Founded in 2023, trusted by 50,000+ athletes worldwide.
@@ -514,9 +516,9 @@ const Landing: React.FC = () => {
             {/* Stats Row */}
             <HStack spacing="8" pt="4" flexWrap="wrap">
               {[
-                { value: '50K+', label: 'Users' },
-                { value: '200+', label: 'PT Experts' },
-                { value: '4.9★', label: 'Average Rating' },
+                { value: '50K+', label: t('landing.users', 'Users') },
+                { value: '200+', label: t('landing.ptExperts', 'PT Experts') },
+                { value: '4.9★', label: t('landing.avgRating', 'Average Rating') },
               ].map((stat, idx) => (
                 <React.Fragment key={idx}>
                   {idx > 0 && (

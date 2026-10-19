@@ -17,9 +17,12 @@ import AdminLayout from '../../components/shared/Layout/AdminLayout.tsx'
 import { useAuthStore } from '../../store/useAuthStore.ts'
 import { FiRefreshCw } from 'react-icons/fi'
 
+import { useTranslation } from 'react-i18next'
+
 const fetcher = (url: string) => apiClient.get(url).then(res => res.data)
 
 const AdminDashboard: React.FC = () => {
+    const { t } = useTranslation()
     const roleId = useAuthStore((state) => state.roleId)
     const isPT = roleId === 2
     const toast = useToast()
@@ -104,7 +107,7 @@ const AdminDashboard: React.FC = () => {
             <Box p="7" maxW="1200px">
                 <Flex justify="space-between" align="center" mb="7" flexWrap="wrap" gap="4">
                     <Heading fontSize="24px" fontWeight="800" color="white">
-                        {isPT ? 'My PT Overview' : 'System Overview'}
+                        {isPT ? t('admin.ptOverview', 'My PT Overview') : t('admin.systemOverview', 'System Overview')}
                     </Heading>
                     <Button
                         leftIcon={<FiRefreshCw />}
@@ -114,10 +117,10 @@ const AdminDashboard: React.FC = () => {
                         color="white"
                         _hover={{ bg: '#1e2028' }}
                         isLoading={isRefreshing || isLoading}
-                        loadingText="Refreshing..."
+                        loadingText={t('common.refreshing', 'Refreshing...')}
                         onClick={handleRefreshAll}
                     >
-                        Refresh
+                        {t('common.refresh', 'Refresh')}
                     </Button>
                 </Flex>
 
@@ -125,7 +128,7 @@ const AdminDashboard: React.FC = () => {
                 <Grid templateColumns="repeat(4, 1fr)" gap="4" mb="7">
                     <Box bg="#141720" border="1px solid" borderColor="#1e2028" borderRadius="16px" p="5">
                         <Text fontSize="12px" color="#8A8A93" textTransform="uppercase" fontWeight="700">
-                            {isPT ? 'My Clients' : 'Total Users'}
+                            {isPT ? t('admin.myClients', 'My Clients') : t('admin.totalUsers', 'Total Users')}
                         </Text>
                         {isLoading ? (
                             <Spinner size="sm" color="white" mt="2" />
@@ -137,7 +140,7 @@ const AdminDashboard: React.FC = () => {
                     </Box>
                     <Box bg="#141720" border="1px solid" borderColor="#1e2028" borderRadius="16px" p="5">
                         <Text fontSize="12px" color="#8A8A93" textTransform="uppercase" fontWeight="700">
-                            {isPT ? 'Active Programs' : 'Active PTs'}
+                            {isPT ? t('admin.activePrograms', 'Active Programs') : t('admin.activePTs', 'Active PTs')}
                         </Text>
                         {isLoading ? (
                             <Spinner size="sm" color="white" mt="2" />
@@ -149,7 +152,7 @@ const AdminDashboard: React.FC = () => {
                     </Box>
                     <Box bg="#141720" border="1px solid" borderColor="#1e2028" borderRadius="16px" p="5">
                         <Text fontSize="12px" color="#8A8A93" textTransform="uppercase" fontWeight="700">
-                            {isPT ? 'Pending Reviews' : 'Exercises'}
+                            {isPT ? t('admin.pendingReviews', 'Pending Reviews') : t('admin.exercises', 'Exercises')}
                         </Text>
                         {isLoading ? (
                             <Spinner size="sm" color="white" mt="2" />
@@ -161,7 +164,7 @@ const AdminDashboard: React.FC = () => {
                     </Box>
                     <Box bg="#141720" border="1px solid" borderColor="#1e2028" borderRadius="16px" p="5">
                         <Text fontSize="12px" color="#8A8A93" textTransform="uppercase" fontWeight="700">
-                            {isPT ? 'My Earnings' : 'Revenue'}
+                            {isPT ? t('admin.myEarnings', 'My Earnings') : t('admin.revenue', 'Revenue')}
                         </Text>
                         {loadingPayments ? (
                             <Spinner size="sm" color="#E03030" mt="2" />
@@ -176,11 +179,11 @@ const AdminDashboard: React.FC = () => {
                 {/* Recent Activity */}
                 <Box bg="#141720" border="1px solid" borderColor="#1e2028" borderRadius="16px" p="6">
                     <Heading fontSize="16px" fontWeight="700" color="white" mb="4">
-                        Recent Activities
+                        {t('admin.recentActivities', 'Recent Activities')}
                     </Heading>
                     <Stack spacing="3">
                         {recentActivities.length === 0 ? (
-                            <Text color="#8A8A93" fontSize="14px">No recent activities.</Text>
+                            <Text color="#8A8A93" fontSize="14px">{t('admin.noActivities', 'No recent activities.')}</Text>
                         ) : (
                             recentActivities.map((act) => (
                                 <Flex key={act.id} align="center" justify="space-between" p="3" bg="#0A0C10" borderRadius="10px" border="1px solid" borderColor="#1e2028">

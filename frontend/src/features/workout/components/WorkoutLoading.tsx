@@ -1,22 +1,24 @@
 import React, { useEffect, useState } from 'react'
 import { Box, Flex, Heading, Text, Stack } from '@chakra-ui/react'
+import { useTranslation } from 'react-i18next'
 import { useWorkoutStore } from '../../../store/useWorkoutStore.ts'
 
 interface WorkoutLoadingProps {
     onComplete: () => void
 }
 
-const loadingPhases = [
-    'Analyzing your profile...',
-    'Optimizing AI program...',
-    'Building personal schedule...',
-    'Finalizing your workout...',
-]
-
 const WorkoutLoading: React.FC<WorkoutLoadingProps> = ({ onComplete }) => {
+    const { t } = useTranslation()
     const { exercises, weeklyPlans, formData } = useWorkoutStore()
     const [progress, setProgress] = useState(0)
     const [phase, setPhase] = useState(0)
+
+    const loadingPhases = [
+        t('workouts.analyzingProfile', 'Analyzing your profile...'),
+        t('workouts.optimizingAi', 'Optimizing AI program...'),
+        t('workouts.buildingSchedule', 'Building personal schedule...'),
+        t('workouts.finalizingWorkout', 'Finalizing your workout...'),
+    ]
 
     const isDataLoaded = formData?.planType === 'weekly' 
         ? weeklyPlans.length > 0 
@@ -173,7 +175,7 @@ const WorkoutLoading: React.FC<WorkoutLoadingProps> = ({ onComplete }) => {
                 <Box w="full">
                     <Flex justify="space-between" mb="2">
                         <Text fontSize="10px" fontWeight="700" color="#8A8A93" textTransform="uppercase" letterSpacing="widest">
-                            Neural Sync
+                            {t('workouts.neuralSync', 'Neural Sync')}
                         </Text>
                         <Text fontSize="10px" fontWeight="700" color="#E03030">
                             {Math.round(progress)}%
@@ -199,7 +201,7 @@ const WorkoutLoading: React.FC<WorkoutLoadingProps> = ({ onComplete }) => {
                         SYS_ID: {sysId}
                     </Text>
                     <Text fontSize="10px" color="#3e4050" fontFamily="monospace">
-                        SECURE
+                        {t('workouts.secure', 'SECURE')}
                     </Text>
                 </Flex>
             </Stack>

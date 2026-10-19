@@ -35,6 +35,7 @@ import { motion } from 'framer-motion'
 import useSWR from 'swr'
 import apiClient from '../../lib/axios'
 import PaginationFooter from '../../features/admin/components/PaginationFooter'
+import { useTranslation } from 'react-i18next'
 
 const MotionBox = motion(Box)
 const MotionTr = motion(Tr)
@@ -52,6 +53,7 @@ const DetailRow: React.FC<{ label: string; value: string; mono?: boolean; color?
 )
 
 const AdminPayments: React.FC = () => {
+    const { t } = useTranslation()
     const [searchTerm, setSearchTerm] = useState('')
     const [statusFilter, setStatusFilter] = useState('All')
     const [dateRange, setDateRange] = useState<[Date | null, Date | null]>([null, null])
@@ -68,8 +70,8 @@ const AdminPayments: React.FC = () => {
             setIsRefreshing(true)
             await mutate(undefined, { revalidate: true })
             toast({
-                title: 'Refreshed',
-                description: 'Transaction records have been synchronized successfully.',
+                title: t('admin.refreshedTitle', 'Refreshed'),
+                description: t('admin.refreshedDesc', 'Transaction records have been synchronized successfully.'),
                 status: 'success',
                 duration: 2500,
                 isClosable: true,
@@ -77,8 +79,8 @@ const AdminPayments: React.FC = () => {
             })
         } catch (err) {
             toast({
-                title: 'Refresh Failed',
-                description: 'An error occurred while synchronizing transaction data.',
+                title: t('admin.refreshFailedTitle', 'Refresh Failed'),
+                description: t('admin.refreshFailedDesc', 'An error occurred while synchronizing transaction data.'),
                 status: 'error',
                 duration: 3000,
                 isClosable: true,
@@ -221,15 +223,15 @@ const AdminPayments: React.FC = () => {
     const toVnd = (amount?: number) => '₫' + Math.round(Number(amount) || 0).toLocaleString('vi-VN')
 
     const statWidgets = computedStats ? [
-        { label: 'Gross Revenue (PayOS)', value: toVnd(computedStats.grossRevenue), color: 'white' },
-        { label: 'Net Revenue', value: toVnd(computedStats.grossRevenue - computedStats.failedAmount), color: '#E03030' },
-        { label: 'Failed', value: toVnd(computedStats.failedAmount), color: '#8A8A93' },
-        { label: 'Pending', value: toVnd(computedStats.pendingAmount), color: 'yellow.400' },
+        { label: t('admin.grossRevenue', 'Gross Revenue (PayOS)'), value: toVnd(computedStats.grossRevenue), color: 'white' },
+        { label: t('admin.netRevenue', 'Net Revenue'), value: toVnd(computedStats.grossRevenue - computedStats.failedAmount), color: '#E03030' },
+        { label: t('admin.failed', 'Failed'), value: toVnd(computedStats.failedAmount), color: '#8A8A93' },
+        { label: t('admin.pending', 'Pending'), value: toVnd(computedStats.pendingAmount), color: 'yellow.400' },
     ] : [
-        { label: 'Gross Revenue (PayOS)', value: '---', color: 'white' },
-        { label: 'Net Revenue', value: '---', color: '#E03030' },
-        { label: 'Failed', value: '---', color: '#8A8A93' },
-        { label: 'Pending', value: '---', color: 'yellow.400' },
+        { label: t('admin.grossRevenue', 'Gross Revenue (PayOS)'), value: '---', color: 'white' },
+        { label: t('admin.netRevenue', 'Net Revenue'), value: '---', color: '#E03030' },
+        { label: t('admin.failed', 'Failed'), value: '---', color: '#8A8A93' },
+        { label: t('admin.pending', 'Pending'), value: '---', color: 'yellow.400' },
     ]
 
     return (
@@ -239,10 +241,10 @@ const AdminPayments: React.FC = () => {
                 <Flex justify="space-between" align="center" mb="7" flexWrap="wrap" gap="4">
                     <Box>
                         <Heading fontSize="28px" fontWeight="900" color="white" textTransform="uppercase">
-                            Payments & Revenue
+                            {t('admin.paymentsRevenue', 'Payments & Revenue')}
                         </Heading>
                         <Text fontSize="13px" color="#8A8A93" mt="1">
-                            Track and manage all payment transactions and financial records across the platform
+                            {t('admin.paymentSubtitle', 'Track and manage all payment transactions and financial records across the platform')}
                         </Text>
                     </Box>
                     <Button
@@ -253,10 +255,10 @@ const AdminPayments: React.FC = () => {
                         color="white"
                         _hover={{ bg: '#1e2028' }}
                         isLoading={isRefreshing || isLoading}
-                        loadingText="Refreshing..."
+                        loadingText={t('common.refreshing', 'Refreshing...')}
                         onClick={handleRefresh}
                     >
-                        Refresh
+                        {t('common.refresh', 'Refresh')}
                     </Button>
                 </Flex>
 
@@ -287,7 +289,7 @@ const AdminPayments: React.FC = () => {
                                     <FiSearch color="#8A8A93" />
                                 </InputLeftElement>
                                 <Input 
-                                    placeholder="Search ID or User..." 
+                                    placeholder={t('admin.searchIdOrUser', 'Search ID or User...')} 
                                     variant="outline" 
                                     borderColor="#1e2028" 
                                     color="white"
@@ -306,26 +308,31 @@ const AdminPayments: React.FC = () => {
                                 value={statusFilter}
                                 onChange={(e) => setStatusFilter(e.target.value)}
                             >
-                                <option value="All" style={{ background: '#141720' }}>All Status</option>
-                                <option value="Completed" style={{ background: '#141720' }}>Completed</option>
-                                <option value="Pending" style={{ background: '#141720' }}>Pending</option>
-                                <option value="Failed" style={{ background: '#141720' }}>Failed</option>
+                                <option value="All" style={{ background: '#141720' }}>{t('admin.allStatus', 'All Status')}</option>
+                                <option value="Completed" style={{ background: '#141720' }}>{t('admin.completed', 'Completed')}</option>
+                                <option value="Pending" style={{ background: '#141720' }}>{t('admin.pending', 'Pending')}</option>
+                                <option value="Failed" style={{ background: '#141720' }}>{t('admin.failed', 'Failed')}</option>
                             </Select>
                         </HStack>
 
                         <HStack spacing={3}>
                             <HStack spacing={2} bg="#0A0C10" p="1" borderRadius="md" border="1px solid #1e2028">
-                                {['All', 'Week', 'Month', 'Year'].map(filter => (
+                                {[
+                                    { key: 'All', label: t('admin.all', 'All') },
+                                    { key: 'Week', label: t('admin.week', 'Week') },
+                                    { key: 'Month', label: t('admin.month', 'Month') },
+                                    { key: 'Year', label: t('admin.year', 'Year') }
+                                ].map(f => (
                                     <Button 
-                                        key={filter} 
+                                        key={f.key} 
                                         size="xs" 
-                                        variant={activeQuickFilter === filter ? 'solid' : 'ghost'}
-                                        bg={activeQuickFilter === filter ? '#1e2028' : 'transparent'}
-                                        color={activeQuickFilter === filter ? 'white' : '#8A8A93'}
+                                        variant={activeQuickFilter === f.key ? 'solid' : 'ghost'}
+                                        bg={activeQuickFilter === f.key ? '#1e2028' : 'transparent'}
+                                        color={activeQuickFilter === f.key ? 'white' : '#8A8A93'}
                                         _hover={{ bg: '#1e2028', color: 'white' }}
-                                        onClick={() => handleQuickFilter(filter)}
+                                        onClick={() => handleQuickFilter(f.key)}
                                     >
-                                        {filter}
+                                        {f.label}
                                     </Button>
                                 ))}
                             </HStack>
@@ -342,7 +349,7 @@ const AdminPayments: React.FC = () => {
                                         setDateRange(update);
                                         setActiveQuickFilter('Custom');
                                     }}
-                                    placeholderText="Select date range"
+                                    placeholderText={t('admin.selectDateRange', 'Select date range')}
                                     isClearable={true}
                                 />
                             </Box>
@@ -360,52 +367,53 @@ const AdminPayments: React.FC = () => {
                         </Flex>
                     ) : error ? (
                         <Flex direction="column" align="center" justify="center" py="10">
-                            <Text color="red.400" mb="2" fontSize="13px">Failed to load payment transactions. Please check your admin privileges or try again.</Text>
-                            <Button size="xs" colorScheme="red" variant="outline" onClick={() => mutate()}>Retry</Button>
+                            <Text color="red.400" mb="2" fontSize="13px">{t('admin.failedLoadTransactions', 'Failed to load payment transactions. Please check your admin privileges or try again.')}</Text>
+                            <Button size="xs" colorScheme="red" variant="outline" onClick={() => mutate()}>{t('common.retry', 'Retry')}</Button>
                         </Flex>
                     ) : (
                         <>
                             <Table variant="simple" size="sm">
                         <Thead bg="#0A0C10">
                             <Tr>
-                                <Th color="#8A8A93" borderColor="#1e2028">Order Code</Th>
-                                <Th color="#8A8A93" borderColor="#1e2028">User</Th>
-                                <Th color="#8A8A93" borderColor="#1e2028">Package</Th>
-                                <Th color="#8A8A93" borderColor="#1e2028">Date</Th>
-                                <Th color="#8A8A93" borderColor="#1e2028" isNumeric>Amount</Th>
-                                <Th color="#8A8A93" borderColor="#1e2028">Status</Th>
-                                <Th color="#8A8A93" borderColor="#1e2028" textAlign="right">Action</Th>
+                                <Th color="#8A8A93" borderColor="#1e2028">{t('admin.orderCode', 'Order Code')}</Th>
+                                <Th color="#8A8A93" borderColor="#1e2028">{t('admin.user', 'User')}</Th>
+                                <Th color="#8A8A93" borderColor="#1e2028">{t('common.package', 'Package')}</Th>
+                                <Th color="#8A8A93" borderColor="#1e2028">{t('common.date', 'Date')}</Th>
+                                <Th color="#8A8A93" borderColor="#1e2028" isNumeric>{t('common.amount', 'Amount')}</Th>
+                                <Th color="#8A8A93" borderColor="#1e2028">{t('common.status', 'Status')}</Th>
+                                <Th color="#8A8A93" borderColor="#1e2028" textAlign="right">{t('common.actions', 'Action')}</Th>
                             </Tr>
                         </Thead>
                         <Tbody>
                             {paginatedTransactions.length > 0 ? (
-                                paginatedTransactions.map((t: any, idx) => {
-                                    const status = t.status === 'SUCCESS' ? 'Completed' : t.status === 'FAILED' ? 'Failed' : t.status === 'PENDING' ? 'Pending' : t.status
+                                paginatedTransactions.map((tItem: any, idx) => {
+                                    const rawStatus = tItem.status === 'SUCCESS' ? 'Completed' : tItem.status === 'FAILED' ? 'Failed' : tItem.status === 'PENDING' ? 'Pending' : tItem.status
+                                    const localizedStatus = rawStatus === 'Completed' ? t('admin.completed', 'Completed') : rawStatus === 'Pending' ? t('admin.pending', 'Pending') : rawStatus === 'Failed' ? t('admin.failed', 'Failed') : rawStatus
                                     return (
                                     <MotionTr 
-                                        key={`${safePage}-${t.id}`} 
+                                        key={`${safePage}-${tItem.id}`} 
                                         _hover={{ bg: 'rgba(255,255,255,0.02)' }}
                                         initial={{ opacity: 0, x: -10 }}
                                         animate={{ opacity: 1, x: 0 }}
                                         transition={{ delay: idx * 0.035, duration: 0.2 }}
                                     >
-                                        <Td color="#8A8A93" borderColor="#1e2028" fontSize="12px" fontFamily="monospace">{t.orderCode}</Td>
-                                        <Td color="white" borderColor="#1e2028" fontWeight="600">{t.userName || t.userEmail || 'N/A'}</Td>
+                                        <Td color="#8A8A93" borderColor="#1e2028" fontSize="12px" fontFamily="monospace">{tItem.orderCode}</Td>
+                                        <Td color="white" borderColor="#1e2028" fontWeight="600">{tItem.userName || tItem.userEmail || 'N/A'}</Td>
                                         <Td borderColor="#1e2028">
-                                            <Text color={t.packageName ? '#E03030' : '#8A8A93'} fontWeight="700" fontSize="12px" textTransform="uppercase">{t.packageName || 'N/A'}</Text>
+                                            <Text color={tItem.packageName ? '#E03030' : '#8A8A93'} fontWeight="700" fontSize="12px" textTransform="uppercase">{tItem.packageName || 'N/A'}</Text>
                                         </Td>
-                                        <Td color="#8A8A93" borderColor="#1e2028">{t.paidAt ? new Date(t.paidAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'N/A'}</Td>
-                                        <Td color="white" borderColor="#1e2028" isNumeric fontWeight="800">{toVnd(t.amount)}</Td>
+                                        <Td color="#8A8A93" borderColor="#1e2028">{tItem.paidAt ? new Date(tItem.paidAt).toLocaleDateString('vi-VN', { month: 'numeric', day: 'numeric', year: 'numeric' }) : 'N/A'}</Td>
+                                        <Td color="white" borderColor="#1e2028" isNumeric fontWeight="800">{toVnd(tItem.amount)}</Td>
                                         <Td borderColor="#1e2028">
                                             <Badge
-                                                {...getStatusColor(status)}
+                                                {...getStatusColor(rawStatus)}
                                                 px="2" py="0.5" borderRadius="md" textTransform="none" fontSize="11px" fontWeight="700"
                                             >
-                                                {status}
+                                                {localizedStatus}
                                             </Badge>
                                         </Td>
                                         <Td borderColor="#1e2028" textAlign="right">
-                                            <Button size="xs" variant="ghost" color="#3182ce" _hover={{ bg: 'rgba(49, 130, 206, 0.1)' }} onClick={() => setSelectedPayment(t)}>View</Button>
+                                            <Button size="xs" variant="ghost" color="#3182ce" _hover={{ bg: 'rgba(49, 130, 206, 0.1)' }} onClick={() => setSelectedPayment(tItem)}>{t('common.view', 'View')}</Button>
                                         </Td>
                                     </MotionTr>
                                     )
@@ -413,7 +421,7 @@ const AdminPayments: React.FC = () => {
                             ) : (
                                 <Tr>
                                     <Td colSpan={7} textAlign="center" py="10" color="#8A8A93" borderColor="#1e2028">
-                                        No transactions found matching your filters.
+                                        {t('admin.noTransactionsFound', 'No transactions found matching your filters.')}
                                     </Td>
                                 </Tr>
                             )}
@@ -440,9 +448,9 @@ const AdminPayments: React.FC = () => {
                 <ModalContent bg="#141720" border="1px solid" borderColor="#1e2028" borderRadius="16px" maxW="480px">
                     <ModalHeader borderBottom="1px solid" borderColor="#1e2028">
                         <HStack justify="space-between">
-                            <Heading fontSize="18px" color="white" fontWeight="700">Payment Detail</Heading>
+                            <Heading fontSize="18px" color="white" fontWeight="700">{t('admin.paymentDetail', 'Payment Detail')}</Heading>
                             <IconButton
-                                aria-label="Close"
+                                aria-label={t('common.close', 'Close')}
                                 icon={<FiX />}
                                 variant="ghost"
                                 color="#8A8A93"
@@ -453,28 +461,28 @@ const AdminPayments: React.FC = () => {
                     <ModalBody py="6">
                         {selectedPayment && (
                             <VStack align="stretch" spacing="4">
-                                <DetailRow label="Order Code" value={selectedPayment.orderCode?.toString()} mono />
-                                <DetailRow label="Transaction Code" value={selectedPayment.transactionCode || 'N/A'} mono />
-                                <DetailRow label="User" value={`${selectedPayment.userName || 'N/A'} (${selectedPayment.userEmail || ''})`} />
-                                <DetailRow label="Package" value={selectedPayment.packageName || 'N/A'} />
-                                <DetailRow label="Amount" value={toVnd(selectedPayment.amount)} color="#E03030" />
-                                <DetailRow label="Payment Method" value={selectedPayment.paymentMethod || 'N/A'} />
-                                <DetailRow label="Status" value={selectedPayment.status === 'SUCCESS' ? 'Completed' : selectedPayment.status}>
+                                <DetailRow label={t('admin.orderCode', 'Order Code')} value={selectedPayment.orderCode?.toString()} mono />
+                                <DetailRow label={t('admin.transactionCode', 'Transaction Code')} value={selectedPayment.transactionCode || 'N/A'} mono />
+                                <DetailRow label={t('admin.user', 'User')} value={`${selectedPayment.userName || 'N/A'} (${selectedPayment.userEmail || ''})`} />
+                                <DetailRow label={t('common.package', 'Package')} value={selectedPayment.packageName || 'N/A'} />
+                                <DetailRow label={t('common.amount', 'Amount')} value={toVnd(selectedPayment.amount)} color="#E03030" />
+                                <DetailRow label={t('admin.paymentMethod', 'Payment Method')} value={selectedPayment.paymentMethod || 'N/A'} />
+                                <DetailRow label={t('common.status', 'Status')} value={selectedPayment.status === 'SUCCESS' ? t('admin.completed', 'Completed') : selectedPayment.status}>
                                     {(selectedPayment.status === 'SUCCESS' || selectedPayment.status === 'FAILED' || selectedPayment.status === 'PENDING') && (
                                         <Badge ml="2" px="2" py="0.5" borderRadius="md" textTransform="none" fontSize="11px"
                                             bg={selectedPayment.status === 'SUCCESS' ? 'green.900' : selectedPayment.status === 'FAILED' ? 'red.900' : 'yellow.900'}
                                             color={selectedPayment.status === 'SUCCESS' ? 'green.300' : selectedPayment.status === 'FAILED' ? 'red.300' : 'yellow.300'}
                                         >
-                                            {selectedPayment.status === 'SUCCESS' ? 'Completed' : selectedPayment.status}
+                                            {selectedPayment.status === 'SUCCESS' ? t('admin.completed', 'Completed') : selectedPayment.status === 'FAILED' ? t('admin.failed', 'Failed') : t('admin.pending', 'Pending')}
                                         </Badge>
                                     )}
                                 </DetailRow>
-                                <DetailRow label="Paid At" value={selectedPayment.paidAt ? new Date(selectedPayment.paidAt).toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' }) : 'N/A'} />
+                                <DetailRow label={t('admin.paidAt', 'Paid At')} value={selectedPayment.paidAt ? new Date(selectedPayment.paidAt).toLocaleString('vi-VN', { dateStyle: 'medium', timeStyle: 'short' }) : 'N/A'} />
                             </VStack>
                         )}
                     </ModalBody>
                     <ModalFooter borderTop="1px solid" borderColor="#1e2028">
-                        <Button variant="ghost" color="#8A8A93" onClick={() => setSelectedPayment(null)}>Close</Button>
+                        <Button variant="ghost" color="#8A8A93" onClick={() => setSelectedPayment(null)}>{t('common.close', 'Close')}</Button>
                     </ModalFooter>
                 </ModalContent>
             </Modal>

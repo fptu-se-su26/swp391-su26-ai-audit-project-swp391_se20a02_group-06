@@ -18,6 +18,7 @@ import {
 } from '@chakra-ui/react'
 import { FiEdit2, FiCheck, FiLogOut } from 'react-icons/fi'
 import { useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { useAuthStore } from '../../store/useAuthStore'
 import MemberLayout from '../../components/shared/Layout/MemberLayout'
 import BodyMetricsModal from './components/BodyMetricsModal'
@@ -25,22 +26,23 @@ import ChangePasswordModal from './components/ChangePasswordModal'
 import { getLatestBodyMetric, addBodyMetric } from '../../api/bodyMetrics'
 import { getProfile } from '../../api/user'
 
-const formatTimeAgo = (dateString: string | null) => {
-    if (!dateString) return 'Never changed';
+const formatTimeAgo = (dateString: string | null, t: any) => {
+    if (!dateString) return t('profile.neverChanged', 'Never changed');
     const date = new Date(dateString);
     const now = new Date();
     const diffTime = Math.abs(now.getTime() - date.getTime());
     const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
 
-    if (diffDays === 0) return 'Changed today';
-    if (diffDays < 30) return `Last changed ${diffDays} days ago`;
+    if (diffDays === 0) return t('profile.changedToday', 'Changed today');
+    if (diffDays < 30) return t('profile.changedDaysAgo', 'Last changed {{days}} days ago', { days: diffDays });
     const diffMonths = Math.floor(diffDays / 30);
-    if (diffMonths < 12) return `Last changed ${diffMonths} months ago`;
+    if (diffMonths < 12) return t('profile.changedMonthsAgo', 'Last changed {{months}} months ago', { months: diffMonths });
     const diffYears = Math.floor(diffDays / 365);
-    return `Last changed ${diffYears} years ago`;
+    return t('profile.changedYearsAgo', 'Last changed {{years}} years ago', { years: diffYears });
 }
 
 const Profile: React.FC = () => {
+    const { t } = useTranslation()
     const { data: profile, isLoading: isProfileLoading, mutate: mutateProfile } = useSWR('profile', () => getProfile())
     const { data: metric, isLoading: isMetricLoading, mutate: mutateMetric } = useSWR('latest-metric', () => getLatestBodyMetric())
     const loading = isProfileLoading || isMetricLoading
@@ -66,7 +68,7 @@ const Profile: React.FC = () => {
     const handleSaveMetrics = async (data: { age: number; gender: string; height: number; weight: number }) => {
         const newMetric = await addBodyMetric(data)
         mutateMetric(newMetric)
-        toast({ title: 'Body Metrics saved successfully', status: 'success', duration: 3000 })
+        toast({ title: t('profile.metricsSaved', 'Body Metrics saved successfully'), status: 'success', duration: 3000 })
     }
 
     const handlePasswordSuccess = () => {
@@ -79,7 +81,7 @@ const Profile: React.FC = () => {
                 {/* Header */}
                 <Flex justify="space-between" align="center" mb="8">
                     <Heading fontSize="24px" fontWeight="800" color="white">
-                        Control Center
+                        {t('profile.controlCenter', 'Control Center')}
                     </Heading>
 
                 </Flex>
@@ -92,10 +94,10 @@ const Profile: React.FC = () => {
                             <Flex justify="space-between" align="flex-start">
                                 <Box>
                                     <Heading fontSize="20px" fontWeight="800" color="white" mb="2">
-                                        {profile?.name ? `${profile.name} Profile` : "Member Profile"}
+                                        {profile?.name ? `${profile.name} ${t('profile.memberProfile', 'Profile')}` : t('profile.memberProfile', "Member Profile")}
                                     </Heading>
                                     <Text fontSize="14px" color="#8A8A93">
-                                        Manage your biometric data and account preferences
+                                        {t('profile.manageBiometrics', 'Manage your biometric data and account preferences')}
                                     </Text>
                                 </Box>
                                 <HStack spacing="3">
@@ -110,7 +112,7 @@ const Profile: React.FC = () => {
                                         borderRadius="8px"
                                         onClick={() => setIsMetricModalOpen(true)}
                                     >
-                                        Edit Profile
+                                        {t('profile.editProfile', 'Edit Profile')}
                                     </Button>
                                     <Button
                                         leftIcon={<FiCheck />}
@@ -120,7 +122,7 @@ const Profile: React.FC = () => {
                                         size="sm"
                                         borderRadius="8px"
                                     >
-                                        Save Changes
+                                        {t('profile.saveChanges', 'Save Changes')}
                                     </Button>
                                 </HStack>
                             </Flex>
@@ -130,7 +132,7 @@ const Profile: React.FC = () => {
                         <Box bg="#111318" border="1px solid #1e2028" borderRadius="20px" p="6">
                             <Flex justify="space-between" align="center" mb="5">
                                 <Heading fontSize="16px" fontWeight="700" color="white">
-                                    Biometric Overview
+                                    {t('profile.biometricOverview', 'Biometric Overview')}
                                 </Heading>
                             </Flex>
 
@@ -141,7 +143,7 @@ const Profile: React.FC = () => {
                                     {/* Height */}
                                     <Box bg="#0A0C10" p="4" borderRadius="16px" border="1px solid #1e2028">
                                         <Text fontSize="12px" fontWeight="700" color="#8A8A93" textTransform="uppercase" mb="2">
-                                            Height
+                                            {t('profile.height', 'Height')}
                                         </Text>
                                         <HStack align="baseline">
                                             <Heading fontSize="28px" fontWeight="800" color="white">
@@ -156,7 +158,7 @@ const Profile: React.FC = () => {
                                     {/* Weight */}
                                     <Box bg="#0A0C10" p="4" borderRadius="16px" border="1px solid #1e2028">
                                         <Text fontSize="12px" fontWeight="700" color="#8A8A93" textTransform="uppercase" mb="2">
-                                            Weight
+                                            {t('profile.weight', 'Weight')}
                                         </Text>
                                         <HStack align="baseline" mb="1">
                                             <Heading fontSize="28px" fontWeight="800" color="white">
@@ -167,14 +169,14 @@ const Profile: React.FC = () => {
                                             </Text>
                                         </HStack>
                                         <Badge bg="rgba(224,48,48,0.1)" color="#E03030" textTransform="none" px="2" py="0.5" borderRadius="4px" fontSize="10px">
-                                            Recorded recently
+                                            {t('profile.recordedRecently', 'Recorded recently')}
                                         </Badge>
                                     </Box>
 
                                     {/* BMI */}
                                     <Box bg="#0A0C10" p="4" borderRadius="16px" border="1px solid #1e2028">
                                         <Text fontSize="12px" fontWeight="700" color="#8A8A93" textTransform="uppercase" mb="2">
-                                            BMI
+                                            {t('profile.bmi', 'BMI')}
                                         </Text>
                                         <HStack align="baseline" mb="1">
                                             <Heading fontSize="28px" fontWeight="800" color="white">
@@ -182,7 +184,7 @@ const Profile: React.FC = () => {
                                             </Heading>
                                         </HStack>
                                         <Badge bg="rgba(72,187,120,0.1)" color="#48BB78" textTransform="none" px="2" py="0.5" borderRadius="4px" fontSize="10px">
-                                            Optimal Range
+                                            {t('profile.optimalRange', 'Optimal Range')}
                                         </Badge>
                                     </Box>
                                 </Grid>
@@ -192,26 +194,26 @@ const Profile: React.FC = () => {
                         {/* Account Information */}
                         <Box bg="#111318" border="1px solid #1e2028" borderRadius="20px" p="6">
                             <Heading fontSize="16px" fontWeight="700" color="white" mb="5">
-                                Account Information
+                                {t('profile.accountInfo', 'Account Information')}
                             </Heading>
                             {loading ? (
                                 <Flex justify="center"><Spinner color="#E03030" /></Flex>
                             ) : (
                                 <Grid templateColumns="repeat(2, 1fr)" gap="6">
                                     <Box>
-                                        <Text fontSize="13px" color="#8A8A93" mb="1">User Name</Text>
+                                        <Text fontSize="13px" color="#8A8A93" mb="1">{t('profile.userName', 'User Name')}</Text>
                                         <Text fontSize="15px" fontWeight="600" color="white">{profile?.name || '--'}</Text>
                                     </Box>
                                     <Box>
-                                        <Text fontSize="13px" color="#8A8A93" mb="1">Email Address</Text>
+                                        <Text fontSize="13px" color="#8A8A93" mb="1">{t('profile.emailAddress', 'Email Address')}</Text>
                                         <Text fontSize="15px" fontWeight="600" color="white">{profile?.email || '--'}</Text>
                                     </Box>
                                     <Box>
-                                        <Text fontSize="13px" color="#8A8A93" mb="1">Membership Tier</Text>
+                                        <Text fontSize="13px" color="#8A8A93" mb="1">{t('profile.membershipTier', 'Membership Tier')}</Text>
                                         <Badge bg="rgba(224,48,48,0.1)" color="#E03030" px="2" py="0.5" borderRadius="4px">{profile?.tier || '--'}</Badge>
                                     </Box>
                                     <Box>
-                                        <Text fontSize="13px" color="#8A8A93" mb="1">Join Date</Text>
+                                        <Text fontSize="13px" color="#8A8A93" mb="1">{t('profile.joinDate', 'Join Date')}</Text>
                                         <Text fontSize="15px" fontWeight="600" color="white">{profile?.joinDate || '--'}</Text>
                                     </Box>
                                 </Grid>
@@ -221,23 +223,16 @@ const Profile: React.FC = () => {
                         {/* Security & Access */}
                         <Box bg="#111318" border="1px solid #1e2028" borderRadius="20px" p="6">
                             <Heading fontSize="16px" fontWeight="700" color="white" mb="5">
-                                Security & Access
+                                {t('profile.securityAccess', 'Security & Access')}
                             </Heading>
                             <Stack spacing="4">
                                 <Flex justify="space-between" align="center" p="4" bg="#0A0C10" borderRadius="12px" border="1px solid #1e2028">
                                     <Box>
-                                        <Text fontSize="14px" fontWeight="600" color="white">Password</Text>
-                                        <Text fontSize="12px" color="#8A8A93">{loading ? 'Loading...' : formatTimeAgo(profile?.passwordChangedAt || null)}</Text>
+                                        <Text fontSize="14px" fontWeight="600" color="white">{t('profile.password', 'Password')}</Text>
+                                        <Text fontSize="12px" color="#8A8A93">{loading ? t('common.loading', 'Loading...') : formatTimeAgo(profile?.passwordChangedAt || null, t)}</Text>
                                     </Box>
-                                    <Button size="sm" variant="outline" border="1px solid #2e3040" color="#E2E1EB" _hover={{ bg: '#1e2028' }} onClick={() => setIsPasswordModalOpen(true)}>Update</Button>
+                                    <Button size="sm" variant="outline" border="1px solid #2e3040" color="#E2E1EB" _hover={{ bg: '#1e2028' }} onClick={() => setIsPasswordModalOpen(true)}>{t('profile.update', 'Update')}</Button>
                                 </Flex>
-                                {/* <Flex justify="space-between" align="center" p="4" bg="#0A0C10" borderRadius="12px" border="1px solid #1e2028">
-                                    <Box>
-                                        <Text fontSize="14px" fontWeight="600" color="white">Two-Factor Auth</Text>
-                                        <Text fontSize="12px" color="#8A8A93">Add an extra layer of security</Text>
-                                    </Box>
-                                    <Button size="sm" variant="outline" border="1px solid #2e3040" color="#E2E1EB" _hover={{ bg: '#1e2028' }}>Enable</Button>
-                                </Flex> */}
                             </Stack>
                         </Box>
                     </Stack>
@@ -255,7 +250,7 @@ const Profile: React.FC = () => {
                             />
                             <Avatar size="2xl" name={profile?.name || "User"} src={profile?.avatarUrl || ""} border="4px solid #111318" mt="4" mb="4" position="relative" zIndex="1" />
                             <Heading fontSize="22px" fontWeight="800" color="white" mb="1">
-                                {profile?.name || "Member"}
+                                {profile?.name || t('profile.memberProfile', "Member")}
                             </Heading>
                             <Text fontSize="14px" color="#8A8A93" mb="6">
                                 {profile?.tier || '--'} Tier
@@ -265,18 +260,18 @@ const Profile: React.FC = () => {
 
                             <VStack align="stretch" spacing="4">
                                 <Flex justify="space-between" align="center">
-                                    <Text fontSize="13px" color="#8A8A93">Workouts Completed</Text>
+                                    <Text fontSize="13px" color="#8A8A93">{t('profile.workoutsCompleted', 'Workouts Completed')}</Text>
                                     <Text fontSize="14px" fontWeight="700" color="white">{loading ? '--' : profile?.workoutsCompleted}</Text>
                                 </Flex>
                                 <Flex justify="space-between" align="center">
-                                    <Text fontSize="13px" color="#8A8A93">Current Streak</Text>
+                                    <Text fontSize="13px" color="#8A8A93">{t('profile.currentStreak', 'Current Streak')}</Text>
                                     <HStack spacing="1">
-                                        <Text fontSize="14px" fontWeight="700" color="#E03030">{loading ? '--' : `${profile?.currentStreak} Days`}</Text>
+                                        <Text fontSize="14px" fontWeight="700" color="#E03030">{loading ? '--' : `${profile?.currentStreak} ${t('profile.days', 'Days')}`}</Text>
                                         <Text fontSize="14px" color="white">🔥</Text>
                                     </HStack>
                                 </Flex>
                                 <Flex justify="space-between" align="center">
-                                    <Text fontSize="13px" color="#8A8A93">Active Plan</Text>
+                                    <Text fontSize="13px" color="#8A8A93">{t('profile.activePlan', 'Active Plan')}</Text>
                                     <Badge bg="rgba(72,187,120,0.1)" color="#48BB78" px="2" py="0.5" borderRadius="4px">{loading ? '--' : profile?.activePlan}</Badge>
                                 </Flex>
                             </VStack>
@@ -290,7 +285,7 @@ const Profile: React.FC = () => {
                                 rightIcon={<FiLogOut />}
                                 onClick={handleLogout}
                             >
-                                Logout
+                                {t('common.logout', 'Logout')}
                             </Button>
                         </Box>
                     </Box>

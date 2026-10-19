@@ -11,6 +11,7 @@ import {
     Text,
 } from '@chakra-ui/react'
 import { FiClock, FiCpu, FiDroplet, FiPlus } from 'react-icons/fi'
+import { useTranslation } from 'react-i18next'
 import AppButton from '../../../components/shared/Button/AppButton'
 
 export const DonutRing: React.FC<{ current: number; total: number }> = ({ current, total }) => {
@@ -170,7 +171,9 @@ export const MealSection: React.FC<{
     label: string
     kcal: number
     items: React.ReactNode
-}> = ({ label, kcal, items }) => (
+}> = ({ label, kcal, items }) => {
+    const { t } = useTranslation()
+    return (
     <Box>
         <Flex justify="space-between" align="center" mb="3">
             <HStack spacing="2">
@@ -192,7 +195,7 @@ export const MealSection: React.FC<{
                 label={
                     <HStack spacing="1">
                         <Icon as={FiPlus} boxSize="12px" />
-                        <Text>Add Food</Text>
+                        <Text>{t('nutrition.addFood', 'Add Food')}</Text>
                     </HStack>
                 }
                 variant="ghost"
@@ -205,9 +208,12 @@ export const MealSection: React.FC<{
         </Flex>
         <Stack spacing="2">{items}</Stack>
     </Box>
-)
+    )
+}
 
-export const HydrationTracker: React.FC<{ current: number; total: number; onLogWater?: () => void }> = ({ current, total, onLogWater }) => (
+export const HydrationTracker: React.FC<{ current: number; total: number; onLogWater?: () => void }> = ({ current, total, onLogWater }) => {
+    const { t } = useTranslation()
+    return (
     <Box
         bg="#141720"
         border="1px solid"
@@ -217,10 +223,10 @@ export const HydrationTracker: React.FC<{ current: number; total: number; onLogW
     >
         <Flex justify="space-between" align="center" mb="3">
             <Heading fontSize="14px" fontWeight="700" color="white">
-                Hydration
+                {t('nutrition.hydration', 'Hydration')}
             </Heading>
             <Text fontSize="11px" color="#8A8A93">
-                {current} / {total} Glasses
+                {current} / {total} {t('dashboard.glasses', 'Glasses')}
             </Text>
         </Flex>
         <Flex gap="2" flexWrap="wrap">
@@ -250,7 +256,8 @@ export const HydrationTracker: React.FC<{ current: number; total: number; onLogW
             })}
         </Flex>
     </Box>
-)
+    )
+}
 
 export const HydrationCountdown: React.FC<{
     current: number
@@ -259,6 +266,7 @@ export const HydrationCountdown: React.FC<{
     endTime?: string
     onRemind?: () => void
 }> = ({ current, target, startTime, endTime, onRemind }) => {
+    const { t } = useTranslation()
     const [display, setDisplay] = useState('--:--')
     const [progress, setProgress] = useState(0)
     const [endTimestamp, setEndTimestamp] = useState(0)
@@ -267,7 +275,7 @@ export const HydrationCountdown: React.FC<{
     const calcInterval = useCallback(() => {
         const remaining = target - current
         if (remaining <= 0) {
-            setDisplay('Done!')
+            setDisplay(t('dashboard.done', 'Done!'))
             setProgress(1)
             setEndTimestamp(0)
             return
@@ -283,7 +291,7 @@ export const HydrationCountdown: React.FC<{
         const nowMin = now.getHours() * 60 + now.getMinutes()
 
         if (nowMin >= endMin || nowMin < startMin) {
-            setDisplay(nowMin >= endMin ? 'Tomorrow' : '--:--')
+            setDisplay(nowMin >= endMin ? t('dashboard.tomorrow', 'Tomorrow') : '--:--')
             setProgress(0)
             setEndTimestamp(0)
             return
@@ -293,7 +301,7 @@ export const HydrationCountdown: React.FC<{
         const intervalMs = (hoursLeft / remaining) * 3600 * 1000
         setTotalInterval(intervalMs)
         setEndTimestamp(Date.now() + intervalMs)
-    }, [current, target, startTime, endTime])
+    }, [current, target, startTime, endTime, t])
 
     useEffect(() => {
         calcInterval()
@@ -321,7 +329,7 @@ export const HydrationCountdown: React.FC<{
         tick()
         const interval = setInterval(tick, 1000)
         return () => clearInterval(interval)
-    }, [endTimestamp, totalInterval])
+    }, [endTimestamp, totalInterval, calcInterval, onRemind])
 
     return (
         <Box bg="#141720" border="1px solid" borderColor="#1e2028" borderRadius="14px" p="4">
@@ -329,7 +337,7 @@ export const HydrationCountdown: React.FC<{
                 <HStack spacing="2">
                     <Icon as={FiClock} color="teal.300" boxSize="14px" />
                     <Text fontSize="12px" fontWeight="700" color="white">
-                        Next glass in
+                        {t('dashboard.nextGlassIn', 'Next glass in')}
                     </Text>
                 </HStack>
                 <Text fontSize="18px" fontWeight="800" color="teal.300" fontFamily="mono">
@@ -352,6 +360,7 @@ export const AIDietPlanCard: React.FC<{
     dietPlan?: any
     onNavigateToAI: () => void
 }> = ({ dietPlan, onNavigateToAI }) => {
+    const { t } = useTranslation()
     if (!dietPlan) {
         return (
             <Box
@@ -364,13 +373,13 @@ export const AIDietPlanCard: React.FC<{
             >
                 <Icon as={FiCpu} color="#E03030" boxSize="24px" mb="2" />
                 <Text fontSize="13px" fontWeight="600" color="white" mb="1">
-                    No AI Diet Plan yet
+                    {t('nutrition.noDietPlan', 'No AI Diet Plan yet')}
                 </Text>
                 <Text fontSize="11px" color="#8A8A93" mb="3">
-                    Let the AI assistant design a personalized diet plan for you.
+                    {t('nutrition.noDietPlanDesc', 'Let the AI assistant design a personalized diet plan for you.')}
                 </Text>
                 <AppButton
-                    label="Chat Now"
+                    label={t('nutrition.chatNow', 'Chat Now')}
                     variant="solid"
                     size="sm"
                     w="full"
@@ -396,7 +405,7 @@ export const AIDietPlanCard: React.FC<{
                 <HStack spacing="2">
                     <Icon as={FiCpu} color="#E03030" boxSize="13px" />
                     <Text fontSize="10px" fontWeight="700" color="#E03030" textTransform="uppercase" letterSpacing="wider">
-                        AI Recommendation
+                        {t('nutrition.aiRecommendation', 'AI Recommendation')}
                     </Text>
                 </HStack>
                 <Text fontSize="10px" fontWeight="700" color="#8A8A93" textTransform="uppercase" letterSpacing="wider" maxW="100px" isTruncated>
@@ -428,7 +437,7 @@ export const AIDietPlanCard: React.FC<{
                 </>
             )}
             <AppButton
-                label="View All"
+                label={t('nutrition.viewAll', 'View All')}
                 variant="outline"
                 size="sm"
                 w="full"

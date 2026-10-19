@@ -21,6 +21,7 @@ import {
     FiTrendingUp,
 } from 'react-icons/fi'
 import NotificationBell from '../../components/shared/Header/NotificationBell'
+import LanguageSwitcher from '../../components/shared/Header/LanguageSwitcher'
 
 export const adminColors = {
     bg: '#0A0A0A',
@@ -181,7 +182,8 @@ export const TopbarActions: React.FC = () => {
     }
 
     return (
-        <HStack spacing="8px">
+        <HStack spacing="12px">
+            <LanguageSwitcher />
             <NotificationBell />
             <Menu>
                 <MenuButton as={Box} cursor="pointer" borderRadius="full">

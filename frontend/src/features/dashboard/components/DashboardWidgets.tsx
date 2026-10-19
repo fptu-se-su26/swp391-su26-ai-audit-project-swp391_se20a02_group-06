@@ -1,5 +1,6 @@
 import React from 'react'
 import { Box, Flex, HStack, Icon, Text } from '@chakra-ui/react'
+import { useTranslation } from 'react-i18next'
 
 export const StatCard: React.FC<{
     label: string
@@ -60,7 +61,16 @@ export const MiniBarChart: React.FC = () => {
 }
 
 export const StreakDots: React.FC = () => {
-    const days = ['M', 'T', 'W', 'T', 'F', 'S', 'S']
+    const { t } = useTranslation()
+    const days = [
+        t('dashboard.mon', 'M'),
+        t('dashboard.tue', 'T'),
+        t('dashboard.wed', 'W'),
+        t('dashboard.thu', 'T'),
+        t('dashboard.fri', 'F'),
+        t('dashboard.sat', 'S'),
+        t('dashboard.sun', 'S'),
+    ]
     const active = [0, 1, 2, 3, 4]
     return (
         <HStack spacing="4px" mt="1">
@@ -120,14 +130,15 @@ export const GoalRing: React.FC<{ current: number; total: number }> = ({ current
 }
 
 export const WeeklyVolumeChart: React.FC = () => {
+    const { t } = useTranslation()
     const data = [
-        { day: 'M', val: 60 },
-        { day: 'T', val: 40 },
-        { day: 'W', val: 100 },
-        { day: 'T', val: 50 },
-        { day: 'F', val: 70 },
-        { day: 'S', val: 30 },
-        { day: 'S', val: 20 },
+        { day: t('dashboard.mon', 'M'), val: 60, isPeak: false },
+        { day: t('dashboard.tue', 'T'), val: 40, isPeak: false },
+        { day: t('dashboard.wed', 'W'), val: 100, isPeak: true },
+        { day: t('dashboard.thu', 'T'), val: 50, isPeak: false },
+        { day: t('dashboard.fri', 'F'), val: 70, isPeak: false },
+        { day: t('dashboard.sat', 'S'), val: 30, isPeak: false },
+        { day: t('dashboard.sun', 'S'), val: 20, isPeak: false },
     ]
     const max = Math.max(...data.map((d) => d.val))
     return (
@@ -138,11 +149,11 @@ export const WeeklyVolumeChart: React.FC = () => {
                         <Box
                             w="full"
                             borderRadius="4px"
-                            bg={d.day === 'W' ? '#E03030' : '#2e3040'}
+                            bg={d.isPeak ? '#E03030' : '#2e3040'}
                             style={{ height: `${(d.val / max) * 100}%` }}
                             position="relative"
                         >
-                            {d.day === 'W' && (
+                            {d.isPeak && (
                                 <Text
                                     position="absolute"
                                     top="-18px"
