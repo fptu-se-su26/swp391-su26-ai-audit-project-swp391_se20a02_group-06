@@ -2874,3 +2874,73 @@ Bài học rút ra:
 1. Chuẩn hóa ngôn ngữ UI: Việc chuẩn hóa toàn bộ các nhãn, placeholder, tooltip và thông báo hệ thống sang tiếng Anh chuẩn ngay từ đầu giúp việc tích hợp i18n / chuyển đổi ngôn ngữ (EN/VI) sau này trở nên cực kỳ thuận lợi và tránh tình trạng lẫn lộn song ngữ trên cùng một màn hình quản trị.
 2. Đồng bộ trải nghiệm phân trang: Việc áp dụng cùng một component PaginationFooter và hiệu ứng MotionTr trên tất cả các trang quản trị (Users, Payments, Reviews) mang lại sự nhất quán cao trong trải nghiệm người dùng Admin.
 ```
+
+---
+
+### Lần sử dụng AI số 37
+
+| Nội dung | Thông tin |
+|---|---|
+| Ngày sử dụng | 19/10/2026 |
+| Công cụ AI | Antigravity |
+| Mục đích sử dụng | Rà soát và chuẩn hóa toàn bộ văn bản giao diện người dùng (UI text) trên toàn bộ hệ thống Frontend sang tiếng Anh ở tất cả các role (Member, PT, Admin, Public, Auth) để chuẩn bị cho kiến trúc đa ngôn ngữ (EN/VI) |
+| Phần việc liên quan | Frontend (Toàn bộ các module User, Workout, Auth, PT, Error, Public, Admin) |
+| Mức độ sử dụng | Hỗ trợ nhiều |
+
+#### 4.1. Prompt đã sử dụng
+
+```text
+"vẫn còn tiếng việt nè, ở tất cả các role, toàn tragn web hệ thóng luôn nhé , tiếng anh cho tôi, để tôi đỏi chuẩn hoá anh việt cho đúng, trên FE"
+```
+
+#### 4.2. Kết quả AI gợi ý
+
+```text
+- Quét tự động toàn bộ source code `frontend/src` tìm các chuỗi tiếng Việt hardcoded.
+- Chuẩn hóa toàn bộ sang tiếng Anh chuẩn:
+  + `WorkoutExerciseModal.tsx`: Chuyển "Bài X / Y" thành "Exercise X of Y", "HƯỚNG DẪN THỰC HIỆN / INSTRUCTIONS" thành "EXERCISE INSTRUCTIONS", "X BƯỚC" thành "X STEPS", "Bước X" thành "STEP X", và thông báo hướng dẫn rỗng.
+  + `WebsiteReviewModal.tsx`: Toàn bộ các thang điểm đánh giá, tiêu đề, mô tả, placeholder góp ý, nút bấm ("Submit Review", "Maybe Later") và các thông báo Toast.
+  + `Register.tsx`: Toàn bộ các thông báo gửi/nhận mã OTP, lỗi trùng email và thông báo đăng ký thành công.
+  + `PaymentSuccess.tsx`: Toàn bộ trạng thái giao dịch (xác nhận, kích hoạt gói, huỷ thanh toán, lỗi) và các nút điều hướng.
+  + `ErrorPage.tsx`: Toàn bộ tiêu đề mã lỗi HTTP (400, 403, 404, 500, 502, 503, Offline, Error) và các nút hành động ("Back to Home", "Reload", "Go Back").
+  + `Progress.tsx`: Các thông báo cảnh báo gói tập yêu cầu khi tập lại lịch sử buổi tập.
+  + `ReviewMarquee.tsx`: Toàn bộ tên học viên và nội dung nhận xét mẫu.
+  + `WorkoutSetup.tsx`: Các cảnh báo yêu cầu gói Premium khi kích hoạt Weekly Plan.
+  + `ErrorBoundary.tsx`: Thông báo fallback khi crash render giao diện.
+  + `MemberLayout.tsx`: Thuộc tính aria-label của menu điều hướng.
+  + `PTProfilePage.tsx`: Cảnh báo giá thuê tối thiểu mỗi buổi tập.
+  + `workoutExercises.ts`: Nhãn mức độ nghiêm trọng chấn thương (Severity X/5).
+```
+
+#### 4.3. Phần sinh viên/nhóm đã sử dụng từ AI
+
+```text
+Toàn bộ mã nguồn chuẩn hóa tiếng Anh 100% trong 12 tệp giao diện của hệ thống Frontend.
+```
+
+#### 4.4. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
+
+```text
+- Yêu cầu mở rộng phạm vi ra toàn bộ ứng dụng ở mọi vai trò (Admin, Member, PT, Public).
+- Định hướng chuẩn hóa ngôn ngữ gốc tiếng Anh để chuẩn bị tích hợp nút chuyển đổi Anh/Việt.
+```
+
+#### 4.5. Minh chứng
+
+| Loại minh chứng | Nội dung |
+|---|---|
+| Link commit | 733718ff24bb18579d4648590d9f00d3648580ea |
+| File liên quan | `WorkoutExerciseModal.tsx`, `WebsiteReviewModal.tsx`, `Register.tsx`, `PaymentSuccess.tsx`, `ErrorPage.tsx`, `Progress.tsx`, `ReviewMarquee.tsx`, `WorkoutSetup.tsx`, `ErrorBoundary.tsx`, `MemberLayout.tsx`, `PTProfilePage.tsx`, `workoutExercises.ts` |
+| Screenshot | Đã kiểm thử trên trình duyệt toàn bộ giao diện bài tập, review, auth, lỗi và thanh toán đều hiển thị tiếng Anh 100% |
+| Kết quả chạy/test | npm run build pass 100% (612ms, 0 errors) |
+| Link video demo | N/A |
+| Ghi chú khác | N/A |
+
+#### 4.6. Nhận xét cá nhân/nhóm
+
+```text
+Bài học rút ra:
+1. Chuẩn hóa i18n từ sớm: Khi xây dựng ứng dụng lớn có nhiều role, việc đồng nhất ngôn ngữ cơ sở sang tiếng Anh ở mọi component giúp codebase gọn gàng, chuyên nghiệp và sẵn sàng cho việc cắm thư viện đa ngôn ngữ như i18next sau này mà không cần sửa vụn vặt từng màn hình.
+2. Quét regex tự động: Sử dụng script Python quét toàn bộ cây thư mục source code với bảng mã Unicode tiếng Việt giúp phát hiện triệt để các góc khuất (modal, toast, fallback text, aria-label) mà mắt thường dễ bỏ sót.
+```
+

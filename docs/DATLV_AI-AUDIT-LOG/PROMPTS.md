@@ -2470,3 +2470,64 @@ Toàn bộ mã nguồn phân trang và chuẩn hóa tiếng Anh đã được á
 | Kết quả chạy/test | npm run build pass 100% (444ms, 0 errors) |
 | Link tài liệu/báo cáo | N/A |
 | Ghi chú khác | N/A |
+
+---
+
+### Prompt số 36
+
+| Nội dung | Thông tin |
+|---|---|
+| Ngày thực hiện | 19/10/2026 |
+| Người thực hiện | Đạt |
+| Công cụ AI | Antigravity |
+| Mục đích | Rà soát và chuẩn hóa toàn bộ văn bản UI tiếng Việt còn sót lại trên toàn hệ thống sang tiếng Anh ở tất cả các vai trò |
+| Kết quả mong đợi | Giao diện toàn hệ thống hiển thị 100% tiếng Anh chuẩn mực để sẵn sàng cho nút chuyển đổi song ngữ Anh/Việt |
+
+#### 5.1. Bối cảnh khi viết prompt
+
+Người dùng kiểm tra trên giao diện modal bài tập vẫn thấy chữ "Bài 3 / 5", "HƯỚNG DẪN THỰC HIỆN / INSTRUCTIONS", "5 BƯỚC", "BƯỚC 1, 2...", đồng thời yêu cầu quét sạch toàn bộ hệ thống ở tất cả các vai trò (User, PT, Admin, Public, Auth) để chuẩn hóa tiếng Anh 100%.
+
+#### 5.2. Nội dung prompt đầy đủ
+
+```text
+"vẫn còn tiếng việt nè, ở tất cả các role, toàn tragn web hệ thóng luôn nhé , tiếng anh cho tôi, để tôi đỏi chuẩn hoá anh việt cho đúng, trên FE"
+```
+
+#### 5.3. Phân tích kết quả AI trả về
+
+- AI đã viết script Python quét tự động toàn bộ 100% các file `.tsx` và `.ts` trong `frontend/src` theo bảng mã ký tự tiếng Việt.
+- Phát hiện và chỉnh sửa 12 tệp giao diện:
+  + `WorkoutExerciseModal.tsx`: Chuyển sang "Exercise X of Y", "EXERCISE INSTRUCTIONS", "X STEPS", "STEP X", và thông báo hướng dẫn rỗng.
+  + `WebsiteReviewModal.tsx`: Chuyển sang "Rate Your Experience", nhãn số sao ("Needs Improvement", "Fair", "Good", "Very Good", "Outstanding Experience"), placeholder, nút bấm và Toast.
+  + `Register.tsx`: Chuyển toàn bộ thông báo OTP và đăng ký sang tiếng Anh.
+  + `PaymentSuccess.tsx`: Chuyển các thông báo trạng thái thanh toán và nút sang tiếng Anh.
+  + `ErrorPage.tsx`: Chuyển toàn bộ tiêu đề trang lỗi và các nút ("Back to Home", "Reload", "Go Back").
+  + `Progress.tsx`, `ReviewMarquee.tsx`, `WorkoutSetup.tsx`, `ErrorBoundary.tsx`, `MemberLayout.tsx`, `PTProfilePage.tsx`, `workoutExercises.ts`.
+- Chạy lại kiểm tra script tự động và xác nhận 100% văn bản giao diện người dùng trên toàn bộ Frontend đã sạch tiếng Việt, build pass không lỗi.
+
+#### 5.4. Kết quả đã áp dụng vào bài
+
+Toàn bộ văn bản giao diện người dùng trên toàn Frontend đã được đồng bộ tiếng Anh, hỗ trợ người dùng có thể phát triển tính năng nút chuyển đổi song ngữ (EN/VI) thuận lợi.
+
+#### 5.5. Phần sinh viên/nhóm đã chỉnh sửa hoặc cải tiến
+
+- Chỉ rõ điểm còn sót trên ảnh chụp thực tế (modal bài tập).
+- Yêu cầu mở rộng phạm vi ra toàn bộ trang web và tất cả các role.
+
+#### 5.6. Đánh giá chất lượng prompt
+
+- [x] Prompt rõ ràng
+- [x] Prompt có đủ bối cảnh
+- [x] Prompt tạo ra kết quả tốt
+
+#### 5.7. Minh chứng liên quan
+
+| Loại minh chứng | Nội dung |
+|---|---|
+| Link commit | 733718ff24bb18579d4648590d9f00d3648580ea |
+| File liên quan | `WorkoutExerciseModal.tsx`, `WebsiteReviewModal.tsx`, `Register.tsx`, `PaymentSuccess.tsx`, `ErrorPage.tsx`, `Progress.tsx`, `ReviewMarquee.tsx`, `WorkoutSetup.tsx`, `ErrorBoundary.tsx`, `MemberLayout.tsx`, `PTProfilePage.tsx`, `workoutExercises.ts` |
+| Screenshot | Đã kiểm thử trên trình duyệt toàn bộ các màn hình hiển thị tiếng Anh chuẩn xác |
+| Kết quả chạy/test | npm run build pass 100% (612ms, 0 errors) |
+| Link tài liệu/báo cáo | N/A |
+| Ghi chú khác | N/A |
+
