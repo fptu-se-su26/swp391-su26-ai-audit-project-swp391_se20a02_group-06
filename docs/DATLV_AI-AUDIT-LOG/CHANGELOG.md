@@ -490,3 +490,4 @@ Sinh viên/nhóm cam kết rằng nội dung changelog phản ánh đúng các t
 | 22 | Thêm cấu hình Dockerfile cho Backend để deploy Render | Đạt | Dockerfile, .dockerignore | N/A |
 | 23 | Cập nhật luồng Github Actions để nạp file .env từ Secret Base64 | Đạt | .github/workflows/deploy-pages.yml | N/A |
 | 24 | Thêm Universal ErrorPage và React ErrorBoundary chống trắng trang | Đạt | ErrorPage.tsx, ErrorBoundary.tsx, router-container.tsx | Commit 8eee557 |
+| 25 | Phân trang 10 dòng & animation cho Reviews & Ratings và chuẩn hoá toàn bộ UI Admin sang tiếng Anh | Đạt | AdminReviews.tsx, AdminPayments.tsx, AdminDashboard.tsx | Commit 5129c39 |

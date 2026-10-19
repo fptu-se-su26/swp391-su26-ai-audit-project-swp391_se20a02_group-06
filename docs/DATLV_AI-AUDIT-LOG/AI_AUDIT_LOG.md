@@ -2813,7 +2813,64 @@ Bài học rút ra:
 2. Hiệu ứng Micro-animations khi phân trang: Bằng cách gắn key `${safePage}-${id}` cho các hàng MotionTr trong Framer Motion, mỗi lần người dùng bấm chuyển trang, các phần tử mới sẽ lướt nhẹ vào màn hình theo dạng gợn sóng (stagger), mang lại cảm giác ứng dụng cao cấp, mượt mà và chuyên nghiệp.
 ```
 
+---
 
+### Lần sử dụng AI số 36
 
+| Nội dung | Thông tin |
+|---|---|
+| Ngày sử dụng | 19/10/2026 |
+| Công cụ AI | Antigravity |
+| Mục đích sử dụng | Phân trang 10 dòng/trang cho Reviews & Ratings và chuẩn hóa toàn bộ UI khu vực Admin sang tiếng Anh để hỗ trợ nút chuyển đổi đa ngôn ngữ (EN/VI) sau này |
+| Phần việc liên quan | Frontend (React, Chakra UI, Framer Motion, Admin Portal) |
+| Mức độ sử dụng | Hỗ trợ nhiều |
 
+#### 4.1. Prompt đã sử dụng
 
+```text
+"cũng phân trang ở phần tab reviews&rating nữa và check lại đồng bột hết tiếng anh cho tôi để sau này tôi làm nút chuyển eng&vie cho trang web."
+```
+
+#### 4.2. Kết quả AI gợi ý
+
+```text
+- Cập nhật AdminReviews.tsx:
+  + Thêm cơ chế phân trang 10 reviews mỗi trang với PaginationFooter.
+  + Tích hợp Framer Motion MotionTr kèm hiệu ứng xuất hiện gợn sóng (staggered delay) khi đổi trang hoặc lọc số sao.
+  + Tự động reset về trang 1 khi chuyển đổi bộ lọc số sao hoặc thay đổi từ khóa tìm kiếm.
+  + Chuyển đổi toàn bộ giao diện sang tiếng Anh chuẩn mực: tiêu đề, KPI Overview cards, bộ lọc sao ("All", "5 Stars"...), placeholder tìm kiếm, tiêu đề bảng (USER, RATING, FEEDBACK & COMMENTS, DATE & TIME, STATUS, ACTIONS), nhãn trạng thái ("VISIBLE", "HIDDEN"), thông báo rỗng, hộp thoại xác nhận xóa và các Toast thông báo.
+- Rà soát toàn bộ các trang Admin khác (AdminPayments.tsx, AdminDashboard.tsx):
+  + Chuyển đổi toàn bộ các thông báo Toast, mô tả, nút "Refresh" sang tiếng Anh 100% để chuẩn bị sẵn sàng cho tính năng Language Switcher (EN/VI).
+```
+
+#### 4.3. Phần sinh viên/nhóm đã sử dụng từ AI
+
+```text
+Toàn bộ mã nguồn phân trang và chuẩn hóa tiếng Anh trong AdminReviews.tsx, AdminPayments.tsx và AdminDashboard.tsx.
+```
+
+#### 4.4. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
+
+```text
+- Định hướng chuẩn bị kiến trúc UI song ngữ (EN/VI) cho tương lai.
+- Đưa ra yêu cầu phân trang đồng bộ giữa các tab Admin (Users, Payments, Reviews & Ratings).
+```
+
+#### 4.5. Minh chứng
+
+| Loại minh chứng | Nội dung |
+|---|---|
+| Link commit | 5129c391bb1645e36829707248e580e65306ba70 |
+| File liên quan | `AdminReviews.tsx`, `AdminPayments.tsx`, `AdminDashboard.tsx` |
+| Screenshot | Đã kiểm thử trên trình duyệt giao diện Reviews & Ratings với phân trang và toàn bộ ngôn ngữ tiếng Anh |
+| Kết quả chạy/test | npm run build pass 100% (444ms, 0 errors) |
+| Link video demo | N/A |
+| Ghi chú khác | N/A |
+
+#### 4.6. Nhận xét cá nhân/nhóm
+
+```text
+Bài học rút ra:
+1. Chuẩn hóa ngôn ngữ UI: Việc chuẩn hóa toàn bộ các nhãn, placeholder, tooltip và thông báo hệ thống sang tiếng Anh chuẩn ngay từ đầu giúp việc tích hợp i18n / chuyển đổi ngôn ngữ (EN/VI) sau này trở nên cực kỳ thuận lợi và tránh tình trạng lẫn lộn song ngữ trên cùng một màn hình quản trị.
+2. Đồng bộ trải nghiệm phân trang: Việc áp dụng cùng một component PaginationFooter và hiệu ứng MotionTr trên tất cả các trang quản trị (Users, Payments, Reviews) mang lại sự nhất quán cao trong trải nghiệm người dùng Admin.
+```

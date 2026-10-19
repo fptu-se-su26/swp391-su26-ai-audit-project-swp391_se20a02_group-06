@@ -2416,4 +2416,57 @@ Toàn bộ mã nguồn giao diện Modal bài tập, script cập nhật databas
 | Link tài liệu/báo cáo | N/A |
 | Ghi chú khác | N/A |
 
+---
 
+### Prompt số 35
+
+| Nội dung | Thông tin |
+|---|---|
+| Ngày thực hiện | 19/10/2026 |
+| Người thực hiện | Đạt |
+| Công cụ AI | Antigravity |
+| Mục đích | Phân trang 10 dòng/trang cho Reviews & Ratings và chuẩn hóa toàn bộ UI khu vực Admin sang tiếng Anh |
+| Kết quả mong đợi | Tab Reviews & Ratings có phân trang 10 items/trang kèm animation chuyển trang; toàn bộ từ ngữ trong Admin chuyển sang tiếng Anh chuẩn để tiện làm nút EN/VI |
+
+#### 5.1. Bối cảnh khi viết prompt
+
+Bảng quản trị Reviews & Ratings đang hiển thị toàn bộ 41 đánh giá trên một trang cuộn dài, chưa có phân trang như bên Users và Payments, đồng thời giao diện Admin còn lẫn lộn tiếng Việt và tiếng Anh.
+
+#### 5.2. Nội dung prompt đầy đủ
+
+```text
+"cũng phân trang ở phần tab reviews&rating nữa và check lại đồng bột hết tiếng anh cho tôi để sau này tôi làm nút chuyển eng&vie cho trang web."
+```
+
+#### 5.3. Phân tích kết quả AI trả về
+
+- AI đã thêm cơ chế phân trang 10 dòng/trang (pageSize = 10) bằng `PaginationFooter` vào `AdminReviews.tsx`.
+- Thêm animation gợn sóng `MotionTr` của Framer Motion với key `${safePage}-${r.id}`.
+- Chuyển đổi toàn bộ UI sang tiếng Anh: tiêu đề, KPI cards, bộ lọc sao ("All", "5 Stars"...), ô tìm kiếm, tiêu đề bảng, nhãn trạng thái ("VISIBLE", "HIDDEN"), thông báo lỗi/rỗng và các Toast.
+- Quét và chuẩn hóa toàn bộ các file còn lại trong thư mục `admin/` (như `AdminPayments.tsx`, `AdminDashboard.tsx`) sạch 100% tiếng Việt sang tiếng Anh chuẩn.
+
+#### 5.4. Kết quả đã áp dụng vào bài
+
+Toàn bộ mã nguồn phân trang và chuẩn hóa tiếng Anh đã được áp dụng, build thành công và chạy mượt mà trên hệ thống.
+
+#### 5.5. Phần sinh viên/nhóm đã chỉnh sửa hoặc cải tiến
+
+- Chủ động yêu cầu chuẩn hóa toàn diện để chuẩn bị cho nút chuyển ngôn ngữ đa ngữ (EN/VI).
+- Yêu cầu giữ nguyên độ mượt mà và tính nhất quán với các tab quản trị trước.
+
+#### 5.6. Đánh giá chất lượng prompt
+
+- [x] Prompt rõ ràng
+- [x] Prompt có đủ bối cảnh
+- [x] Prompt tạo ra kết quả tốt
+
+#### 5.7. Minh chứng liên quan
+
+| Loại minh chứng | Nội dung |
+|---|---|
+| Link commit | 5129c391bb1645e36829707248e580e65306ba70 |
+| File liên quan | `AdminReviews.tsx`, `AdminPayments.tsx`, `AdminDashboard.tsx` |
+| Screenshot | Đã kiểm thử trên giao diện Reviews & Ratings với phân trang và tiếng Anh hoàn chỉnh |
+| Kết quả chạy/test | npm run build pass 100% (444ms, 0 errors) |
+| Link tài liệu/báo cáo | N/A |
+| Ghi chú khác | N/A |
