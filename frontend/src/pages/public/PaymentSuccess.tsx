@@ -23,7 +23,7 @@ const PaymentSuccess = () => {
       const orderCode = getOrderCode()
       if (!orderCode) {
         setStatus('error')
-        setMessage('Không tìm thấy mã đơn hàng.')
+        setMessage('Order code not found.')
         return
       }
 
@@ -36,7 +36,7 @@ const PaymentSuccess = () => {
           await apiClient.post(`/jobs/cancel-payment?orderCode=${orderCode}`)
         } catch {}
         setStatus('cancelled')
-        setMessage('Thanh toán đã bị huỷ hoặc không thành công. Slot tập đã được mở lại.')
+        setMessage('Payment was cancelled or unsuccessful. The booking slot has been reopened.')
         return
       }
 
@@ -47,7 +47,7 @@ const PaymentSuccess = () => {
         if (kind === 'SUBSCRIPTION') {
           await apiClient.post(`/jobs/simulate-payment?orderCode=${orderCode}`, null, opts)
           setStatus('success')
-          setMessage('Thanh toán thành công! Gói tập của bạn đã được kích hoạt.')
+          setMessage('Payment successful! Your membership package has been activated.')
           localStorage.removeItem('payment-kind')
           setTimeout(() => navigate('/dashboard'), 1000)
           return
@@ -56,7 +56,7 @@ const PaymentSuccess = () => {
         try {
           await apiClient.post(`/jobs/simulate-schedule-payment?orderCode=${orderCode}`, null, opts)
           setStatus('success')
-          setMessage('Thanh toán lịch tập PT thành công! Link Google Meet đã được tạo và gửi qua email cho bạn.')
+          setMessage('PT session booking confirmed! A Google Meet link has been created and sent to your email.')
           localStorage.removeItem('payment-kind')
           setTimeout(() => navigate('/dashboard'), 1000)
           return
@@ -64,7 +64,7 @@ const PaymentSuccess = () => {
           if (schedErr.response?.data?.message?.includes('Schedule not found')) {
             await apiClient.post(`/jobs/simulate-payment?orderCode=${orderCode}`, null, opts)
             setStatus('success')
-            setMessage('Thanh toán thành công! Gói tập của bạn đã được kích hoạt.')
+            setMessage('Payment successful! Your membership package has been activated.')
             localStorage.removeItem('payment-kind')
             setTimeout(() => navigate('/dashboard'), 1000)
             return
@@ -74,11 +74,11 @@ const PaymentSuccess = () => {
       } catch (err: any) {
         if (err.response?.status === 400) {
           setStatus('success')
-          setMessage('Thanh toán đã được xác nhận trước đó.')
+          setMessage('Payment was already confirmed previously.')
           setTimeout(() => navigate('/dashboard'), 1000)
         } else {
           setStatus('error')
-          setMessage(err.response?.data?.message || 'Xác nhận thanh toán thất bại. Vui lòng liên hệ hỗ trợ.')
+          setMessage(err.response?.data?.message || 'Payment confirmation failed. Please contact support.')
         }
       }
     }
@@ -93,18 +93,18 @@ const PaymentSuccess = () => {
         status === 'cancelled' ? '#F59E0B' :
         status === 'error' ? '#E03030' : 'white'
       }>
-        {status === 'processing' ? 'Đang xác nhận thanh toán...' :
-         status === 'success' ? 'Thanh toán thành công!' :
-         status === 'cancelled' ? 'Thanh toán đã huỷ' :
-         'Lỗi thanh toán'}
+        {status === 'processing' ? 'Confirming payment...' :
+         status === 'success' ? 'Payment Successful!' :
+         status === 'cancelled' ? 'Payment Cancelled' :
+         'Payment Error'}
       </Heading>
       <Text color="#8A8A93">{message}</Text>
       {status === 'cancelled' && (
-        <AppButton label="Quay lại trang gói tập" onClick={() => navigate('/pricing')} mt="4" />
+        <AppButton label="Back to Pricing" onClick={() => navigate('/pricing')} mt="4" />
       )}
       {status === 'success' && (
         <Text fontSize="sm" color="#8A8A93" mt="4">
-          Đang chuyển hướng đến trang quản lý...
+          Redirecting to dashboard...
         </Text>
       )}
     </Flex>

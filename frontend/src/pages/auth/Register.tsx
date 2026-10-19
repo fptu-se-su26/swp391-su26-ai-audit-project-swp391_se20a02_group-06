@@ -99,41 +99,41 @@ const Register: React.FC = () => {
       setIsOtpModalOpen(true)
       if (res?.otpCode) {
         toast({
-          title: 'Mã xác thực (Dev mode)',
-          description: `Mã OTP của bạn là: ${res.otpCode}`,
+          title: 'Verification Code (Dev mode)',
+          description: `Your OTP code is: ${res.otpCode}`,
           status: 'info',
           duration: 10000,
           isClosable: true,
         })
       } else {
         toast({
-          title: 'Đã gửi mã OTP',
-          description: res?.message || 'Vui lòng kiểm tra hộp thư đến (hoặc thư rác) của bạn.',
+          title: 'OTP Code Sent',
+          description: res?.message || 'Please check your inbox (or spam folder) for the verification code.',
           status: 'success',
           duration: 4000,
           isClosable: true,
         })
       }
     } catch (error: any) {
-      const errorMessage = error.response?.data?.message || 'Gửi mã OTP thất bại'
+      const errorMessage = error.response?.data?.message || 'Failed to send OTP code'
       const isEmailAlreadyInUse =
         errorMessage.toLowerCase().includes('sử dụng') ||
         errorMessage.toLowerCase().includes('already exists') ||
         errorMessage.toLowerCase().includes('already in use')
 
-      const displayMessage = isEmailAlreadyInUse ? 'Email đã được sử dụng' : errorMessage
+      const displayMessage = isEmailAlreadyInUse ? 'Email is already registered' : errorMessage
       setFormError(displayMessage)
 
       if (isEmailAlreadyInUse) {
         setError('email', {
           type: 'manual',
-          message: 'Email đã được sử dụng',
+          message: 'Email is already registered',
         })
       }
 
       toast({
-        title: 'Không thể gửi mã OTP',
-        description: error.response?.data?.message || error.message || 'Vui lòng thử lại sau.',
+        title: 'Unable to send OTP',
+        description: error.response?.data?.message || error.message || 'Please try again later.',
         status: 'error',
         duration: 4000,
         isClosable: true,
@@ -160,8 +160,8 @@ const Register: React.FC = () => {
     setIsOtpModalOpen(false)
     
     toast({
-      title: 'Đăng ký thành công',
-      description: `Chào mừng ${response.fullname} đến với NETFIT!`,
+      title: 'Registration Successful',
+      description: `Welcome ${response.fullname} to NETFIT!`,
       status: 'success',
       duration: 4000,
       isClosable: true,
@@ -177,16 +177,16 @@ const Register: React.FC = () => {
     const res = await authApi.sendRegisterOTP({ email: registerData.email.trim() })
     if (res?.otpCode) {
       toast({
-        title: 'Mã xác thực mới (Dev mode)',
-        description: `Mã OTP mới: ${res.otpCode}`,
+        title: 'New Verification Code (Dev mode)',
+        description: `Your new OTP code is: ${res.otpCode}`,
         status: 'info',
         duration: 10000,
         isClosable: true,
       })
     } else {
       toast({
-        title: 'Đã gửi lại mã OTP',
-        description: 'Vui lòng kiểm tra hộp thư của bạn.',
+        title: 'OTP Resent Successfully',
+        description: 'Please check your email inbox.',
         status: 'success',
         duration: 4000,
         isClosable: true,

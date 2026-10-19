@@ -63,11 +63,11 @@ const Progress: React.FC = () => {
         if (lockedItems.length > 0) {
             const requiredPackages = Array.from(new Set(lockedItems.map(i => i.packageName || 'Premium'))).join(', ')
             const lockedNames = lockedItems.map(i => i.title).slice(0, 3).join(', ') + (lockedItems.length > 3 ? '...' : '')
-            const currentPkg = membership?.isActive ? membership.packageName : 'Gói hiện tại đã hết hạn'
+            const currentPkg = membership?.isActive ? membership.packageName : 'Current package has expired'
 
             toast({
-                title: 'Không thể tập lại buổi tập này',
-                description: `Buổi tập này có bài tập (${lockedNames}) thuộc gói "${requiredPackages}". Gói tập của bạn (${currentPkg}) đã hết hạn hoặc không đủ quyền truy cập. Vui lòng nâng cấp gói để tiếp tục!`,
+                title: 'Unable to replay workout session',
+                description: `This session contains exercises (${lockedNames}) requiring the "${requiredPackages}" package. Your current tier (${currentPkg}) does not have access. Please upgrade to continue!`,
                 status: 'warning',
                 duration: 6000,
                 isClosable: true,
@@ -141,10 +141,10 @@ const Progress: React.FC = () => {
     const handleOpenExerciseModal = async (detail: WorkoutSessionDetailDto) => {
         const lockInfo = isDetailLocked(detail)
         if (lockInfo.locked) {
-            const currentPkg = membership?.isActive ? membership.packageName : 'Gói hiện tại đã hết hạn'
+            const currentPkg = membership?.isActive ? membership.packageName : 'Current package has expired'
             toast({
-                title: 'Bài tập thuộc gói nâng cấp',
-                description: `Bài tập "${lockInfo.title}" yêu cầu gói "${lockInfo.packageName || 'Premium'}". Gói tập của bạn (${currentPkg}) không đủ quyền truy cập.`,
+                title: 'Premium Tier Required',
+                description: `The exercise "${lockInfo.title}" requires the "${lockInfo.packageName || 'Premium'}" tier. Your current tier (${currentPkg}) does not have access.`,
                 status: 'warning',
                 duration: 5000,
                 isClosable: true,

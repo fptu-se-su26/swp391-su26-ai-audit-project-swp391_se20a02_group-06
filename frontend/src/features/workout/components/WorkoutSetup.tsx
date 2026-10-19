@@ -43,7 +43,7 @@ const WorkoutSetup: React.FC<WorkoutSetupProps> = ({ onComplete }) => {
     const TOTAL = 3
     const toast = useToast()
     const [hasWeeklyAccess, setHasWeeklyAccess] = useState(false)
-    const [requiredPackageName, setRequiredPackageName] = useState<string>('cao cấp nhất')
+    const [requiredPackageName, setRequiredPackageName] = useState<string>('Premium Tier')
     const [showInjuryWarning, setShowInjuryWarning] = useState(false)
     const navigate = useNavigate()
 
@@ -493,8 +493,8 @@ const WorkoutSetup: React.FC<WorkoutSetupProps> = ({ onComplete }) => {
                                     onClick={() => {
                                         if (!hasWeeklyAccess) {
                                             toast({
-                                                title: 'Tính năng Premium',
-                                                description: `Bạn cần đăng ký gói "${requiredPackageName}" để dùng Weekly Plan. Bấm để xem các gói.`,
+                                                title: 'Premium Tier Feature',
+                                                description: `You need the "${requiredPackageName}" subscription to generate Weekly Plans. Click to view available packages.`,
                                                 status: 'warning',
                                                 duration: 5000,
                                                 isClosable: true,

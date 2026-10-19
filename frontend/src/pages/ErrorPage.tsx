@@ -23,35 +23,35 @@ interface ErrorConfig {
 const ERROR_MAP: Record<string, ErrorConfig> = {
   '400': {
     code: '400',
-    title: 'Yêu cầu không hợp lệ',
+    title: 'Invalid Request',
   },
   '403': {
     code: '403',
-    title: 'Từ chối truy cập',
+    title: 'Access Denied',
   },
   '404': {
     code: '404',
-    title: 'Trang không tồn tại',
+    title: 'Page Not Found',
   },
   '500': {
     code: '500',
-    title: 'Lỗi kết nối máy chủ',
+    title: 'Internal Server Error',
   },
   '502': {
     code: '502',
-    title: 'Máy chủ phản hồi sai',
+    title: 'Bad Gateway',
   },
   '503': {
     code: '503',
-    title: 'Dịch vụ tạm gián đoạn',
+    title: 'Service Temporarily Unavailable',
   },
   network: {
     code: 'Offline',
-    title: 'Mất kết nối máy chủ',
+    title: 'Network Connection Lost',
   },
   default: {
     code: 'Error',
-    title: 'Đã xảy ra sự cố',
+    title: 'Unexpected Error Occurred',
   },
 }
 
@@ -231,7 +231,7 @@ const ErrorPage: React.FC<ErrorPageProps> = ({ errorCode, message }) => {
             {/* Action Buttons */}
             <HStack spacing={3} pt={2} justify="center" w="full">
               <AppButton
-                label="Về Trang Chủ"
+                label="Back to Home"
                 onClick={() => navigate('/')}
                 size="md"
                 px={7}
@@ -240,7 +240,7 @@ const ErrorPage: React.FC<ErrorPageProps> = ({ errorCode, message }) => {
 
               {isServerIssue ? (
                 <AppButton
-                  label="Tải Lại"
+                  label="Reload"
                   variant="outline"
                   onClick={() => window.location.reload()}
                   size="md"
@@ -255,7 +255,7 @@ const ErrorPage: React.FC<ErrorPageProps> = ({ errorCode, message }) => {
                 />
               ) : (
                 <AppButton
-                  label="Quay Lại"
+                  label="Go Back"
                   variant="outline"
                   onClick={() => navigate(-1 as any)}
                   size="md"

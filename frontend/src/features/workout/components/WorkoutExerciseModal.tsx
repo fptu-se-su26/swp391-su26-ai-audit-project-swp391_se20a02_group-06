@@ -188,7 +188,7 @@ const WorkoutExerciseModal: React.FC<WorkoutExerciseModalProps> = ({ exercise, i
                     <Text fontSize="20px" fontWeight="700" noOfLines={1}>{exercise.name}</Text>
                     {currentStep && totalSteps && (
                         <Text fontSize="12px" fontWeight="600" color="#8A8A93" mt="1">
-                            Bài {currentStep} / {totalSteps}
+                            Exercise {currentStep} of {totalSteps}
                         </Text>
                     )}
                 </ModalHeader>
@@ -274,7 +274,7 @@ const WorkoutExerciseModal: React.FC<WorkoutExerciseModalProps> = ({ exercise, i
                                             <Icon as={FiList} boxSize="15px" />
                                         </Box>
                                         <Text fontSize="13px" fontWeight="700" color="#FFFFFF" letterSpacing="0.5px">
-                                            HƯỚNG DẪN THỰC HIỆN / INSTRUCTIONS
+                                            EXERCISE INSTRUCTIONS
                                         </Text>
                                     </Flex>
                                     <Badge
@@ -289,7 +289,7 @@ const WorkoutExerciseModal: React.FC<WorkoutExerciseModalProps> = ({ exercise, i
                                         borderRadius="full"
                                         letterSpacing="wider"
                                     >
-                                        {instructionSteps.length} BƯỚC
+                                        {instructionSteps.length} {instructionSteps.length === 1 ? 'STEP' : 'STEPS'}
                                     </Badge>
                                 </Flex>
 
@@ -334,7 +334,7 @@ const WorkoutExerciseModal: React.FC<WorkoutExerciseModalProps> = ({ exercise, i
                                             </Box>
                                             <Box flex="1">
                                                 <Text fontSize="11px" fontWeight="700" color="#8A8A93" textTransform="uppercase" letterSpacing="wider" mb="0.5">
-                                                    Bước {idx + 1}
+                                                    STEP {idx + 1}
                                                 </Text>
                                                 <Text fontSize="13.5px" color="#F1F1F5" lineHeight="1.65" fontWeight="500">
                                                     {stepText}
@@ -349,7 +349,7 @@ const WorkoutExerciseModal: React.FC<WorkoutExerciseModalProps> = ({ exercise, i
                                 <Flex align="center" gap="3">
                                     <Icon as={FiInfo} color="#8A8A93" boxSize="18px" />
                                     <Text fontSize="13px" color="#8A8A93">
-                                        Chưa có hướng dẫn chi tiết theo bước. Hãy quan sát chuyển động mẫu trong video để thực hiện đúng kỹ thuật.
+                                        No step-by-step instructions available. Please follow the demonstration video for proper form.
                                     </Text>
                                 </Flex>
                             </Box>

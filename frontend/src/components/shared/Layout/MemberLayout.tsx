@@ -70,7 +70,7 @@ const MemberLayout: React.FC<MemberLayoutProps> = ({ children }) => {
                 >
                     <Flex align="center" gap="2">
                         <IconButton
-                            aria-label="Mở menu điều hướng"
+                            aria-label="Open navigation menu"
                             display={{ base: 'inline-flex', lg: 'none' }}
                             icon={<FiMenu />}
                             variant="ghost"

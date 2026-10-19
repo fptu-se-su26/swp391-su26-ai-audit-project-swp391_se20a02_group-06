@@ -30,7 +30,7 @@ class ErrorBoundary extends Component<Props, State> {
           errorCode="500"
           message={
             this.state.error?.message ||
-            'Hệ thống phát sinh sự cố bất ngờ khi kết xuất giao diện. Vui lòng thử tải lại trang.'
+            'An unexpected error occurred while rendering the page. Please try refreshing.'
           }
         />
       )

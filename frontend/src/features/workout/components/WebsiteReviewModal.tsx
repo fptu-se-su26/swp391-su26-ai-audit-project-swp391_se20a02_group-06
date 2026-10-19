@@ -25,11 +25,11 @@ interface WebsiteReviewModalProps {
 }
 
 const RATING_LABELS: Record<number, string> = {
-    1: 'Chưa hài lòng 😞',
-    2: 'Cần cải thiện 😐',
-    3: 'Tạm ổn, bình thường 🙂',
-    4: 'Hài lòng và bổ ích 😊',
-    5: 'Rất tuyệt vời! Trải nghiệm đỉnh cao 🔥',
+    1: 'Needs Improvement 😞',
+    2: 'Fair 😐',
+    3: 'Good 🙂',
+    4: 'Very Good 😊',
+    5: 'Outstanding Experience! 🔥',
 }
 
 const WebsiteReviewModal: React.FC<WebsiteReviewModalProps> = ({
@@ -48,8 +48,8 @@ const WebsiteReviewModal: React.FC<WebsiteReviewModalProps> = ({
     const handleSubmit = async () => {
         if (rating === 0) {
             toast({
-                title: 'Vui lòng chọn số sao',
-                description: 'Hãy chọn từ 1 đến 5 sao để đánh giá trải nghiệm của bạn.',
+                title: 'Please select a star rating',
+                description: 'Rate your experience from 1 to 5 stars to continue.',
                 status: 'warning',
                 duration: 3000,
                 isClosable: true,
@@ -66,8 +66,8 @@ const WebsiteReviewModal: React.FC<WebsiteReviewModalProps> = ({
             })
 
             toast({
-                title: 'Cảm ơn bạn rất nhiều! ⭐',
-                description: 'Đánh giá quý giá của bạn đã được ghi nhận vào hệ thống.',
+                title: 'Thank you very much! ⭐',
+                description: 'Your valuable feedback has been recorded successfully.',
                 status: 'success',
                 duration: 4000,
                 isClosable: true,
@@ -79,17 +79,17 @@ const WebsiteReviewModal: React.FC<WebsiteReviewModalProps> = ({
             }
             onClose()
         } catch (error: any) {
-            const msg = error.response?.data?.message || 'Không thể gửi đánh giá lúc này.'
+            const msg = error.response?.data?.message || 'Unable to submit review at this time.'
             toast({
-                title: 'Gửi đánh giá thất bại',
+                title: 'Submission Failed',
                 description: msg,
                 status: 'error',
                 duration: 4000,
                 isClosable: true,
                 position: 'top',
             })
-            // Nếu lỗi do đã đánh giá rồi thì cũng đóng modal
-            if (msg.includes('đã gửi') || msg.includes('đã đánh giá')) {
+            // If already reviewed, close modal
+            if (msg.toLowerCase().includes('already') || msg.includes('đã gửi') || msg.includes('đã đánh giá')) {
                 onClose()
             }
         } finally {
@@ -132,10 +132,10 @@ const WebsiteReviewModal: React.FC<WebsiteReviewModalProps> = ({
                         <Icon as={FaStar} color="#FFB800" boxSize="28px" />
                     </Box>
                     <Text fontSize="20px" fontWeight="800" letterSpacing="-0.5px">
-                        Đánh giá trải nghiệm của bạn
+                        Rate Your Experience
                     </Text>
                     <Text fontSize="13px" color="#8A8A93" fontWeight="normal" mt="1" px="3">
-                        Chúc mừng bạn đã hoàn thành bài tập! Hãy dành 10 giây chấm điểm và góp ý để AISTHEA phục vụ bạn tốt hơn nhé.
+                        Congratulations on finishing your workout! Take 10 seconds to rate and share your thoughts to help us improve.
                     </Text>
                 </ModalHeader>
 
@@ -158,7 +158,7 @@ const WebsiteReviewModal: React.FC<WebsiteReviewModalProps> = ({
                                             onMouseEnter={() => setHoverRating(star)}
                                             onMouseLeave={() => setHoverRating(0)}
                                             onClick={() => setRating(star)}
-                                            aria-label={`${star} sao`}
+                                            aria-label={`${star} stars`}
                                         >
                                             <Icon
                                                 as={FaStar}
@@ -178,19 +178,19 @@ const WebsiteReviewModal: React.FC<WebsiteReviewModalProps> = ({
                                 minH="20px"
                                 transition="all 0.2s"
                             >
-                                {currentDisplayRating > 0 ? RATING_LABELS[currentDisplayRating] : 'Bấm vào sao để chấm điểm'}
+                                {currentDisplayRating > 0 ? RATING_LABELS[currentDisplayRating] : 'Click stars to rate'}
                             </Text>
                         </Box>
 
                         {/* Comment textarea */}
                         <Box w="full">
                             <Text fontSize="13px" color="#8A8A93" fontWeight="600" mb="2">
-                                Nhận xét & Đóng góp ý kiến (tuỳ chọn)
+                                Feedback & Suggestions (Optional)
                             </Text>
                             <Textarea
                                 value={comment}
                                 onChange={(e) => setComment(e.target.value)}
-                                placeholder="Bạn cảm thấy bài tập, AI hướng dẫn hay giao diện như thế nào? Có điểm nào cần cải thiện không..."
+                                placeholder="How was the workout, AI guidance, or interface? Let us know what we can do better..."
                                 bg="#0A0C10"
                                 border="1px solid"
                                 borderColor="#2A2D3A"
@@ -203,7 +203,7 @@ const WebsiteReviewModal: React.FC<WebsiteReviewModalProps> = ({
                                 resize="none"
                             />
                             <Text fontSize="11px" color="#555" textAlign="right" mt="1">
-                                {comment.length}/1000 ký tự
+                                {comment.length}/1000 characters
                             </Text>
                         </Box>
                     </VStack>
@@ -219,7 +219,7 @@ const WebsiteReviewModal: React.FC<WebsiteReviewModalProps> = ({
                         onClick={onClose}
                         isDisabled={isSubmitting}
                     >
-                        Để sau
+                        Maybe Later
                     </Button>
                     <Button
                         bg="#E03030"
@@ -229,12 +229,12 @@ const WebsiteReviewModal: React.FC<WebsiteReviewModalProps> = ({
                         borderRadius="10px"
                         flex="2"
                         isLoading={isSubmitting}
-                        loadingText="Đang gửi..."
+                        loadingText="Submitting..."
                         isDisabled={rating === 0}
                         onClick={handleSubmit}
                         boxShadow="0 4px 15px rgba(224, 48, 48, 0.4)"
                     >
-                        Gửi đánh giá
+                        Submit Review
                     </Button>
                 </ModalFooter>
             </ModalContent>

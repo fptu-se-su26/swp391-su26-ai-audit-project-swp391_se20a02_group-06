@@ -62,10 +62,10 @@ const FALLBACK_REVIEWS: WebsiteReviewDto[] = [
     {
         id: -2,
         userId: 0,
-        fullname: 'Minh Đặng',
+        fullname: 'Minh Dang',
         email: 'minhdang@gmail.com',
         rating: 5,
-        comment: 'Giao diện cực kỳ trực quan và hiện đại! Lộ trình tập luyện chi tiết có đầy đủ video hướng dẫn, giúp mình tự tin tập đúng form hơn rất nhiều.',
+        comment: 'Extremely clean and modern interface! The detailed workout plans with step-by-step videos gave me the confidence to execute every movement with proper form.',
         isHidden: false,
         createdAt: '2026-10-14T00:00:00Z',
     },
@@ -82,10 +82,10 @@ const FALLBACK_REVIEWS: WebsiteReviewDto[] = [
     {
         id: -4,
         userId: 0,
-        fullname: 'Hoàng Quân',
+        fullname: 'Quan Hoang',
         email: 'quan.hoang@gmail.com',
         rating: 5,
-        comment: 'Tính năng nhắc nhở uống nước thông minh kết hợp theo dõi thể lực giúp mình duy trì phong độ tập luyện cực tốt.',
+        comment: 'Smart hydration reminders combined with physical progress analytics helped me maintain consistent workout momentum and peak energy.',
         isHidden: false,
         createdAt: '2026-10-16T00:00:00Z',
     },
@@ -312,7 +312,7 @@ const ReviewMarquee: React.FC = () => {
                                     noOfLines={4}
                                     fontStyle="italic"
                                 >
-                                    "{review.comment || 'Tuyệt vời, nền tảng rất đáng tin cậy và hiệu quả!'}"
+                                    "{review.comment || 'Outstanding fitness platform, highly reliable and effective!'}"
                                 </Text>
                             </VStack>
 

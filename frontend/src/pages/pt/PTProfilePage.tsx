@@ -111,7 +111,7 @@ const PTProfilePage: React.FC = () => {
         if (editSessionRate && parseFloat(editSessionRate) < 2000) {
             toast({
                 title: 'Invalid Session Rate',
-                description: 'Giá thuê mỗi buổi tập tối thiểu là 2.000 VNĐ.',
+                description: 'The minimum rate per training session is 2,000 VND.',
                 status: 'warning',
                 duration: 4000,
                 isClosable: true

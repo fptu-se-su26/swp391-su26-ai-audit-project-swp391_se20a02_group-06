@@ -29,7 +29,7 @@ export const generateExercises = async (data: WorkoutFormData): Promise<Exercise
                     (m) => m.id.toString() === injury.id || m.name.toLowerCase() === injury.id.toLowerCase()
                 )
                 const name = found ? found.name : injury.id
-                return `${name} (Mức độ ${injury.severity}/5)`
+                return `${name} (Severity ${injury.severity}/5)`
             })
             injuredMuscleGroups = injuredNames.join(', ')
         }
@@ -127,7 +127,7 @@ export const generateWeeklyExercises = async (data: WorkoutFormData): Promise<We
                     (m) => m.id.toString() === injury.id || m.name.toLowerCase() === injury.id.toLowerCase()
                 )
                 const name = found ? found.name : injury.id
-                return `${name} (Mức độ ${injury.severity}/5)`
+                return `${name} (Severity ${injury.severity}/5)`
             })
             injuredMuscleGroups = injuredNames.join(', ')
         }
