@@ -2345,3 +2345,75 @@ Toàn bộ mã nguồn trang lỗi và bộ bọc ErrorBoundary đã được t�
 | Link tài liệu/báo cáo | N/A |
 | Ghi chú khác | N/A |
 
+---
+
+### Prompt số 34
+
+| Nội dung | Thông tin |
+|---|---|
+| Ngày thực hiện | 19/10/2026 |
+| Người thực hiện | Lê Văn Đạt |
+| Công cụ AI | Antigravity |
+| Mục đích | Thiết kế Thẻ Bước hướng dẫn bài tập trực quan, chuẩn hóa Database, phân trang 10 dòng/trang và tích hợp Animation gợn sóng cho User Management & Payments |
+| Giai đoạn | [Phase 04] Implementation |
+
+#### 5.1. Prompt đã sử dụng
+
+```text
+- "có 2 phần mà tôi muốn cập nhập là ở FE chỗ phần bài tập này phần decription hướng dẫn tập á tôi muốn là các bước thực hiện trực quan đưuocj đánh số 1,2....đó nên là tôi muốn bạn làm lại phần FE phần hướng dẫn và prompt để tôi nhờ AI bên máy kia dựa và decription hiẹn tại cập nhật laị các bước chỗ DB để bạn hiển thị ra. bạn hiểu tôi chứ cho tôi plan trước đi"
+- "bạn thiết kế FE trước đi"
+- "sửa DB trên máy cho phù hợp luôn để rồi chốt 1 promp chuẩn để chạy AI bên máy kia cập nhập DB cho đúng"
+- "User Management ở này có phân trang, mỗi trang 10 dòng thôi."
+- "payment cũng phân trang cho tôi."
+- "có chuyển giống như ở payment á cho trang user. chuyển trang có animtion cho các phần tử á, bạn hiểu tôi chứ"
+- "commit lại cho tôi và push lên git đi, check xem có lỗi gì không nhé push lên để redeploy đó"
+```
+
+#### 5.2. Bối cảnh khi viết prompt
+
+```text
+Phần mô tả bài tập trong WorkoutExerciseModal trước đây là một đoạn văn bản tiếng Anh dài dồn cục, khiến người tập khó theo dõi từng bước động tác khi đang tập luyện. Cần thiết kế lại thành các Step Cards trực quan, đánh số 1, 2, 3... có màu sắc bắt mắt. Đồng thời, các bảng quản trị Admin Users và Payments khi có nhiều bản ghi bị kéo dài vô tận, cần phân trang 10 dòng mỗi trang và có animation chuyển động mượt mà khi lật trang.
+```
+
+#### 5.3. Kết quả AI trả về
+
+```text
+- Nâng cấp WorkoutExerciseModal.tsx: Viết hàm bóc tách thông minh parseInstructionSteps, thiết kế huy hiệu số phát sáng, nhãn Bước X rõ ràng, và ghim cố định các nút hành động (Start, Complete, Skip Break) ở ModalFooter.
+- Viết scripts/format_exercise_descriptions.py và tự động sinh scripts/update_exercises_steps.sql chuẩn hóa toàn bộ 357 bài tập trong database MySQL.
+- Thêm phân trang 10 dòng/trang (pageSize = 10) và tích hợp PaginationFooter cho AdminUsers.tsx & AdminPayments.tsx.
+- Ứng dụng Framer Motion (MotionTr, MotionBox): Tạo hiệu ứng gợn sóng (stagger wave) trượt từ trái sang cho các dòng khi chuyển trang.
+- Kiểm thử build Frontend và Backend đạt 100% không lỗi.
+```
+
+#### 5.4. Kết quả đã áp dụng vào bài
+
+```text
+Toàn bộ mã nguồn giao diện Modal bài tập, script cập nhật database, phân trang và animation bảng quản trị đã được tích hợp và hoạt động ổn định trên hệ thống.
+```
+
+#### 5.5. Phần sinh viên/nhóm đã chỉnh sửa hoặc cải tiến
+
+```text
+- Yêu cầu thiết kế giao diện FE trước để kiểm tra thực tế rồi mới chuẩn hóa database.
+- Đưa ra yêu cầu cụ thể về việc phân trang giới hạn đúng 10 dòng mỗi trang.
+- Yêu cầu đồng bộ hiệu ứng chuyển trang động (animation) từ Payments sang User Management.
+```
+
+#### 5.6. Đánh giá chất lượng prompt
+
+- [x] Prompt rõ ràng
+- [x] Prompt có đủ bối cảnh
+- [x] Prompt tạo ra kết quả tốt
+
+#### 5.7. Minh chứng liên quan
+
+| Loại minh chứng | Nội dung |
+|---|---|
+| Link commit | 39bfb15d977531bc721cd0efa1e23eed39e5035f |
+| File liên quan | `WorkoutExerciseModal.tsx`, `AdminUsers.tsx`, `AdminPayments.tsx`, `Progress.tsx`, `format_exercise_descriptions.py`, `update_exercises_steps.sql` |
+| Screenshot | Đã kiểm thử thành công trên trình duyệt các màn hình Workout Modal, User Management và Payments |
+| Kết quả chạy/test | npm run build pass 100% (0 errors), dotnet build pass 0 error |
+| Link tài liệu/báo cáo | N/A |
+| Ghi chú khác | N/A |
+
+

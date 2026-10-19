@@ -2737,6 +2737,83 @@ Bài học rút ra:
 2. Tinh tế trong Visual Hierarchy: Bố cục UI càng tối giản thì khoảng cách (spacing/padding) giữa các phần tử càng quan trọng. Việc tách biệt rõ ràng giữa huy hiệu mã lỗi và dòng tiêu đề giúp người dùng nắm bắt thông điệp tức thì mà không cảm thấy rối mắt.
 ```
 
+---
+
+### Lần sử dụng AI số 35
+
+| Nội dung | Thông tin |
+|---|---|
+| Ngày sử dụng | 19/10/2026 |
+| Công cụ AI | Antigravity |
+| Mục đích sử dụng | Thiết kế hệ thống Thẻ Bước hướng dẫn bài tập (Step Cards), chuẩn hóa 357 bài tập Database, phân trang 10 dòng/trang và tích hợp Animation trượt mượt mà cho User Management & Payments Admin |
+| Phần việc liên quan | Fullstack (Frontend UI/UX, Framer Motion, Database Migration & Scripts) |
+| Mức độ sử dụng | Hỗ trợ nhiều |
+
+#### 4.1. Prompt đã sử dụng
+
+```text
+- "có 2 phần mà tôi muốn cập nhập là ở FE chỗ phần bài tập này phần decription hướng dẫn tập á tôi muốn là các bước thực hiện trực quan đưuocj đánh số 1,2....đó nên là tôi muốn bạn làm lại phần FE phần hướng dẫn và prompt để tôi nhờ AI bên máy kia dựa và decription hiẹn tại cập nhật laị các bước chỗ DB để bạn hiển thị ra. bạn hiểu tôi chứ cho tôi plan trước đi"
+- "bạn thiết kế FE trước đi"
+- "sửa DB trên máy cho phù hợp luôn để rồi chốt 1 promp chuẩn để chạy AI bên máy kia cập nhập DB cho đúng"
+- "User Management ở này có phân trang, mỗi trang 10 dòng thôi."
+- "payment cũng phân trang cho tôi."
+- "có chuyển giống như ở payment á cho trang user. chuyển trang có animtion cho các phần tử á, bạn hiểu tôi chứ"
+- "commit lại cho tôi và push lên git đi, check xem có lỗi gì không nhé push lên để redeploy đó"
+```
+
+#### 4.2. Kết quả AI gợi ý
+
+```text
+1. Nâng cấp Giao diện Hướng dẫn Bài tập (WorkoutExerciseModal.tsx):
+   - Xây dựng hàm bóc tách thông minh parseInstructionSteps bóc tách mọi biến thể (Bước 1:, Step 1:, 1., gạch đầu dòng, hoặc đoạn văn bản nhiều câu).
+   - Thiết kế Thẻ Bước Thực Hiện Trực Quan (Visual Step Cards): Huy hiệu số gradient đỏ phát sáng, nhãn Bước X nổi bật, hiệu ứng hover viền đỏ nổi.
+   - Ghim thanh điều khiển cố định (Sticky ModalFooter): Nút Start, Complete, Skip Break cố định chân modal giúp trải nghiệm cuộn bài tập dài cực kỳ mượt mà.
+2. Chuẩn hóa Database & Cung cấp Script Đồng bộ Máy 24/7:
+   - Viết scripts/format_exercise_descriptions.py và tự động sinh scripts/update_exercises_steps.sql cập nhật 357 bài tập trong database MySQL.
+   - Soạn thảo prompt chi tiết và script tự động cho máy chủ 24/7 đồng bộ dữ liệu.
+3. Phân trang 10 dòng/trang cho Admin User Management & Payments:
+   - Cắt danh sách paginatedUsers và paginatedTransactions đúng 10 dòng/trang.
+   - Tự động reset về trang 1 khi tìm kiếm hoặc lọc trạng thái/gói/thời gian.
+   - Tích hợp component chuẩn PaginationFooter hiển thị số trang và nút điều hướng.
+4. Tích hợp Animation chuyển trang mượt mà (Framer Motion):
+   - Áp dụng MotionTr với key={`${safePage}-${id}`} tạo hiệu ứng gợn sóng trượt từ trái sang và mờ dần khi chuyển giữa các trang (Stagger Wave).
+   - Tích hợp MotionBox cho Stat Cards, Filters và Table Card Container.
+```
+
+#### 4.3. Phần sinh viên/nhóm đã sử dụng từ AI
+
+```text
+Toàn bộ mã nguồn cải tiến giao diện WorkoutExerciseModal.tsx, script chuẩn hóa DB scripts/format_exercise_descriptions.py, file SQL scripts/update_exercises_steps.sql, phân trang và animation trong AdminUsers.tsx & AdminPayments.tsx.
+```
+
+#### 4.4. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
+
+```text
+- Đưa ra yêu cầu phân trang giới hạn đúng 10 dòng/trang cho bảng Users và Payments.
+- Yêu cầu đồng bộ hiệu ứng animation chuyển trang mượt mà giữa Payments và Users.
+- Yêu cầu kiểm tra build nghiêm ngặt trước khi commit để đảm bảo CI/CD redeploy Vercel thành công.
+```
+
+#### 4.5. Minh chứng
+
+| Loại minh chứng | Nội dung |
+|---|---|
+| Link commit | 39bfb15d977531bc721cd0efa1e23eed39e5035f |
+| File liên quan | `WorkoutExerciseModal.tsx`, `AdminUsers.tsx`, `AdminPayments.tsx`, `Progress.tsx`, `format_exercise_descriptions.py`, `update_exercises_steps.sql` |
+| Screenshot | Đã kiểm thử thành công trên trình duyệt các màn hình Workout Modal, User Management và Payments |
+| Kết quả chạy/test | npm run build pass 100% (0 errors), dotnet build pass 0 error |
+| Link video demo | N/A |
+| Ghi chú khác | N/A |
+
+#### 4.6. Nhận xét cá nhân/nhóm
+
+```text
+Bài học rút ra:
+1. Trải nghiệm người dùng trong hiển thị nội dung dài: Việc tách các đoạn văn dài thành từng bước thực hiện độc lập kèm huy hiệu đánh số giúp người tập tiếp thu kỹ thuật nhanh gấp nhiều lần, đồng thời cố định nút hành động ở ModalFooter giúp người dùng không phải cuộn mỏi tay để hoàn thành bài tập.
+2. Hiệu ứng Micro-animations khi phân trang: Bằng cách gắn key `${safePage}-${id}` cho các hàng MotionTr trong Framer Motion, mỗi lần người dùng bấm chuyển trang, các phần tử mới sẽ lướt nhẹ vào màn hình theo dạng gợn sóng (stagger), mang lại cảm giác ứng dụng cao cấp, mượt mà và chuyên nghiệp.
+```
+
+
 
 
 
