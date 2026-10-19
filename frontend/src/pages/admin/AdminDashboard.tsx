@@ -53,8 +53,8 @@ const AdminDashboard: React.FC = () => {
                 !isPT && mutatePayments ? mutatePayments(undefined, { revalidate: true }) : Promise.resolve(),
             ])
             toast({
-                title: 'Đã cập nhật',
-                description: 'Dữ liệu tổng quan đã được làm mới.',
+                title: 'Refreshed',
+                description: 'Overview dashboard data has been synchronized.',
                 status: 'success',
                 duration: 2000,
                 isClosable: true,
@@ -62,8 +62,8 @@ const AdminDashboard: React.FC = () => {
             })
         } catch {
             toast({
-                title: 'Không thể làm mới',
-                description: 'Có lỗi xảy ra khi tải dữ liệu mới.',
+                title: 'Refresh Failed',
+                description: 'An error occurred while loading new data.',
                 status: 'error',
                 duration: 2500,
                 isClosable: true,
@@ -81,7 +81,7 @@ const AdminDashboard: React.FC = () => {
             user: p.userName || p.userEmail,
             action: `Paid for ${p.packageName} (₫${Math.round(Number(p.amount) || 0).toLocaleString('vi-VN')})`,
             type: 'payment',
-            time: p.paidAt ? new Date(p.paidAt).toLocaleDateString('vi-VN') : 'Recently',
+            time: p.paidAt ? new Date(p.paidAt).toLocaleDateString('en-US') : 'Recently',
         })) ?? []),
         ...(users?.slice(-2)?.map((u: any, i: number) => ({
             id: `user-${i}`,
@@ -114,10 +114,10 @@ const AdminDashboard: React.FC = () => {
                         color="white"
                         _hover={{ bg: '#1e2028' }}
                         isLoading={isRefreshing || isLoading}
-                        loadingText="Đang tải..."
+                        loadingText="Refreshing..."
                         onClick={handleRefreshAll}
                     >
-                        Làm mới
+                        Refresh
                     </Button>
                 </Flex>
 

@@ -68,8 +68,8 @@ const AdminPayments: React.FC = () => {
             setIsRefreshing(true)
             await mutate(undefined, { revalidate: true })
             toast({
-                title: 'Đã cập nhật',
-                description: 'Dữ liệu giao dịch đã được đồng bộ mới nhất.',
+                title: 'Refreshed',
+                description: 'Transaction records have been synchronized successfully.',
                 status: 'success',
                 duration: 2500,
                 isClosable: true,
@@ -77,8 +77,8 @@ const AdminPayments: React.FC = () => {
             })
         } catch (err) {
             toast({
-                title: 'Không thể làm mới',
-                description: 'Có lỗi xảy ra khi đồng bộ dữ liệu giao dịch.',
+                title: 'Refresh Failed',
+                description: 'An error occurred while synchronizing transaction data.',
                 status: 'error',
                 duration: 3000,
                 isClosable: true,
@@ -242,7 +242,7 @@ const AdminPayments: React.FC = () => {
                             Payments & Revenue
                         </Heading>
                         <Text fontSize="13px" color="#8A8A93" mt="1">
-                            Theo dõi và quản lý toàn bộ giao dịch thanh toán trên hệ thống
+                            Track and manage all payment transactions and financial records across the platform
                         </Text>
                     </Box>
                     <Button
@@ -253,10 +253,10 @@ const AdminPayments: React.FC = () => {
                         color="white"
                         _hover={{ bg: '#1e2028' }}
                         isLoading={isRefreshing || isLoading}
-                        loadingText="Đang tải..."
+                        loadingText="Refreshing..."
                         onClick={handleRefresh}
                     >
-                        Làm mới
+                        Refresh
                     </Button>
                 </Flex>
 
@@ -360,8 +360,8 @@ const AdminPayments: React.FC = () => {
                         </Flex>
                     ) : error ? (
                         <Flex direction="column" align="center" justify="center" py="10">
-                            <Text color="red.400" mb="2" fontSize="13px">Không thể tải dữ liệu thanh toán. Vui lòng kiểm tra lại quyền Admin hoặc đăng nhập lại.</Text>
-                            <Button size="xs" colorScheme="red" variant="outline" onClick={() => mutate()}>Thử lại</Button>
+                            <Text color="red.400" mb="2" fontSize="13px">Failed to load payment transactions. Please check your admin privileges or try again.</Text>
+                            <Button size="xs" colorScheme="red" variant="outline" onClick={() => mutate()}>Retry</Button>
                         </Flex>
                     ) : (
                         <>

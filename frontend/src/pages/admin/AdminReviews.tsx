@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useMemo, useEffect } from 'react'
 import {
     Box,
     Flex,
@@ -28,9 +28,14 @@ import {
 } from '@chakra-ui/react'
 import { FiSearch, FiEye, FiEyeOff, FiTrash2 } from 'react-icons/fi'
 import { FaStar } from 'react-icons/fa'
+import { motion } from 'framer-motion'
 import useSWR from 'swr'
 import apiClient from '../../lib/axios'
 import AdminLayout from '../../components/shared/Layout/AdminLayout.tsx'
+import PaginationFooter from '../../features/admin/components/PaginationFooter'
+
+const MotionTr = motion(Tr)
+const MotionBox = motion(Box)
 
 interface WebsiteReviewItem {
     id: number
@@ -62,7 +67,14 @@ const AdminReviews: React.FC = () => {
     const [selectedRatingFilter, setSelectedRatingFilter] = useState<number | null>(null)
     const [searchQuery, setSearchQuery] = useState<string>('')
     const [actionLoadingId, setActionLoadingId] = useState<number | null>(null)
+    const [currentPage, setCurrentPage] = useState<number>(1)
+    const pageSize = 10
     const toast = useToast()
+
+    // Reset to first page when filtering or searching
+    useEffect(() => {
+        setCurrentPage(1)
+    }, [selectedRatingFilter, searchQuery])
 
     const apiUrl = `/admin/website-reviews?${selectedRatingFilter ? `ratingFilter=${selectedRatingFilter}&` : ''}${searchQuery ? `search=${encodeURIComponent(searchQuery)}` : ''}`
 
@@ -73,8 +85,8 @@ const AdminReviews: React.FC = () => {
         try {
             await apiClient.put(`/admin/website-reviews/${id}/toggle-hide`)
             toast({
-                title: 'Thành công',
-                description: currentHidden ? 'Đã hiển thị lại đánh giá.' : 'Đã ẩn đánh giá.',
+                title: 'Status Updated',
+                description: currentHidden ? 'Review is now visible to the public.' : 'Review has been hidden.',
                 status: 'success',
                 duration: 2500,
                 isClosable: true,
@@ -83,8 +95,8 @@ const AdminReviews: React.FC = () => {
             mutate()
         } catch (err: any) {
             toast({
-                title: 'Thao tác thất bại',
-                description: err.response?.data?.message || 'Không thể cập nhật trạng thái.',
+                title: 'Action Failed',
+                description: err.response?.data?.message || 'Failed to update review visibility status.',
                 status: 'error',
                 duration: 3000,
                 isClosable: true,
@@ -96,14 +108,14 @@ const AdminReviews: React.FC = () => {
     }
 
     const handleDelete = async (id: number) => {
-        if (!window.confirm('Bạn có chắc chắn muốn xóa vĩnh viễn đánh giá này không?')) return
+        if (!window.confirm('Are you sure you want to permanently delete this review?')) return
 
         setActionLoadingId(id)
         try {
             await apiClient.delete(`/admin/website-reviews/${id}`)
             toast({
-                title: 'Đã xóa',
-                description: 'Đánh giá đã được xóa khỏi hệ thống.',
+                title: 'Review Deleted',
+                description: 'The review has been permanently removed from the system.',
                 status: 'success',
                 duration: 2500,
                 isClosable: true,
@@ -112,8 +124,8 @@ const AdminReviews: React.FC = () => {
             mutate()
         } catch (err: any) {
             toast({
-                title: 'Xóa thất bại',
-                description: err.response?.data?.message || 'Không thể xóa đánh giá.',
+                title: 'Delete Failed',
+                description: err.response?.data?.message || 'Failed to delete review.',
                 status: 'error',
                 duration: 3000,
                 isClosable: true,
@@ -134,26 +146,36 @@ const AdminReviews: React.FC = () => {
         { star: 1, count: data?.oneStarCount || 0 },
     ]
 
+    const allReviews = data?.reviews || []
+    const totalItems = allReviews.length
+    const totalPages = Math.max(1, Math.ceil(totalItems / pageSize))
+    const safePage = Math.min(currentPage, totalPages)
+
+    const paginatedReviews = useMemo(() => {
+        const start = (safePage - 1) * pageSize
+        return allReviews.slice(start, start + pageSize)
+    }, [allReviews, safePage, pageSize])
+
     return (
-        <AdminLayout title="Reviews & Ratings" searchPlaceholder="Tìm kiếm đánh giá...">
+        <AdminLayout title="Reviews & Ratings" searchPlaceholder="Search reviews...">
             <Box p={{ base: '4', md: '7' }} maxW="1200px">
                 <Flex justify="space-between" align="center" mb="6">
                     <Box>
                         <Heading fontSize="24px" fontWeight="800" color="white">
-                            Quản lý Đánh giá Trang web
+                            Website Reviews & Ratings
                         </Heading>
                         <Text fontSize="13px" color="#8A8A93" mt="1">
-                            Xem phản hồi, số sao và góp ý của học viên sau khi hoàn thành buổi tập đầu tiên.
+                            Monitor member feedback, star ratings, and testimonials after workout sessions.
                         </Text>
                     </Box>
                 </Flex>
 
                 {/* KPI Overview Cards */}
                 <Grid templateColumns={{ base: '1fr', md: '1fr 1fr 2fr' }} gap="4" mb="6">
-                    {/* Card 1: Điểm trung bình */}
+                    {/* Card 1: Average Rating */}
                     <Box bg="#141720" border="1px solid" borderColor="#1e2028" borderRadius="16px" p="5">
                         <Text fontSize="12px" color="#8A8A93" textTransform="uppercase" fontWeight="700">
-                            Điểm đánh giá trung bình
+                            Average Rating
                         </Text>
                         <HStack align="baseline" spacing="3" mt="2">
                             <Text fontSize="36px" fontWeight="800" color="#FFB800" lineHeight="1">
@@ -175,32 +197,33 @@ const AdminReviews: React.FC = () => {
                         </HStack>
                     </Box>
 
-                    {/* Card 2: Tổng lượt đánh giá */}
+                    {/* Card 2: Total Reviews */}
                     <Box bg="#141720" border="1px solid" borderColor="#1e2028" borderRadius="16px" p="5">
                         <Text fontSize="12px" color="#8A8A93" textTransform="uppercase" fontWeight="700">
-                            Tổng số đánh giá
+                            Total Reviews
                         </Text>
                         <Text fontSize="36px" fontWeight="800" color="white" lineHeight="1" mt="2">
                             {total}
                         </Text>
                         <Text fontSize="12px" color="#8A8A93" mt="3">
-                            Mỗi tài khoản đánh giá 1 lần duy nhất
+                            One verified review per member account
                         </Text>
                     </Box>
 
-                    {/* Card 3: Phân bố số sao */}
+                    {/* Card 3: Rating Distribution */}
                     <Box bg="#141720" border="1px solid" borderColor="#1e2028" borderRadius="16px" p="5">
                         <Text fontSize="12px" color="#8A8A93" textTransform="uppercase" fontWeight="700" mb="3">
-                            Phân bố xếp hạng sao
+                            Rating Distribution
                         </Text>
                         <VStack spacing="2" align="stretch">
                             {counts.map(({ star, count }) => {
                                 const percent = total > 0 ? (count / total) * 100 : 0
                                 return (
                                     <HStack key={star} spacing="3" fontSize="12px">
-                                        <HStack w="45px" spacing="1">
+                                        <HStack w="55px" spacing="1">
                                             <Text color="white" fontWeight="700">{star}</Text>
                                             <Icon as={FaStar} color="#FFB800" boxSize="11px" />
+                                            <Text color="#8A8A93" fontSize="11px">Stars</Text>
                                         </HStack>
                                         <Progress
                                             value={percent}
@@ -240,7 +263,7 @@ const AdminReviews: React.FC = () => {
                             _hover={{ bg: selectedRatingFilter === null ? '#B82020' : '#1E2028', color: 'white' }}
                             onClick={() => setSelectedRatingFilter(null)}
                         >
-                            Tất cả ({total})
+                            All ({total})
                         </Button>
                         {[5, 4, 3, 2, 1].map((star) => {
                             const isSelected = selectedRatingFilter === star
@@ -258,19 +281,19 @@ const AdminReviews: React.FC = () => {
                                     leftIcon={<Icon as={FaStar} color={isSelected ? '#0A0C10' : '#FFB800'} />}
                                     onClick={() => setSelectedRatingFilter(isSelected ? null : star)}
                                 >
-                                    {star} Sao ({count})
+                                    {star} {star === 1 ? 'Star' : 'Stars'} ({count})
                                 </Button>
                             )
                         })}
                     </HStack>
 
                     {/* Search Input */}
-                    <InputGroup maxW={{ base: 'full', md: '280px' }} size="sm">
+                    <InputGroup maxW={{ base: 'full', md: '300px' }} size="sm">
                         <InputLeftElement pointerEvents="none">
                             <FiSearch color="#8A8A93" />
                         </InputLeftElement>
                         <Input
-                            placeholder="Tìm tên, email, nhận xét..."
+                            placeholder="Search by name, email, feedback..."
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                             bg="#141720"
@@ -283,158 +306,194 @@ const AdminReviews: React.FC = () => {
                     </InputGroup>
                 </Flex>
 
-                {/* Table Data */}
-                <Box bg="#141720" border="1px solid" borderColor="#1e2028" borderRadius="16px" overflow="hidden">
+                {/* Table Data Card */}
+                <MotionBox
+                    bg="#141720"
+                    border="1px solid"
+                    borderColor="#1e2028"
+                    borderRadius="16px"
+                    overflow="hidden"
+                    initial={{ opacity: 0, y: 16 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.3 }}
+                >
                     {isLoading ? (
                         <Flex justify="center" align="center" p="16">
                             <Spinner color="#E03030" size="lg" />
                         </Flex>
                     ) : error ? (
                         <Text color="red.400" p="8" textAlign="center">
-                            Không thể tải danh sách đánh giá.
+                            Failed to load reviews. Please refresh or try again later.
                         </Text>
-                    ) : data?.reviews?.length === 0 ? (
+                    ) : allReviews.length === 0 ? (
                         <Box p="16" textAlign="center">
                             <Icon as={FaStar} boxSize="40px" color="#2A2D3A" mb="3" />
                             <Text color="#8A8A93" fontWeight="600">
-                                Chưa có đánh giá nào phù hợp với bộ lọc.
+                                No reviews match your filter criteria.
                             </Text>
                         </Box>
                     ) : (
-                        <Box overflowX="auto">
-                            <Table variant="simple" size="sm">
-                                <Thead bg="#0A0C10">
-                                    <Tr>
-                                        <Th color="#8A8A93" borderColor="#1e2028" py="4">Người dùng</Th>
-                                        <Th color="#8A8A93" borderColor="#1e2028">Số sao</Th>
-                                        <Th color="#8A8A93" borderColor="#1e2028">Nhận xét & Góp ý</Th>
-                                        <Th color="#8A8A93" borderColor="#1e2028">Thời gian</Th>
-                                        <Th color="#8A8A93" borderColor="#1e2028">Trạng thái</Th>
-                                        <Th color="#8A8A93" borderColor="#1e2028" textAlign="right">Thao tác</Th>
-                                    </Tr>
-                                </Thead>
-                                <Tbody>
-                                    {data?.reviews.map((r) => {
-                                        const isActionLoading = actionLoadingId === r.id
-                                        return (
-                                            <Tr
-                                                key={r.id}
-                                                opacity={r.isHidden ? 0.6 : 1}
-                                                _hover={{ bg: 'rgba(255,255,255,0.02)' }}
-                                                transition="all 0.15s"
-                                            >
-                                                {/* User Info */}
-                                                <Td borderColor="#1e2028" py="4">
-                                                    <HStack spacing="3">
-                                                        <Avatar size="sm" name={r.fullname} src={r.avatarUrl} />
+                        <>
+                            <Box overflowX="auto">
+                                <Table variant="simple" size="sm">
+                                    <Thead bg="#0A0C10">
+                                        <Tr>
+                                            <Th color="#8A8A93" borderColor="#1e2028" py="4" fontSize="11px" letterSpacing="0.05em">USER</Th>
+                                            <Th color="#8A8A93" borderColor="#1e2028" fontSize="11px" letterSpacing="0.05em">RATING</Th>
+                                            <Th color="#8A8A93" borderColor="#1e2028" fontSize="11px" letterSpacing="0.05em">FEEDBACK & COMMENTS</Th>
+                                            <Th color="#8A8A93" borderColor="#1e2028" fontSize="11px" letterSpacing="0.05em">DATE & TIME</Th>
+                                            <Th color="#8A8A93" borderColor="#1e2028" fontSize="11px" letterSpacing="0.05em">STATUS</Th>
+                                            <Th color="#8A8A93" borderColor="#1e2028" textAlign="right" fontSize="11px" letterSpacing="0.05em">ACTIONS</Th>
+                                        </Tr>
+                                    </Thead>
+                                    <Tbody>
+                                        {paginatedReviews.map((r, idx) => {
+                                            const isActionLoading = actionLoadingId === r.id
+                                            return (
+                                                <MotionTr
+                                                    key={`${safePage}-${r.id}`}
+                                                    initial={{ opacity: 0, y: 10 }}
+                                                    animate={{ opacity: 1, y: 0 }}
+                                                    transition={{ duration: 0.25, delay: idx * 0.035, ease: 'easeOut' }}
+                                                    opacity={r.isHidden ? 0.6 : 1}
+                                                    _hover={{ bg: 'rgba(255,255,255,0.02)' }}
+                                                >
+                                                    {/* User Info */}
+                                                    <Td borderColor="#1e2028" py="4">
+                                                        <HStack spacing="3">
+                                                            <Avatar size="sm" name={r.fullname} src={r.avatarUrl} />
+                                                            <Box>
+                                                                <Text color="white" fontWeight="700" fontSize="13px">
+                                                                    {r.fullname}
+                                                                </Text>
+                                                                <Text color="#8A8A93" fontSize="11px">
+                                                                    {r.email}
+                                                                </Text>
+                                                            </Box>
+                                                        </HStack>
+                                                    </Td>
+
+                                                    {/* Stars */}
+                                                    <Td borderColor="#1e2028">
+                                                        <HStack spacing="1">
+                                                            {[1, 2, 3, 4, 5].map((s) => (
+                                                                <Icon
+                                                                    key={s}
+                                                                    as={FaStar}
+                                                                    color={s <= r.rating ? '#FFB800' : '#2A2D3A'}
+                                                                    boxSize="13px"
+                                                                />
+                                                            ))}
+                                                            <Text color="#FFB800" fontWeight="700" fontSize="12px" ml="1">
+                                                                {r.rating}.0
+                                                            </Text>
+                                                        </HStack>
+                                                    </Td>
+
+                                                    {/* Comment */}
+                                                    <Td borderColor="#1e2028" maxW="360px">
+                                                        {r.comment ? (
+                                                            <Text color="#E2E1EB" fontSize="13px" noOfLines={2}>
+                                                                "{r.comment}"
+                                                            </Text>
+                                                        ) : (
+                                                            <Text color="#555" fontSize="12px" fontStyle="italic">
+                                                                (No comment provided)
+                                                            </Text>
+                                                        )}
+                                                    </Td>
+
+                                                    {/* Date */}
+                                                    <Td color="#8A8A93" borderColor="#1e2028" fontSize="12px">
                                                         <Box>
-                                                            <Text color="white" fontWeight="700" fontSize="13px">
-                                                                {r.fullname}
+                                                            <Text color="white" fontSize="12px" fontWeight="600">
+                                                                {new Date(r.createdAt).toLocaleDateString('en-US', {
+                                                                    month: 'short',
+                                                                    day: '2-digit',
+                                                                    year: 'numeric',
+                                                                })}
                                                             </Text>
                                                             <Text color="#8A8A93" fontSize="11px">
-                                                                {r.email}
+                                                                {new Date(r.createdAt).toLocaleTimeString('en-US', {
+                                                                    hour: '2-digit',
+                                                                    minute: '2-digit',
+                                                                    hour12: false,
+                                                                })}
                                                             </Text>
                                                         </Box>
-                                                    </HStack>
-                                                </Td>
+                                                    </Td>
 
-                                                {/* Stars */}
-                                                <Td borderColor="#1e2028">
-                                                    <HStack spacing="1">
-                                                        {[1, 2, 3, 4, 5].map((s) => (
-                                                            <Icon
-                                                                key={s}
-                                                                as={FaStar}
-                                                                color={s <= r.rating ? '#FFB800' : '#2A2D3A'}
-                                                                boxSize="13px"
-                                                            />
-                                                        ))}
-                                                        <Text color="#FFB800" fontWeight="700" fontSize="12px" ml="1">
-                                                            {r.rating}.0
-                                                        </Text>
-                                                    </HStack>
-                                                </Td>
+                                                    {/* Status Badge */}
+                                                    <Td borderColor="#1e2028">
+                                                        <Badge
+                                                            bg={r.isHidden ? '#2A2D3A' : 'rgba(34, 197, 94, 0.15)'}
+                                                            color={r.isHidden ? '#8A8A93' : '#4ADE80'}
+                                                            border="1px solid"
+                                                            borderColor={r.isHidden ? '#333' : 'rgba(34, 197, 94, 0.3)'}
+                                                            px="2.5"
+                                                            py="0.5"
+                                                            borderRadius="md"
+                                                            fontSize="11px"
+                                                            fontWeight="700"
+                                                            letterSpacing="0.05em"
+                                                        >
+                                                            {r.isHidden ? 'HIDDEN' : 'VISIBLE'}
+                                                        </Badge>
+                                                    </Td>
 
-                                                {/* Comment */}
-                                                <Td borderColor="#1e2028" maxW="360px">
-                                                    {r.comment ? (
-                                                        <Text color="#E2E1EB" fontSize="13px" noOfLines={2}>
-                                                            "{r.comment}"
-                                                        </Text>
-                                                    ) : (
-                                                        <Text color="#555" fontSize="12px" fontStyle="italic">
-                                                            (Không có lời nhắn)
-                                                        </Text>
-                                                    )}
-                                                </Td>
+                                                    {/* Action Buttons */}
+                                                    <Td borderColor="#1e2028" textAlign="right">
+                                                        <HStack spacing="2" justify="flex-end">
+                                                            <Tooltip label={r.isHidden ? 'Make review visible' : 'Hide review from public'}>
+                                                                <IconButton
+                                                                    aria-label="Toggle Hide"
+                                                                    icon={r.isHidden ? <FiEye /> : <FiEyeOff />}
+                                                                    size="sm"
+                                                                    variant="ghost"
+                                                                    color={r.isHidden ? '#4ADE80' : '#8A8A93'}
+                                                                    _hover={{ bg: '#1E2028', color: 'white' }}
+                                                                    isLoading={isActionLoading}
+                                                                    onClick={() => handleToggleHide(r.id, r.isHidden)}
+                                                                />
+                                                            </Tooltip>
+                                                            <Tooltip label="Delete review permanently">
+                                                                <IconButton
+                                                                    aria-label="Delete review"
+                                                                    icon={<FiTrash2 />}
+                                                                    size="sm"
+                                                                    variant="ghost"
+                                                                    color="red.400"
+                                                                    _hover={{ bg: 'red.900', color: 'red.200' }}
+                                                                    isLoading={isActionLoading}
+                                                                    onClick={() => handleDelete(r.id)}
+                                                                />
+                                                            </Tooltip>
+                                                        </HStack>
+                                                    </Td>
+                                                </MotionTr>
+                                            )
+                                        })}
+                                    </Tbody>
+                                </Table>
+                            </Box>
 
-                                                {/* Date */}
-                                                <Td color="#8A8A93" borderColor="#1e2028" fontSize="12px">
-                                                    {new Date(r.createdAt).toLocaleDateString('vi-VN', {
-                                                        day: '2-digit',
-                                                        month: '2-digit',
-                                                        year: 'numeric',
-                                                        hour: '2-digit',
-                                                        minute: '2-digit',
-                                                    })}
-                                                </Td>
-
-                                                {/* Status Badge */}
-                                                <Td borderColor="#1e2028">
-                                                    <Badge
-                                                        bg={r.isHidden ? '#2A2D3A' : 'rgba(34, 197, 94, 0.15)'}
-                                                        color={r.isHidden ? '#8A8A93' : '#4ADE80'}
-                                                        border="1px solid"
-                                                        borderColor={r.isHidden ? '#333' : 'rgba(34, 197, 94, 0.3)'}
-                                                        px="2"
-                                                        py="0.5"
-                                                        borderRadius="md"
-                                                        fontSize="11px"
-                                                    >
-                                                        {r.isHidden ? 'Đã ẩn' : 'Hiển thị'}
-                                                    </Badge>
-                                                </Td>
-
-                                                {/* Action Buttons */}
-                                                <Td borderColor="#1e2028" textAlign="right">
-                                                    <HStack spacing="2" justify="flex-end">
-                                                        <Tooltip label={r.isHidden ? 'Hiện đánh giá' : 'Ẩn đánh giá'}>
-                                                            <IconButton
-                                                                aria-label="Toggle Hide"
-                                                                icon={r.isHidden ? <FiEye /> : <FiEyeOff />}
-                                                                size="sm"
-                                                                variant="ghost"
-                                                                color={r.isHidden ? '#4ADE80' : '#8A8A93'}
-                                                                _hover={{ bg: '#1E2028', color: 'white' }}
-                                                                isLoading={isActionLoading}
-                                                                onClick={() => handleToggleHide(r.id, r.isHidden)}
-                                                            />
-                                                        </Tooltip>
-                                                        <Tooltip label="Xóa đánh giá">
-                                                            <IconButton
-                                                                aria-label="Delete review"
-                                                                icon={<FiTrash2 />}
-                                                                size="sm"
-                                                                variant="ghost"
-                                                                color="red.400"
-                                                                _hover={{ bg: 'red.900', color: 'red.200' }}
-                                                                isLoading={isActionLoading}
-                                                                onClick={() => handleDelete(r.id)}
-                                                            />
-                                                        </Tooltip>
-                                                    </HStack>
-                                                </Td>
-                                            </Tr>
-                                        )
-                                    })}
-                                </Tbody>
-                            </Table>
-                        </Box>
+                            {/* Pagination Footer */}
+                            {totalItems > 0 && (
+                                <PaginationFooter
+                                    currentPage={safePage}
+                                    totalPages={totalPages}
+                                    totalItems={totalItems}
+                                    pageSize={pageSize}
+                                    onPageChange={setCurrentPage}
+                                />
+                            )}
+                        </>
                     )}
-                </Box>
+                </MotionBox>
             </Box>
         </AdminLayout>
     )
 }
 
 export default AdminReviews
+
