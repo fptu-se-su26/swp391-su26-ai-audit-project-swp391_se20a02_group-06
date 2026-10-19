@@ -54,6 +54,7 @@ interface ProductPackageDto {
     id: number
     name: string
     tier: number
+    isActive: boolean
 }
 
 interface CreatorDto {
@@ -132,7 +133,9 @@ const AdminWorkouts: React.FC = () => {
 
     const packageOptions = useMemo(() => {
         if (!packages) return []
-        return packages.filter(p => p.tier > 0).map(p => ({ id: p.id, name: p.name }))
+        return [...packages]
+            .sort((a, b) => a.tier - b.tier || a.name.localeCompare(b.name))
+            .map(p => ({ id: p.id, name: p.isActive === false ? `${p.name} (Inactive)` : p.name }))
     }, [packages])
 
     const totalPages = Math.max(1, Math.ceil((filteredExercises.length || 0) / pageSize))
@@ -387,12 +390,15 @@ const AdminWorkouts: React.FC = () => {
                     _focus={{ borderColor: "#E03030", boxShadow: "none" }}
                 >
                     <option value="" style={{ color: "black" }}>Free (no package required)</option>
-                    {packages?.filter(p => p.tier > 0).map(pkg => (
+                    {packageOptions.map(pkg => (
                         <option key={pkg.id} value={pkg.id.toString()} style={{ color: "black" }}>
                             {pkg.name}
                         </option>
                     ))}
                 </Select>
+                <Text fontSize="12px" color="#6A6A73" mt={1}>
+                    Choose a package from Pricing &amp; Packages, or leave Free for everyone.
+                </Text>
             </FormControl>
             {isEdit && (
                 <FormControl>

@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react'
 import {
-    AspectRatio, Badge, Box, Flex, HStack, Text, Image,
-    Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalCloseButton,
+    AspectRatio, Badge, Box, Flex, HStack, Text, Image, Stack, Icon,
+    Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalFooter, ModalCloseButton,
 } from '@chakra-ui/react'
+import { FiList, FiClock, FiInfo } from 'react-icons/fi'
 import AppButton from '../../../components/shared/Button/AppButton'
 
 export interface ModalExerciseData {
@@ -27,6 +28,44 @@ const formatTime = (seconds: number): string => {
     const m = Math.floor(seconds / 60)
     const s = seconds % 60
     return `${m}:${s.toString().padStart(2, '0')}`
+}
+
+/**
+ * Phân tích chuỗi description thành từng bước thực hiện độc lập.
+ * Tương thích linh hoạt:
+ * - Hỗ trợ dạng đánh số xuống dòng: "1. Chuẩn bị\n2. Thực hiện"
+ * - Hỗ trợ dạng tiền tố: "Bước 1: ...\nBước 2: ..." hoặc "Step 1: ...\nStep 2: ..."
+ * - Hỗ trợ dạng gạch đầu dòng: "- Bước 1\n- Bước 2" hoặc "* Bước 1\n* Bước 2"
+ * - Hỗ trợ dạng cùng 1 dòng: "1. Chuẩn bị... 2. Thực hiện..."
+ * - Tự động tách câu nếu là đoạn văn thông thường nhiều câu.
+ */
+const parseInstructionSteps = (description?: string): string[] => {
+    if (!description || !description.trim()) return []
+
+    const clean = description.trim()
+
+    // 1. Phân tách theo dòng nếu có nhiều dòng
+    const rawLines = clean.split(/\r?\n/).map(l => l.trim()).filter(Boolean)
+    if (rawLines.length > 1) {
+        return rawLines.map(line => {
+            return line.replace(/^(\d+[\.\/\)\:\-]\s*|\b(Bước|Step)\s*\d+[\:\.\-]?\s*|[-*•]\s*)/i, '').trim()
+        }).filter(Boolean)
+    }
+
+    // 2. Nếu nằm trên 1 dòng nhưng có đánh số: "1. ... 2. ... 3. ..." hoặc "Bước 1: ... Bước 2: ..."
+    const inlineNumbered = clean.split(/(?:^|\s+)(?:\d+[\.\/\)\:]|\b(?:Bước|Step)\s*\d+[\:\.\-]?)\s+/i).map(s => s.trim()).filter(Boolean)
+    if (inlineNumbered.length > 1) {
+        return inlineNumbered
+    }
+
+    // 3. Fallback: Nếu là đoạn văn bản liên tục nhiều câu, tự động tách theo dấu chấm
+    const sentences = clean.split(/(?<=[.!?])\s+(?=[A-ZÀ-Ỹ0-9])/).map(s => s.trim()).filter(Boolean)
+    if (sentences.length > 1) {
+        return sentences
+    }
+
+    // 4. Nếu chỉ có 1 câu đơn
+    return [clean]
 }
 
 const WorkoutExerciseModal: React.FC<WorkoutExerciseModalProps> = ({ exercise, isOpen, onClose, onComplete, currentStep, totalSteps }) => {
@@ -139,10 +178,12 @@ const WorkoutExerciseModal: React.FC<WorkoutExerciseModalProps> = ({ exercise, i
     const isYoutube = url && (url.includes('youtube.com') || url.includes('youtu.be'))
     const youtubeId = isYoutube ? (url!.match(/(?:v=|embed\/|youtu\.be\/)([a-zA-Z0-9_-]{11})/)?.[1] || '') : ''
 
+    const instructionSteps = parseInstructionSteps(exercise.description)
+
     return (
-        <Modal isOpen={isOpen} onClose={onClose} isCentered size="3xl">
+        <Modal isOpen={isOpen} onClose={onClose} isCentered size="3xl" scrollBehavior="inside">
             <ModalOverlay backdropFilter="blur(4px)" bg="blackAlpha.800" />
-            <ModalContent mx="3" bg="#111318" border="1px solid" borderColor="#1e2028" borderRadius={{ base: '16px', sm: '24px' }} overflow="hidden">
+            <ModalContent mx="3" maxH="90vh" bg="#111318" border="1px solid" borderColor="#1e2028" borderRadius={{ base: '16px', sm: '24px' }} overflow="hidden">
                 <ModalHeader color="white" pt="6" pb="4" pr="12">
                     <Text fontSize="20px" fontWeight="700" noOfLines={1}>{exercise.name}</Text>
                     {currentStep && totalSteps && (
@@ -202,7 +243,10 @@ const WorkoutExerciseModal: React.FC<WorkoutExerciseModalProps> = ({ exercise, i
                         {/* Timer / Info */}
                         <Flex justify="space-between" align="center" bg="#0A0C10" p="4" borderRadius="12px" border="1px solid" borderColor="#1e2028" mb="6">
                             <Box>
-                                <Text fontSize="12px" color="#8A8A93" mb="1">Duration</Text>
+                                <Flex align="center" gap="1.5" mb="1">
+                                    <Icon as={FiClock} color="#8A8A93" boxSize="13px" />
+                                    <Text fontSize="12px" color="#8A8A93">Duration</Text>
+                                </Flex>
                                 <Text fontSize="18px" fontWeight="800" color="#E03030">{exercise.duration ? `${exercise.duration}m` : '--'}</Text>
                             </Box>
                             {started && (
@@ -213,29 +257,122 @@ const WorkoutExerciseModal: React.FC<WorkoutExerciseModalProps> = ({ exercise, i
                             )}
                         </Flex>
 
-                        {/* Description */}
-                        {exercise.description && (
-                            <Text fontSize="14px" color="#E2E1EB" mb="6" lineHeight="1.6">
-                                {exercise.description}
-                            </Text>
+                        {/* Instructions / Steps */}
+                        {instructionSteps.length > 0 ? (
+                            <Box mb="4">
+                                <Flex align="center" justify="space-between" mb="3">
+                                    <Flex align="center" gap="2.5">
+                                        <Box
+                                            p="1.5"
+                                            borderRadius="8px"
+                                            bg="rgba(224, 48, 48, 0.12)"
+                                            color="#E03030"
+                                            display="flex"
+                                            alignItems="center"
+                                            justifyContent="center"
+                                        >
+                                            <Icon as={FiList} boxSize="15px" />
+                                        </Box>
+                                        <Text fontSize="13px" fontWeight="700" color="#FFFFFF" letterSpacing="0.5px">
+                                            HƯỚNG DẪN THỰC HIỆN / INSTRUCTIONS
+                                        </Text>
+                                    </Flex>
+                                    <Badge
+                                        bg="rgba(224, 48, 48, 0.15)"
+                                        color="#E03030"
+                                        border="1px solid"
+                                        borderColor="rgba(224, 48, 48, 0.3)"
+                                        fontSize="11px"
+                                        fontWeight="700"
+                                        px="2.5"
+                                        py="0.5"
+                                        borderRadius="full"
+                                        letterSpacing="wider"
+                                    >
+                                        {instructionSteps.length} BƯỚC
+                                    </Badge>
+                                </Flex>
+
+                                <Stack spacing="2.5">
+                                    {instructionSteps.map((stepText, idx) => (
+                                        <Flex
+                                            key={idx}
+                                            align="flex-start"
+                                            gap="3.5"
+                                            bg="#0A0C10"
+                                            border="1px solid"
+                                            borderColor="#1e2028"
+                                            borderRadius="14px"
+                                            p="3.5"
+                                            transition="all 0.25s ease"
+                                            _hover={{
+                                                borderColor: 'rgba(224, 48, 48, 0.45)',
+                                                bg: '#0e1118',
+                                                transform: 'translateY(-1px)',
+                                                boxShadow: '0 4px 20px rgba(0, 0, 0, 0.4)',
+                                            }}
+                                        >
+                                            <Box
+                                                w="26px"
+                                                h="26px"
+                                                minW="26px"
+                                                borderRadius="full"
+                                                bg="linear-gradient(135deg, rgba(224, 48, 48, 0.25) 0%, rgba(224, 48, 48, 0.08) 100%)"
+                                                border="1.5px solid"
+                                                borderColor="rgba(224, 48, 48, 0.5)"
+                                                color="#FF5A5A"
+                                                fontSize="12px"
+                                                fontWeight="800"
+                                                display="flex"
+                                                alignItems="center"
+                                                justifyContent="center"
+                                                mt="1px"
+                                                flexShrink={0}
+                                                boxShadow="0 0 10px rgba(224, 48, 48, 0.2)"
+                                            >
+                                                {idx + 1}
+                                            </Box>
+                                            <Box flex="1">
+                                                <Text fontSize="11px" fontWeight="700" color="#8A8A93" textTransform="uppercase" letterSpacing="wider" mb="0.5">
+                                                    Bước {idx + 1}
+                                                </Text>
+                                                <Text fontSize="13.5px" color="#F1F1F5" lineHeight="1.65" fontWeight="500">
+                                                    {stepText}
+                                                </Text>
+                                            </Box>
+                                        </Flex>
+                                    ))}
+                                </Stack>
+                            </Box>
+                        ) : (
+                            <Box mb="4" p="4" bg="#0A0C10" border="1px dashed" borderColor="#1e2028" borderRadius="14px">
+                                <Flex align="center" gap="3">
+                                    <Icon as={FiInfo} color="#8A8A93" boxSize="18px" />
+                                    <Text fontSize="13px" color="#8A8A93">
+                                        Chưa có hướng dẫn chi tiết theo bước. Hãy quan sát chuyển động mẫu trong video để thực hiện đúng kỹ thuật.
+                                    </Text>
+                                </Flex>
+                            </Box>
                         )}
                     </Box>
+                </ModalBody>
 
-                    {/* Actions */}
+                {/* Fixed Sticky Footer for Actions */}
+                <ModalFooter bg="#0D0F14" borderTop="1px solid" borderColor="#1e2028" p="4">
                     {modalBreak ? (
-                        <>
-                        <Text textAlign="center" fontSize="13px" fontWeight="700" color="#22C55E" mb="3" textTransform="uppercase" letterSpacing="wider">
-                            Break Time
-                        </Text>
-                        <AppButton
-                            label={breakRemaining > 0 ? `Skip Break (${formatTime(breakRemaining)})` : 'Continue'}
-                            variant="solid"
-                            w="full" h="48px" fontSize="15px"
-                            bg="#22C55E" color="black"
-                            _hover={{ bg: '#16A34A' }}
-                            onClick={skipBreak}
-                        />
-                        </>
+                        <Box w="full">
+                            <Text textAlign="center" fontSize="13px" fontWeight="700" color="#22C55E" mb="2" textTransform="uppercase" letterSpacing="wider">
+                                Break Time
+                            </Text>
+                            <AppButton
+                                label={breakRemaining > 0 ? `Skip Break (${formatTime(breakRemaining)})` : 'Continue'}
+                                variant="solid"
+                                w="full" h="48px" fontSize="15px"
+                                bg="#22C55E" color="black"
+                                _hover={{ bg: '#16A34A' }}
+                                onClick={skipBreak}
+                            />
+                        </Box>
                     ) : started && !isCompleted ? (
                         <AppButton
                             label="Complete"
@@ -251,7 +388,7 @@ const WorkoutExerciseModal: React.FC<WorkoutExerciseModalProps> = ({ exercise, i
                             onClick={handleStart}
                         />
                     ) : null}
-                </ModalBody>
+                </ModalFooter>
             </ModalContent>
         </Modal>
     )

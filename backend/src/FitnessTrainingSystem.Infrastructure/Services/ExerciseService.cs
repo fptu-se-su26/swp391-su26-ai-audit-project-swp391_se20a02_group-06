@@ -139,6 +139,8 @@ public class ExerciseService : IExerciseService
                 PackageName = e.Package?.Name,
                 IsLocked = isLocked,
                 ThumbnailUrl = thumbUrl,
+                Description = e.Description,
+                VideoUrl = isLocked ? null : e.VideoUrl,
             };
         }).ToList();
     }

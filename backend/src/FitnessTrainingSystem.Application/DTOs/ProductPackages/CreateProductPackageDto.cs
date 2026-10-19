@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using FitnessTrainingSystem.Domain.Enums;
 
 namespace FitnessTrainingSystem.Application.DTOs.ProductPackages;
@@ -11,4 +12,7 @@ public class CreateProductPackageDto
     public string? Description { get; set; }
     public bool IsActive { get; set; } = true;
     public bool IsPopular { get; set; } = false;
+
+    [Range(0, 100, ErrorMessage = "Tier must be between 0 and 100")]
+    public int Tier { get; set; }
 }

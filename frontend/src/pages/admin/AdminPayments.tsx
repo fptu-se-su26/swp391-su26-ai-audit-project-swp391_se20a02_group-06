@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react'
+import React, { useState, useMemo, useEffect } from 'react'
 import {
     Box,
     Flex,
@@ -34,6 +34,7 @@ import {
 import { motion } from 'framer-motion'
 import useSWR from 'swr'
 import apiClient from '../../lib/axios'
+import PaginationFooter from '../../features/admin/components/PaginationFooter'
 
 const MotionBox = motion(Box)
 const MotionTr = motion(Tr)
@@ -146,6 +147,22 @@ const AdminPayments: React.FC = () => {
             return matchSearch && matchStatus && matchDate
         })
     }, [payments, searchTerm, statusFilter, startDate, endDate])
+
+    // Pagination state (10 transactions per page)
+    const [currentPage, setCurrentPage] = useState(1)
+    const pageSize = 10
+
+    // Reset to page 1 whenever filters change
+    useEffect(() => {
+        setCurrentPage(1)
+    }, [searchTerm, statusFilter, startDate, endDate, activeQuickFilter])
+
+    const totalPages = Math.max(1, Math.ceil(filteredTransactions.length / pageSize))
+    const safePage = Math.min(currentPage, totalPages)
+    const paginatedTransactions = useMemo(() => {
+        const start = (safePage - 1) * pageSize
+        return filteredTransactions.slice(start, start + pageSize)
+    }, [filteredTransactions, safePage, pageSize])
 
     const getStatusColor = (status: string) => {
         switch(status) {
@@ -347,7 +364,8 @@ const AdminPayments: React.FC = () => {
                             <Button size="xs" colorScheme="red" variant="outline" onClick={() => mutate()}>Thử lại</Button>
                         </Flex>
                     ) : (
-                    <Table variant="simple" size="sm">
+                        <>
+                            <Table variant="simple" size="sm">
                         <Thead bg="#0A0C10">
                             <Tr>
                                 <Th color="#8A8A93" borderColor="#1e2028">Order Code</Th>
@@ -360,16 +378,16 @@ const AdminPayments: React.FC = () => {
                             </Tr>
                         </Thead>
                         <Tbody>
-                            {filteredTransactions.length > 0 ? (
-                                filteredTransactions.map((t: any, idx) => {
+                            {paginatedTransactions.length > 0 ? (
+                                paginatedTransactions.map((t: any, idx) => {
                                     const status = t.status === 'SUCCESS' ? 'Completed' : t.status === 'FAILED' ? 'Failed' : t.status === 'PENDING' ? 'Pending' : t.status
                                     return (
                                     <MotionTr 
-                                        key={t.id} 
+                                        key={`${safePage}-${t.id}`} 
                                         _hover={{ bg: 'rgba(255,255,255,0.02)' }}
                                         initial={{ opacity: 0, x: -10 }}
                                         animate={{ opacity: 1, x: 0 }}
-                                        transition={{ delay: 0.6 + (idx * 0.05) }}
+                                        transition={{ delay: idx * 0.035, duration: 0.2 }}
                                     >
                                         <Td color="#8A8A93" borderColor="#1e2028" fontSize="12px" fontFamily="monospace">{t.orderCode}</Td>
                                         <Td color="white" borderColor="#1e2028" fontWeight="600">{t.userName || t.userEmail || 'N/A'}</Td>
@@ -401,6 +419,17 @@ const AdminPayments: React.FC = () => {
                             )}
                         </Tbody>
                     </Table>
+
+                    {filteredTransactions.length > 0 && (
+                        <PaginationFooter
+                            currentPage={safePage}
+                            totalPages={totalPages}
+                            totalItems={filteredTransactions.length}
+                            pageSize={pageSize}
+                            onPageChange={setCurrentPage}
+                        />
+                    )}
+                    </>
                     )}
                 </MotionBox>
             </Box>

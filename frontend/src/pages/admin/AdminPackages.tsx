@@ -44,6 +44,7 @@ interface ProductPackageDto {
     description?: string
     isActive: boolean
     isPopular: boolean
+    tier: number
 }
 
 const typeLabels: Record<number, string> = {
@@ -68,6 +69,7 @@ const AdminPackages: React.FC = () => {
         description: '',
         isActive: true,
         isPopular: false,
+        tier: '',
     })
 
     const totalPackages = packages?.length || 0
@@ -93,6 +95,7 @@ const AdminPackages: React.FC = () => {
             description: '',
             isActive: true,
             isPopular: false,
+            tier: '',
         })
         onOpen()
     }
@@ -107,6 +110,7 @@ const AdminPackages: React.FC = () => {
             description: pkg.description || '',
             isActive: pkg.isActive,
             isPopular: pkg.isPopular,
+            tier: pkg.tier?.toString() || '0',
         })
         onOpen()
     }
@@ -123,6 +127,7 @@ const AdminPackages: React.FC = () => {
             description: formData.description || null,
             isActive: formData.isActive,
             isPopular: formData.isPopular,
+            tier: parseInt(formData.tier) || 0,
         }
 
         try {
@@ -173,6 +178,7 @@ const AdminPackages: React.FC = () => {
                 description: pkg.description,
                 isActive: pkg.isActive,
                 isPopular: !pkg.isPopular,
+                tier: pkg.tier ?? 0,
             })
             mutate()
             toast({ title: `Package marked as ${!pkg.isPopular ? 'popular' : 'not popular'}`, status: 'success', duration: 2000 })
@@ -220,6 +226,7 @@ const AdminPackages: React.FC = () => {
                                 <Th color="#8A8A93" fontSize="12px" fontWeight="600" textTransform="uppercase" py="4">Type</Th>
                                 <Th color="#8A8A93" fontSize="12px" fontWeight="600" textTransform="uppercase" py="4">Price</Th>
                                 <Th color="#8A8A93" fontSize="12px" fontWeight="600" textTransform="uppercase" py="4">Duration</Th>
+                                <Th color="#8A8A93" fontSize="12px" fontWeight="600" textTransform="uppercase" py="4">Tier</Th>
                                 <Th color="#8A8A93" fontSize="12px" fontWeight="600" textTransform="uppercase" py="4">Popular</Th>
                                 <Th color="#8A8A93" fontSize="12px" fontWeight="600" textTransform="uppercase" py="4" textAlign="right">Actions</Th>
                             </Tr>
@@ -227,19 +234,19 @@ const AdminPackages: React.FC = () => {
                         <Tbody>
                             {isLoading ? (
                                 <Tr>
-                                    <Td colSpan={6} textAlign="center" py="10">
+                                    <Td colSpan={7} textAlign="center" py="10">
                                         <Spinner color="#e03030" />
                                     </Td>
                                 </Tr>
                             ) : error ? (
                                 <Tr>
-                                    <Td colSpan={6} textAlign="center" py="10" color="red.500">
+                                    <Td colSpan={7} textAlign="center" py="10" color="red.500">
                                         Failed to load packages
                                     </Td>
                                 </Tr>
                             ) : packages?.length === 0 ? (
                                 <Tr>
-                                    <Td colSpan={6} textAlign="center" py="10" color="#8A8A93">
+                                    <Td colSpan={7} textAlign="center" py="10" color="#8A8A93">
                                         No packages found
                                     </Td>
                                 </Tr>
@@ -270,6 +277,11 @@ const AdminPackages: React.FC = () => {
                                         </Td>
                                         <Td borderTop="1px solid" borderColor="#1e2028">
                                             <Text color="#8A8A93" fontSize="14px">{pkg.durationDays} days</Text>
+                                        </Td>
+                                        <Td borderTop="1px solid" borderColor="#1e2028">
+                                            <Badge bg="rgba(255,255,255,0.06)" color="#E2E1EB" px="2" py="1" borderRadius="md">
+                                                {pkg.tier ?? 0}
+                                            </Badge>
                                         </Td>
                                         <Td borderTop="1px solid" borderColor="#1e2028">
                                             <Switch 
@@ -364,6 +376,24 @@ const AdminPackages: React.FC = () => {
                                     />
                                 </FormControl>
                             </Flex>
+
+                            <FormControl>
+                                <FormLabel color="#8A8A93" fontSize="12px">Tier / Access Level</FormLabel>
+                                <Input
+                                    name="tier"
+                                    type="number"
+                                    min={0}
+                                    max={100}
+                                    value={formData.tier}
+                                    onChange={handleInputChange}
+                                    placeholder="0 = base, 1 = higher, ..."
+                                    bg="#0A0C10" border="1px solid" borderColor="#262a36" color="white"
+                                    _focus={{ borderColor: '#e03030', boxShadow: 'none' }}
+                                />
+                                <Text color="#6A6A73" fontSize="11px" mt="1.5">
+                                    Higher tiers unlock exercises assigned to this package. Use 0 for base access.
+                                </Text>
+                            </FormControl>
 
                             <FormControl>
                                 <FormLabel color="#8A8A93" fontSize="12px">Description</FormLabel>

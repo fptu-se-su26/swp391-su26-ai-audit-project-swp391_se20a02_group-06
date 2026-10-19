@@ -25,12 +25,20 @@ interface MyExercise {
     muscleGroupId?: number
     difficulty?: number
     creatorName?: string
+    packageId?: number | null
     isDraft?: boolean
 }
 
 interface MuscleGroup {
     id: number
     name: string
+}
+
+interface ProductPackage {
+    id: number
+    name: string
+    tier: number
+    isActive: boolean
 }
 
 const fetcher = (url: string) => apiClient.get(url).then(res => res.data)
@@ -96,6 +104,7 @@ interface NewExerciseModalProps {
 const NewExerciseModal: React.FC<NewExerciseModalProps> = ({ isOpen, onClose, onSuccess }) => {
     const toast = useToast()
     const { data: muscleGroups } = useSWR<MuscleGroup[]>('/muscle-groups', fetcher)
+    const { data: packages } = useSWR<ProductPackage[]>('/product-packages', fetcher)
 
     const [title, setTitle] = useState('')
     const [description, setDescription] = useState('')
@@ -103,6 +112,7 @@ const NewExerciseModal: React.FC<NewExerciseModalProps> = ({ isOpen, onClose, on
     const [muscleGroupId, setMuscleGroupId] = useState('')
     const [difficulty, setDifficulty] = useState<number>(0)
     const [duration, setDuration] = useState('')
+    const [packageId, setPackageId] = useState('')
     const [isUploadingVideo, setIsUploadingVideo] = useState(false)
     const [isSubmitting, setIsSubmitting] = useState(false)
 
@@ -113,6 +123,7 @@ const NewExerciseModal: React.FC<NewExerciseModalProps> = ({ isOpen, onClose, on
         setMuscleGroupId('')
         setDifficulty(0)
         setDuration('')
+        setPackageId('')
     }
 
     const handleClose = () => {
@@ -171,6 +182,7 @@ const NewExerciseModal: React.FC<NewExerciseModalProps> = ({ isOpen, onClose, on
                 muscleGroup: selectedMuscleGroup?.name || undefined,
                 difficulty,
                 duration: duration ? parseInt(duration) : undefined,
+                packageId: packageId ? parseInt(packageId) : undefined,
                 isDraft,
             })
             toast({ title: isDraft ? 'Draft saved!' : 'Exercise created successfully!', description: isDraft ? 'You can find it in the Draft tab.' : undefined, status: 'success', duration: 3000, isClosable: true })
@@ -218,6 +230,22 @@ const NewExerciseModal: React.FC<NewExerciseModalProps> = ({ isOpen, onClose, on
                             <Input type="number" value={duration} onChange={(e) => setDuration(e.target.value)} placeholder="e.g. 15" {...inputStyles} />
                         </FormControl>
                         <FormControl>
+                            <FormLabel color="#8A8A93" fontSize="12px" fontWeight="700" textTransform="uppercase" letterSpacing="0.05em">Package</FormLabel>
+                            <Select placeholder="Free (no package required)" value={packageId} onChange={(e) => setPackageId(e.target.value)} bg="#0A0C10" borderColor="#1e2028" color="white" h="44px" _hover={{ borderColor: adminColors.primary }} _focus={{ borderColor: adminColors.primary, boxShadow: 'none' }}>
+                                {packages
+                                    ?.slice()
+                                    .sort((a, b) => a.tier - b.tier || a.name.localeCompare(b.name))
+                                    .map(pkg => (
+                                        <option key={pkg.id} value={pkg.id} style={{ backgroundColor: '#141720', color: 'white' }}>
+                                            {pkg.name}{pkg.isActive === false ? ' (Inactive)' : ''}
+                                        </option>
+                                    ))}
+                            </Select>
+                            <Text fontSize="11px" color={adminColors.dim} mt="1.5">
+                                Leave as Free if this exercise should be available to everyone.
+                            </Text>
+                        </FormControl>
+                        <FormControl>
                             <FormLabel color="#8A8A93" fontSize="12px" fontWeight="700" textTransform="uppercase" letterSpacing="0.05em">Video Demonstration URL</FormLabel>
                             <Flex gap="3" align="center">
                                 <Input value={videoUrl} onChange={(e) => setVideoUrl(e.target.value)} placeholder="https://www.youtube.com/watch?v=..." flex="1" {...inputStyles} />
@@ -255,6 +283,7 @@ interface EditExerciseModalProps {
 const EditExerciseModal: React.FC<EditExerciseModalProps> = ({ exercise, isOpen, onClose, onSuccess }) => {
     const toast = useToast()
     const { data: muscleGroups } = useSWR<MuscleGroup[]>('/muscle-groups', fetcher)
+    const { data: packages } = useSWR<ProductPackage[]>('/product-packages', fetcher)
 
     const [title, setTitle] = useState('')
     const [description, setDescription] = useState('')
@@ -262,6 +291,7 @@ const EditExerciseModal: React.FC<EditExerciseModalProps> = ({ exercise, isOpen,
     const [muscleGroupId, setMuscleGroupId] = useState('')
     const [difficulty, setDifficulty] = useState<number>(0)
     const [duration, setDuration] = useState('')
+    const [packageId, setPackageId] = useState('')
     const [isUploadingVideo, setIsUploadingVideo] = useState(false)
     const [isSubmitting, setIsSubmitting] = useState(false)
     const [initialized, setInitialized] = useState(false)
@@ -274,6 +304,7 @@ const EditExerciseModal: React.FC<EditExerciseModalProps> = ({ exercise, isOpen,
             setMuscleGroupId(exercise.muscleGroupId ? String(exercise.muscleGroupId) : '')
             setDifficulty(exercise.difficulty ?? 0)
             setDuration(exercise.duration ? String(exercise.duration) : '')
+            setPackageId(exercise.packageId ? String(exercise.packageId) : '')
             setInitialized(true)
         }
         if (!isOpen) {
@@ -334,6 +365,7 @@ const EditExerciseModal: React.FC<EditExerciseModalProps> = ({ exercise, isOpen,
                 muscleGroup: selectedMuscleGroup?.name || undefined,
                 difficulty,
                 duration: duration ? parseInt(duration) : undefined,
+                packageId: packageId ? parseInt(packageId) : null,
             })
             toast({ title: 'Exercise updated successfully!', status: 'success', duration: 3000, isClosable: true })
             handleClose()
@@ -378,6 +410,22 @@ const EditExerciseModal: React.FC<EditExerciseModalProps> = ({ exercise, isOpen,
                         <FormControl>
                             <FormLabel color="#8A8A93" fontSize="12px" fontWeight="700" textTransform="uppercase" letterSpacing="0.05em">Duration (minutes)</FormLabel>
                             <Input type="number" value={duration} onChange={(e) => setDuration(e.target.value)} placeholder="e.g. 15" {...inputStyles} />
+                        </FormControl>
+                        <FormControl>
+                            <FormLabel color="#8A8A93" fontSize="12px" fontWeight="700" textTransform="uppercase" letterSpacing="0.05em">Package</FormLabel>
+                            <Select placeholder="Free (no package required)" value={packageId} onChange={(e) => setPackageId(e.target.value)} bg="#0A0C10" borderColor="#1e2028" color="white" h="44px" _hover={{ borderColor: adminColors.primary }} _focus={{ borderColor: adminColors.primary, boxShadow: 'none' }}>
+                                {packages
+                                    ?.slice()
+                                    .sort((a, b) => a.tier - b.tier || a.name.localeCompare(b.name))
+                                    .map(pkg => (
+                                        <option key={pkg.id} value={pkg.id} style={{ backgroundColor: '#141720', color: 'white' }}>
+                                            {pkg.name}{pkg.isActive === false ? ' (Inactive)' : ''}
+                                        </option>
+                                    ))}
+                            </Select>
+                            <Text fontSize="11px" color={adminColors.dim} mt="1.5">
+                                Leave as Free if this exercise should be available to everyone.
+                            </Text>
                         </FormControl>
                         <FormControl>
                             <FormLabel color="#8A8A93" fontSize="12px" fontWeight="700" textTransform="uppercase" letterSpacing="0.05em">Video Demonstration URL</FormLabel>

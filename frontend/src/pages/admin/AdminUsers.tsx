@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react'
+import React, { useState, useMemo, useEffect } from 'react'
 import {
     Box,
     Flex,
@@ -55,6 +55,11 @@ import useSWR from 'swr'
 import apiClient from '../../lib/axios'
 import AdminLayout from '../../components/shared/Layout/AdminLayout'
 import { useAuthStore } from '../../store/useAuthStore'
+import PaginationFooter from '../../features/admin/components/PaginationFooter'
+import { motion } from 'framer-motion'
+
+const MotionBox = motion(Box)
+const MotionTr = motion(Tr)
 
 interface UserDto {
     id: number
@@ -145,6 +150,22 @@ const AdminUsers: React.FC = () => {
             return matchesSearch && matchesStatus && matchesPlan
         })
     }, [users, searchQuery, statusFilter, planFilter])
+
+    // Pagination state (10 users per page as requested)
+    const [currentPage, setCurrentPage] = useState(1)
+    const pageSize = 10
+
+    // Reset to page 1 whenever search query or filters change
+    useEffect(() => {
+        setCurrentPage(1)
+    }, [searchQuery, statusFilter, planFilter])
+
+    const totalPages = Math.max(1, Math.ceil(filteredUsers.length / pageSize))
+    const safePage = Math.min(currentPage, totalPages)
+    const paginatedUsers = useMemo(() => {
+        const start = (safePage - 1) * pageSize
+        return filteredUsers.slice(start, start + pageSize)
+    }, [filteredUsers, safePage, pageSize])
 
     // Summary statistics
     const stats = useMemo(() => {
@@ -360,7 +381,10 @@ const AdminUsers: React.FC = () => {
 
                 {/* Stat Cards */}
                 <SimpleGrid columns={{ base: 2, md: 4 }} spacing="4" mb="6">
-                    <Box bg="#141720" border="1px solid #1e2028" borderRadius="16px" p="4">
+                    <MotionBox
+                        bg="#141720" border="1px solid #1e2028" borderRadius="16px" p="4"
+                        initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0 }}
+                    >
                         <Flex justify="space-between" align="center">
                             <Text color="#8A8A93" fontSize="12px" fontWeight="600" textTransform="uppercase">
                                 Total Members
@@ -372,9 +396,12 @@ const AdminUsers: React.FC = () => {
                         <Text color="white" fontSize="24px" fontWeight="800" mt="2">
                             {stats.total}
                         </Text>
-                    </Box>
+                    </MotionBox>
 
-                    <Box bg="#141720" border="1px solid #1e2028" borderRadius="16px" p="4">
+                    <MotionBox
+                        bg="#141720" border="1px solid #1e2028" borderRadius="16px" p="4"
+                        initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.08 }}
+                    >
                         <Flex justify="space-between" align="center">
                             <Text color="#8A8A93" fontSize="12px" fontWeight="600" textTransform="uppercase">
                                 Active
@@ -386,9 +413,12 @@ const AdminUsers: React.FC = () => {
                         <Text color="#34d399" fontSize="24px" fontWeight="800" mt="2">
                             {stats.active}
                         </Text>
-                    </Box>
+                    </MotionBox>
 
-                    <Box bg="#141720" border="1px solid #1e2028" borderRadius="16px" p="4">
+                    <MotionBox
+                        bg="#141720" border="1px solid #1e2028" borderRadius="16px" p="4"
+                        initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.16 }}
+                    >
                         <Flex justify="space-between" align="center">
                             <Text color="#8A8A93" fontSize="12px" fontWeight="600" textTransform="uppercase">
                                 Banned / Inactive
@@ -400,9 +430,12 @@ const AdminUsers: React.FC = () => {
                         <Text color="#f87171" fontSize="24px" fontWeight="800" mt="2">
                             {stats.banned}
                         </Text>
-                    </Box>
+                    </MotionBox>
 
-                    <Box bg="#141720" border="1px solid #1e2028" borderRadius="16px" p="4">
+                    <MotionBox
+                        bg="#141720" border="1px solid #1e2028" borderRadius="16px" p="4"
+                        initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.24 }}
+                    >
                         <Flex justify="space-between" align="center">
                             <Text color="#8A8A93" fontSize="12px" fontWeight="600" textTransform="uppercase">
                                 Paid Memberships
@@ -414,78 +447,85 @@ const AdminUsers: React.FC = () => {
                         <Text color="#E03030" fontSize="24px" fontWeight="800" mt="2">
                             {stats.premium}
                         </Text>
-                    </Box>
+                    </MotionBox>
                 </SimpleGrid>
 
                 {/* Filters & Search */}
-                <Flex
-                    direction={{ base: 'column', md: 'row' }}
-                    gap="3"
+                <MotionBox
+                    initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.32 }}
                     mb="5"
-                    justify="space-between"
-                    align={{ base: 'stretch', md: 'center' }}
                 >
-                    <InputGroup maxW={{ base: '100%', md: '360px' }}>
-                        <InputLeftElement pointerEvents="none">
-                            <FiSearch color="#8A8A93" />
-                        </InputLeftElement>
-                        <Input
-                            placeholder="Search by name or email..."
-                            value={searchQuery}
-                            onChange={e => setSearchQuery(e.target.value)}
-                            bg="#141720"
-                            border="1px solid #1e2028"
-                            color="white"
-                            fontSize="13px"
-                            borderRadius="12px"
-                            _placeholder={{ color: '#555968' }}
-                            _focus={{ borderColor: '#E03030', boxShadow: '0 0 0 1px #E03030' }}
-                        />
-                    </InputGroup>
+                    <Flex
+                        direction={{ base: 'column', md: 'row' }}
+                        gap="3"
+                        justify="space-between"
+                        align={{ base: 'stretch', md: 'center' }}
+                    >
+                        <InputGroup maxW={{ base: '100%', md: '360px' }}>
+                            <InputLeftElement pointerEvents="none">
+                                <FiSearch color="#8A8A93" />
+                            </InputLeftElement>
+                            <Input
+                                placeholder="Search by name or email..."
+                                value={searchQuery}
+                                onChange={e => setSearchQuery(e.target.value)}
+                                bg="#141720"
+                                border="1px solid #1e2028"
+                                color="white"
+                                fontSize="13px"
+                                borderRadius="12px"
+                                _placeholder={{ color: '#555968' }}
+                                _focus={{ borderColor: '#E03030', boxShadow: '0 0 0 1px #E03030' }}
+                            />
+                        </InputGroup>
 
-                    <HStack spacing="3">
-                        <Select
-                            value={statusFilter}
-                            onChange={e => setStatusFilter(e.target.value)}
-                            bg="#141720"
-                            border="1px solid #1e2028"
-                            color="white"
-                            fontSize="13px"
-                            borderRadius="12px"
-                            w="150px"
-                            _focus={{ borderColor: '#E03030' }}
-                        >
-                            <option value="ALL" style={{ background: '#141720' }}>Status: All</option>
-                            <option value="ACTIVE" style={{ background: '#141720' }}>Active Only</option>
-                            <option value="BANNED" style={{ background: '#141720' }}>Banned Only</option>
-                        </Select>
+                        <HStack spacing="3">
+                            <Select
+                                value={statusFilter}
+                                onChange={e => setStatusFilter(e.target.value)}
+                                bg="#141720"
+                                border="1px solid #1e2028"
+                                color="white"
+                                fontSize="13px"
+                                borderRadius="12px"
+                                w="150px"
+                                _focus={{ borderColor: '#E03030' }}
+                            >
+                                <option value="ALL" style={{ background: '#141720' }}>Status: All</option>
+                                <option value="ACTIVE" style={{ background: '#141720' }}>Active Only</option>
+                                <option value="BANNED" style={{ background: '#141720' }}>Banned Only</option>
+                            </Select>
 
-                        <Select
-                            value={planFilter}
-                            onChange={e => setPlanFilter(e.target.value)}
-                            bg="#141720"
-                            border="1px solid #1e2028"
-                            color="white"
-                            fontSize="13px"
-                            borderRadius="12px"
-                            w="160px"
-                            _focus={{ borderColor: '#E03030' }}
-                        >
-                            <option value="ALL" style={{ background: '#141720' }}>Plan: All</option>
-                            <option value="FREE" style={{ background: '#141720' }}>Free Plan</option>
-                            <option value="PRO" style={{ background: '#141720' }}>Paid / Pro</option>
-                        </Select>
-                    </HStack>
-                </Flex>
+                            <Select
+                                value={planFilter}
+                                onChange={e => setPlanFilter(e.target.value)}
+                                bg="#141720"
+                                border="1px solid #1e2028"
+                                color="white"
+                                fontSize="13px"
+                                borderRadius="12px"
+                                w="160px"
+                                _focus={{ borderColor: '#E03030' }}
+                            >
+                                <option value="ALL" style={{ background: '#141720' }}>Plan: All</option>
+                                <option value="FREE" style={{ background: '#141720' }}>Free Plan</option>
+                                <option value="PRO" style={{ background: '#141720' }}>Paid / Pro</option>
+                            </Select>
+                        </HStack>
+                    </Flex>
+                </MotionBox>
 
                 {/* User Table */}
-                <Box
+                <MotionBox
                     bg="#141720"
                     border="1px solid"
                     borderColor="#1e2028"
                     borderRadius="16px"
                     overflow="hidden"
                     boxShadow="0 8px 24px rgba(0,0,0,0.25)"
+                    initial={{ y: 20, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    transition={{ delay: 0.4 }}
                 >
                     {isLoading ? (
                         <Flex justify="center" align="center" p="16" direction="column" gap="3">
@@ -504,8 +544,9 @@ const AdminUsers: React.FC = () => {
                             <Text color="#8A8A93" fontSize="14px">No users found matching your filters.</Text>
                         </Flex>
                     ) : (
-                        <Box overflowX="auto">
-                            <Table variant="simple" size="sm">
+                        <>
+                            <Box overflowX="auto">
+                                <Table variant="simple" size="sm">
                                 <Thead bg="#0A0C10">
                                     <Tr>
                                         <Th color="#8A8A93" borderColor="#1e2028" py="4" fontSize="11px" letterSpacing="0.05em">NAME</Th>
@@ -521,16 +562,18 @@ const AdminUsers: React.FC = () => {
                                     </Tr>
                                 </Thead>
                                 <Tbody>
-                                    {filteredUsers.map(u => {
+                                    {paginatedUsers.map((u, idx) => {
                                         const isActive = u.status?.toUpperCase() === 'ACTIVE'
                                         const isPaidPlan = u.plan && u.plan.toLowerCase() !== 'free' && u.plan !== '-'
                                         const isActionLoading = actionLoadingId === u.id
 
                                         return (
-                                            <Tr
-                                                key={u.id}
+                                            <MotionTr
+                                                key={`${safePage}-${u.id}`}
                                                 _hover={{ bg: 'rgba(255,255,255,0.02)' }}
-                                                transition="background 0.15s"
+                                                initial={{ opacity: 0, x: -10 }}
+                                                animate={{ opacity: 1, x: 0 }}
+                                                transition={{ delay: idx * 0.035, duration: 0.2 }}
                                             >
                                                 {/* Name + Avatar */}
                                                 <Td borderColor="#1e2028" py="3.5">
@@ -732,14 +775,25 @@ const AdminUsers: React.FC = () => {
                                                         </HStack>
                                                     </Td>
                                                 )}
-                                            </Tr>
+                                            </MotionTr>
                                         )
                                     })}
                                 </Tbody>
                             </Table>
                         </Box>
-                    )}
-                </Box>
+
+                        {filteredUsers.length > 0 && (
+                            <PaginationFooter
+                                currentPage={safePage}
+                                totalPages={totalPages}
+                                totalItems={filteredUsers.length}
+                                pageSize={pageSize}
+                                onPageChange={setCurrentPage}
+                            />
+                        )}
+                    </>
+                )}
+                </MotionBox>
             </Box>
 
             {/* Modal: Edit User */}

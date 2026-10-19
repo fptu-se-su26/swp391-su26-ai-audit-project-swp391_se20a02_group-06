@@ -20,7 +20,10 @@ public class ProductPackageService : IProductPackageService
 
     public async Task<IEnumerable<ProductPackageDto>> GetAllAsync()
     {
-        var packages = await _context.ProductPackages.ToListAsync();
+        var packages = await _context.ProductPackages
+            .OrderBy(p => p.Tier)
+            .ThenBy(p => p.Name)
+            .ToListAsync();
         return _mapper.Map<IEnumerable<ProductPackageDto>>(packages);
     }
 
